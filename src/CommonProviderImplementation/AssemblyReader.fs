@@ -7,11 +7,24 @@ module internal ProviderImplementation.AssemblyReader
 open System
 open System.IO
 open System.Collections.Generic
+open System.Collections.Concurrent
 open System.Reflection
  
 // -------------------------------------------------------------------- 
 // Utilities
 // -------------------------------------------------------------------- 
+
+[<Struct>]
+type uoption<'T> (hasValue: bool, value: 'T) = 
+    member x.HasValue = hasValue
+    member x.Value = value
+
+[<AutoOpen>]
+module Utils = 
+    let UNone<'T> = uoption<'T>(false, Unchecked.defaultof<'T>)
+    let USome v = uoption<'T>(true, v)
+    let (|UNone|USome|) (x:uoption<'T>) = if x.HasValue then USome x.Value else UNone 
+
 
 let tryFindMulti k map = match Map.tryFind k map with Some res -> res | None -> [| |]
 
@@ -24,35 +37,19 @@ let splitNameAt (nm:string) idx =
 
 let splitILTypeName (nm:string) = 
     match nm.LastIndexOf '.' with
-    | -1 -> None, nm
-    | idx -> let a,b = splitNameAt nm idx in Some a, b
+    | -1 -> UNone, nm
+    | idx -> let a,b = splitNameAt nm idx in USome a, b
 
-let joinILTypeName (nspace: string option) (nm:string) = 
+let joinILTypeName (nspace: string uoption) (nm:string) = 
     match nspace with 
-    | None -> nm
-    | Some ns -> ns + "." + nm
+    | UNone -> nm
+    | USome ns -> ns + "." + nm
 
 // -------------------------------------------------------------------- 
 // Ordered lists with a lookup table
 // --------------------------------------------------------------------
 
 let lazyMap f (x:Lazy<_>) =  if x.IsValueCreated then Lazy.CreateFromValue (f (x.Force())) else lazy (f (x.Force()))
-
-
-/// This is used to store event, property and field maps.
-type LazyOrderedMultiMap<'Key,'Data when 'Key : equality>(keyf : 'Data -> 'Key, lazyItems : Lazy<'Data[]>) = 
-
-    let quickMap= 
-        lazyItems |> lazyMap (fun entries -> 
-            let t = new Dictionary<_,_>(entries.Length, HashIdentity.Structural)
-            for y in entries do 
-                let key = keyf y 
-                t.[key] <- y :: (if t.ContainsKey(key) then t.[key] else [])
-            t)
-
-    member self.Entries() = lazyItems.Force()
-
-    member self.Item with get(x) = let t = quickMap.Force() in if t.ContainsKey x then t.[x] else []
 
 
 //---------------------------------------------------------------------
@@ -187,7 +184,7 @@ type PublicKey =
     static member KeyAsToken(k) = PublicKeyToken(PublicKey(k).ToToken())
 
 [<Sealed>]
-type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey option, retargetable: bool, version: Version option, locale: string option)  =  
+type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey option, retargetable: bool, version: Version option, locale: string uoption)  =  
     member x.Name=name
     member x.Hash=hash
     member x.PublicKey=publicKey
@@ -195,7 +192,7 @@ type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey optio
     member x.Version=version
     member x.Locale=locale
     static member FromAssemblyName (aname:System.Reflection.AssemblyName) =
-        let locale = None
+        let locale = UNone
         let publicKey = 
            match aname.GetPublicKey()  with 
            | null | [| |] -> 
@@ -232,8 +229,8 @@ type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey optio
             add (string v.Revision)
             add ", Culture="
             match aref.Locale with 
-            | None -> add "neutral"
-            | Some b -> add b
+            | UNone -> add "neutral"
+            | USome b -> add b
             add ", PublicKeyToken="
             match aref.PublicKey with 
             | None -> add "null"
@@ -350,7 +347,7 @@ type ILTypeRefScope =
 
 
 // IL type references have a pre-computed hash code to enable quick lookup tables during binary generation.
-and ILTypeRef(enc: ILTypeRefScope, nsp: string option, name: string) = 
+and ILTypeRef(enc: ILTypeRefScope, nsp: string uoption, name: string) = 
           
     member x.Scope = enc
     member x.Name = name
@@ -520,10 +517,11 @@ type ILCustomAttr =
     { Method: ILMethodSpec;
       Data: byte[] }
 
-[<NoEquality; NoComparison>]
-type ILCustomAttrs(contents: Lazy<ILCustomAttr[]>) =
-   static let empty = ILCustomAttrs(Lazy.CreateFromValue [| |])
-   member x.Elements = contents.Force()
+type ILCustomAttrs =
+   abstract Elements : ILCustomAttr[]
+
+type ILCustomAttrsStatics() =
+   static let empty = { new ILCustomAttrs with member __.Elements = [| |] }
    static member Empty = empty
 
 [<RequireQualifiedAccess>]
@@ -554,10 +552,10 @@ type ILFieldInit =
     | Null
   
 type ILParameter =
-    { Name: string option;
-      ParameterType: ILType;
-      Default: ILFieldInit option;  
-      //Marshal: ILNativeType option; 
+    { Name: string uoption
+      ParameterType: ILType
+      Default: ILFieldInit option
+      //Marshal: ILNativeType option
       Attributes: ParameterAttributes
       CustomAttrs: ILCustomAttrs }
     member x.IsIn = ((x.Attributes &&& ParameterAttributes.In) <> enum 0)
@@ -632,14 +630,22 @@ type ILMethodDef =
     member md.CallingSignature =  ILCallingSignature (md.CallingConv,md.ParameterTypes,md.Return.Type)
     override x.ToString() = "method " + x.Name
 
-/// Index table by name and arity. 
-type MethodDefMap = Map<string, ILMethodDef[]>
+type ILMethodDefs(larr: Lazy<ILMethodDef[]>) = 
 
-[<NoEquality; NoComparison>]
-type ILMethodDefs(larr: Lazy<ILMethodDef[]>, lmap:Lazy<MethodDefMap>) = 
+    let mutable lmap = null
+    let getmap() = 
+        if lmap = null then 
+            lmap <- Dictionary()
+            for y in larr.Force() do 
+                let key = y.Name
+                if lmap.ContainsKey key then 
+                    lmap.[key] <- Array.append [| y |] lmap.[key]
+                else
+                    lmap.[key] <- [| y |] 
+        lmap
 
     member x.Elements = larr.Force() 
-    member x.FindByName nm  =  tryFindMulti nm (lmap.Force() )
+    member x.FindByName nm  =  getmap().[nm]
     member x.FindByNameAndArity (nm,arity) =  x.FindByName nm |> Array.filter (fun x -> x.Parameters.Length = arity) 
 
 
@@ -659,12 +665,8 @@ type ILEventDef =
     member x.IsStatic = x.AddMethod.CallingConv.IsStatic
     override x.ToString() = "event " + x.Name
 
-(* Index table by name. *)
-[<NoEquality; NoComparison>]
 type ILEventDefs = 
-    | Events of LazyOrderedMultiMap<string, ILEventDef>
-    member x.Elements = let (Events t) = x in t.Entries()
-    member x.LookupByName s = let (Events t) = x in t.[s]
+    abstract Elements : ILEventDef[]
 
 [<NoComparison; NoEquality>]
 type ILPropertyDef = 
@@ -679,19 +681,15 @@ type ILPropertyDef =
       CustomAttrs: ILCustomAttrs }
     member x.IsStatic = (match x.CallingConv with ILThisConvention.Static -> true | _ -> false)
     member x.IndexParameters = x.IndexParameterTypes |> Array.mapi (fun i ty -> 
-        {  Name = Some("arg"+string i)
+        {  Name = USome("arg"+string i)
            ParameterType = ty
            Default = None
            Attributes  = ParameterAttributes.None
-           CustomAttrs = ILCustomAttrs.Empty })
+           CustomAttrs = ILCustomAttrsStatics.Empty })
     override x.ToString() = "property " + x.Name
     
-// Index table by name.
-[<NoEquality; NoComparison>]
 type ILPropertyDefs = 
-    | Properties of LazyOrderedMultiMap<string, ILPropertyDef>
-    member x.Elements = let (Properties t) = x in t.Entries()
-    member x.LookupByName s = let (Properties t) = x in t.[s]
+    abstract Elements : ILPropertyDef[]
 
 [<NoComparison; NoEquality>]
 type ILFieldDef = 
@@ -712,19 +710,16 @@ type ILFieldDef =
     override x.ToString() = "field " + x.Name
 
 
-// Index table by name.  Keep a canonical list to make sure field order is not disturbed for binary manipulation.
 type ILFieldDefs = 
-    | Fields of LazyOrderedMultiMap<string, ILFieldDef>
-    member x.Elements = let (Fields t) = x in t.Entries()
-    member x.LookupByName s = let (Fields t) = x in t.[s]
+    abstract Elements : ILFieldDef[]
 
 type ILMethodImplDef =
     { Overrides: ILOverridesSpec;
       OverrideBy: ILMethodSpec }
 
 // Index table by name and arity. 
-type ILMethodImplDefs(larr : Lazy<ILMethodImplDef[]>) =
-    member x.Elements = larr.Force()
+type ILMethodImplDefs = 
+    abstract Elements : ILMethodImplDef[]
 
 and MethodImplsMap = Map<string * int, ILMethodImplDef array>
 
@@ -761,27 +756,16 @@ type ILTypeDefKind =
     | Interface
     | Enum 
     | Delegate
-    | Other of IlxExtensionTypeKind
-
-and IlxExtensionTypeKind = Ext_type_def_kind of obj
-
-type internal_type_def_kind_extension = 
-    { internalTypeDefKindExtIs: IlxExtensionTypeKind -> bool; }
-
 
 [<NoComparison; NoEquality>]
 type ILTypeDef =  
     { Kind: ILTypeDefKind
-      Namespace: string option
+      Namespace: string uoption
       Name: string  
       GenericParams: ILGenericParameterDefs   (* class is generic *)
       Access: ILTypeDefAccess  
-      IsAbstract: bool
-      IsSealed: bool 
-      IsSerializable: bool 
-      IsComInterop: bool (* Class or interface generated for COM interop *) 
+      Attributes: TypeAttributes
       Layout: ILTypeDefLayout
-      IsSpecialName: bool
       Encoding: ILDefaultPInvokeEncoding
       NestedTypes: ILTypeDefs
       Implements: ILTypes  
@@ -794,11 +778,17 @@ type ILTypeDef =
       InitSemantics: ILTypeInit
       Events: ILEventDefs
       Properties: ILPropertyDefs
-      CustomAttrs: ILCustomAttrs }
+      CustomAttrs: ILCustomAttrs 
+      Token : int }
     member x.IsClass =     (match x.Kind with ILTypeDefKind.Class -> true | _ -> false)
     member x.IsInterface = (match x.Kind with ILTypeDefKind.Interface -> true | _ -> false)
     member x.IsEnum =      (match x.Kind with ILTypeDefKind.Enum -> true | _ -> false)
     member x.IsDelegate =  (match x.Kind with ILTypeDefKind.Delegate -> true | _ -> false)
+    member x.IsAbstract= (x.Attributes &&& TypeAttributes.Abstract) <> enum 0
+    member x.IsSealed= (x.Attributes &&& TypeAttributes.Sealed) <> enum 0
+    member x.IsSerializable= (x.Attributes &&& TypeAttributes.Serializable) <> enum 0
+    member x.IsComInterop= (x.Attributes &&& TypeAttributes.Import) <> enum 0
+    member x.IsSpecialName= (x.Attributes &&& TypeAttributes.SpecialName) <> enum 0
 
     member tdef.IsStructOrEnum = 
         match tdef.Kind with
@@ -807,20 +797,22 @@ type ILTypeDef =
 
     override x.ToString() = "type " + x.Name
 
-and ILTypeDefs(larr : Lazy<Lazy<ILTypeDef>[]>) =
+and ILTypeDefs(larr : Lazy<(string uoption * string * Lazy<ILTypeDef>)[]>) =
 
-    let lmap = 
-        larr |> lazyMap (fun arr -> 
-            (Map.empty, arr) ||> Array.fold (fun tab ltd -> 
-                let td = ltd.Force() 
-                let key = (td.Namespace, td.Name)
-                tab.Add (key, ltd)))
+    let mutable lmap = null
+    let getmap() = 
+        if lmap = null then 
+            lmap <- Dictionary()
+            for (nsp, nm, ltd) in larr.Force() do 
+                let key = nsp, nm
+                lmap.[key] <- ltd
+        lmap
 
     member x.Elements = 
-        [| for td in larr.Force() -> td.Force() |]
+        [| for (_,_,td) in larr.Force() -> td.Force() |]
     
     member x.TryFindByName (nsp,nm)  = 
-        let tdefs = lmap.Force()
+        let tdefs = getmap()
         let key = (nsp,nm)
         if tdefs.ContainsKey key then 
             Some (tdefs.[key].Force())
@@ -846,7 +838,7 @@ and ILNestedExportedTypesAndForwarders(larr:Lazy<ILNestedExportedType[]>) =
 and [<NoComparison; NoEquality>]
     ILExportedTypeOrForwarder =
     { ScopeRef: ILScopeRef
-      Namespace : string option
+      Namespace : string uoption
       Name: string
       IsForwarder: bool
       Access: ILTypeDefAccess
@@ -885,7 +877,7 @@ type ILAssemblyManifest =
       //SecurityDecls: ILPermissions;
       PublicKey: byte[] option
       Version: Version option
-      Locale: string option
+      Locale: string uoption
       CustomAttrs: ILCustomAttrs
       //DisableJitOptimizations: bool
       //JitTracking: bool
@@ -1227,9 +1219,7 @@ let tokToTaggedIdx f nbits tok =
 
 type ByteFile(bytes:byte[]) = 
 
-    static member OpenIn f = ByteFile(File.ReadAllBytes f)
-    static member OpenBytes bytes = ByteFile(bytes)
-
+    member x.Bytes = bytes
     member mc.ReadByte addr = bytes.[addr]
     member mc.ReadBytes addr len = Array.sub bytes addr len
     member m.CountUtf8String addr = 
@@ -1665,20 +1655,10 @@ let mkILArr1DTy ty = ILType.Array (ILArrayShape.SingleDimensional, ty)
 let typeNameForGlobalFunctions = "<Module>"
 
 let mkILNonGenericTySpec tref =  ILTypeSpec (tref,[| |])
-let mkILTypeForGlobalFunctions scoref = ILType.Boxed (mkILNonGenericTySpec (ILTypeRef(ILTypeRefScope.Top scoref, None, typeNameForGlobalFunctions)))
+let mkILTypeForGlobalFunctions scoref = ILType.Boxed (mkILNonGenericTySpec (ILTypeRef(ILTypeRefScope.Top scoref, UNone, typeNameForGlobalFunctions)))
 
 let mkILMethSpecInTyRaw (typ:ILType, cc, nm, args, rty, minst:ILGenericArgs) =
     ILMethodSpec (ILMethodRef (typ.TypeRef,cc,minst.Length,nm,args,rty),typ,minst)
-
-let mkILFieldsLazy l =  Fields (LazyOrderedMultiMap((fun (f:ILFieldDef) -> f.Name),l))
-let mkILEventsLazy l =  Events (LazyOrderedMultiMap((fun (e: ILEventDef) -> e.Name),l))
-let mkILPropertiesLazy l =  Properties (LazyOrderedMultiMap((fun (p: ILPropertyDef) -> p.Name),l) )
-let addILMethodToMap (y: ILMethodDef) tab =
-    let key = y.Name
-    let prev = tryFindMulti key tab
-    Map.add key (Array.append [| y |] prev) tab
-
-let mkILMethodsLazy (ltab : Lazy<_>) =  ILMethodDefs (ltab, lazy (Array.foldBack addILMethodToMap (ltab.Force()) Map.empty))
 
 let mkILFieldSpecInTy (typ:ILType,nm,fty) = 
     ILFieldSpec (ILFieldRef (typ.TypeRef,nm,fty), typ)
@@ -1691,7 +1671,7 @@ let mkILFormalGenericArgsRaw (gparams:ILGenericParameterDefs)  =
 //---------------------------------------------------------------------
 
 let mkILGlobals systemRuntimeScopeRef = 
-      let mkILTyspec nsp nm =  mkILNonGenericTySpec(ILTypeRef(ILTypeRefScope.Top(systemRuntimeScopeRef),Some nsp,nm))
+      let mkILTyspec nsp nm =  mkILNonGenericTySpec(ILTypeRef(ILTypeRefScope.Top(systemRuntimeScopeRef),USome nsp,nm))
       { typ_Object = ILType.Boxed (mkILTyspec "System" "Object")
         typ_String = ILType.Boxed (mkILTyspec "System" "String")
         typ_Type = ILType.Boxed (mkILTyspec "System" "Type")
@@ -2061,7 +2041,6 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     // All the caches.  The sizes are guesstimates for the rough sharing-density of the assembly 
     let cacheAssemblyRef               = mkCacheInt32 lowMem infile "ILAssemblyRef"  (getNumRows ILTableNames.AssemblyRef)
     let cacheMemberRefAsMemberData     = mkCacheGeneric lowMem infile "MemberRefAsMemberData" (getNumRows ILTableNames.MemberRef / 20 + 1)
-    let cacheCustomAttr                = mkCacheGeneric lowMem infile "CustomAttr" (getNumRows ILTableNames.CustomAttribute / 50 + 1)
     let cacheTypeRef                   = mkCacheInt32 lowMem infile "ILTypeRef" (getNumRows ILTableNames.TypeRef / 20 + 1)
     let cacheTypeRefAsType             = mkCacheGeneric lowMem infile "TypeRefAsType" (getNumRows ILTableNames.TypeRef / 20 + 1)
     let cacheBlobHeapAsPropertySig     = mkCacheGeneric lowMem infile "BlobHeapAsPropertySig" (getNumRows ILTableNames.Property / 20 + 1)
@@ -2069,18 +2048,9 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     let cacheBlobHeapAsMethodSig       = mkCacheGeneric lowMem infile "BlobHeapAsMethodSig" (getNumRows ILTableNames.Method / 20 + 1)
     let cacheTypeDefAsType             = mkCacheGeneric lowMem infile "TypeDefAsType" (getNumRows ILTableNames.TypeDef / 20 + 1)
     let cacheMethodDefAsMethodData     = mkCacheInt32 lowMem infile "MethodDefAsMethodData" (getNumRows ILTableNames.Method / 20 + 1)
-    let cacheGenericParams             = mkCacheGeneric lowMem infile "GenericParams" (getNumRows ILTableNames.GenericParam / 20 + 1)
     // nb. Lots and lots of cache hits on this cache, hence never optimize cache away 
     let cacheStringHeap                = mkCacheInt32 false infile "string heap" ( stringsStreamSize / 50 + 1)
     let cacheBlobHeap                  = mkCacheInt32 lowMem infile "blob heap" ( blobsStreamSize / 50 + 1) 
-
-    let cacheNestedRow          = mkCacheInt32 lowMem infile "Nested Table Rows" (getNumRows ILTableNames.Nested / 20 + 1)
-    let cacheConstantRow        = mkCacheInt32 lowMem infile "Constant Rows" (getNumRows ILTableNames.Constant / 20 + 1)
-    let cacheMethodSemanticsRow = mkCacheInt32 lowMem infile "MethodSemantics Rows" (getNumRows ILTableNames.MethodSemantics / 20 + 1)
-    let cacheTypeDefRow         = mkCacheInt32 lowMem infile "ILTypeDef Rows" (getNumRows ILTableNames.TypeDef / 20 + 1)
-    let cacheInterfaceImplRow   = mkCacheInt32 lowMem infile "InterfaceImpl Rows" (getNumRows ILTableNames.InterfaceImpl / 20 + 1)
-    //let cacheFieldMarshalRow    = mkCacheInt32 lowMem infile "FieldMarshal Rows" (getNumRows ILTableNames.FieldMarshal / 20 + 1)
-    let cachePropertyMapRow     = mkCacheInt32 lowMem infile "PropertyMap Rows" (getNumRows ILTableNames.PropertyMap / 20 + 1)
 
    //-----------------------------------------------------------------------
 
@@ -2148,8 +2118,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         (scopeIdx,nameIdx,namespaceIdx) 
 
     /// Read Table ILTypeDef 
-    let seekReadTypeDefRowUncached idx =
-
+    let seekReadTypeDefRow idx =
         let mutable addr = rowAddr ILTableNames.TypeDef idx
         let flags = seekReadInt32Adv &addr
         let nameIdx = seekReadStringIdx &addr
@@ -2158,8 +2127,6 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         let fieldsIdx = seekReadUntaggedIdx ILTableNames.Field &addr
         let methodsIdx = seekReadUntaggedIdx ILTableNames.Method &addr
         (flags, nameIdx, namespaceIdx, extendsIdx, fieldsIdx, methodsIdx) 
-
-    let seekReadTypeDefRow = cacheTypeDefRow  seekReadTypeDefRowUncached
 
     /// Read Table Field 
     let seekReadFieldRow idx =
@@ -2188,14 +2155,11 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         let nameIdx = seekReadStringIdx &addr
         (flags,seq,nameIdx) 
 
-    let seekReadInterfaceImplRowUncached idx =
+    let seekReadInterfaceImplRow idx =
         let mutable addr = rowAddr ILTableNames.InterfaceImpl idx
         let tidx = seekReadUntaggedIdx ILTableNames.TypeDef &addr
         let intfIdx = seekReadTypeDefOrRefOrSpecIdx &addr
         (tidx,intfIdx)
-
-    /// Read Table InterfaceImpl 
-    let seekReadInterfaceImplRow = cacheInterfaceImplRow  seekReadInterfaceImplRowUncached
 
     /// Read Table MemberRef 
     let seekReadMemberRefRow idx =
@@ -2206,14 +2170,12 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         (mrpIdx,nameIdx,typeIdx) 
 
     /// Read Table Constant 
-    let seekReadConstantRowUncached idx =
+    let seekReadConstantRow idx =
         let mutable addr = rowAddr ILTableNames.Constant idx
         let kind = seekReadUInt16Adv &addr
         let parentIdx = seekReadHasConstantIdx &addr
         let valIdx = seekReadBlobIdx &addr
         (kind, parentIdx, valIdx)
-
-    let seekReadConstantRow = cacheConstantRow  seekReadConstantRowUncached
 
     /// Read Table CustomAttribute 
     let seekReadCustomAttributeRow idx =
@@ -2254,13 +2216,11 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         (flags,nameIdx,typIdx) 
    
     /// Read Table PropertyMap 
-    let seekReadPropertyMapRowUncached idx =
+    let seekReadPropertyMapRow idx =
         let mutable addr = rowAddr ILTableNames.PropertyMap idx
         let tidx = seekReadUntaggedIdx ILTableNames.TypeDef &addr
         let propsIdx = seekReadUntaggedIdx ILTableNames.Property &addr
         (tidx,propsIdx)
-
-    let seekReadPropertyMapRow = cachePropertyMapRow  seekReadPropertyMapRowUncached
 
     /// Read Table Property 
     let seekReadPropertyRow idx =
@@ -2271,14 +2231,12 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         (flags,nameIdx,typIdx) 
 
     /// Read Table MethodSemantics 
-    let seekReadMethodSemanticsRowUncached idx =
+    let seekReadMethodSemanticsRow idx =
         let mutable addr = rowAddr ILTableNames.MethodSemantics idx
         let flags = seekReadUInt16AsInt32Adv &addr
         let midx = seekReadUntaggedIdx ILTableNames.Method &addr
         let assocIdx = seekReadHasSemanticsIdx &addr
         (flags,midx,assocIdx)
-
-    let seekReadMethodSemanticsRow = cacheMethodSemanticsRow seekReadMethodSemanticsRowUncached 
 
     /// Read Table MethodImpl 
     let seekReadMethodImplRow idx =
@@ -2356,13 +2314,11 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         (offset,flags,nameIdx,implIdx) 
 
     /// Read Table Nested 
-    let seekReadNestedRowUncached idx =
+    let seekReadNestedRow idx =
         let mutable addr = rowAddr ILTableNames.Nested idx
         let nestedIdx = seekReadUntaggedIdx ILTableNames.TypeDef &addr
         let enclIdx = seekReadUntaggedIdx ILTableNames.TypeDef &addr
         (nestedIdx,enclIdx)
-
-    let seekReadNestedRow = cacheNestedRow  seekReadNestedRowUncached
 
     /// Read Table GenericParam 
     let seekReadGenericParamRow idx =
@@ -2385,7 +2341,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
 
     let readStringHeapUncached idx =  seekReadUTF8String is (stringsStreamPhysicalLoc + idx) 
     let readStringHeap = cacheStringHeap readStringHeapUncached
-    let readStringHeapOption idx = if idx = 0 then None else Some (readStringHeap idx) 
+    let readStringHeapOption idx = if idx = 0 then UNone else USome (readStringHeap idx) 
 
     let emptyByteArray: byte[] = [||]
     let readBlobHeapUncached idx = 
@@ -2496,8 +2452,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     and seekReadClassLayout idx =
         match seekReadOptionalIndexedRow (getNumRows ILTableNames.ClassLayout,seekReadClassLayoutRow,(fun (_,_,tidx) -> tidx),simpleIndexCompare idx,isSorted ILTableNames.ClassLayout,(fun (pack,size,_) -> pack,size)) with 
         | None -> { Size = None; Pack = None }
-        | Some (pack,size) -> { Size = Some size; 
-                               Pack = Some pack; }
+        | Some (pack,size) -> { Size = Some size; Pack = Some pack; }
 
     and memberAccessOfFlags flags =
         let f = (flags &&& 0x00000007)
@@ -2529,11 +2484,11 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     and typeKindOfFlags nspace nm _mdefs _fdefs (super:ILType option) flags =
         if (flags &&& 0x00000020) <> 0x0 then ILTypeDefKind.Interface 
         else 
-             let isEnum = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = Some "System" && ty.TypeSpec.Name = "Enum")
-             let isDelegate = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = Some "System" && ty.TypeSpec.Name = "Delegate")
-             let isMulticastDelegate = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = Some "System" && ty.TypeSpec.Name = "MulticastDelegate")
-             let selfIsMulticastDelegate = (nspace = Some "System" && nm = "MulticastDelegate")
-             let isValueType = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = Some "System" && ty.TypeSpec.Name = "ValueType" && not (nspace = Some "System" && nm = "Enum"))
+             let isEnum = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = USome "System" && ty.TypeSpec.Name = "Enum")
+             let isDelegate = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = USome "System" && ty.TypeSpec.Name = "Delegate")
+             let isMulticastDelegate = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = USome "System" && ty.TypeSpec.Name = "MulticastDelegate")
+             let selfIsMulticastDelegate = (nspace = USome "System" && nm = "MulticastDelegate")
+             let isValueType = (match super with None -> false | Some ty -> ty.TypeSpec.Namespace = USome "System" && ty.TypeSpec.Name = "ValueType" && not (nspace = USome "System" && nm = "Enum"))
              if isEnum then ILTypeDefKind.Enum 
              elif  (isDelegate && not selfIsMulticastDelegate) || isMulticastDelegate then ILTypeDefKind.Delegate
              elif isValueType then ILTypeDefKind.ValueType 
@@ -2571,10 +2526,12 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         info,seekReadTypeDefRowExtents info idx
 
     and seekReadTypeDef toponly (idx:int) =
-        let (flags,_,_, _, _, _) = seekReadTypeDefRow idx
+        let (flags, nameIdx, namespaceIdx, _, _, _) = seekReadTypeDefRow idx
         if toponly && not (isTopTypeDef flags) then None
         else
 
+         let name = readStringHeap nameIdx
+         let nspace = readStringHeapOption namespaceIdx
          let rest = 
             lazy
                let ((flags,nameIdx,namespaceIdx, extendsIdx, fieldsIdx, methodsIdx) as info) = seekReadTypeDefRow idx
@@ -2600,13 +2557,9 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                  Namespace=nspace
                  Name=name
                  GenericParams=typars 
+                 Attributes = enum<TypeAttributes> flags
                  Access= typeAccessOfFlags flags
-                 IsAbstract= (flags &&& 0x00000080) <> 0x0
-                 IsSealed= (flags &&& 0x00000100) <> 0x0 
-                 IsSerializable= (flags &&& 0x00002000) <> 0x0 
-                 IsComInterop= (flags &&& 0x00001000) <> 0x0 
                  Layout = layout
-                 IsSpecialName= (flags &&& 0x00000400) <> 0x0
                  Encoding=typeEncodingOfFlags flags
                  NestedTypes= nested
                  Implements =  impls  
@@ -2622,8 +2575,9 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                      else ILTypeInit.OnAny 
                  Events= events
                  Properties=props
-                 CustomAttrs=cas }
-         Some rest 
+                 CustomAttrs=cas 
+                 Token = idx }
+         Some (nspace, name, rest)
 
     and seekReadTopTypeDefs () =
         [| for i = 1 to getNumRows ILTableNames.TypeDef do
@@ -2643,9 +2597,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     and seekReadInterfaceImpls numtypars tidx =
         seekReadIndexedRows (getNumRows ILTableNames.InterfaceImpl,seekReadInterfaceImplRow ,fst,simpleIndexCompare tidx,isSorted ILTableNames.InterfaceImpl,(snd >> seekReadTypeDefOrRef numtypars AsObject [| |])) 
 
-    and seekReadGenericParams numtypars (a,b) : ILGenericParameterDefs =  cacheGenericParams seekReadGenericParamsUncached (GenericParamsIdx(numtypars,a,b))
-
-    and seekReadGenericParamsUncached (GenericParamsIdx(numtypars,a,b)) =
+    and seekReadGenericParams numtypars (a,b) : ILGenericParameterDefs =
         let pars =
             seekReadIndexedRows
                 (getNumRows ILTableNames.GenericParam,seekReadGenericParamRow,
@@ -2801,13 +2753,13 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
            CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.FieldDef,idx)) }
      
     and seekReadFields (numtypars, hasLayout) fidx1 fidx2 =
-        mkILFieldsLazy 
-           (lazy
+        { new ILFieldDefs with 
+           member __.Elements = 
                [| for i = fidx1 to fidx2 - 1 do
-                   yield seekReadField (numtypars, hasLayout) i |])
+                   yield seekReadField (numtypars, hasLayout) i |] }
 
     and seekReadMethods numtypars midx1 midx2 =
-        mkILMethodsLazy 
+        ILMethodDefs 
            (lazy 
                [| for i = midx1 to midx2 - 1 do
                      yield seekReadMethod numtypars i |])
@@ -3049,16 +3001,16 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
      
      
     and seekReadParams (retty,argtys) pidx1 pidx2 =
-        let retRes : ILReturn ref =  ref { (* Marshal=None *) Type=retty; CustomAttrs=ILCustomAttrs.Empty }
+        let retRes : ILReturn ref =  ref { (* Marshal=None *) Type=retty; CustomAttrs=ILCustomAttrsStatics.Empty }
         let paramsRes = 
             argtys 
             |> Array.map (fun ty ->  
-                { Name=None
+                { Name=UNone
                   Default=None
                   //Marshal=None
                   Attributes= ParameterAttributes.None
                   ParameterType=ty
-                  CustomAttrs=ILCustomAttrs.Empty })
+                  CustomAttrs=ILCustomAttrsStatics.Empty })
         for i = pidx1 to pidx2 - 1 do
             seekReadParamExtras (retRes,paramsRes) i
         !retRes, paramsRes
@@ -3083,8 +3035,8 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                    CustomAttrs = cas }
           
     and seekReadMethodImpls numtypars tidx =
-       ILMethodImplDefs
-          (lazy 
+       { new ILMethodImplDefs with 
+          member x.Elements = 
               let mimpls = seekReadIndexedRows (getNumRows ILTableNames.MethodImpl,seekReadMethodImplRow,(fun (a,_,_) -> a),simpleIndexCompare tidx,isSorted ILTableNames.MethodImpl,(fun (_,b,c) -> b,c))
               mimpls |> Array.map (fun (b,c) -> 
                   { OverrideBy=
@@ -3093,7 +3045,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                     Overrides=
                       let (MethodData(enclTyp, cc, nm, argtys, retty,minst)) = seekReadMethodDefOrRefNoVarargs numtypars c
                       let mspec = mkILMethSpecInTyRaw (enclTyp, cc, nm, argtys, retty,minst)
-                      OverridesSpec(mspec.MethodRef, mspec.EnclosingType) }))
+                      OverridesSpec(mspec.MethodRef, mspec.EnclosingType) }) }
 
     and seekReadMultipleMethodSemantics (flags,id) =
         seekReadIndexedRows 
@@ -3133,8 +3085,8 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
          CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.Event,idx)) }
    
     and seekReadEvents numtypars tidx =
-       mkILEventsLazy 
-          (lazy 
+       { new ILEventDefs with 
+            member __.Elements =  
                match seekReadOptionalIndexedRow (getNumRows ILTableNames.EventMap,(fun i -> i, seekReadEventMapRow i),(fun (_,row) -> fst row),compare tidx,false,(fun (i,row) -> (i,snd row))) with 
                | None -> [| |]
                | Some (rowNum,beginEventIdx) ->
@@ -3146,7 +3098,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                            endEventIdx
 
                    [| for i in beginEventIdx .. endEventIdx - 1 do
-                       yield seekReadEvent numtypars i |])
+                       yield seekReadEvent numtypars i |] }
 
     and seekReadProperty numtypars idx =
        let (flags,nameIdx,typIdx) = seekReadPropertyRow idx
@@ -3171,8 +3123,8 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
          CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.Property,idx)) }
    
     and seekReadProperties numtypars tidx =
-       mkILPropertiesLazy
-          (lazy 
+       { new ILPropertyDefs with
+          member x.Elements = 
                match seekReadOptionalIndexedRow (getNumRows ILTableNames.PropertyMap,(fun i -> i, seekReadPropertyMapRow i),(fun (_,row) -> fst row),compare tidx,false,(fun (i,row) -> (i,snd row))) with 
                | None -> [| |]
                | Some (rowNum,beginPropIdx) ->
@@ -3183,21 +3135,20 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                            let (_, endPropIdx) = seekReadPropertyMapRow (rowNum + 1)
                            endPropIdx
                    [| for i in beginPropIdx .. endPropIdx - 1 do
-                         yield seekReadProperty numtypars i |])
+                         yield seekReadProperty numtypars i |] }
 
 
     and seekReadCustomAttrs idx = 
-        ILCustomAttrs
-           (lazy seekReadIndexedRows (getNumRows ILTableNames.CustomAttribute,
+        { new ILCustomAttrs with 
+           member __.Elements = 
+               seekReadIndexedRows (getNumRows ILTableNames.CustomAttribute,
                                       seekReadCustomAttributeRow,(fun (a,_,_) -> a),
                                       hcaCompare idx,
                                       isSorted ILTableNames.CustomAttribute,
-                                      (fun (_,b,c) -> seekReadCustomAttr (b,c))))
+                                      (fun (_,b,c) -> seekReadCustomAttr (b,c))) }
 
-    and seekReadCustomAttr (TaggedIndex(cat,idx),b) = cacheCustomAttr seekReadCustomAttrUncached (CustomAttrIdx (cat,idx,b))
-
-    and seekReadCustomAttrUncached (CustomAttrIdx (cat,idx,valIdx)) = 
-        { Method=seekReadCustomAttrType (TaggedIndex(cat,idx));
+    and seekReadCustomAttr (catIdx,valIdx) = 
+        { Method=seekReadCustomAttrType catIdx;
           Data=
             match readBlobHeapOption valIdx with
             | Some bytes -> bytes
@@ -3315,6 +3266,8 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
     let ilModule = seekReadModule 1
     let ilAssemblyRefs = [ for i in 1 .. getNumRows ILTableNames.AssemblyRef do yield seekReadAssemblyRef i ]
 
+    member x.Bytes = is.Bytes
+    member x.ILGlobals = ilg
     member x.ILModuleDef = ilModule
     member x.ILAssemblyRefs = ilAssemblyRefs
     
@@ -3588,46 +3541,46 @@ let decodeILCustomAttribData ilg (ca: ILCustomAttr) : ILCustomAttrArg list  =
 
     let rec parseVal argty sigptr = 
       match argty with 
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "SByte" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "SByte" ->  
           let n,sigptr = sigptr_get_i8 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Byte" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Byte" ->  
           let n,sigptr = sigptr_get_u8 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Int16" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Int16" ->  
           let n,sigptr = sigptr_get_i16 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "UInt16" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "UInt16" ->  
           let n,sigptr = sigptr_get_u16 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Int32" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Int32" ->  
           let n,sigptr = sigptr_get_i32 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "UInt32" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "UInt32" ->  
           let n,sigptr = sigptr_get_u32 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Int64" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Int64" ->  
           let n,sigptr = sigptr_get_i64 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "UInt64" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "UInt64" ->  
           let n,sigptr = sigptr_get_u64 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Double" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Double" ->  
           let n,sigptr = sigptr_get_ieee64 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Single" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Single" ->  
           let n,sigptr = sigptr_get_ieee32 bytes sigptr
           (argty, box n), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Char" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Char" ->  
           let n,sigptr = sigptr_get_u16 bytes sigptr
           (argty, box (char n)), sigptr
-      | ILType.Value tspec when tspec.Namespace = Some "System" && tspec.Name = "Boolean" ->  
+      | ILType.Value tspec when tspec.Namespace = USome "System" && tspec.Name = "Boolean" ->  
           let n,sigptr = sigptr_get_byte bytes sigptr
           (argty, box (not (n = 0))), sigptr
-      | ILType.Boxed tspec when tspec.Namespace = Some "System" && tspec.Name = "String" ->  
+      | ILType.Boxed tspec when tspec.Namespace = USome "System" && tspec.Name = "String" ->  
           let n,sigptr = sigptr_get_serstring_possibly_null bytes sigptr
           (argty, box (match n with None -> null | Some s -> s)), sigptr
-      | ILType.Boxed tspec when tspec.Namespace = Some "System" && tspec.Name = "Type" ->  
+      | ILType.Boxed tspec when tspec.Namespace = USome "System" && tspec.Name = "Type" ->  
           let nOpt,sigptr = sigptr_get_serstring_possibly_null bytes sigptr
           match nOpt with
           | None -> (argty, box null) , sigptr // TODO: read System.Type attributes
@@ -3638,7 +3591,7 @@ let decodeILCustomAttribData ilg (ca: ILCustomAttr) : ILCustomAttrArg list  =
                 (argty, box null) , sigptr // TODO: read System.Type attributes
             with e ->
                 failwith (sprintf "decodeILCustomAttribData: error parsing type in custom attribute blob: %s" e.Message)
-      | ILType.Boxed tspec when tspec.Namespace = Some "System" && tspec.Name = "Object" ->  
+      | ILType.Boxed tspec when tspec.Namespace = USome "System" && tspec.Name = "Object" ->  
           let et,sigptr = sigptr_get_u8 bytes sigptr
           if et = 0xFFuy then 
               (argty, null), sigptr
@@ -3702,15 +3655,28 @@ let decodeILCustomAttribData ilg (ca: ILCustomAttr) : ILCustomAttrArg list  =
 *)
     fixedArgs
 
-  
-let ILModuleReaderAfterReadingAllBytes (infile, systemRuntimeScopeRef, lowMem) = 
-    let mc = ByteFile.OpenIn infile
-    ILModuleReader(infile, mc, systemRuntimeScopeRef, lowMem)
+
+type CacheValue = ILModuleReader 
+let (|CacheValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> CacheValue)
+let CacheValue (pair: CacheValue) = System.WeakReference (box pair)
+
+// Amortize readers weakly - this is enough that all the type providers in this DLL will at least share
+// resources when all instantiated at the ame time.
+let readersWeakCache = ConcurrentDictionary<string, WeakReference>()
+
+let ILModuleReaderAfterReadingAllBytes  (file, ilGlobals: ILGlobals, lowMem) = 
+    let bytes = File.ReadAllBytes file
+    match readersWeakCache.TryGetValue file with 
+    | true, CacheValue mr2  when bytes = mr2.Bytes && ilGlobals.systemRuntimeScopeRef.QualifiedName = mr2.ILGlobals.systemRuntimeScopeRef.QualifiedName -> mr2
+    | _ -> 
+        let mr = ILModuleReader(file, ByteFile(bytes), ilGlobals, lowMem)
+        readersWeakCache.[file] <- CacheValue (mr)
+        mr
 
 
 (* NOTE: ecma_ prefix refers to the standard "mscorlib" *)
 let ecmaPublicKey = PublicKeyToken ([|0xdeuy; 0xaduy; 0xbeuy; 0xefuy; 0xcauy; 0xfeuy; 0xfauy; 0xceuy |]) 
-let ecmaMscorlibScopeRef = ILScopeRef.Assembly (ILAssemblyRef("mscorlib", None, Some ecmaPublicKey, true, None, None))
+let ecmaMscorlibScopeRef = ILScopeRef.Assembly (ILAssemblyRef("mscorlib", None, Some ecmaPublicKey, true, None, UNone))
 
 // -------------------------------------------------------------------- 
 // Reflection converters

@@ -11,6 +11,7 @@ open System.IO
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
+open ProviderImplementation.AssemblyReader
 
 let (++) a b = Path.Combine(a, b)
 
@@ -81,7 +82,7 @@ let ``test basic binding context net40``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -90,10 +91,10 @@ let ``test basic binding context portable7``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("System.Runtime") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -102,7 +103,7 @@ let ``test basic binding context portable47``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -111,13 +112,13 @@ let ``test basic binding context portable259``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("System.Runtime") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 
 

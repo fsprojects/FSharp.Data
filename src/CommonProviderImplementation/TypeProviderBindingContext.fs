@@ -27,7 +27,7 @@ type TypeProviderBindingContext(referencedAssemblyPaths : string list) as this =
             if simpleName = "mscorlib" || simpleName = "System.Runtime" then 
                 let reader = ILModuleReaderAfterReadingAllBytes (path, mkILGlobals ecmaMscorlibScopeRef, true)
                 let mdef = reader.ILModuleDef
-                match mdef.TypeDefs.TryFindByName(Some "System", "Object") with 
+                match mdef.TypeDefs.TryFindByName(USome "System", "Object") with 
                 | None -> None
                 | Some _ -> 
                     let m = mdef.ManifestOfAssembly 
@@ -58,7 +58,11 @@ type TypeProviderBindingContext(referencedAssemblyPaths : string list) as this =
            | Some r -> r
  
     let ilGlobals = lazy mkILGlobals (systemRuntimeScopeRef.Force())
-    let readers = lazy ([| for ref in referencedAssemblyPaths -> ref, lazy (try Choice1Of2(ContextAssembly(ilGlobals.Force(), this.TryBindAssembly, ILModuleReaderAfterReadingAllBytes(ref, ilGlobals.Force(), lowMem), ref)) with err -> Choice2Of2 err) |])
+    let readers = 
+        lazy ([| for ref in referencedAssemblyPaths -> 
+                  ref,lazy (try let reader = ILModuleReaderAfterReadingAllBytes(ref, ilGlobals.Force(), lowMem)
+                                Choice1Of2(ContextAssembly(ilGlobals.Force(), this.TryBindAssembly, reader, ref)) 
+                            with err -> Choice2Of2 err) |])
     let readersTable =  lazy ([| for (ref, asm) in readers.Force() do let simpleName = Path.GetFileNameWithoutExtension ref in yield simpleName, asm |] |> Map.ofArray)
     let referencedAssemblies = lazy ([| for (_,asm) in readers.Force() do match asm.Force() with Choice2Of2 _ -> () | Choice1Of2 asm -> yield asm :> Assembly |])
 

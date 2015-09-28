@@ -29,7 +29,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
 
-        ProviderHelpers.getOrCreateProvidedType this worldBankTypeName version cacheDuration <| fun () ->
+        ProviderHelpers.getOrCreateProvidedType cfg this worldBankTypeName version cacheDuration <| fun () ->
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  

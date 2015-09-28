@@ -78,6 +78,7 @@ open ProviderImplementation.AssemblyReader
 module Utils = 
     let nullToOption x = match x with null -> None | _ -> Some x
     let optionToNull x = match x with None -> null | Some x -> x
+    let uoptionToNull x = match x with UNone -> null | USome x -> x
     let notRequired msg = 
        printfn "--------------------"
        printfn "SHOULD NOT BE REQUIRED! %s. Stack trace:\n%s" msg (System.Diagnostics.StackTrace().ToString())
@@ -86,8 +87,8 @@ module Utils =
     // A table tracking how wrapped type definition objects are translated to cloned objects.
     // Unique wrapped type definition objects must be translated to unique wrapper objects, based 
     // on object identity.
-    type TxTable<'T1, 'T2 when 'T1 : not struct>() = 
-        let tab = Dictionary<'T1, 'T2>(HashIdentity.Reference)
+    type TxTable<'T2>() = 
+        let tab = Dictionary<int, 'T2>()
         member __.Get inp f = 
             if tab.ContainsKey inp then 
                 tab.[inp] 
@@ -179,7 +180,7 @@ module Utils =
 
     let rec eqTypeAndILTypeRef (ty1: Type) (ty2: ILTypeRef) = 
         ty1.Name = ty2.Name && 
-        ty1.Namespace = (match ty2.Namespace with None -> null | Some s -> s) &&
+        ty1.Namespace = (uoptionToNull ty2.Namespace) &&
         match ty2.Scope with 
         | ILTypeRefScope.Top scoref2 -> eqAssemblyAndILScopeRef ty1.Assembly scoref2
         | ILTypeRefScope.Nested tref2 -> ty1.IsNested && eqTypeAndILTypeRef ty1.DeclaringType tref2
@@ -495,7 +496,7 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     and TxILParameter gps (inp : ILParameter) = 
         { new ParameterInfo() with 
 
-            override __.Name = optionToNull inp.Name 
+            override __.Name = uoptionToNull inp.Name 
             override __.ParameterType = inp.ParameterType |> TxILType gps
             override __.RawDefaultValue = (match inp.Default with None -> null | Some v -> convFieldInit v)
             override __.Attributes = inp.Attributes
@@ -813,12 +814,12 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
         match declTyOpt with 
         | None -> 
             match inp.Namespace with 
-            | None -> inp.Name
-            | Some nsp -> nsp + "." + inp.Name
+            | UNone -> inp.Name
+            | USome nsp -> nsp + "." + inp.Name
         | Some declTy -> 
             declTy.FullName + "+" + inp.Name
                     
-    override __.Namespace = inp.Namespace |> optionToNull
+    override __.Namespace = inp.Namespace |> uoptionToNull
     override __.BaseType = inp.Extends |> Option.map (TxILType (gps, [| |])) |> optionToNull
     override __.GetInterfaces() = inp.Implements |> Array.map (TxILType (gps, [| |]))
 
@@ -865,7 +866,7 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
  
     // GetNestedType is used for linking to the binding context
     override this.GetNestedType(name, _bindingFlags) = 
-        inp.NestedTypes.TryFindByName(None, name) |> Option.map (asm.TxILTypeDef (Some (this :> Type))) |> optionToNull
+        inp.NestedTypes.TryFindByName(UNone, name) |> Option.map (asm.TxILTypeDef (Some (this :> Type))) |> optionToNull
 
     override this.GetPropertyImpl(name, _bindingFlags, _binder, _returnType, _types, _modifiers) = 
         inp.Properties.Elements 
@@ -935,18 +936,14 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     member x.MakeConstructorInfo (declTy,md) = TxILConstructorDef declTy md
 
 
-and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyRef -> Choice<ContextAssembly,exn>, reader: ILModuleReader, location: string) as asm =
+and ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyRef -> Choice<ContextAssembly,exn>, reader: ILModuleReader, location: string) as asm =
     inherit Assembly()
-    //let thisAssembly = typedefof<Utils.IWraps<_>>.Assembly
 
-    // A table tracking how wrapped type definition objects are translated to cloned objects.
-    // Unique wrapped type definition objects must be translated to unique wrapper objects, based 
-    // on object identity.
-    let txTable = TxTable<ILTypeDef, Type>()
-
+    // A table tracking how type definition objects are translated.
+    let txTable = TxTable<Type>()
 
     member __.TxILTypeDef (declTyOpt: Type option) (inp: ILTypeDef) =
-        txTable.Get inp (fun () -> ContextTypeDefinition(ilGlobals, tryBindAssembly, asm, declTyOpt, inp) :> System.Type)
+        txTable.Get inp.Token (fun () -> ContextTypeDefinition(ilGlobals, tryBindAssembly, asm, declTyOpt, inp) :> System.Type)
 
     override x.GetTypes () = [| for td in reader.ILModuleDef.TypeDefs.Elements -> x.TxILTypeDef None td  |]
     override x.Location = location
@@ -961,9 +958,9 @@ and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyR
         elif nm.Contains(".") then 
             let i = nm.LastIndexOf(".")
             let nsp,nm2 = nm.[0..i-1], nm.[i+1..]
-            x.TryBindType(Some nsp, nm2) |> optionToNull
+            x.TryBindType(USome nsp, nm2) |> optionToNull
         else
-            x.TryBindType(None, nm) |> optionToNull
+            x.TryBindType(UNone, nm) |> optionToNull
 
     override x.GetName () = reader.ILModuleDef.ManifestOfAssembly.GetName()
 
@@ -977,12 +974,12 @@ and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyR
         | ILResourceLocation.Local f -> new MemoryStream(f()) :> Stream
         | _ -> notRequired (sprintf "reading manifest resource %s from non-embedded location" resourceName)
 
-    member x.BindType(nsp:string option, nm:string) = 
+    member x.BindType(nsp:string uoption, nm:string) = 
         match x.TryBindType(nsp, nm) with 
         | None -> failwithf "failed to bind type %s in assembly %s" nm asm.FullName
         | Some res -> res
 
-    member x.TryBindType(nsp:string option, nm:string) : Type option = 
+    member x.TryBindType(nsp:string uoption, nm:string) : Type option = 
         match reader.ILModuleDef.TypeDefs.TryFindByName(nsp, nm) with 
         | Some td -> asm.TxILTypeDef None td |> Some
         | None -> 
