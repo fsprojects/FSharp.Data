@@ -18,7 +18,46 @@ let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.T
 let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
 let assemblyName = "FSharp.Data.dll"
 
-type Platform = Net40 | Portable7 | Portable47
+type Platform = Net40 | Portable7 | Portable47 | Portable259
+
+let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
+let referenceAssembliesPath = 
+    if runningOnMono
+    then "/Library/Frameworks/Mono.framework/Versions/CurrentVersion/lib/mono/"
+    else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
+    ++ "Reference Assemblies" 
+    ++ "Microsoft" 
+
+let fsharp31PortableAssembliesPath profile = 
+     match profile with 
+     | 47 -> referenceAssembliesPath ++ "FSharp" ++ ".NETPortable" ++ "2.3.5.1" ++ "FSharp.Core.dll"
+     | 7 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.3.1.0" ++ "FSharp.Core.dll"
+     | 259 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.259.3.1" ++ "FSharp.Core.dll"
+     | _ -> failwith "unimplemented portable profile"
+
+let fsharp31AssembliesPath = referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
+
+let net40AssembliesPath = referenceAssembliesPath ++ "Framework" ++ ".NETFramework" ++ "v4.5" 
+
+let portableAssembliesPath profile = 
+    match profile with 
+    | 47 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.0" ++ "Profile" ++ "Profile47" 
+    | 7 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile7" 
+    | 259 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile259" 
+    | _ -> failwith "unimplemented portable profile"
+
+let net40FSharp31Refs = [net40AssembliesPath ++ "mscorlib.dll"; net40AssembliesPath ++ "System.Xml.dll"; net40AssembliesPath ++ "System.Core.dll"; net40AssembliesPath ++ "System.Xml.Linq.dll"; net40AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
+let portable47FSharp31Refs = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath 47]
+
+let portableCoreFSharp31Refs profile = 
+    [ for asm in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions"; 
+                   "System.Linq.Queryable"; "System.Net"; "System.Net.NetworkInformation"; "System.Net.Primitives"; "System.Net.Requests"; "System.ObjectModel"; "System.Reflection"; 
+                   "System.Reflection.Extensions"; "System.Reflection.Primitives"; "System.Resources.ResourceManager"; "System.Runtime.Extensions"; 
+                   "System.Runtime.InteropServices.WindowsRuntime"; "System.Runtime.Serialization"; "System.Threading"; "System.Threading.Tasks"; "System.Xml"; "System.Xml.Linq"; "System.Xml.XDocument";
+                   "System.Runtime.Serialization.Json"; "System.Runtime.Serialization.Primitives"; "System.Windows" ] do 
+         yield portableAssembliesPath profile ++ asm + ".dll"
+      yield fsharp31PortableAssembliesPath profile ]
 
 let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
     let runtimeAssembly =
@@ -26,7 +65,14 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
         | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
         | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
         | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
-    inst.Dump resolutionFolder (if saveToFileSystem then outputFolder else "") runtimeAssembly signatureOnly ignoreOutput
+        | Portable259 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable259" ++ assemblyName
+    let runtimeAssemblyRefs = 
+        match platform with
+        | Net40 -> net40FSharp31Refs
+        | Portable7 -> portableCoreFSharp31Refs 7
+        | Portable259 -> portableCoreFSharp31Refs 259
+        | Portable47 -> portable47FSharp31Refs
+    inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
 let dumpAll inst =
