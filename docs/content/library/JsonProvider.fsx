@@ -206,6 +206,7 @@ Let's start by listing the 5 most recently updated open issues in the FSharp.Dat
 
 *)
 
+#if GITHUB
 type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
 
 let topRecentlyUpdatedIssues = 
@@ -216,6 +217,7 @@ let topRecentlyUpdatedIssues =
 
 for issue in topRecentlyUpdatedIssues do
     printfn "#%d %s" issue.Number issue.Title
+#endif
 
 (**
 
@@ -224,6 +226,7 @@ we need to post a JSON value similar to this:
 
 *)
 
+#if GITHUB
 [<Literal>]
 let issueSample = """
 {
@@ -237,6 +240,7 @@ let issueSample = """
   ]
 }
 """
+#endif
 
 (** 
 
@@ -247,6 +251,7 @@ create an instance, and send a POST request:
 
 (*** do-not-eval ***)
 
+#if GITHUB
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",
@@ -255,6 +260,7 @@ let newIssue = GitHubIssue.Issue("Test issue",
                                  labels = [| |], 
                                  milestone = 0)
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
+#endif
 
 (**
 <a name="jsonlib"></a>
