@@ -55,7 +55,7 @@ let fsharp31PortableAssembliesPath profile =
 
 let fsharp31AssembliesPath = referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
 
-let net40AssembliesPath = 
+let net45AssembliesPath = 
     if runningOnMono then monoRoot ++ "4.5"
     else referenceAssembliesPath ++ "Framework" ++ ".NETFramework" ++ "v4.5" 
 
@@ -67,7 +67,7 @@ let portableAssembliesPath profile =
     | 259 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile259" 
     | _ -> failwith "unimplemented portable profile"
 
-let net40FSharp31Refs = [net40AssembliesPath ++ "mscorlib.dll"; net40AssembliesPath ++ "System.Xml.dll"; net40AssembliesPath ++ "System.Core.dll"; net40AssembliesPath ++ "System.Xml.Linq.dll"; net40AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
+let net40FSharp31Refs = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
 let portable47FSharp31Refs = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath 47]
 
 let portableCoreFSharp31Refs profile = 
