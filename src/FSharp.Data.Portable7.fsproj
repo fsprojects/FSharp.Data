@@ -12,7 +12,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}</ProjectGuid>
+    <ProjectGuid>{40512f73-8187-4361-a42c-e8c96f3f4592}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.Data</RootNamespace>
     <AssemblyName>FSharp.Data</AssemblyName>
@@ -89,7 +89,8 @@
   </Target> -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable7" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable7" />
+    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable7" />
+    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(SolutionDir)bin\portable7" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable7" />
   </Target>
   <Import Project="$(SolutionDir)\.paket\paket.targets" />

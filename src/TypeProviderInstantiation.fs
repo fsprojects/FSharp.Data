@@ -65,7 +65,7 @@ type TypeProviderInstantiation =
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
 
-    member x.GenerateType resolutionFolder runtimeAssembly =
+    member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
         let f, args =
             match x with
             | Csv x -> 
@@ -120,7 +120,7 @@ type TypeProviderInstantiation =
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |] 
-        Debug.generate resolutionFolder runtimeAssembly f args
+        Debug.generate resolutionFolder runtimeAssembly runtimeAssemblyRefs f args
 
     override x.ToString() =
         match x with
@@ -164,10 +164,10 @@ type TypeProviderInstantiation =
     member x.ExpectedPath outputFolder = 
         Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
 
-    member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
+    member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly
+            x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
             |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"

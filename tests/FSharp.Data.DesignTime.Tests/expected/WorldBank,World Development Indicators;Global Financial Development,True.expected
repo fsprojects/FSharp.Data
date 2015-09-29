@@ -1,9 +1,9 @@
-class WorldBankDataProvider
+class WorldBankDataProvider : obj
     static member GetDataContext: () -> WorldBankDataProvider+ServiceTypes+WorldBankDataService
     (new WorldBankData("http://api.worldbank.org", "World Development Indicators;Global Financial Development"))
 
 
-class WorldBankDataProvider+ServiceTypes
+class WorldBankDataProvider+ServiceTypes : obj
 
 class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.WorldBankData
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
@@ -16,7 +16,7 @@ class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.Wo
     (this :> IWorldBankData).GetTopics()
 
 
-class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollection<T><Country>
+class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollection<WorldBankDataProvider+ServiceTypes+Country>
     member Afghanistan: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("AFG", "Afghanistan")
 
@@ -810,7 +810,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     (this :> ICountryCollection).GetCountry("ZWE", "Zimbabwe")
 
 
-class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollection<T><Region>
+class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollection<WorldBankDataProvider+ServiceTypes+Region>
     member Africa: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("AFR")
 
@@ -929,7 +929,7 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     (this :> IRegionCollection).GetRegion("WLD")
 
 
-class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<T><Topic>
+class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<WorldBankDataProvider+ServiceTypes+Topic>
     member ``Agriculture & Rural Development``: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("1")
 

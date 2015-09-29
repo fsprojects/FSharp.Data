@@ -1,6 +1,7 @@
-﻿// ----------------------------------------------------------------------------------------------
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
 // Utilities for building F# quotations without quotation literals
-// ----------------------------------------------------------------------------------------------
 
 module ProviderImplementation.QuotationBuilder
 
@@ -17,13 +18,12 @@ open ProviderImplementation.ProvidedTypes
 ///
 /// There are two possible uses:
 ///    typ?Name tyArgs args
-///    typ?Name args
 ///
-/// In the first case, tyArgs is a sequence of type arguments for method `Name`.
+/// tyArgs is a sequence of type arguments for method `Name`.
 /// Actual arguments can be either expression (Expr<'T>) or primitive values, whic
 /// are automatically wrapped using Expr.Value.
 ///
-let (?) (typ:Type) (operation:string) (args1:'T) : 'R = 
+let (?) (typ:Type) (operation:string) (args1:'T) (args2: 'U) : Expr = 
   // Arguments are either Expr or other type - in the second case,
   // we treat them as Expr.Value (which will only work for primitives)
   let convertValue (arg:obj) = 
@@ -53,25 +53,18 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | [| :? MethodInfo as mi |] -> 
         let mi = 
           if tyargs = [] then mi
-          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map ProvidedTypeDefinition.EraseType)
-        if mi.IsStatic then Expr.Call(mi, args)
-        else Expr.Call(List.head args, mi, List.tail args)
+          else mi.MakeGenericMethod(tyargs |> Array.ofList)
+        if mi.IsStatic then Expr.CallUnchecked(mi, args)
+        else Expr.CallUnchecked(List.head args, mi, List.tail args)
     | [| :? ConstructorInfo as ci |] ->
         if tyargs <> [] then failwith "Constructor cannot be generic!"
-        Expr.NewObject(ci, args)
+        Expr.NewObjectUnchecked(ci, args)
     | [| :? PropertyInfo as pi |] ->
         let isStatic = 
           pi.CanRead && pi.GetGetMethod().IsStatic || 
           pi.CanWrite && pi.GetSetMethod().IsStatic
-        if isStatic then Expr.PropertyGet(pi, args)
-        else Expr.PropertyGet(List.head args, pi, List.tail args)
+        if isStatic then Expr.PropertyGetUnchecked(pi, args)
+        else Expr.PropertyGetUnchecked(List.head args, pi, List.tail args)
     | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
-  // If the result is a function, we are called with two tuples as arguments
-  // and the first tuple represents type arguments for a generic function...
-  if FSharpType.IsFunction(typeof<'R>) then
-    let domTyp, res = FSharpType.GetFunctionElements(typeof<'R>)
-    if res <> typeof<Expr> then failwith "QuotationBuilder: The resulting type must be Expr!"
-    FSharpValue.MakeFunction(typeof<'R>, fun args2 ->
-      invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
-  else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
+  invokeOperation (args1, typeof<'T>) (args2, typeof<'U>) 

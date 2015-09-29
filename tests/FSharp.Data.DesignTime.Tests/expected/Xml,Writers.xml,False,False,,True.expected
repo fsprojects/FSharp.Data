@@ -1,4 +1,4 @@
-class XmlProvider
+class XmlProvider : obj
     static member AsyncGetSample: () -> XmlProvider+Authors async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "Writers.xml"), f)

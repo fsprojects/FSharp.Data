@@ -60,11 +60,13 @@ Target "AssemblyInfo" <| fun () ->
         let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
         let title = 
             Path.GetFileNameWithoutExtension file
+            |> replace ".Portable259" ""
             |> replace ".Portable47" ""
             |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
         let versionSuffix =
-            if file.Contains ".Portable47" then ".47"
+            if file.Contains ".Portable259" then ".259"
+            elif file.Contains ".Portable47" then ".47"
             elif file.Contains ".Portable7" then ".7"
             else ".0"
         let version = release.AssemblyVersion + versionSuffix
@@ -96,10 +98,6 @@ Target "CleanInternetCaches" <| fun () ->
 
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
-#if MONO
-#else
-    ++ "FSharp.Data.Portable7.sln"
-#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -110,10 +108,6 @@ Target "BuildTests" <| fun () ->
 
 Target "BuildConsoleTests" <| fun () ->
     !! "TestApps.Console.sln"
-//#if MONO
-//#else
-//    ++ "TestApps.Console.Portable7.sln"
-//#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -164,6 +158,8 @@ Target "SourceLink" <| fun () ->
     CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
     CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
+    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
+    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 

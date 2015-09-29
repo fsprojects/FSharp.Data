@@ -1,4 +1,4 @@
-class JsonProvider
+class JsonProvider : obj
     static member AsyncGetSamples: () -> JsonProvider+Root[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "GitHub.json"), f)

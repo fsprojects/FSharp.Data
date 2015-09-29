@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>true</Tailcalls>
+    <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -41,18 +41,6 @@
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
-      <Paket>True</Paket>
-      <Link>paket-files/ProvidedTypes.fsi</Link>
-    </Content>
-    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/ProvidedTypes.fs</Link>
-    </Compile>
-    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\DebugProvidedTypes.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/DebugProvidedTypes.fs</Link>
-    </Compile>
     <Compile Include="Net\UriUtils.fs" />
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
@@ -63,6 +51,13 @@
     <Compile Include="CommonRuntime\NameUtils.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonProviderImplementation\UncheckedQuotations.fs" />
+    <Compile Include="CommonProviderImplementation\ProvidedTypes-modified.fsi" />
+    <Compile Include="CommonProviderImplementation\ProvidedTypes-modified.fs" />
+    <Compile Include="CommonProviderImplementation\DebugProvidedTypes-modified.fs" />
+    <Compile Include="CommonProviderImplementation\AssemblyReader.fs" />
+    <Compile Include="CommonProviderImplementation\AssemblyReaderReflection.fs" />
+    <Compile Include="CommonProviderImplementation\TypeProviderBindingContext.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyReplacer.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
@@ -137,6 +132,9 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin\portable7" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin\portable7" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin\portable7" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin\portable259" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin\portable259" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin\portable259" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />

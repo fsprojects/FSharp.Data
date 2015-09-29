@@ -24,7 +24,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.CsvProvider'
   let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some typeof<obj>)
+  let csvProvTy = replacer.ProvidedTypeDefinition(asm, ns, "CsvProvider", typeof<obj>, hideObjectMethods=true, nonNullable = true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -82,28 +82,35 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
       
-      let paramType = (replacer.ToRuntime typedefof<seq<_>>).MakeGenericType(rowType)
+      let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
       let headers = 
         match sampleCsv.Headers with 
         | None -> <@@ None: string[] option @@> 
         | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
 
-      let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], InvokeCode = (fun (Singleton paramValue) ->
-        let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
-        Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
+      let ctor = 
+          replacer.ProvidedConstructor(
+              [ replacer.ProvidedParameter("rows", paramType) ], 
+              invokeCode = (fun (Singleton paramValue) ->
+                let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
+                Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
 
-      let parseRows = ProvidedMethod("ParseRows", [ProvidedParameter("text", typeof<string>)], rowType.MakeArrayType(), IsStaticMethod = true)
-      parseRows.InvokeCode <- fun (Singleton text) ->         
-        let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
-        Expr.Let(stringArrayToRowVar, stringArrayToRow, body)
+      let parseRows = 
+          replacer.ProvidedMethod("ParseRows", 
+              [replacer.ProvidedParameter("text", typeof<string>)], 
+              rowType.MakeArrayType(), 
+              isStatic = true,
+              invokeCode = fun (Singleton text) ->         
+                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
+                Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
       csvType.AddMember parseRows
 
       { GeneratedType = csvType
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
           let body = 
-            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
+            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, 
                                      separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
