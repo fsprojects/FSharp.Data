@@ -191,7 +191,7 @@ module HtmlRuntime =
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
-        let numberOfHeaderRows = res |> Array.countWhile (Array.forall (fun r -> r.IsHeader))
+        let numberOfHeaderRows = res |> Array.countWhile (Array.forall (fun cell -> cell.IsHeader))
 
         let hasRealHeaders, res = 
             match numberOfHeaderRows with
