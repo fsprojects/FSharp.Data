@@ -133,6 +133,12 @@
     <None Include="Data\MarketDepth.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\EmptyDefinitionLists.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlLists.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Data\SimpleHtmlTablesWithTr.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -3,6 +3,7 @@
 * Added support for single column CSV files in CsvProvider.
 * Fix saving of CSV files with cells spanning multiple lines.
 * Fixed parsing of HTML tables with headers spanning multiple rows.
+* Fixed parsing of HTML definition lists without description elements.
 
 #### 2.2.5 - July 12 2015
 * Fix HtmlNode.hasClass to work on multi class elements.
