@@ -1271,10 +1271,10 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Annual freshwater withdrawals, total (billion cubic meters)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("ER.H2O.FWTL.K3")
 
-    member ``Annualized growth in survey mean consumption or income per capita, bottom 40% (%, based on 2005 PPP)``: FDR.WorldBank.Indicator async with get
+    member ``Annualized growth in per capita real survey mean consumption or income, bottom 40% (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.SPR.PC40.ZG")
 
-    member ``Annualized growth in survey mean consumption or income per capita, total population (%, based on 2005 PPP)``: FDR.WorldBank.Indicator async with get
+    member ``Annualized growth in per capita real survey mean consumption or income, total population (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.SPR.PCAP.ZG")
 
     member ``Antiretroviral therapy coverage (% of people living with HIV)``: FDR.WorldBank.Indicator async with get
@@ -2420,10 +2420,10 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Fish species, threatened``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.FSH.THRD.NO")
 
-    member ``Fixed (wired) broadband subscriptions``: FDR.WorldBank.Indicator async with get
+    member ``Fixed broadband subscriptions``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IT.NET.BBND")
 
-    member ``Fixed (wired) broadband subscriptions (per 100 people)``: FDR.WorldBank.Indicator async with get
+    member ``Fixed broadband subscriptions (per 100 people)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IT.NET.BBND.P2")
 
     member ``Fixed telephone subscriptions``: FDR.WorldBank.Indicator async with get
@@ -3566,7 +3566,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Mortality rate, under-5 (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.DYN.MORT")
 
-    member ``Mortality rate, under-5, female (per 1,000)``: FDR.WorldBank.Indicator async with get
+    member ``Mortality rate, under-5, female (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.DYN.MORT.FE")
 
     member ``Mortality rate, under-5, male (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
@@ -4379,19 +4379,19 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Portfolio investment, bonds (PPG + PNG) (NFL, current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.NFL.BOND.CD")
 
-    member ``Poverty gap at $1.25 a day (PPP) (%)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty gap at $1.90 a day (2011 PPP) (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.GAPS")
 
-    member ``Poverty gap at $2 a day (PPP) (%)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty gap at $3.10 a day (2011 PPP) (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.GAP2")
 
     member ``Poverty gap at national poverty lines (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.NAGP")
 
-    member ``Poverty headcount ratio at $1.25 a day (PPP) (% of population)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.DDAY")
 
-    member ``Poverty headcount ratio at $2 a day (PPP) (% of population)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty headcount ratio at $3.10 a day (2011 PPP) (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.2DAY")
 
     member ``Poverty headcount ratio at national poverty lines (% of population)``: FDR.WorldBank.Indicator async with get
@@ -5013,9 +5013,15 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("AG.SRF.TOTL.K2")
 
     member ``Survey mean consumption or income per capita, bottom 40% (2005 PPP $ per day)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.SPR.PC40.05")
+
+    member ``Survey mean consumption or income per capita, bottom 40% (2011 PPP $ per day)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.SPR.PC40")
 
     member ``Survey mean consumption or income per capita, total population (2005 PPP $ per day)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.SPR.PCAP.05")
+
+    member ``Survey mean consumption or income per capita, total population (2011 PPP $ per day)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.SPR.PCAP")
 
     member ``Survival to age 65, female (% of cohort)``: FDR.WorldBank.Indicator async with get
@@ -5665,10 +5671,10 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Annual freshwater withdrawals, total (billion cubic meters)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("ER.H2O.FWTL.K3")
 
-    member ``Annualized growth in survey mean consumption or income per capita, bottom 40% (%, based on 2005 PPP)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Annualized growth in per capita real survey mean consumption or income, bottom 40% (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PC40.ZG")
 
-    member ``Annualized growth in survey mean consumption or income per capita, total population (%, based on 2005 PPP)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Annualized growth in per capita real survey mean consumption or income, total population (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PCAP.ZG")
 
     member ``Antiretroviral therapy coverage (% of people living with HIV)``: FDR.WorldBank.IndicatorDescription with get
@@ -6814,10 +6820,10 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Fish species, threatened``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.FSH.THRD.NO")
 
-    member ``Fixed (wired) broadband subscriptions``: FDR.WorldBank.IndicatorDescription with get
+    member ``Fixed broadband subscriptions``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IT.NET.BBND")
 
-    member ``Fixed (wired) broadband subscriptions (per 100 people)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Fixed broadband subscriptions (per 100 people)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IT.NET.BBND.P2")
 
     member ``Fixed telephone subscriptions``: FDR.WorldBank.IndicatorDescription with get
@@ -7960,7 +7966,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Mortality rate, under-5 (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.DYN.MORT")
 
-    member ``Mortality rate, under-5, female (per 1,000)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Mortality rate, under-5, female (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.DYN.MORT.FE")
 
     member ``Mortality rate, under-5, male (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
@@ -8773,19 +8779,19 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Portfolio investment, bonds (PPG + PNG) (NFL, current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.NFL.BOND.CD")
 
-    member ``Poverty gap at $1.25 a day (PPP) (%)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty gap at $1.90 a day (2011 PPP) (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.GAPS")
 
-    member ``Poverty gap at $2 a day (PPP) (%)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty gap at $3.10 a day (2011 PPP) (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.GAP2")
 
     member ``Poverty gap at national poverty lines (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.NAGP")
 
-    member ``Poverty headcount ratio at $1.25 a day (PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.DDAY")
 
-    member ``Poverty headcount ratio at $2 a day (PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty headcount ratio at $3.10 a day (2011 PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.2DAY")
 
     member ``Poverty headcount ratio at national poverty lines (% of population)``: FDR.WorldBank.IndicatorDescription with get
@@ -9407,9 +9413,15 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("AG.SRF.TOTL.K2")
 
     member ``Survey mean consumption or income per capita, bottom 40% (2005 PPP $ per day)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PC40.05")
+
+    member ``Survey mean consumption or income per capita, bottom 40% (2011 PPP $ per day)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PC40")
 
     member ``Survey mean consumption or income per capita, total population (2005 PPP $ per day)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PCAP.05")
+
+    member ``Survey mean consumption or income per capita, total population (2011 PPP $ per day)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.SPR.PCAP")
 
     member ``Survival to age 65, female (% of cohort)``: FDR.WorldBank.IndicatorDescription with get
