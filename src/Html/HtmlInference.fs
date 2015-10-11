@@ -38,14 +38,16 @@ let inferHeaders parameters (rows : string [][]) =
 
 let inferListType parameters values = 
 
-    let inferedtype value = 
-        // If there's only whitespace, treat it as a missing value and not as a string
-        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
-        // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
-        elif Array.exists ((=) <| value.Trim()) parameters.MissingValues then 
-            if parameters.PreferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
-        else getInferedTypeFromString parameters.CultureInfo value None
+    if Seq.length values > 0 then
+        let inferedtype value = 
+            // If there's only whitespace, treat it as a missing value and not as a string
+            if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
+            // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+            elif Array.exists ((=) <| value.Trim()) parameters.MissingValues then 
+                if parameters.PreferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
+            else getInferedTypeFromString parameters.CultureInfo value None
 
-    values
-    |> Seq.map inferedtype
-    |> Seq.reduce (subtypeInfered (not parameters.PreferOptionals))
+        values
+        |> Seq.map inferedtype
+        |> Seq.reduce (subtypeInfered (not parameters.PreferOptionals))
+    else InferedType.Null
