@@ -1,7 +1,8 @@
 #### 2.3.0-beta1 - Unreleased
 * Support for PCL profile 7 and PCL profile 259.
 * Added support for single column CSV files in CsvProvider.
-* Fix saving of CSV files with multiline cells.
+* Fix saving of CSV files with cells spanning multiple lines.
+* Fixed parsing of HTML tables with headers spanning multiple rows.
 
 #### 2.2.5 - July 12 2015
 * Fix HtmlNode.hasClass to work on multi class elements.

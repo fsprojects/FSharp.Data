@@ -183,16 +183,33 @@ module HtmlRuntime =
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
+        let hasHeaders = res.[0] |> Array.forall (fun r -> r.IsHeader) 
+        let mutable inHeaders = hasHeaders
+        let mutable i = 1
+        while inHeaders && i < rows.Length do
+            if res.[i] |> Array.forall (fun r -> r.IsHeader) then
+                for j = 0 to numberOfColumns - 1 do
+                    let previousCell = res.[i-1].[j]
+                    let thisCell = res.[i].[j]
+                    if previousCell.Data <> "" && thisCell.Data <> "" && thisCell.Data <> previousCell.Data then
+                        res.[i].[j] <- Cell(true, previousCell.Data + " - " + thisCell.Data)
+                i <- i + 1
+            else
+                inHeaders <- false
+        
+        let res = if i > 1 then res.[i-1..] else res
+            
         let hasHeaders, headerNamesAndUnits, inferedProperties = 
             match inferenceParameters with
             | None -> None, None, None
             | Some inferenceParameters ->
                 let hasHeaders, headerNames, units, inferedProperties = 
-                    if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-                    then true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
-                    else res
-                         |> Array.map (Array.map (fun x -> x.Data))
-                         |> HtmlInference.inferHeaders inferenceParameters
+                    if hasHeaders then 
+                        true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
+                    else 
+                        res
+                        |> Array.map (Array.map (fun x -> x.Data))
+                        |> HtmlInference.inferHeaders inferenceParameters
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =
