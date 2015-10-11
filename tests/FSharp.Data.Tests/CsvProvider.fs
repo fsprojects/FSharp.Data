@@ -460,3 +460,16 @@ let ``Rejects data rows ending with two or more separators when header length ma
   let csv = CsvProvider<csvWithDataEndingWithSeparatorFollowedBySeparators, Separators="|", IgnoreErrors=true>.GetSample()
   let row = csv.Rows |> Seq.exactlyOne
   row |> should equal ("Yoda","XYZ","yoda@xyz.com", 98123)
+
+[<Literal>]
+let csvWithMultilineCells = """Id,Text
+1,"abc,"
+2,"def
+ghi"
+"""
+
+[<Test>]
+let ``Multiline cells saved correctly``() = 
+    let csv = CsvProvider<csvWithMultilineCells>.GetSample()
+    csv.Rows |> Seq.map (fun r -> r.Id, r.Text.Replace("\r", "")) |> Seq.toList |> should equal [1, "abc,"; 2, "def\nghi"]
+    csv.SaveToString().Replace("\r", "") |> should equal (csvWithMultilineCells.Replace("\r", ""))

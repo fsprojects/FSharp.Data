@@ -335,7 +335,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     for row in x.Rows do
       row |> rowToStringArray.Invoke |> writeLine (fun item -> 
-        if item.Contains separator then
+        if item.Contains separator || item.Contains "\n" then
           writer.Write quote
           writer.Write (item.Replace(quote, doubleQuote))
           writer.Write quote
