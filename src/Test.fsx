@@ -31,11 +31,28 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
 
 let dumpAll inst =
     dump false false Net40 false inst
-    dump false false Portable7 false inst
-    dump false false Portable47 false inst
-    dump false false Portable259 false inst
+//    dump false false Portable7 false inst
+//    dump false false Portable47 false inst
+//    dump false false Portable259 false inst
 
-Html { Sample = "doctor_who2.html"
+let parameters : HtmlInference.Parameters = 
+    { MissingValues = TextConversions.DefaultMissingValues
+      CultureInfo = CultureInfo.InvariantCulture
+      UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
+      PreferOptionals = false }
+
+let includeLayout = false
+
+let printTable tableName (url:string)  = 
+    url
+    |> HtmlDocument.Load
+    |> HtmlRuntime.getTables (Some parameters) includeLayout
+    |> List.filter (fun table -> table.Name = tableName)
+    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
+
+printTable "Overview" "https://en.wikipedia.org/wiki/List_of_Doctor_Who_serials"
+
+Html { Sample = "doctor_who3.html"
        PreferOptionals = false
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
@@ -90,35 +107,3 @@ let testCases =
 
 for testCase in testCases do
     dump false false Net40 true testCase
-
-let parameters : HtmlInference.Parameters = 
-    { MissingValues = TextConversions.DefaultMissingValues
-      CultureInfo = CultureInfo.InvariantCulture
-      UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
-      PreferOptionals = false }
-
-let printTables includeLayout (url:string) = 
-    url
-    |> HtmlDocument.Load
-    |> HtmlRuntime.getTables (Some parameters) includeLayout
-    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
-
-let printLists (url:string) = 
-    url
-    |> HtmlDocument.Load
-    |> HtmlRuntime.getLists
-    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
-
-printLists "https://en.wikipedia.org/wiki/Doctor_Who"
-printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
-printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
-printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"
-printTables false "http://en.wikipedia.org/wiki/Athletics_at_the_2012_Summer_Olympics_%E2%80%93_Women's_heptathlon"
-printTables false "http://www.imdb.com/chart/top?sort=ir,desc"
-printTables false "https://www.nuget.org/packages/FSharp.Data"
-printTables false "http://www.rottentomatoes.com"
-printTables false "http://www.orbitz.com/shop/home?airDA=true&ar.rt.leaveSlice.dest.dl=LGW_AIRPORT&search=Continue&ar.rt.carriers%5B1%5D=&ar.rt.narrowSel=0&type=air&ar.rt.returnSlice.time=Anytime&ar.rt.leaveSlice.originRadius=0&ar.rt.flexAirSearch=0&ar.rt.numAdult=1&ar.rt.numChild=0&ar.rt.child%5B4%5D=&ar.rt.leaveSlice.orig.key=SFO&ar.rt.child%5B2%5D=&strm=true&ar.rt.child%5B0%5D=&ar.rt.leaveSlice.time=Anytime&ar.rt.child%5B6%5D=&ar.rt.carriers%5B0%5D=&ar.rt.numSenior=0&ar.rt.returnSlice.date=05%2F28%2F14&ar.rt.narrow=airlines&ar.rt.carriers%5B2%5D=&ar.rt.leaveSlice.dest.key=LONDON&ar.rt.leaveSlice.date=04%2F22%2F14&ar.rt.nonStop=0&ar.rt.cabin=C&ar.rt.leaveSlice.destinationRadius=0&ar.type=roundTrip&ar.rt.child%5B3%5D=&ar.rt.child%5B5%5D=&ar.rt.child%5B7%5D=&ar.rt.child%5B1%5D="
-printTables false "http://www.sherdog.com/stats/fightfinder?SearchTxt=silva"
-printTables false "http://www.ebay.com/sch/i.html?_nkw=cars"
-printTables false "http://www.ebay.com/sch/i.html?_nkw=cars&_sacat=0&_from=R40"
-printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1.TR11.TRC1.A0.H0.Xcar&_nkw=cars&_sacat=0&_from=R40"

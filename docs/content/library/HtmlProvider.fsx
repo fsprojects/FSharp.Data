@@ -119,7 +119,7 @@ let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Wh
 let viewersByDoctor = 
     doctorWho.Tables.Overview.Rows 
     |> Seq.groupBy (fun season -> season.``Doctor(s)``)
-    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> try float season.``Viewers (millions)`` with _ -> 0.0))
+    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Viewers (millions) - Average``))
     |> Seq.toArray
 
 // Visualize it
