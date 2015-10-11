@@ -251,9 +251,8 @@ printfn "%s (%d 回リツイートされました)\n:%s"
 
 *)
 
-#if GITHUB
-
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+// GitHub.json downloaded from https://api.github.com/repos/fsharp/FSharp.Data/issues to prevent rate limit when generating these docs
+type GitHub = JsonProvider<"../../data/GitHub.json">
 
 let topRecentlyUpdatedIssues = 
     GitHub.GetSamples()
@@ -263,7 +262,6 @@ let topRecentlyUpdatedIssues =
 
 for issue in topRecentlyUpdatedIssues do
     printfn "#%d %s" issue.Number issue.Title
-#endif
 
 (**
 
@@ -273,7 +271,6 @@ GitHubのドキュメント http://developer.github.com/v3/issues/#create-an-iss
 
 *)
 
-#if GITHUB
 [<Literal>]
 let issueSample = """
 {
@@ -287,7 +284,6 @@ let issueSample = """
   ]
 }
 """
-#endif
 
 (**
 
@@ -300,7 +296,6 @@ Issueそれぞれに対応するものとは異なります。
 
 (*** do-not-eval ***)
 
-#if GITHUB
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",
@@ -309,7 +304,6 @@ let newIssue = GitHubIssue.Issue("Test issue",
                                  labels = [| |], 
                                  milestone = 0)
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
-#endif
 
 (**
 ## 関連する記事

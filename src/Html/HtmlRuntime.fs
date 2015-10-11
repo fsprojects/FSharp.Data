@@ -37,8 +37,7 @@ type HtmlTable =
       Html : HtmlNode }
     override x.ToString() =
         let sb = StringBuilder()
-        use wr = new StringWriter(sb) 
-        wr.WriteLine(x.Name)
+        sb.AppendLine x.Name |> ignore
         let data = array2D x.Rows
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
@@ -47,8 +46,8 @@ type HtmlTable =
             widths.[c] <- max (widths.[c]) (cell.Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
-            wr.WriteLine()
+                sb.Append(data.[r,c].PadRight(widths.[c] + 1)) |> ignore
+            sb.AppendLine() |> ignore
         sb.ToString()
 
 /// Representation of an HTML list
@@ -56,12 +55,26 @@ type HtmlList =
     { Name : string
       Values : string[]
       Html : HtmlNode }
+    override x.ToString() = 
+        let sb = StringBuilder()
+        sb.AppendLine x.Name |> ignore
+        for value in x.Values do 
+            sb.AppendLine value |> ignore
+        sb.ToString()
 
 /// Representation of an HTML definition list
 type HtmlDefinitionList = 
     { Name : string
       Definitions : HtmlList list
       Html : HtmlNode }
+    override x.ToString() = 
+        let sb = StringBuilder()
+        sb.AppendLine x.Name |> ignore
+        for list in x.Definitions do 
+            sb.AppendLine list.Name |> ignore
+            for value in list.Values do 
+                sb.AppendLine value |> ignore
+        sb.ToString()
 
 /// Representation of an HTML table, list, or definition list
 type HtmlObject = 

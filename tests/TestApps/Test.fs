@@ -7,9 +7,7 @@ type Stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT">
 
 type RSS = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 
-#if GITHUB
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
-#endif
+type GitHub = JsonProvider<"../../../docs/content/data/GitHub.json">
 
 let getTestData() = async {
     do! Http.AsyncRequest("https://accounts.coursera.org/api/v1/login",
