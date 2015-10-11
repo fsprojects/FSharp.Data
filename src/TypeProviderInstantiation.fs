@@ -220,7 +220,8 @@ type TypeProviderInstantiation =
             x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
             |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
             |> replace "FSharp.Data.Runtime." "FDR."
-            |> replace ("@\"" + resolutionFolder + "\"") "\"<RESOLUTION_FOLDER>\""
+            |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+            |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
         if outputFolder <> "" then
             File.WriteAllText(x.ExpectedPath outputFolder, output)
         output
