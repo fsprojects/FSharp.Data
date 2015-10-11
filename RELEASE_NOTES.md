@@ -1,4 +1,4 @@
-#### 2.3.0-beta1 - Unreleased
+#### 2.3.0-beta1 - October 11 2015
 * Support for PCL profile 7 and PCL profile 259.
 * Added support for single column CSV files in CsvProvider.
 * Fix saving of CSV files with cells spanning multiple lines.
