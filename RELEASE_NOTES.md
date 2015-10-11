@@ -1,3 +1,7 @@
+#### 2.3.0-beta1 - Unreleased
+* Support for PCL profile 7 and PCL profile 259.
+* Added support for single column CSV's in CsvProvider.
+
 #### 2.2.5 - July 12 2015
 * Fix HtmlNode.hasClass to work on multi class elements.
 
