@@ -5,201 +5,286 @@ open System.IO
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
 type CsvProviderArgs = 
     { Sample : string
-      Separator : string
-      Culture : string
+      Separators : string
       InferRows : int
       Schema : string
       HasHeaders : bool
       IgnoreErrors : bool
+      SkipRows : int
       AssumeMissingValues : bool
       PreferOptionals : bool
       Quote : char
       MissingValues : string
       CacheRows : bool
-      ResolutionFolder : string }
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type XmlProviderArgs = 
     { Sample : string
       SampleIsList : bool
       Global : bool
       Culture : string
-      ResolutionFolder : string }
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type JsonProviderArgs = 
     { Sample : string
       SampleIsList : bool
       RootName : string
       Culture : string
-      ResolutionFolder : string }
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
+
+type HtmlProviderArgs = 
+    { Sample : string
+      PreferOptionals : bool
+      IncludeLayoutTables : bool
+      MissingValues : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type FreebaseProviderArgs =
-    { Key : string
-      ServiceUrl : string
-      NumIndividuals : int
-      UseUnitsOfMeasure : bool 
-      Pluralize : bool 
-      SnapshotDate : string
-      LocalCache : bool
-      AllowLocalQueryEvaluation : bool
-      UseRefinedTypes: bool }
+type Platform = Net40 | Portable7 | Portable47 | Portable259
+
+module private RuntimeAssemblies = 
+
+    let (++) a b = Path.Combine(a, b)
+
+    let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
+    // Assumes OSX
+    let monoRoot = "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono"
+
+    let referenceAssembliesPath = 
+        (if runningOnMono then monoRoot else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86)
+        ++ "Reference Assemblies" 
+        ++ "Microsoft" 
+
+    let fsharp31PortableAssembliesPath profile = 
+         match profile with 
+         | 47 -> referenceAssembliesPath ++ "FSharp" ++ ".NETPortable" ++ "2.3.5.1" ++ "FSharp.Core.dll"
+         | 7 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.3.1.0" ++ "FSharp.Core.dll"
+         | 259 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.259.3.1" ++ "FSharp.Core.dll"
+         | _ -> failwith "unimplemented portable profile"
+
+    let fsharp31AssembliesPath = 
+        if runningOnMono then monoRoot ++ "gac" ++ "FSharp.Core" ++ "4.3.1.0__b03f5f7f11d50a3a"
+        else referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
+
+    let net45AssembliesPath = 
+        if runningOnMono then monoRoot ++ "4.5"
+        else referenceAssembliesPath ++ "Framework" ++ ".NETFramework" ++ "v4.5" 
+
+    let portableAssembliesPath profile = 
+        let portableRoot = if runningOnMono then monoRoot ++ "xbuild-frameworks" else referenceAssembliesPath ++ "Framework"
+        match profile with 
+        | 47 -> portableRoot ++ ".NETPortable" ++ "v4.0" ++ "Profile" ++ "Profile47" 
+        | 7 | 259 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ (sprintf "Profile%d" profile)
+        | _ -> failwith "unimplemented portable profile"
+
+    let net40FSharp31Refs = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
+    let portable47FSharp31Refs = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath 47]
+
+    let portableCoreFSharp31Refs profile = 
+        [ for asm in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions"; 
+                       "System.Linq.Queryable"; "System.Net"; "System.Net.NetworkInformation"; "System.Net.Primitives"; "System.Net.Requests"; "System.ObjectModel"; "System.Reflection"; 
+                       "System.Reflection.Extensions"; "System.Reflection.Primitives"; "System.Resources.ResourceManager"; "System.Runtime.Extensions"; 
+                       "System.Runtime.InteropServices.WindowsRuntime"; "System.Runtime.Serialization"; "System.Threading"; "System.Threading.Tasks"; "System.Xml"; "System.Xml.Linq"; "System.Xml.XDocument";
+                       "System.Runtime.Serialization.Json"; "System.Runtime.Serialization.Primitives"; "System.Windows" ] do 
+             yield portableAssembliesPath profile ++ asm + ".dll"
+          yield fsharp31PortableAssembliesPath profile ]
 
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
+    | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
-    | Freebase of FreebaseProviderArgs
 
-    member x.GenerateType resolutionFolder runtimeAssembly =
+    member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
         let f, args =
             match x with
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
-                   box x.Separator
-                   box x.Culture
+                   box x.Separators
                    box x.InferRows
                    box x.Schema
                    box x.HasHeaders
                    box x.IgnoreErrors
+                   box x.SkipRows
                    box x.AssumeMissingValues
                    box x.PreferOptionals
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
-                   box x.ResolutionFolder |] 
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.Global
                    box x.Culture
-                   box x.ResolutionFolder |] 
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
                    box x.Culture
-                   box x.ResolutionFolder|] 
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
+            | Html x -> 
+                (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.PreferOptionals
+                   box x.IncludeLayoutTables
+                   box x.MissingValues
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |] 
-            | Freebase x ->
-                (fun cfg -> new FreebaseTypeProvider(cfg) :> TypeProviderForNamespaces),
-                [| box x.Key
-                   box x.ServiceUrl
-                   box x.NumIndividuals
-                   box x.UseUnitsOfMeasure 
-                   box x.Pluralize
-                   box x.SnapshotDate
-                   box x.LocalCache
-                   box x.AllowLocalQueryEvaluation 
-                   box x.UseRefinedTypes |]
-        Debug.generate resolutionFolder runtimeAssembly f args
+        Debug.generate resolutionFolder runtimeAssembly runtimeAssemblyRefs f args
 
     override x.ToString() =
         match x with
         | Csv x -> 
             ["Csv"
              x.Sample
-             x.Separator
-             x.Culture
+             x.Separators
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
              x.AssumeMissingValues.ToString()
-             x.PreferOptionals.ToString()]
+             x.PreferOptionals.ToString()
+             x.MissingValues
+             x.Culture
+             x.Encoding ]
         | Xml x -> 
             ["Xml"
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | Json x -> 
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
+        | Html x -> 
+            ["Html"
+             x.Sample
+             x.PreferOptionals.ToString()
+             x.IncludeLayoutTables.ToString()
              x.Culture]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString()]
-        | Freebase x -> 
-            ["Freebase"
-             x.NumIndividuals.ToString()
-             x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder = 
         Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
 
-    member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
+    member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly
-            |> match x with
-               | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
-               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+            x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
+            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+            |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
         if outputFolder <> "" then
             File.WriteAllText(x.ExpectedPath outputFolder, output)
         output
 
     static member Parse (line:string) =
         let args = line.Split [|','|]
+        args.[0],
         match args.[0] with
         | "Csv" ->
             Csv { Sample = args.[1]
-                  Separator = args.[2]
-                  Culture = args.[3]
+                  Separators = args.[2]
                   InferRows = Int32.MaxValue
-                  Schema = args.[4].Replace(';', ',')
-                  HasHeaders = args.[5] |> bool.Parse
+                  Schema = args.[3].Replace(';', ',')
+                  HasHeaders = args.[4] |> bool.Parse
                   IgnoreErrors = false
-                  AssumeMissingValues = args.[6] |> bool.Parse
-                  PreferOptionals = args.[7] |> bool.Parse
+                  SkipRows = 0
+                  AssumeMissingValues = args.[5] |> bool.Parse
+                  PreferOptionals = args.[6] |> bool.Parse
                   Quote = '"'
-                  MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
+                  MissingValues = args.[7]
+                  Culture = args.[8]
+                  Encoding = args.[9]
                   CacheRows = false
-                  ResolutionFolder = "" }
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
-                  ResolutionFolder = "" }
+                  Encoding = ""
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 
-                   ResolutionFolder = ""}
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" 
+                   InferTypesFromValues = args.[5] |> bool.Parse }
+        | "Html" ->
+            Html { Sample = args.[1]
+                   PreferOptionals = args.[2] |> bool.Parse
+                   IncludeLayoutTables = args.[3] |> bool.Parse
+                   MissingValues = ""
+                   Culture = args.[4] 
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
-        | "Freebase" ->
-            Freebase { Key = args.[1]
-                       NumIndividuals = args.[2] |> Int32.Parse
-                       UseUnitsOfMeasure = args.[3] |> bool.Parse
-                       Pluralize = args.[4] |> bool.Parse
-                       SnapshotDate = ""
-                       ServiceUrl = FreebaseQueries.DefaultServiceUrl
-                       LocalCache = true
-                       AllowLocalQueryEvaluation = true 
-                       UseRefinedTypes = true }
         | _ -> failwithf "Unknown: %s" args.[0]
+
+    static member GetRuntimeAssemblyRefs platform =
+        match platform with
+        | Net40 -> RuntimeAssemblies.net40FSharp31Refs
+        | Portable7 -> RuntimeAssemblies.portableCoreFSharp31Refs 7
+        | Portable259 -> RuntimeAssemblies.portableCoreFSharp31Refs 259
+        | Portable47 -> RuntimeAssemblies.portable47FSharp31Refs
 
 open System.Runtime.CompilerServices
 

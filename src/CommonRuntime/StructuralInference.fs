@@ -5,11 +5,12 @@ open System
 open System.Diagnostics
 open System.Collections.Generic
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
 /// [omit]
-module Seq = 
+module List = 
     /// Merge two sequences by pairing elements for which
     /// the specified predicate returns the same key
     ///
@@ -50,6 +51,7 @@ let typeTag = function
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
+  | InferedType.Json _ -> InferedTypeTag.Json
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.
@@ -120,8 +122,9 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
   // Subtype of matching types or one of equal types
   | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
   | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
+  | InferedType.Json(t1, o1), InferedType.Json(t2, o2) -> InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
-  | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowEmptyValues t1 t2)
+  | InferedType.Collection(o1, t1), InferedType.Collection(o2, t2) -> InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2)
   
   // Top type can be merged with anything else
   | t, InferedType.Top | InferedType.Top, t -> t
@@ -145,23 +148,23 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
 /// Heterogeneous types already handle optionality on their own, so we drop
 /// optionality from all its inner types
 and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t.DropOptionality()
       | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> 
           tag, (subtypeInfered allowEmptyValues t1 t2).DropOptionality()
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
 
 /// A collection can contain multiple types - in that case, we do keep 
 /// the multiplicity for each different type tag to generate better types
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
 and private unionCollectionTypes allowEmptyValues cases1 cases2 = 
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
@@ -180,14 +183,17 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
           let t = if m <> Single then t.DropOptionality() else t
           tag, (m, t)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
+
+and unionCollectionOrder order1 order2 =
+    order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes allowEmptyValues t1 t2 =
-  Seq.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
-  |> Seq.map (fun (name, fst, snd) ->
+  List.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
+  |> List.map (fun (name, fst, snd) ->
       match fst, snd with
       // If one is missing, return the other, but optional
       | Some p, None | None, Some p -> { p with Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
@@ -199,17 +205,18 @@ and unionRecordTypes allowEmptyValues t1 t2 =
           { InferedProperty.Name = name
             Type = subtypeInfered allowEmptyValues p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
-  |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
 let inferCollectionType allowEmptyValues types = 
-  types 
-  |> Seq.groupBy typeTag
-  |> Seq.map (fun (tag, types) ->
-      let multiple = if Seq.length types > 1 then Multiple else Single
-      tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types) )
-  |> Map.ofSeq |> InferedType.Collection
+  let groupedTypes =
+      types 
+      |> Seq.groupBy typeTag
+      |> Seq.map (fun (tag, types) ->
+          let multiple = if Seq.length types > 1 then Multiple else Single
+          tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types))
+      |> Seq.toList
+  InferedType.Collection (List.map fst groupedTypes, Map.ofList groupedTypes)
 
 [<AutoOpen>]
 module private Helpers =
@@ -236,6 +243,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
+  let (|ParseNoCulture|_|) func value = func value
 
   let asGuid _ value = TextConversions.AsGuid value
 
@@ -243,8 +251,12 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 #if FX_NET_CORE_REFLECTION
     cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #else
-    let runningOnMono = Type.GetType("Mono.Runtime") <> null
-    if runningOnMono then
+    try
+      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+    with :? ArgumentOutOfRangeException when Type.GetType("Mono.Runtime") <> null ->
+      // In Mono before 4.0, the above call was throwing ArgumentOurOfRange exception (see #426)
+      // Since Mono 4.0, the above method works, but the following workaround stopps working.
+      // So, we try the workaround *only* on Mono and *only* when we get out of range exception.
       let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
       let eraIndex =
         match era with
@@ -252,8 +264,6 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
         | x when x > 0 && x <= abbreviatedEraNames.Length -> era
         | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
       abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
-    else
-      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #endif
 
   let isFakeDate (date:DateTime) value =
@@ -272,7 +282,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | "" -> null
   | Parse TextConversions.AsInteger 0 -> typeof<Bit0>
   | Parse TextConversions.AsInteger 1 -> typeof<Bit1>
-  | Parse TextConversions.AsBoolean _ -> typeof<bool>
+  | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
@@ -286,3 +296,39 @@ let getInferedTypeFromString cultureInfo value unit =
     match inferPrimitiveType cultureInfo value with
     | null -> InferedType.Null
     | typ -> InferedType.Primitive(typ, unit, false)
+
+type IUnitsOfMeasureProvider =
+    abstract SI : str:string -> System.Type
+    abstract Product : measure1: System.Type * measure2: System.Type  -> System.Type
+    abstract Inverse : denominator: System.Type -> System.Type
+
+let defaultUnitsOfMeasureProvider = 
+    { new IUnitsOfMeasureProvider with
+        member x.SI(_): Type = null
+        member x.Product(_, _) = failwith "Not implemented yet"
+        member x.Inverse(_) = failwith "Not implemented yet" }
+
+let private uomTransformations = [
+    ["²"; "^2"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Product(t, t)
+    ["³"; "^3"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t)
+    ["^-1"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Inverse(t) ]
+
+let parseUnitOfMeasure (provider:IUnitsOfMeasureProvider) (str:string) = 
+    let unit =
+        uomTransformations
+        |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
+        |> List.tryPick (fun (suffix, trans) ->
+            if str.EndsWith suffix then
+                let baseUnitStr = str.[..str.Length - suffix.Length - 1]
+                let baseUnit = provider.SI baseUnitStr
+                if baseUnit = null then 
+                    None 
+                else 
+                    baseUnit |> trans provider |> Some
+            else
+                None)
+    match unit with
+    | Some _ -> unit
+    | None ->
+        let unit = provider.SI str
+        if unit = null then None else Some unit

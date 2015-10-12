@@ -1,14 +1,14 @@
 ﻿(** 
 # F# Data: JSON Type Provider
 
-This article demonstrates how to use the JSON type provider to access JSON files
-in a statically typed way. We first look how the structure is inferred and then 
+This article demonstrates how to use the JSON Type Provider to access JSON files
+in a statically typed way. We first look at how the structure is inferred and then 
 demonstrate the provider by parsing data from WorldBank and Twitter.
 
-The JSON type provider provides a statically typed access to JSON documents.
+The JSON Type Provider provides statically typed access to JSON documents.
 It takes a sample document as an input (or a document containing a JSON array of samples).
 The generated type can then be used to read files with the same structure. If the 
-loaded file does not match the structure of the sample, an runtime error may occur 
+loaded file does not match the structure of the sample, a runtime error may occur 
 (but only when accessing e.g. non-existing element).
 
 ## Introducing the provider
@@ -23,10 +23,10 @@ open FSharp.Data
 ### Inferring types from the sample
 
 The `JsonProvider<...>` takes one static parameter of type `string`. The parameter can 
-be _either_ a sample string _or_ a sample file (relatively to the current folder or online 
+be _either_ a sample string _or_ a sample file (relative to the current folder or online 
 accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
 
-The following sample passes small JSON string to the provider:
+The following sample passes a small JSON string to the provider:
 *)
 
 type Simple = JsonProvider<""" { "name":"John", "age":94 } """>
@@ -44,7 +44,7 @@ fields as properties (with PascalCase name to follow standard naming conventions
 
 In the previous case, the sample document simply contained an integer and so the provider
 inferred the type `int`. Sometimes, the types in the sample document (or a list of samples) 
-may not exactly match. For example, a list may mix integers and floats:
+may not match exactly. For example, a list may mix integers and floats:
 *)
 
 type Numbers = JsonProvider<""" [1, 2, 3, 3.14] """>
@@ -69,15 +69,15 @@ mixed.Numbers |> Seq.sum
 mixed.Strings |> String.concat ", "
 
 (**
-As you can see, the `Mixed` type has property `Numbers` and `Strings` that 
-return only `int` and `string` values from the collection. This means that we get a nice
+As you can see, the `Mixed` type has properties `Numbers` and `Strings` that 
+return only `int` and `string` values from the collection. This means that we get 
 type-safe access to the values, but not in the original order (if order matters, then
 you can use the `mixed.JsonValue` property to get the underlying `JsonValue` and 
 process it dynamically as described in [the documentation for `JsonValue`](JsonValue.html).
 
 ### Inferring record types
 
-Now, let's look at a sample JSON document that contains a list of records. The
+Now let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
@@ -97,7 +97,7 @@ has properties `Name` and `Age`. As `Age` is not available for all records in th
 data set, it is inferred as `option<int>`. The above sample uses `Option.iter` to print
 the value only when it is available.
 
-In the previous case, the values of individual properties had common type - `string` 
+In the previous case, the values of individual properties had common types - `string` 
 for the `Name` property and numeric type for `Age`. However, what if the property of
 a record can have multiple different types? In that case, the type provider behaves
 as follows: 
@@ -117,12 +117,12 @@ a type that has an optional property for each possible option, so we can use
 simple pattern matching on `option<int>` and `option<string>` values to distinguish
 between the two options. This is similar to the handling of heterogeneous arrays.
 
-Note that we have a `GetSamples` method because the sample is a json list. If it was a json
+Note that we have a `GetSamples` method because the sample is a JSON list. If it was a JSON
 object, we would have a `GetSample` method instead.
 
 ## Loading WorldBank data
 
-Let's now use the type provider to process some real data. We use a data set returned by 
+Now let's use the type provider to process some real data. We use a data set returned by 
 [the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
 
     [lang=js]
@@ -146,7 +146,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"../data/WorldBank.json">
-let doc = WorldBank.Load("../data/WorldBank.json")
+let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
@@ -178,7 +178,7 @@ it to print the result only when the data point is available.
 
 ## Parsing Twitter stream
 
-In our last example, we look how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
+We now look on how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
 Tweets are quite heterogeneous, so we infer the structure from a _list_ of inputs rather than from 
 just a single input. To do that, we use the file [`data/TwitterStream.json`](../data/TwitterStream.json) 
 (containing a list of tweets) and pass an optional parameter `SampleIsList=true` which tells the 
@@ -199,11 +199,93 @@ tweet. As you can see, the `tweet.User` property has been inferred as optional (
 tweet might not have an author?) so we unsafely get the value using the `Value` property.
 The `RetweetCount` and `Text` properties may be also missing, so we also access them unsafely.
 
+## Getting and creating GitHub issues
+
+In this example we will now also create JSON in addition to consuming it.
+Let's start by listing the 5 most recently updated open issues in the FSharp.Data repo.
+
+*)
+
+// GitHub.json downloaded from https://api.github.com/repos/fsharp/FSharp.Data/issues to prevent rate limit when generating these docs
+type GitHub = JsonProvider<"../data/GitHub.json">
+
+let topRecentlyUpdatedIssues = 
+    GitHub.GetSamples()
+    |> Seq.filter (fun issue -> issue.State = "open")
+    |> Seq.sortBy (fun issue -> System.DateTime.Now - issue.UpdatedAt)
+    |> Seq.truncate 5
+
+for issue in topRecentlyUpdatedIssues do
+    printfn "#%d %s" issue.Number issue.Title
+
+(**
+
+And now let's create a new issue. We look into the documentation at http://developer.github.com/v3/issues/#create-an-issue and we see that
+we need to post a JSON value similar to this:
+
+*)
+
+[<Literal>]
+let issueSample = """
+{
+  "title": "Found a bug",
+  "body": "I'm having a problem with this.",
+  "assignee": "octocat",
+  "milestone": 1,
+  "labels": [
+    "Label1",
+    "Label2"
+  ]
+}
+"""
+
+(** 
+
+This JSON is different from what we got for each issue in the previous API call, so we'll define a new type based on this sample,
+create an instance, and send a POST request:
+
+*)
+
+(*** do-not-eval ***)
+
+type GitHubIssue = JsonProvider<issueSample, RootName="issue">
+
+let newIssue = GitHubIssue.Issue("Test issue",
+                                 "This is a test issue created in F# Data documentation", 
+                                 assignee = "",
+                                 labels = [| |], 
+                                 milestone = 0)
+newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
+
+(**
+<a name="jsonlib"></a>
+## Using JSON provider in a library
+
+You can use the types created by JSON type provider in a public API of a library that you are building,
+but there is one important thing to keep in mind - when the user references your library, the type
+provider will be loaded and the types will be generated at that time (the JSON provider is not
+currently a _generative_ type provider). This means that the type provider will need to be able to
+access the sample JSON. This works fine when the sample is specified inline, but it won't work when
+the sample is specified as a local file (unless you distribute the samples with your library).
+
+For this reason, the JSON provider lets you specify samples as embedded resources using the 
+static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
+
+*)
+type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldbank.json">
+
+(**
+You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 
+When a user of your library references `MyLib.dll` later, the JSON Type Provider will be able
+to load `MyLib.dll` and locate the sample `worldbank.json` as a resource of the library. When
+this succeeds, it does not attempt to find the local file and so your library can be used
+without providing a local copy of the sample JSON files.
+
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
- * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 
+ * [F# Data: JSON Parser](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
+ * [API Reference: JsonProvider type provider](../reference/fsharp-data-jsonprovider.html)
+ * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
 
 *)

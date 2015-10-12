@@ -1,5 +1,5 @@
 ﻿#if INTERACTIVE
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -8,66 +8,117 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 
 open System
 open System.IO
-open System.Net
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-
-//alow tests that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
+open ProviderImplementation.AssemblyReader
 
 let (++) a b = Path.Combine(a, b)
 
 let sourceDirectory = __SOURCE_DIRECTORY__
 
-let testCases = 
+let testCasesTuple = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
-let testCasesForUSA =
-    testCases
-    |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
+let testCases = 
+    testCasesTuple
+#if BUILD_SERVER
+    |> Array.filter (snd >> function | WorldBank _ -> false | _ -> true)
+#endif
+    |> Array.map snd
 
 let expectedDirectory = sourceDirectory ++ "expected" 
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
-let portable47RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
-let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
+let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ ("portable" + string profile) ++ assemblyName
+
+[<Test>]
+let ``test basic binding context net40``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Net40)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable7``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable7)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("System.Runtime") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable47``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable47)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable259``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable259)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("System.Runtime") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice2Of2 err -> raise err
+
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
-    for testCase in testCases do
-        testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
-        |> ignore
+    for (sample, testCase) in testCasesTuple do
+        try
+            testCase.Dump (resolutionFolder, expectedDirectory, runtimeAssembly, (TypeProviderInstantiation.GetRuntimeAssemblyRefs Net40), signatureOnly=false, ignoreOutput=false)
+            |> ignore
+        with e -> 
+            raise(new Exception(sprintf "Failed generating: %s" sample, e))
 
 let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
 [<Test>]
-#if TEAM_CITY
-[<TestCaseSource "testCasesForUSA">]
-#else
 [<TestCaseSource "testCases">]
-#endif
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
-    let expected = testCase.ExpectedPath expectedDirectory |> File.ReadAllText |> normalize
-    let output = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize
+    let path = testCase.ExpectedPath expectedDirectory 
+    let expected = path |> File.ReadAllText |> normalize
+    let outputRaw = testCase.Dump (resolutionFolder, "", runtimeAssembly, (TypeProviderInstantiation.GetRuntimeAssemblyRefs Net40), signatureOnly=false, ignoreOutput=false) 
+    let output = outputRaw |> normalize
     if output <> expected then
-        printfn "Obtained Signature:\n%s" output
+        printfn "Obtained Signature:\n%s" outputRaw
+    //System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
     output |> should equal expected
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder "" portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 47, (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable47), signatureOnly=false, ignoreOutput=true) |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder "" portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 7, (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable7), signatureOnly=false, ignoreOutput=true) |> ignore
+
+
+[<Test>]
+[<TestCaseSource "testCases">]
+let ``Generating expressions works in portable profile 259 `` (testCase:TypeProviderInstantiation) = 
+    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 259, (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable259), signatureOnly=false, ignoreOutput=true) |> ignore

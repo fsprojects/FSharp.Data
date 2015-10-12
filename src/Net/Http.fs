@@ -2,6 +2,18 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+
+namespace System.Runtime.InteropServices
+
+open System
+
+[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
+type internal OptionalAttribute() = 
+    inherit Attribute()
+
+#endif
+
 namespace FSharp.Data
 
 open System
@@ -9,11 +21,17 @@ open System.Globalization
 open System.IO
 open System.Net
 open System.Text
+open System.Text.RegularExpressions
 open System.Reflection
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
 module HttpMethod =
+
+    // RFC 2626 specifies 8 methods
+
     /// Request information about the communication options available on the request/response chain identified by the URI
     let Options = "OPTIONS"
     /// Retrieve whatever information (in the form of an entity) is identified by the URI
@@ -32,7 +50,29 @@ module HttpMethod =
     /// Reserved for use with a proxy that can dynamically switch to being a tunnel 
     let Connect = "CONNECT"
 
-/// Header to send in an HTTP request
+    // RFC 4918 (WebDAV) adds 7 methods
+
+    /// Retrieves properties defined on the resource identified by the request URI
+    let PropFind = "PROPFIND"
+    /// Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI
+    let PropPatch = "PROPPATCH"
+    /// Creates a new collection resource at the location specified by the Request URI
+    let MkCol = "MKCOL"
+    /// Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header
+    let Copy = "COPY"
+    /// Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source where all three actions are performed atomically
+    let Move = "MOVE"
+    /// Used to take out a lock of any access type on the resource identified by the request URI.
+    let Lock = "LOCK"
+    /// Removes the lock identified by the lock token from the request URI, and all other resources included in the lock
+    let Unlock = "UNLOCK"
+
+    // RFC 5789 adds one more
+
+    /// Requests that the origin server applies partial modifications contained in the entity enclosed in the request to the resource identified by the request URI
+    let Patch = "PATCH"
+
+/// Headers that can be sent in an HTTP request
 module HttpRequestHeaders =
     /// Content-Types that are acceptable for the response
     let Accept (contentType:string) = "Accept", contentType
@@ -48,6 +88,12 @@ module HttpRequestHeaders =
     let Allow (methods:string) = "Allow", methods
     /// Authentication credentials for HTTP authentication
     let Authorization (credentials:string) = "Authorization", credentials
+    /// Authentication header using Basic Auth encoding
+    let BasicAuth (username:string) (password:string) = 
+        let base64Encode (s:string) = 
+            let bytes = Encoding.UTF8.GetBytes(s)
+            Convert.ToBase64String(bytes)
+        sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization 
     /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain 
     let CacheControl (control:string) = "Cache-Control", control
     /// What type of connection the user-agent would prefer 
@@ -121,7 +167,7 @@ module HttpRequestHeaders =
     /// Override HTTP method. 
     let XHTTPMethodOverride (httpMethod:string) = "X-HTTP-Method-Override", httpMethod
 
-/// Header received in an HTTP response
+/// Headers that can be received in an HTTP response
 module HttpResponseHeaders =
     /// Specifying which web sites can participate in cross-origin resource sharing
     let [<Literal>] AccessControlAllowOrigin = "Access-Control-Allow-Origin"
@@ -210,6 +256,7 @@ type HttpResponse =
   { Body : HttpResponseBody
     StatusCode: int
     ResponseUrl : string
+    /// If the same header is present multiple times, the values will be concatenated with comma as the separator
     Headers : Map<string,string>
     Cookies : Map<string,string> }
 
@@ -218,13 +265,16 @@ type HttpResponseWithStream =
   { ResponseStream : Stream
     StatusCode: int
     ResponseUrl : string
+    /// If the same header is present multiple times, the values will be concatenated with comma as the separator
     Headers : Map<string,string>
     Cookies : Map<string,string> }
 
 /// Constants for common HTTP content types
 module HttpContentTypes =
+    /// */*
+    let [<Literal>] Any = "*/*"
     /// plain/text
-    let [<Literal>] Text = "plain/text"
+    let [<Literal>] Text = "text/plain"
     /// application/octet-stream
     let [<Literal>] Binary = "application/octet-stream"
     /// application/octet-stream
@@ -256,8 +306,26 @@ module HttpContentTypes =
 
 type private HeaderEnum = System.Net.HttpRequestHeader
 
+/// Constants for common HTTP encodings
+module HttpEncodings = 
+
+    /// ISO-8859-1
+    let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
+
+    /// ISO-8859-1
+    let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
+
+    let internal getEncoding (encodingStr:string) = 
+#if FX_NO_GETENCODING_BY_CODEPAGE
+        Encoding.GetEncoding encodingStr
+#else
+        match Int32.TryParse(encodingStr, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+        | true, codepage -> Encoding.GetEncoding codepage                
+        | _ -> Encoding.GetEncoding encodingStr
+#endif
+
 [<AutoOpen>]
-module private Helpers =
+module private HttpHelpers =
 
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content
@@ -277,15 +345,79 @@ module private Helpers =
         return output 
     }
 
-    let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
-#if FX_NO_WEBREQUEST_CONTENTLENGTH
+    let getProperty (typ:Type) obj prop =        
+#if FX_NET_CORE_REFLECTION
+        let prop = try typ.GetRuntimeProperty prop with _ -> null
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
 #else
-        req.ContentLength <- int64 postBytes.Length
+        let prop = try typ.GetProperty prop with _ -> null
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj, [| |]) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
 #endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
-        output.Flush()
-    }
+
+    let (?) obj prop =
+        getProperty (obj.GetType()) obj prop
+
+    let (?<-) obj prop value =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, box value) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, value, [| |]) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#endif
+
+    let writeBody (req:HttpWebRequest) (postBytes:byte[]) =
+        // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
+        // To work around, we use a different FromBeginEnd
+        // See https://github.com/fsharp/FSharp.Data/issues/762
+        // and https://bugzilla.xamarin.com/show_bug.cgi?id=25519
+        let alternateFromBeginEnd beginAction endAction obj =
+            Threading.Tasks.TaskFactory().FromAsync(
+                Func<_, _, _>(fun c s -> beginAction(c, s)),
+                Func<_, _>(endAction),
+                obj)
+            |> Async.AwaitTask
+
+        async {
+#if FX_NO_WEBREQUEST_CONTENTLENGTH
+            ignore (req?ContentLength <- int64 postBytes.Length)
+#else
+            req.ContentLength <- int64 postBytes.Length
+#endif
+            use! output =
+                if Type.GetType("Mono.Runtime") <> null
+                then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
+                else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+
+            do! output.AsyncWrite(postBytes, 0, postBytes.Length)
+            output.Flush()
+        }
 
     let reraisePreserveStackTrace (e:Exception) =
         try
@@ -336,88 +468,89 @@ module private Helpers =
 
     let setHeaders headers (req:HttpWebRequest) =
         let hasContentType = ref false
-        headers |> Option.iter (checkForRepeatedHeaders [])
-        headers |> Option.iter (List.iter (fun (header, value) ->
-            match header with
-            | "Accept" -> req.Accept <- value
-            | "Accept-Charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
-            | "Accept-Datetime" -> req.Headers.["Accept-Datetime"] <- value
-            | "Accept-Encoding" -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
-            | "Accept-Language" -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
-            | "Allow" -> req.Headers.[HeaderEnum.Allow] <- value
-            | "Authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
-            | "Cache-Control" -> req.Headers.[HeaderEnum.CacheControl] <- value
+        checkForRepeatedHeaders [] headers
+        headers |> List.iter (fun (header:string, value) ->
+            match header.ToLowerInvariant() with
+            | "accept" -> req.Accept <- value
+            | "accept-charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
+            | "accept-datetime" -> req.Headers.["Accept-Datetime"] <- value
+            | "accept-encoding" -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
+            | "accept-language" -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
+            | "allow" -> req.Headers.[HeaderEnum.Allow] <- value
+            | "authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
+            | "cache-control" -> req.Headers.[HeaderEnum.CacheControl] <- value
 #if FX_NO_WEBREQUEST_CONNECTION
-            | "Connection" -> req.Headers.[HeaderEnum.Connection] <- value
+            | "connection" -> if not (req?Connection <- value) then req.Headers.[HeaderEnum.Connection] <- value
 #else
-            | "Connection" -> req.Connection <- value
+            | "connection" -> req.Connection <- value
 #endif
-            | "Content-Encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
-            | "Content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
-            | "Content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
-            | "Content-MD5" -> req.Headers.[HeaderEnum.ContentMd5] <- value
-            | "Content-Range" -> req.Headers.[HeaderEnum.ContentRange] <- value
-            | "Content-Type" ->
+            | "content-encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
+            | "content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
+            | "content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
+            | "content-md5" -> req.Headers.[HeaderEnum.ContentMd5] <- value
+            | "content-range" -> req.Headers.[HeaderEnum.ContentRange] <- value
+            | "content-type" ->
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "Date" -> req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
 #else
-            | "Date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
-            | "Expect" -> req.Headers.[HeaderEnum.Expect] <- value
+            | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
 #else
-            | "Expect" -> req.Expect <- value
+            | "expect" -> req.Expect <- value
 #endif
-            | "Expires" -> req.Headers.[HeaderEnum.Expires] <- value
-            | "From" -> req.Headers.[HeaderEnum.From] <- value
+            | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
+            | "from" -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
-            | "Host" -> req.Headers.[HeaderEnum.Host] <- value
+            | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
 #else
-            | "Host" -> req.Host <- value
+            | "host" -> req.Host <- value
 #endif       
-            | "If-Match" -> req.Headers.[HeaderEnum.IfMatch] <- value
+            | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "IfModifiedSince" -> req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
-            | "If-Modified-Since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
-            | "If-None-Match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
-            | "If-Range" -> req.Headers.[HeaderEnum.IfRange] <- value
-            | "If-Unmodified-Since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
-            | "Keep-Alive" -> req.Headers.[HeaderEnum.KeepAlive] <- value
-            | "Last-Modified" -> req.Headers.[HeaderEnum.LastModified] <- value
-            | "Max-Forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
-            | "Origin" -> req.Headers.["Origin"] <- value
-            | "Pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
+            | "if-none-match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
+            | "if-range" -> req.Headers.[HeaderEnum.IfRange] <- value
+            | "if-unmodified-since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
+            | "keep-alive" -> req.Headers.[HeaderEnum.KeepAlive] <- value
+            | "last-modified" -> req.Headers.[HeaderEnum.LastModified] <- value
+            | "max-forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
+            | "origin" -> req.Headers.["Origin"] <- value
+            | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
 #if FX_NO_WEBREQUEST_RANGE
-            | "Range(start, finish)" -> req.Headers.[HeaderEnum.Range] <- value
+            | "range" -> req.Headers.[HeaderEnum.Range] <- value
 #else
-            | "Range" -> 
+            | "range" -> 
                 if not (value.StartsWith("bytes=")) then failwith "Invalid value for the Range header"
                 let bytes = value.Substring("bytes=".Length).Split('-')
                 if bytes.Length <> 2 then failwith "Invalid value for the Range header"
                 req.AddRange(int64 bytes.[0], int64 bytes.[1])
 #endif
-            | "Proxy-Authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
+            | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | "Referer" -> req.Headers.[HeaderEnum.Referer] <- value
+            | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
 #else
-            | "Referer" -> req.Referer <- value
+            | "referer" -> req.Referer <- value
 #endif            
-            | "TE" -> req.Headers.[HeaderEnum.Te] <- value
-            | "Trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
-            | "Translate" -> req.Headers.[HeaderEnum.Translate] <- value
-            | "Upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
+            | "te" -> req.Headers.[HeaderEnum.Te] <- value
+            | "trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
+            | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
+            | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | "User-Agent" -> req.Headers.[HeaderEnum.UserAgent] <- value
+            | "user-agent" -> if not (req?UserAgent <- value) then try req.Headers.[HeaderEnum.UserAgent] <- value with _ -> ()
 #else
-            | "User-Agent" -> req.UserAgent <- value
+            | "user-agent" -> req.UserAgent <- value
 #endif
-            | "Via" -> req.Headers.[HeaderEnum.Via] <- value
-            | "Warning" -> req.Headers.[HeaderEnum.Warning] <- value
-            | name -> req.Headers.[name] <- value))
+            | "via" -> req.Headers.[HeaderEnum.Via] <- value
+            | "warning" -> req.Headers.[HeaderEnum.Warning] <- value
+            | _ -> req.Headers.[header] <- value
+        )
         hasContentType.Value
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
@@ -436,7 +569,27 @@ module private Helpers =
         else 
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
-    let toHttpResponse forceText responseUrl statusCode contentType (_contentEncoding:string)
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressGZip (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic gzip decompression failed"
+        memoryStream
+#endif
+
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressDeflate (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic deflate decompression failed"
+        memoryStream
+#endif
+
+    let toHttpResponse forceText responseUrl statusCode contentType contentEncoding
                        characterSet responseEncodingOverride cookies headers stream = async {
 
         let isText (mimeType:string) =
@@ -448,31 +601,30 @@ module private Helpers =
                 mimeType = HttpContentTypes.JavaScript ||
                 mimeType = "application/ecmascript" ||
                 mimeType = "application/xml-dtd" ||
-                mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+                mimeType.StartsWith "application/" && mimeType.EndsWith "+xml" ||
+                mimeType.StartsWith "application/" && mimeType.EndsWith "+json"
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
         use stream = stream
         let! memoryStream = asyncRead stream
 
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         let memoryStream = 
-            if _contentEncoding = "gzip" then
-                new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-            elif _contentEncoding = "deflate" then
-                new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
-            else
-                memoryStream
-#endif
+            // this only applies when automatic decompression is off
+            if contentEncoding = "gzip" then decompressGZip memoryStream
+            elif contentEncoding = "deflate" then decompressDeflate memoryStream
+            else memoryStream
 
         let respBody = 
             if forceText || isText contentType then
-                use sr = 
+                let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
-                    | "", "" -> new StreamReader(memoryStream)
-                    | "", characterSet -> new StreamReader(memoryStream, Encoding.GetEncoding(characterSet))
-                    | responseEncodingOverride, _ -> new StreamReader(memoryStream, Encoding.GetEncoding(responseEncodingOverride))
-
+                    | "", "" -> HttpEncodings.ResponseDefaultEncoding
+                    // some web servers respond with broken things like Content-Type: text/xml; charset="UTF-8"
+                    // this goes against rfc2616, but it breaks Encoding.GetEncoding, so let us strip this char out
+                    | "", characterSet -> Encoding.GetEncoding (characterSet.Replace("\"",""))
+                    | responseEncodingOverride, _ -> HttpEncodings.getEncoding responseEncodingOverride
+                use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
             else
                 memoryStream.ToArray() |> Binary
@@ -484,10 +636,77 @@ module private Helpers =
                  Cookies = cookies }
     }
 
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+    let isWindowsPhone =
+        let runningOnMono = Type.GetType("Mono.Runtime") <> null
+        if runningOnMono then
+            false
+        else
+            match getProperty typeof<Environment> null "OSVersion" with
+            | Some osVersion ->
+                match osVersion?Version with
+                | Some (version:Version) ->
+                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
+                    version.Major >= 8
+                | _ -> false
+            | _ -> false
+#endif
+
+    // .NET has trouble parsing some cookies. See http://stackoverflow.com/a/22098131/165633
+    let getAllCookiesFromHeader (header:string) (responseUri:Uri) (cookieContainer:CookieContainer) =
+        let cookiesWithWrongSplit = header.Replace("\r", "").Replace("\n", "").Split(',')
+        let cookies = ResizeArray()
+        let mutable i = 0
+        while i < cookiesWithWrongSplit.Length do
+            // the next command is not a new cookie but part of the current one
+            if cookiesWithWrongSplit.[i].IndexOf("expires=", StringComparison.OrdinalIgnoreCase) > 0 then
+                cookies.Add(cookiesWithWrongSplit.[i] + "," + cookiesWithWrongSplit.[i + 1])
+                i <- i + 1
+            else
+                cookies.Add(cookiesWithWrongSplit.[i])
+            i <- i + 1
+        for cookieStr in cookies do
+            let cookie = new Cookie()
+            cookieStr.Split ';'
+            |> Array.iteri (fun i cookiePart ->
+                let cookiePart = cookiePart.Trim()
+                if i = 0 then
+                    let firstEqual = cookiePart.IndexOf "="
+                    cookie.Name <- cookiePart.Substring(0, firstEqual)
+                    cookie.Value <- cookiePart.Substring(firstEqual + 1)
+                elif cookiePart.IndexOf("path", StringComparison.OrdinalIgnoreCase) = 0 then
+                    let kvp = cookiePart.Split '='
+                    if kvp.[1] <> "" && kvp.[1] <> "/" then
+                        cookie.Path <- kvp.[1]
+                elif cookiePart.IndexOf("domain", StringComparison.OrdinalIgnoreCase) = 0 then
+                    let kvp = cookiePart.Split '='
+                    if kvp.[1] <> "" then
+                        cookie.Domain <- kvp.[1]
+                elif cookiePart.Equals("secure", StringComparison.OrdinalIgnoreCase) then
+                    cookie.Secure <- true
+                elif cookiePart.Equals("httponly", StringComparison.OrdinalIgnoreCase) then
+                    cookie.HttpOnly <- true
+            )
+
+            if cookie.Domain = "" then
+                cookie.Domain <- responseUri.Host
+
+            let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path)
+            cookieContainer.Add(uri, cookie)
+
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
-type Http private() = 
+type Http private() =
+
+    static let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+        RegexOptions.None
+#else
+        RegexOptions.Compiled
+#endif
+
+    static let charsetRegex = Regex("charset=([^;\s]*)", regexOptions)
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -496,16 +715,10 @@ type Http private() =
         | query ->
             url
             + if url.Contains "?" then "&" else "?"
-            + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + Uri.EscapeUriString v ]
+            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                       ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) =
-#else
-    static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                       ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
-#endif
-
+    static member private InnerRequest(url:string, toHttpResponse, [<Optional>] ?query, [<Optional>] ?headers:seq<_>, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies:seq<_>, [<Optional>] ?cookieContainer, 
+                                       [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
@@ -513,20 +726,20 @@ type Http private() =
         // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
         let req = WebRequest.Create(uri) :?> HttpWebRequest
 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-#else
-        certificate |> Option.map req.ClientCertificates.Add |> ignore
-#endif
-
         // set method
         let defaultMethod = if body.IsSome then HttpMethod.Post else HttpMethod.Get
         req.Method <- (defaultArg httpMethod defaultMethod).ToString()
 
         // set headers
+        let headers = defaultArg (Option.map List.ofSeq headers) []
         let hasContentType = setHeaders headers req
 
+        let nativeAutomaticDecompression = ref true
+
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
+        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then 
+            nativeAutomaticDecompression := false
+            req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
     #endif
@@ -536,7 +749,7 @@ type Http private() =
 
         match cookies with
         | None -> ()
-        | Some cookies -> cookies |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
+        | Some cookies -> cookies |> List.ofSeq |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
         try
             req.CookieContainer <- cookieContainer
         with :? NotImplementedException ->
@@ -544,60 +757,82 @@ type Http private() =
             if cookies.IsSome then
                 failwith "Cookies not supported by this platform"
 
+        let getEncoding contentType =
+            let charset = charsetRegex.Match(contentType)
+            if charset.Success then
+                Encoding.GetEncoding charset.Groups.[1].Value
+            else
+                HttpEncodings.PostDefaultEncoding
+
         let body = body |> Option.map (fun body ->
 
-            let defaultContentType, bytes =
+            let defaultContentType, (bytes: Encoding -> byte[]) =
                 match body with
-                | TextRequest text -> HttpContentTypes.Text, Encoding.UTF8.GetBytes(text)
-                | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
-                | FormValues values -> 
-                    let bytes = 
+                | TextRequest text -> HttpContentTypes.Text, (fun e -> e.GetBytes(text))
+                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> bytes)
+                | FormValues values ->
+                    let bytes (e:Encoding) =
                         [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
                         |> String.concat "&"
-                        |> Encoding.UTF8.GetBytes
+                        |> e.GetBytes
                     HttpContentTypes.FormValues, bytes
 
             // Set default content type if it is not specified by the user
-            if not hasContentType then req.ContentType <- defaultContentType
+            let encoding =
+                if not hasContentType then
+                    req.ContentType <- defaultContentType
 
-            bytes)
+                getEncoding req.ContentType
+
+            bytes encoding)
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
-   
-            match body with
-            | Some body -> do! writeBody req body
-            | None -> ()
 
             let req = 
                 match customizeHttpRequest with
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
+   
+            match body with
+            | Some body -> do! writeBody req body
+            | None -> ()
 
             let! resp = getResponse req silentHttpErrors
-
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
             let headers = 
                 [ for header in resp.Headers.AllKeys do 
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
+                
+            match headers.TryFind HttpResponseHeaders.SetCookie with
+            | Some cookieHeader -> getAllCookiesFromHeader cookieHeader resp.ResponseUri cookieContainer
+            | None -> ()
+
+            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
+
+            let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
 
             let statusCode, characterSet = 
                 match resp with
                 | :? HttpWebResponse as resp -> 
 #if FX_NO_WEBRESPONSE_CHARACTERSET
-                    int resp.StatusCode, ""
+                    int resp.StatusCode, (defaultArg resp?CharacterSet "")
 #else
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
 
-            let contentEncoding = defaultArg (Map.tryFind "Content-Encoding" headers) ""
+            let characterSet = if characterSet = null then "" else characterSet
+
+            let contentEncoding = 
+                // .NET removes the gzip/deflate from the content encoding header when it handles the decompression itself, but Mono doesn't, so we clear it explicitely
+                if !nativeAutomaticDecompression then ""
+                else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
             let stream = resp.GetResponseStream()
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -605,30 +840,18 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member AsyncRequest(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
-#else
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
-        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
 
     /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = async {
+    static member AsyncRequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
-#else
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate)  = async {
-        let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
         return
             match response.Body with
             | Text text -> text
@@ -640,45 +863,37 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
-        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+    static member AsyncRequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) =
+        let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+            let! stream = async {
+                // this only applies when automatic decompression is off
+                if contentEncoding = "gzip" then
+                    use stream = stream
+                    let! memoryStream = asyncRead stream
+                    return decompressGZip memoryStream :> Stream
+                elif contentEncoding = "deflate" then
+                    use stream = stream
+                    let! memoryStream = asyncRead stream
+                    return decompressDeflate memoryStream :> Stream
+                else
+                    return stream }
             return { ResponseStream = stream
                      StatusCode = statusCode
                      ResponseUrl = responseUrl
                      Headers = headers
                      Cookies = cookies }
         }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                           ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
-#else
-    static member AsyncRequestStream(url,?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
-        // responseEncodingOverride is never set for this overload
-        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
-            return { ResponseStream = stream
-                     StatusCode = statusCode
-                     ResponseUrl = responseUrl
-                     Headers = headers
-                     Cookies = cookies }
-        }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
 
     /// Download an HTTP web resource from the specified URL synchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member Request(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
-#else
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
         |> Async.RunSynchronously
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -686,15 +901,9 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member RequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
-#else                              
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
-        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
         |> Async.RunSynchronously
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -702,13 +911,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) = 
+    static member RequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
-#else                              
-    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest, ?certificate) = 
-        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
-#endif
         |> Async.RunSynchronously

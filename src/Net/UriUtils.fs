@@ -29,13 +29,14 @@ let private uriInfo (uri : Uri) (source : string) =
         | _ -> queryPos
 
     let path =
-        if queryPos > -1 then source.Substring(start, pathEnd - start)
+        if queryPos > -1 || fragPos > -1 then source.Substring(start, pathEnd - start)
         else source.Substring(start)
     
     let query = 
-        if fragPos > -1 then source.Substring(queryPos, fragPos - queryPos)
-        else if queryPos > -1 then source.Substring(queryPos)
-        else ""
+        match queryPos, fragPos with
+        | -1, _ -> ""
+        | _, -1 -> source.Substring(queryPos)
+        | _ -> source.Substring(queryPos, fragPos - queryPos)
     
     { Path = path
       Query = query }

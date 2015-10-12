@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonProvider
@@ -11,6 +11,7 @@ open FsUnit
 open System
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 
 type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
@@ -46,7 +47,29 @@ let ``Reading a required float that is not a valid float returns NaN`` () =
   prov.A |> should equal Double.NaN
 
 [<Test>]
-let ``Optional int correctly infered`` () = 
+let ``Can control type inference`` () =
+  let inferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=true>.GetSamples().[0]
+
+  let intLike   : int  = inferred.IntLike
+  let boolLike1 : bool = inferred.BoolLike1
+  let boolLike2 : bool = inferred.BoolLike2
+
+  intLike   |> should equal 123
+  boolLike1 |> should equal false
+  boolLike2 |> should equal true
+
+  let notInferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=false>.GetSamples().[0]
+
+  let intLike   : string    = notInferred.IntLike
+  let boolLike1 : decimal   = notInferred.BoolLike1
+  let boolLike2 : string    = notInferred.BoolLike2
+
+  intLike   |> should equal "123"
+  boolLike1 |> should equal 0M
+  boolLike2 |> should equal "1"
+
+[<Test>]
+let ``Optional int correctly inferred`` () = 
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
   let i = prov.[0].A
   i |> should equal (Some 123)
@@ -129,7 +152,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[1].A.Boolean  |> should equal None
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
-    j.[1].B.DateTime |> should equal (Some (DateTime(2014,3,4)))
+    j.[1].B.DateTime |> should equal (Some (DateTime(DateTime.Today.Year,3,4)))
     j.[1].B.Number   |> should equal (Some 3.4m)
     j.[1].B.Array    |> should equal None
     j.[1].C.Boolean  |> should equal (Some true)
@@ -495,3 +518,107 @@ let ``Can parse optional arrays``() =
     j.Ab.Persons.[0].Contacts.[0].Emails |> should equal [| |]
     j.Ab.Persons.[0].Contacts.[1].Emails.Length |> should equal 1
 
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
+type GitHub = JsonProvider<"Data/GitHub.json", RootName="Issue">
+
+[<Test>]
+let ``Can construct complex objects``() =
+    let user = GitHub.User("login", 0, "avatarUrl", Guid.Parse("{75B3E239-BF95-4FAB-ABE3-F2795D3C843B}"), "url", "htmlUrl", "folowersUrl", "followingUrl", "gistsUrl",
+                           "starredUrl", "subscriptionsUrl", "organizationsUrl", "reposUrl", "eventsUrl", "receivedEventsUrl", "type")
+    let pullRequest = GitHub.PullRequest(None, None, None)
+    let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
+    let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
+    let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
+                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """{
+  "url": "url",
+  "labels_url": "labelsUrl",
+  "comments_url": "commentsUrl",
+  "events_url": "eventsUrl",
+  "html_url": "htmlUrl",
+  "id": 0,
+  "number": 1,
+  "title": "title",
+  "user": {
+    "login": "login",
+    "id": 0,
+    "avatar_url": "avatarUrl",
+    "gravatar_id": "75b3e239-bf95-4fab-abe3-f2795d3c843b",
+    "url": "url",
+    "html_url": "htmlUrl",
+    "followers_url": "folowersUrl",
+    "following_url": "followingUrl",
+    "gists_url": "gistsUrl",
+    "starred_url": "starredUrl",
+    "subscriptions_url": "subscriptionsUrl",
+    "organizations_url": "organizationsUrl",
+    "repos_url": "reposUrl",
+    "events_url": "eventsUrl",
+    "received_events_url": "receivedEventsUrl",
+    "type": "type"
+  },
+  "labels": [
+    {
+      "url": "url",
+      "name": "name",
+      "color": 1.5
+    },
+    {
+      "url": "url",
+      "name": "name",
+      "color": "string"
+    }
+  ],
+  "state": "state",
+  "assignee": null,
+  "milestone": null,
+  "comments": 2,
+  "created_at": "2013-03-15T00:00:00.0000000",
+  "updated_at": "2013-03-16T00:00:00.0000000",
+  "closed_at": null,
+  "pull_request": {
+    "html_url": null,
+    "diff_url": null,
+    "patch_url": null
+  },
+  "body": null
+}""")
+
+type HeterogeneousArray = JsonProvider<"""[8, 9, false, { "a": 3 }]""">
+
+[<Test>]
+let ``Can construct heterogeneous array``() =
+    let json = HeterogeneousArray.Root([| 8; 9 |], false, HeterogeneousArray.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  8,
+  9,
+  false,
+  {
+    "a": 3
+  }
+]""")
+
+type HeterogeneousArrayWithOptionals = JsonProvider<"""[ [{ "a": 3 }], [8, 9, false, { "a": 3 }] ]""", SampleIsList=true>
+
+[<Test>]
+let ``Can construct heterogeneous arrays with optionals``() =
+    let json = HeterogeneousArrayWithOptionals.Root([| |], None, HeterogeneousArrayWithOptionals.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  {
+    "a": 3
+  }
+]""")
+
+[<Test>]
+let ``Weird UnitSystem case``() =
+    let comments = JsonProvider<"Data/reddit.json">.GetSample()
+    let data = comments.Data.Children.[0].Data
+    data.LinkId |> shouldEqual "t3_2424px"
+
+[<Test>]
+let ``Whitespace is preserved``() =
+    let j = JsonProvider<"""{ "s": " "}""">.GetSample()
+    j.S |> should equal " "

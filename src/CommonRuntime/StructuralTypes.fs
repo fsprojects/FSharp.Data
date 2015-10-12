@@ -1,8 +1,7 @@
 ﻿namespace FSharp.Data.Runtime.StructuralTypes
 
 open System
-open System.Diagnostics
-open System.Collections.Generic
+open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 // Types that represent the result of the type inference
@@ -31,6 +30,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Number 
   | Boolean
   | String
+  | Json
   | DateTime
   | Guid
   // Collections and sum types
@@ -54,16 +54,17 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
-  | Primitive of typ:System.Type * unit:option<System.Type> * optional:bool
+  | Primitive of typ:Type * unit:option<System.Type> * optional:bool
   | Record of name:string option * fields:InferedProperty list * optional:bool
-  | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
-  | Heterogeneous of Map<InferedTypeTag, InferedType>
+  | Json of typ:InferedType * optional:bool
+  | Collection of order:InferedTypeTag list * types:Map<InferedTypeTag, InferedMultiplicity * InferedType>
+  | Heterogeneous of types:Map<InferedTypeTag, InferedType>
   | Null
   | Top
 
   member x.IsOptional =
     match x with
-    | Primitive(optional = true) | Record(optional = true) -> true
+    | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> true
     | _ -> false
 
   static member CanHaveEmptyValues typ = 
@@ -74,20 +75,20 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
   /// It's currently only true in CsvProvider when PreferOptionals is set to false
   member x.EnsuresHandlesMissingValues allowEmptyValues =
     match x with
-    | Null | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) -> x
+    | Null | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> x
     | Primitive(typ, _, false) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x    
     | Primitive(typ, unit, false) -> Primitive(typ, unit, true)
     | Record(name, props, false) -> Record(name, props, true)
-    | Collection map ->
-         map 
-         |> Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ)
-         |> Collection
+    | Json(typ, false) -> Json(typ, true)
+    | Collection (order, types) ->
+         Collection (order, Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ) types)
     | Top -> failwith "EnsuresHandlesMissingValues: unexpected InferedType.Top"
 
   member x.DropOptionality() =
     match x with
     | Primitive(typ, unit, true) -> Primitive(typ, unit, false)
     | Record(name, props, true) -> Record(name, props, false)
+    | Json(typ, true) -> Json(typ, false)
     | _ -> x
 
   // We need to implement custom equality that returns 'true' when 
@@ -100,7 +101,8 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
       | a, b when Object.ReferenceEquals(a, b) -> true
       | Primitive(t1, ot1, b1), Primitive(t2, ot2, b2) -> t1 = t2 && ot1 = ot2 && b1 = b2
       | Record(s1, pl1, b1), Record(s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
-      | Collection(m1), Collection(m2) -> m1 = m2
+      | Json(t1, o1), Json(t2, o2) -> t1 = t2 && o1 = o2
+      | Collection(o1, t1), Collection(o2, t2) -> o1 = o2 && t1 = t2
       | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
       | Null, Null | Top, Top -> true
       | _ -> false
@@ -123,7 +125,8 @@ type InferedTypeTag with
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
     | Record None -> "Record"
-    | Record (Some name) -> name
+    | Record (Some name) -> NameUtils.nicePascalName name
+    | Json _ -> "Json"
   
   /// Converts tag to string code that can be passed to generated code
   member x.Code = 
@@ -136,6 +139,7 @@ type InferedTypeTag with
     match str with
     | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
     | "Record" -> Record None
+    | "Json" -> Json
     | "Number" -> Number 
     | "Boolean" -> Boolean
     | "String" -> String 

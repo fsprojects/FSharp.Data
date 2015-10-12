@@ -70,7 +70,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 配列の要素として含まれるようになります。
 
 変換関数は `XElement` を引数にとり、 `JsonValue` を返すような再帰関数です。
-この関数は( `JsonValue.Object` と `JsonValue.Array` を使って)JSONオブジェクトと
+この関数は( `JsonValue.Record` と `JsonValue.Array` を使って)JSONのレコードと
 配列を組み立てます。
 すべての属性は `JsonValue.String` に変換されます。
 ただし今回の例では数値型を適切なJSON型に変換するような機能は実装しません：
@@ -102,9 +102,8 @@ let rec fromXml (xml:XElement) =
         | children -> key + "s", createArray children )
         
   // 子要素および属性用に生成された要素を連結する
-  Seq.concat [Seq.ofList attrs; children]
-  |> Map.ofSeq
-  |> JsonValue.Object
+  Array.append (Array.ofList attrs) (Array.ofSeq children)
+  |> JsonValue.Record
 
 (**
 
@@ -163,10 +162,9 @@ let toXml(x:JsonValue) =
     // JSONオブジェクトは(プリミティブであれば)XML属性か、
     // あるいは子要素になる
     // attributes (for primitives) or child elements
-    | JsonValue.Object properties -> 
+    | JsonValue.Record properties -> 
       properties 
-      |> Seq.sortBy (fun (KeyValue(key, _)) -> key)
-      |> Seq.map (fun (KeyValue(key,value)) ->
+      |> Array.map (fun (key, value) ->
           match value with
           | JsonValue.String s -> attr key s
           | JsonValue.Boolean b -> attr key b
@@ -176,7 +174,7 @@ let toXml(x:JsonValue) =
 
     // JSON配列は <item> 要素のシーケンスになる
     | JsonValue.Array elements -> 
-        elements |> Seq.map (fun item -> 
+        elements |> Array.map (fun item -> 
           elem "item" (toXml item)) :> obj
 
   // 変換を実行して、結果をオブジェクトのシーケンスにキャストする
@@ -193,7 +191,7 @@ let toXml(x:JsonValue) =
  * [F# Data: JSON 型プロバイダー](../library/JsonProvider.html) -
    型安全な方法でJSONデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
- * [F# Data: XML Type Provider](../library/XmlProvider.html) -
+ * [F# Data: XML 型プロバイダー](../library/XmlProvider.html) -
    型安全な方法でXMLデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
 

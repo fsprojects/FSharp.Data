@@ -2,17 +2,23 @@
 
 open System
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 
-/// [omit]
-/// Static helper methods called from the generated code
+/// Static helper methods called from the generated code for working with text
 type TextRuntime = 
 
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
   static member GetCulture(cultureStr) =
-    if String.IsNullOrEmpty cultureStr then CultureInfo.InvariantCulture 
+    if String.IsNullOrWhiteSpace cultureStr 
+    then CultureInfo.InvariantCulture 
     else CultureInfo cultureStr
+
+  static member GetMissingValues(missingValuesStr) =
+    if String.IsNullOrWhiteSpace missingValuesStr
+    then TextConversions.DefaultMissingValues
+    else missingValuesStr.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
 
   // --------------------------------------------------------------------------------------
   // string option -> type
@@ -28,13 +34,13 @@ type TextRuntime =
   static member ConvertDecimal(cultureStr, text) =
     text |> Option.bind (TextConversions.AsDecimal (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertFloat(cultureStr, missingValues:string, text) = 
-    text |> Option.bind (TextConversions.AsFloat (missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)) 
-                                                                     (*useNoneForMissingValues*)true
-                                                                     (TextRuntime.GetCulture cultureStr))
+  static member ConvertFloat(cultureStr, missingValuesStr, text) = 
+    text |> Option.bind (TextConversions.AsFloat (TextRuntime.GetMissingValues missingValuesStr)
+                                                 (*useNoneForMissingValues*)true 
+                                                 (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertBoolean(cultureStr, text) = 
-    text |> Option.bind (TextConversions.AsBoolean (TextRuntime.GetCulture cultureStr))
+  static member ConvertBoolean(text) = 
+    text |> Option.bind TextConversions.AsBoolean
 
   static member ConvertDateTime(cultureStr, text) = 
     text |> Option.bind (TextConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
@@ -62,18 +68,19 @@ type TextRuntime =
     | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  static member ConvertFloatBack(cultureStr, missingValues:string, value:float option) = 
+  static member ConvertFloatBack(cultureStr, missingValuesStr, value:float option) = 
     match value with
     | Some value ->
         if Double.IsNaN value then
-          let missingValues = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-          if missingValues.Length = 0 then (TextRuntime.GetCulture cultureStr).NumberFormat.NaNSymbol else missingValues.[0]
+          let missingValues = TextRuntime.GetMissingValues missingValuesStr
+          if missingValues.Length = 0 
+          then (TextRuntime.GetCulture cultureStr).NumberFormat.NaNSymbol 
+          else missingValues.[0]
         else
           value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  // cultureStr is ignored for now, but might not be in the future, so we're keeping in in the API
-  static member ConvertBooleanBack(_cultureStr:string, value:bool option, use0and1) =     
+  static member ConvertBooleanBack(value:bool option, use0and1) =     
     match value with
     | Some value when use0and1 -> if value then "1" else "0"
     | Some value -> if value then "true" else "false"
@@ -81,7 +88,7 @@ type TextRuntime =
 
   static member ConvertDateTimeBack(cultureStr, value:DateTime option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
+    | Some value -> value.ToString("O", TextRuntime.GetCulture cultureStr)
     | None -> ""
 
   static member ConvertGuidBack(value:Guid option) = 
@@ -102,8 +109,6 @@ type TextRuntime =
     | None, None -> failwithf "%s is missing" name
     | None, Some originalValue -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name originalValue
 
-  static member GetOptionalValue value = Some value
-
   /// Turn an F# option type Option<'T> containing a primitive 
   /// value type into a .NET type Nullable<'T>
   static member OptionToNullable opt =
@@ -118,3 +123,4 @@ type TextRuntime =
   /// Turn a sync operation into an async operation
   static member AsyncMap<'T, 'R>(valueAsync:Async<'T>, mapping:Func<'T, 'R>) = 
     async { let! value = valueAsync in return mapping.Invoke value }
+

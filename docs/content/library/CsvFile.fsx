@@ -1,5 +1,5 @@
 ﻿(**
-# F# Data: CSV Parser and Reader
+# F# Data: CSV Parser
 
 The F# [CSV Type Provider](CsvProvider.html) is built on top of an efficient CSV parser written
 in F#. There's also a simple API that can be used to access values dynamically.
@@ -86,4 +86,8 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
 
  * [F# Data: CSV Type Provider](CsvProvider.html) - discusses F# type provider
    that provides type-safe access to CSV data
+ * [API Reference: CsvFile class](../reference/fsharp-data-csvfile.html)
+ * [API Reference: CsvRow class](../reference/fsharp-data-csvrow.html)
+ * [API Reference: CsvExtensions module](../reference/fsharp-data-csvextensions.html)
+
 *)

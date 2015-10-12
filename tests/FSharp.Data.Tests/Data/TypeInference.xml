@@ -1,0 +1,4 @@
+<XS>
+    <X intLike="123"><boolLike>0</boolLike><jsonLike>{"a":1}</jsonLike></X>
+    <X intLike="321"><boolLike>1</boolLike><jsonLike>{"a":3}</jsonLike></X>
+</XS>

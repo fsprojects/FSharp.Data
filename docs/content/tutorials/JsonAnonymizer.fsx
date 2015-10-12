@@ -71,10 +71,10 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
             |> Double.Parse 
             |> JsonValue.Float
         | JsonValue.Boolean _  | JsonValue.Null -> json
-        | JsonValue.Object props -> 
+        | JsonValue.Record props -> 
             props 
-            |> Map.map (fun key value -> if propertiesToSkip.Contains key then value else anonymize value) 
-            |> JsonValue.Object
+            |> Array.map (fun (key, value) -> key, if propertiesToSkip.Contains key then value else anonymize value)
+            |> JsonValue.Record
         | JsonValue.Array array -> 
             array 
             |> Array.map anonymize 
@@ -92,7 +92,7 @@ printfn "%O" anonymizedJson
 
 ## Related articles
 
- * [F# Data: JSON Parser and Reader](../library/JsonValue.html) - a tutorial that introduces
+ * [F# Data: JSON Parser](../library/JsonValue.html) - a tutorial that introduces
    `JsonValue` for working with JSON values dynamically.
  * [F# Data: JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
    that provides type-safe access to JSON data.

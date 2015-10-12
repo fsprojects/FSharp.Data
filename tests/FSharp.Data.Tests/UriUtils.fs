@@ -4,7 +4,7 @@
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.UriUtility
@@ -46,3 +46,14 @@ let ``AbsolutePath contains escaped slashes`` () =
 [<Platform("Net")>]
 let ``Uri Fragment is properly set`` () = 
     uri.Fragment |> should equal "#frag"
+
+[<Test>]
+[<Platform("Net")>]
+let ``Uri's with fragment but no query work correctly`` () =
+    let uri = new Uri("http://www.google.com/#1") |> UriUtils.enableUriSlashes
+    uri.ToString() |> should equal "http://www.google.com/#1"
+    uri.AbsoluteUri |> should equal "http://www.google.com/#1"
+    uri.Query |> should equal ""
+    uri.Fragment |> should equal "#1"
+    uri.PathAndQuery |> should equal "/"
+    uri.AbsolutePath |> should equal "/"

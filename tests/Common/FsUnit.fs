@@ -16,7 +16,7 @@ let should (f : 'a -> #Constraint) x (y : obj) =
 let equal x = new EqualConstraint(x)
 
 // like "should equal", but validates same-type
-let shouldEqual (x: 'a) (y: 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
+let shouldEqual (expected: 'a) (actual: 'a) = Assert.AreEqual(expected, actual, sprintf "Expected: %A\nActual: %A" expected actual)
 
 let notEqual x = new NotConstraint(new EqualConstraint(x))
 

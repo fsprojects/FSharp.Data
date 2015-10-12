@@ -1,0 +1,32 @@
+@if (Model.Types.Length > 0 || Model.Modules.Length > 0)
+{
+    var typesAndModules = new List<dynamic>();
+    foreach (var t in Model.Types) {
+        typesAndModules.Add(t);
+    }
+    foreach (var t in Model.Modules)
+    {
+        typesAndModules.Add(t);
+    }
+    typesAndModules.Sort((a, b) =>
+    {
+        var result = a.Name.CompareTo(b.Name);
+        return result == 0 ? a.UrlName.Contains("module").CompareTo(b.UrlName.Contains("module")) : result;
+    });
+  <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type or Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      @foreach (var it in typesAndModules)
+      {
+        <tr>
+          <td class="type-name">
+            <a href="@(it.UrlName).html">@it.Name</a>
+          </td>
+          <td class="xmldoc">@it.Comment.Blurb</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

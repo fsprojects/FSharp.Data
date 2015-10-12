@@ -7,65 +7,103 @@ module internal Test
 #endif
 
 open System
+open System.Globalization
 open System.IO
-open System.Net
 open ProviderImplementation
-
-//alow test cases that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
+open FSharp.Data
+open FSharp.Data.Runtime
 
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
 let assemblyName = "FSharp.Data.dll"
 
-type Platform = Net40 | Portable7 | Portable47
-
 let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
-    let runtimeAssembly = 
+    let runtimeAssembly =
         match platform with
         | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
         | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
-        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
-    inst.Dump resolutionFolder (if saveToFileSystem then outputFolder else "") runtimeAssembly signatureOnly ignoreOutput
+        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
+        | Portable259 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable259" ++ assemblyName
+    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
+    inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
-let dumpNet40 = dump false false Net40
-let dumpPortable47 = dump false false Portable47
+let dumpAll inst =
+    dump false false Net40 false inst
+//    dump false false Portable7 false inst
+//    dump false false Portable47 false inst
+//    dump false false Portable259 false inst
+
+let parameters : HtmlInference.Parameters = 
+    { MissingValues = TextConversions.DefaultMissingValues
+      CultureInfo = CultureInfo.InvariantCulture
+      UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
+      PreferOptionals = false }
+
+let includeLayout = false
+
+let printTable tableName (url:string)  = 
+    url
+    |> HtmlDocument.Load
+    |> HtmlRuntime.getTables (Some parameters) includeLayout
+    |> List.filter (fun table -> table.Name = tableName)
+    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
+
+printTable "Overview" "https://en.wikipedia.org/wiki/List_of_Doctor_Who_serials"
+
+Html { Sample = "doctor_who3.html"
+       PreferOptionals = false
+       IncludeLayoutTables = false
+       MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
+       Culture = "" 
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
+|> dumpAll
 
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
-       Culture = "" 
-       ResolutionFolder = "" }
-|> dumpPortable47 false
+       Culture = ""
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = ""
+       InferTypesFromValues = true }
+|> dumpAll
 
-Xml { Sample = "http://tomasp.net/blog/rss.aspx"
-      SampleIsList = false
-      Global = true
-      Culture = "" 
-      ResolutionFolder = "" }
-|> dumpPortable47 false
+Xml { Sample = "JsonInXml.xml"
+      SampleIsList = true
+      Global = false
+      Culture = ""
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = ""
+      InferTypesFromValues = true }
+|> dumpAll
 
 Csv { Sample = "AirQuality.csv"
-      Separator = ";" 
-      Culture = "" 
+      Separators = ";"
       InferRows = Int32.MaxValue
       Schema = ""
       HasHeaders = true
       IgnoreErrors = false
+      SkipRows = 0
       AssumeMissingValues = false
       PreferOptionals = false
       Quote = '"'
-      MissingValues = "NaN,NA,#N/A,:"
+      MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
       CacheRows = true
-      ResolutionFolder = "" }
-|> dumpPortable47 false
+      Culture = ""
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
+|> dumpAll
 
-let testCases = 
+let testCases =
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
     |> File.ReadAllLines
-    |> Array.map TypeProviderInstantiation.Parse
+    |> Array.map (TypeProviderInstantiation.Parse >> snd)
 
 for testCase in testCases do
-    dumpNet40 true testCase
+    dump false false Net40 true testCase
