@@ -48,7 +48,12 @@ solution before trying out the samples to ensure that all needed packages are in
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
 
+## Maintainers
+
+Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus) and [Tomas Petricek](http://github.com/tpetricek).
+
+
+
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
  [3]: http://fsharp.github.io/FSharp.Data/
-
