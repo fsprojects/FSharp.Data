@@ -825,7 +825,7 @@ module HtmlExtensions =
     let (?) (node : HtmlNode) name = 
         HtmlNode.attributeValue name node 
 
-module CssExtensions =
+module CssSelectors =
     type SelectorToken =
         | ClassPrefix of int
         | IdPrefix of int
@@ -888,7 +888,8 @@ module CssExtensions =
                 | [] -> 
                     acc, []
                 | _ ->
-                    failwith "Invalid css selector syntax"
+                    acc, []
+                    //failwith "Invalid css selector syntax"
         
             let (|TokenStr|_|) (s:string) x  =
                 let chars = s.ToCharArray() |> Seq.toList
@@ -968,9 +969,11 @@ module CssExtensions =
                 | [] -> List.rev acc // TODO: refactor code to remove this
                 | c :: t when Char.IsLetterOrDigit c |> not ->
                     let offset = getOffset t
-                    failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
+                    []
+                    //failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
                 | _ ->
-                    failwith "Invalid css selector syntax"
+                    //failwith "Invalid css selector syntax"
+                    []
             tokenize' [] source
 
     type FilterLevel = 
@@ -1096,13 +1099,17 @@ module CssExtensions =
                     selectElements' acc t
 
                 | [] -> acc
-                | _ -> failwith "Invalid token"
+                | _ -> []//failwith "Invalid token"
 
             selectElements' nodes tokens
 
         member public x.GetElements() =
             run()
 
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module CssSelectorExtensions =
+    open CssSelectors
 
     [<Extension>]
     type CssSelectorExtensions =
