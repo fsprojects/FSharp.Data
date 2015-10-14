@@ -82,17 +82,17 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ "accept", "application/xml,text/html;q=0.3"
                              AcceptCharset "utf-8, utf-16;q=0.5" 
-                             AcceptDatetime (DateTime(2007,5,31,20,35,0))
+                             AcceptDatetime (DateTime(2007, 5, 31, 20, 35, 0, DateTimeKind.Utc))
                              AcceptLanguage "en-GB, en-US;q=0.1"
                              Authorization  "QWxhZGRpbjpvcGVuIHNlc2FtZQ==" 
                              Connection "conn1"
                              ContentMD5 "Q2hlY2sgSW50ZWdyaXR5IQ=="
                              ContentType "application/json"
-                             Date (DateTime(1999, 12, 31, 11, 59, 59))
+                             Date (DateTime(1999, 12, 31, 11, 59, 59, DateTimeKind.Utc))
                              Expect "100"
                              From "user@example.com"
                              IfMatch "737060cd8c284d8af7ad3082f209582d"
-                             IfModifiedSince (DateTime(2000, 12, 31, 11, 59, 59))
+                             IfModifiedSince (DateTime(2000, 12, 31, 11, 59, 59, DateTimeKind.Utc))
                              IfNoneMatch "737060cd8c284d8af7ad3082f209582d"
                              IfRange "737060cd8c284d8af7ad3082f209582d"
                              MaxForwards 5
@@ -119,11 +119,11 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.Connection |> should equal "conn1"
     MockServer.recordedRequest.Value.Headers.["Content-MD5"] |> should equal ["Q2hlY2sgSW50ZWdyaXR5IQ=="]
     MockServer.recordedRequest.Value.Headers.ContentType |> should equal "application/json"
-    MockServer.recordedRequest.Value.Headers.Date.Value |> should equal (DateTime(1999, 12, 31, 11, 59, 59))
+    MockServer.recordedRequest.Value.Headers.Date.Value |> should equal (DateTime(1999, 12, 31, 11, 59, 59, DateTimeKind.Utc))
     MockServer.recordedRequest.Value.Headers.["Expect"] |> should equal ["100"]
     MockServer.recordedRequest.Value.Headers.["From"] |> should equal ["user@example.com"]
     MockServer.recordedRequest.Value.Headers.IfMatch |> should equal ["737060cd8c284d8af7ad3082f209582d"]
-    MockServer.recordedRequest.Value.Headers.IfModifiedSince |> should equal (DateTime(2000, 12, 31, 11, 59, 59))
+    MockServer.recordedRequest.Value.Headers.IfModifiedSince |> should equal (DateTime(2000, 12, 31, 11, 59, 59, DateTimeKind.Utc))
     MockServer.recordedRequest.Value.Headers.IfNoneMatch |> should equal ["737060cd8c284d8af7ad3082f209582d"]
     MockServer.recordedRequest.Value.Headers.IfRange |> should equal "737060cd8c284d8af7ad3082f209582d"
     MockServer.recordedRequest.Value.Headers.MaxForwards |> should equal 5
