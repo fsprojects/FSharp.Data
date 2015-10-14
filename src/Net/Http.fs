@@ -27,6 +27,9 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open FSharp.Data.Runtime
 
+module internal HttpConstantHelpers =
+    let DateTimeFormatWithTimeZone = "ddd, dd MMM yyyy HH:mm:ss K"
+
 /// The method to use in an HTTP request
 module HttpMethod =
 
@@ -79,7 +82,7 @@ module HttpRequestHeaders =
     /// Character sets that are acceptable
     let AcceptCharset (characterSets:string) = "Accept-Charset", characterSets
     /// Acceptable version in time 
-    let AcceptDatetime (dateTime:DateTime) = "Accept-Datetime", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    let AcceptDatetime (dateTime:DateTime) = "Accept-Datetime", dateTime.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
     /// List of acceptable encodings. See HTTP compression.
     let AcceptEncoding (encoding:string) = "Accept-Encoding", encoding
     /// List of acceptable human languages for response 
@@ -111,11 +114,11 @@ module HttpRequestHeaders =
     /// The MIME type of the body of the request (used with POST and PUT requests)
     let ContentType (contentType:string) = "Content-Type", contentType
     /// The date and time that the message was sent
-    let Date (date:DateTime) = "Date", date.ToString("R", CultureInfo.InvariantCulture)
+    let Date (date:DateTime) = "Date", date.ToUniversalTime().ToString(HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)
     /// Indicates that particular server behaviors are required by the client
     let Expect (behaviors:string) = "Expect", behaviors
     /// Gives the date/time after which the response is considered stale
-    let Expires (dateTime:DateTime) = "Expires", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    let Expires (dateTime:DateTime) = "Expires", dateTime.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
     /// The email address of the user making the request 
     let From (email:string) = "From", email
     /// The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening. 
@@ -125,17 +128,17 @@ module HttpRequestHeaders =
     /// This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent 
     let IfMatch (entity:string) = "If-Match", entity
     /// Allows a 304 Not Modified to be returned if content is unchanged 
-    let IfModifiedSince (dateTime:DateTime) = "If-Modified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    let IfModifiedSince (dateTime:DateTime) = "If-Modified-Since", dateTime.ToUniversalTime().ToString(HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)
     /// Allows a 304 Not Modified to be returned if content is unchanged
     let IfNoneMatch (etag:string) = "If-None-Match", etag
     /// If the entity is unchanged, send me the part(s) that I am missing; otherwise, send me the entire new entity
     let IfRange (range:string) = "If-Range", range
     /// Only send the response if the entity has not been modified since a specific time
-    let IfUnmodifiedSince (dateTime:DateTime) = "If-Unmodified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    let IfUnmodifiedSince (dateTime:DateTime) = "If-Unmodified-Since", dateTime.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
     /// Specifies a parameter used into order to maintain a persistent connection
     let KeepAlive (keepAlive:string) = "Keep-Alive", keepAlive
     /// Specifies the date and time at which the accompanying body data was last modified
-    let LastModified (dateTime:DateTime) = "Last-Modified", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    let LastModified (dateTime:DateTime) = "Last-Modified", dateTime.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
     /// Limit the number of times the message can be forwarded through proxies or gateways
     let MaxForwards (count:int) = "Max-Forwards", count.ToString()
     /// Initiates a request for cross-origin resource sharing (asks server for an 'Access-Control-Allow-Origin' response header)
@@ -493,9 +496,9 @@ module private HttpHelpers =
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.ParseExact(value, HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
 #else
-            | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "date" -> req.Date <- DateTime.ParseExact(value, HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
             | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
@@ -511,9 +514,9 @@ module private HttpHelpers =
 #endif       
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
-            | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, HttpConstantHelpers.DateTimeFormatWithTimeZone, CultureInfo.InvariantCulture)
 #endif
             | "if-none-match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
             | "if-range" -> req.Headers.[HeaderEnum.IfRange] <- value
