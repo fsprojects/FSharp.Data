@@ -29,6 +29,9 @@ module HtmlCssSelectors =
         | Disabled of int
         | Enabled of int
         | Selected of int
+        | Button of int
+        | EmptyNode of int
+//        | Contrains of int * string
 
     type CssSelectorTokenizer() =
         let mutable charCount:int = 0
@@ -57,7 +60,6 @@ module HtmlCssSelectors =
                     else
                         inQuotes <- true
                         readString acc t
-            
                 | '\\' :: '\'' :: t when inQuotes ->
                     readString (acc + ('\''.ToString())) t
 
@@ -69,7 +71,18 @@ module HtmlCssSelectors =
                 | _ ->
                     acc, []
                     //failwith "Invalid css selector syntax"
-        
+            
+            let (|StartsWith|_|) (s:string) (items:char list) = 
+                let candidates = s.ToCharArray() |> Seq.toList
+                if items.Length < candidates.Length then
+                    None
+                else
+                    let start = items |> Seq.take(candidates.Length) |> Seq.toList
+                    if (Seq.compareWith (fun a b -> (int a) - (int b)) start candidates) = 0 then 
+                        Some (items |> Seq.skip s.Length |> Seq.toList)
+                    else
+                        None
+
             let (|TokenStr|_|) (s:string) x  =
                 let chars = s.ToCharArray() |> Seq.toList
 
@@ -130,6 +143,10 @@ module HtmlCssSelectors =
                 | TokenStr ":checked" t ->
                     let _, t' = readString "" t
                     tokenize' (Checked(getOffset t + 1) :: acc) t'
+                | StartsWith ":button" t -> 
+                    tokenize' (Button(getOffset t + 1) :: acc) t
+                | StartsWith ":empty" t ->
+                    tokenize' (EmptyNode(getOffset t + 1) :: acc) t
                 | TokenStr ":disabled" t ->
                     let _, t' = readString "" t
                     tokenize' (Disabled(getOffset t + 1) :: acc) t'
@@ -147,8 +164,8 @@ module HtmlCssSelectors =
                     tokenize' (TagName(getOffset t, s) :: acc) t'
                 | [] -> List.rev acc // TODO: refactor code to remove this
                 | c :: t when Char.IsLetterOrDigit c |> not ->
-                    let offset = getOffset t
                     []
+                    //let offset = getOffset t
                     //failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
                 | _ ->
                     //failwith "Invalid css selector syntax"
@@ -250,8 +267,28 @@ module HtmlCssSelectors =
                     level <- FilterLevel.Root
                     selectElements' selectedNodes t
 
+                | Button _ :: t ->
+                    let selectedNodes = filterByAttr acc "type" (fun v -> v = "button")
+                                        |> Seq.append (acc |> Seq.collect (fun n -> n.DescendantsAndSelf "button"))
+                                        |> Seq.toList
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
+
                 | Checked _ :: t ->
                     let selectedNodes = attrExists acc "checked"
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
+
+                | EmptyNode _ :: t ->
+                    let selectedNodes = acc 
+                                        |> Seq.collect(
+                                            fun n -> 
+                                                n.DescendantsAndSelf() 
+                                                |> Seq.filter(
+                                                    fun d ->
+                                                        String.IsNullOrWhiteSpace (d.InnerText()) && d.Descendants() |> Seq.isEmpty
+                                                        ))
+                                        |> Seq.toList
                     level <- FilterLevel.Root
                     selectElements' selectedNodes t
 

@@ -129,3 +129,197 @@ let ``Attribute Ends With Selector``() =
     let values = selection |> List.map (fun n -> n.AttributeValue("name"))
     values |> should equal ["newsletter";"jobletter"]
 
+/// tests jQuery selector documented here: https://api.jquery.com/attribute-equals-selector/
+[<Test>]
+let ``Attribute Equals Selector``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>attributeEquals demo</title>
+          <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        </head>
+        <body>
+        <div>
+          <label>
+            <input type="radio" name="newsletter" value="Hot Fuzz">
+            <span>name?</span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="radio" name="newsletter" value="Cold Fusion">
+            <span>value?</span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="radio" name="newsletter" value="Evil Plans">
+            <span>value?</span>
+          </label>
+        </div>
+         <script>
+        $( "input[value='Hot Fuzz']" ).next().text( "Hot Fuzz" );
+        </script>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "input[value='Hot Fuzz']"
+    let values = selection |> List.map (fun n -> n.AttributeValue("value"))
+    values |> should equal ["Hot Fuzz"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/attribute-not-equal-selector/
+[<Test>]
+let ``Attribute Not Equal Selector``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>attributeNotEqual demo</title>
+          <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        </head>
+        <body>
+ 
+        <div>
+          <input type="radio" name="newsletter" value="Hot Fuzz">
+          <span>name is newsletter</span>
+        </div>
+        <div>
+          <input type="radio" value="Cold Fusion">
+          <span>no name</span>
+        </div>
+        <div>
+          <input type="radio" name="accept" value="Evil Plans">
+          <span>name is accept</span>
+        </div>
+ 
+        <script>
+        $( "input[name!='newsletter']" ).next().append( "<b>; not newsletter</b>" );
+        </script>
+ 
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "input[name!='newsletter']"
+    let values = selection |> List.map (fun n -> n.AttributeValue("value"))
+    values |> should equal ["Cold Fusion";"Evil Plans"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/attribute-starts-with-selector/
+[<Test>]
+let ``Attribute Starts With Selector``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>attributeStartsWith demo</title>
+          <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        </head>
+        <body>
+        <input name="newsletter">
+        <input name="milkman">
+        <input name="newsboy">
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "input[name^='news']"
+    let values = selection |> List.map (fun n -> n.AttributeValue("name"))
+    values |> should equal ["newsletter";"newsboy"]
+    
+let htmlForms = """<!doctype html>
+        <html>
+        <body>
+        <form>
+          <fieldset>
+            <input type="button" value="Input Button">
+            <input type="checkbox" id="check1">
+            <input type="password">
+            <input name="email" disabled="disabled">
+            <input type="radio">
+            <input type="checkbox" id="check2" checked="checked">
+            <input type="reset">
+            <input type="submit">
+            <input type="text">
+            <select><option>Option</option></select>
+            <textarea class="comment box1">Type a comment here</textarea>
+            <button>Go !</button>
+          </fieldset>
+        </form>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+
+/// tests jQuery selector documented here: https://api.jquery.com/button-selector/
+[<Test>]
+let ``:button Selector``() = 
+    let selection = htmlForms.CssSelect ":button"
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should haveLength 2
+    values |> List.filter(fun v -> String.IsNullOrWhiteSpace v |> not) |> should equal ["Go !"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/checkbox-selector/
+[<Test>]
+let ``:checkbox Selector``() = 
+    htmlForms.CssSelect ":checkbox"
+    |> List.map (fun n -> n.AttributeValue "id")
+    |> should equal ["check1";"check2"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/checked-selector/
+[<Test>]
+let ``:checked Selector``() = 
+    htmlForms.CssSelect ":checked"
+    |> List.map (fun n -> n.AttributeValue "id")
+    |> should equal ["check2"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/child-selector/
+[<Test>]
+let ``Child Selector``() = 
+    let html = """<!doctype html>
+        <html>
+        <body>
+        <ul class="topnav">
+          <li name="li1">Item 1</li>
+          <li name="li2">Item 2
+            <ul>
+            <li>Nested item 1</li>
+            <li>Nested item 2</li>
+            <li>Nested item 3</li>
+            </ul>
+          </li>
+          <li name="li3">Item 3</li>
+        </ul>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "ul.topnav > li"
+    let values = selection |> List.map (fun n -> n.AttributeValue("name"))
+    values |> should equal ["li1";"li2";"li3"]
+
+[<Test>]
+let ``Class Selector``() = 
+    htmlForms.CssSelect ".comment"
+    |> List.map (fun n -> n.InnerText())
+    |> should equal ["Type a comment here"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/disabled-selector/
+[<Test>]
+let ``:disabled Selector``() = 
+    htmlForms.CssSelect ":disabled"
+    |> List.map (fun n -> n.AttributeValue("name"))
+    |> should equal ["email"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/empty-selector/
+[<Test>]
+let ``empty Selector``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>empty demo</title>
+        </head>
+        <body>
+        <table border="1">
+          <tr><td>TD #0</td><td id="td1"></td></tr>
+          <tr><td>TD #2</td><td id="td2"></td></tr>
+          <tr><td id="td3"></td><td>TD#5</td></tr>
+        </table>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "td:empty"
+    let values = selection |> List.map (fun n -> n.AttributeValue("id"))
+    values |> should equal ["td1";"td2";"td3"]
+
