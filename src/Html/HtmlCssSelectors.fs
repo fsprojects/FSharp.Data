@@ -134,15 +134,12 @@ module HtmlCssSelectors =
                 | '!' :: '=' :: t ->
                     let s, t' = readString "" t
                     tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeNotEqual(getOffset t) :: acc) t'
-                |  TokenStr ":checkbox" t  ->
-                    let _, t' = readString "" t
-                    tokenize' (Checkbox(getOffset t + 1) :: acc) t'
-                |  TokenStr ":selected" t  ->
-                    let _, t' = readString "" t
-                    tokenize' (Selected(getOffset t + 1) :: acc) t'
-                | TokenStr ":checked" t ->
-                    let _, t' = readString "" t
-                    tokenize' (Checked(getOffset t + 1) :: acc) t'
+                | StartsWith ":checkbox" t  ->
+                    tokenize' (Checkbox(getOffset t + 1) :: acc) t
+                | StartsWith ":selected" t  ->
+                    tokenize' (Selected(getOffset t + 1) :: acc) t
+                | StartsWith ":checked" t ->
+                    tokenize' (Checked(getOffset t + 1) :: acc) t
                 | StartsWith ":button" t -> 
                     tokenize' (Button(getOffset t + 1) :: acc) t
                 | StartsWith ":empty" t ->
@@ -150,9 +147,8 @@ module HtmlCssSelectors =
                 | TokenStr ":disabled" t ->
                     let _, t' = readString "" t
                     tokenize' (Disabled(getOffset t + 1) :: acc) t'
-                | TokenStr ":enabled" t ->
-                    let _, t' = readString "" t
-                    tokenize' (Enabled(getOffset t + 1) :: acc) t'
+                | StartsWith ":enabled" t ->
+                    tokenize' (Enabled(getOffset t + 1) :: acc) t
                 | '>' :: t ->
                     let seqtoken = acc |> List.toSeq |> Seq.skip(1) |> Seq.toList
                     match acc.Head with
@@ -286,7 +282,8 @@ module HtmlCssSelectors =
                                                 n.DescendantsAndSelf() 
                                                 |> Seq.filter(
                                                     fun d ->
-                                                        String.IsNullOrWhiteSpace (d.InnerText()) && d.Descendants() |> Seq.isEmpty
+                                                        String.IsNullOrWhiteSpace (d.InnerText()) 
+                                                            && d.Descendants() |> Seq.isEmpty
                                                         ))
                                         |> Seq.toList
                     level <- FilterLevel.Root

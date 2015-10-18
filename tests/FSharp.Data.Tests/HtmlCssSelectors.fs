@@ -290,10 +290,16 @@ let ``Child Selector``() =
     values |> should equal ["li1";"li2";"li3"]
 
 [<Test>]
-let ``Class Selector``() = 
+let ``class Selector``() = 
     htmlForms.CssSelect ".comment"
     |> List.map (fun n -> n.InnerText())
     |> should equal ["Type a comment here"]
+
+[<Test>]
+let ``id Selector``() = 
+    htmlForms.CssSelect "#check1"
+    |> List.map (fun n -> n.AttributeValue "type")
+    |> should equal ["checkbox"]
 
 /// tests jQuery selector documented here: https://api.jquery.com/disabled-selector/
 [<Test>]
@@ -322,4 +328,19 @@ let ``empty Selector``() =
     let selection = html.CssSelect "td:empty"
     let values = selection |> List.map (fun n -> n.AttributeValue("id"))
     values |> should equal ["td1";"td2";"td3"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/enabled-selector/
+[<Test>]
+let ``:enabled Selector``() = 
+    let html = """<!doctype html><html>
+        <body>
+        <form>
+          <input name="email" disabled="disabled">
+          <input name="id">
+        </form>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "input:enabled"
+    let values = selection |> List.map (fun n -> n.AttributeValue("name"))
+    values |> should equal ["id"]
 
