@@ -31,7 +31,10 @@ module HtmlCssSelectors =
         | Selected of int
         | Button of int
         | EmptyNode of int
-//        | Contrains of int * string
+        | File of int
+        | Hidden of int
+        | Radio of int
+        | Password of int
 
     type CssSelectorTokenizer() =
         let mutable charCount:int = 0
@@ -142,6 +145,12 @@ module HtmlCssSelectors =
                     tokenize' (Checked(getOffset t + 1) :: acc) t
                 | StartsWith ":button" t -> 
                     tokenize' (Button(getOffset t + 1) :: acc) t
+                | StartsWith ":hidden" t -> 
+                    tokenize' (Hidden(getOffset t + 1) :: acc) t
+                | StartsWith ":radio" t -> 
+                    tokenize' (Radio(getOffset t + 1) :: acc) t
+                | StartsWith ":password" t -> 
+                    tokenize' (Password(getOffset t + 1) :: acc) t
                 | StartsWith ":empty" t ->
                     tokenize' (EmptyNode(getOffset t + 1) :: acc) t
                 | TokenStr ":disabled" t ->
@@ -149,6 +158,8 @@ module HtmlCssSelectors =
                     tokenize' (Disabled(getOffset t + 1) :: acc) t'
                 | StartsWith ":enabled" t ->
                     tokenize' (Enabled(getOffset t + 1) :: acc) t
+                | StartsWith ":file" t ->
+                    tokenize' (File(getOffset t + 1) :: acc) t
                 | '>' :: t ->
                     let seqtoken = acc |> List.toSeq |> Seq.skip(1) |> Seq.toList
                     match acc.Head with
@@ -204,6 +215,12 @@ module HtmlCssSelectors =
             let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]
             
             let rec selectElements' (acc:HtmlNode list) source =
+
+                let selectDescendantOfType ty t = 
+                    let selectedNodes = filterByAttr acc "type" (fun v -> v = ty)
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
+
                 match source with
                 | TagName(_, name) :: t -> 
                     let selectedNodes = searchTag acc name
@@ -258,10 +275,11 @@ module HtmlCssSelectors =
                     level <- FilterLevel.Root
                     selectElements' selectedNodes t
                 
-                | Checkbox _ :: t ->
-                    let selectedNodes = filterByAttr acc "type" (fun v -> v = "checkbox")
-                    level <- FilterLevel.Root
-                    selectElements' selectedNodes t
+                | Checkbox _ :: t -> selectDescendantOfType "checkbox" t
+                | File _ :: t -> selectDescendantOfType "file" t
+                | Hidden _ :: t -> selectDescendantOfType "hidden" t
+                | Radio _ :: t -> selectDescendantOfType "radio" t
+                | Password _ :: t -> selectDescendantOfType "password" t
 
                 | Button _ :: t ->
                     let selectedNodes = filterByAttr acc "type" (fun v -> v = "button")
@@ -333,18 +351,23 @@ module CssSelectorExtensions =
 
         static member private Select (nodes:HtmlNode list) selector =
             let tokenizer = CssSelectorTokenizer()
-            let tokens = tokenizer.Tokenize selector
-            let executor = CssSelectorExecutor(nodes, tokens)
-            executor.GetElements()
+            match tokenizer.Tokenize selector with
+            | [] -> []
+            | tokens -> 
+                let executor = CssSelectorExecutor(nodes, tokens)
+                executor.GetElements()
 
+        /// Gets descendants matched by Css selector
         [<Extension>]
         static member CssSelect(doc:HtmlDocument, selector) = 
             CssSelectorExtensions.Select [doc.Body()] selector
         
+        /// Gets descendants matched by Css selector
         [<Extension>]
         static member CssSelect(nodes, selector) = 
             CssSelectorExtensions.Select nodes selector
 
+        /// Gets descendants matched by Css selector
         [<Extension>]
         static member CssSelect(node:HtmlNode, selector) = 
             CssSelectorExtensions.Select [node] selector

@@ -229,10 +229,12 @@ let htmlForms = """<!doctype html>
           <fieldset>
             <input type="button" value="Input Button">
             <input type="checkbox" id="check1">
-            <input type="password">
+            <input type="hidden" id="hidden1">
+            <input type="password" id="pass1">
             <input name="email" disabled="disabled">
-            <input type="radio">
+            <input type="radio" id="radio1">
             <input type="checkbox" id="check2" checked="checked">
+            <input type="file" id="uploader1">
             <input type="reset">
             <input type="submit">
             <input type="text">
@@ -343,4 +345,38 @@ let ``:enabled Selector``() =
     let selection = html.CssSelect "input:enabled"
     let values = selection |> List.map (fun n -> n.AttributeValue("name"))
     values |> should equal ["id"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/file-selector/
+[<Test>]
+let ``:file Selector``() = 
+    let selection = htmlForms.CssSelect ":file"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["uploader1"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/hidden-selector/
+[<Test>]
+let ``:hidden Selector``() = 
+    let selection = htmlForms.CssSelect ":hidden"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["hidden1"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/radio-selector/
+[<Test>]
+let ``:radio Selector``() = 
+    let selection = htmlForms.CssSelect ":radio"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["radio1"]
+
+/// tests jQuery selector documented here: https://api.jquery.com/password-selector/
+[<Test>]
+let ``:password Selector``() = 
+    let selection = htmlForms.CssSelect ":password"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["pass1"]
+
+
 
