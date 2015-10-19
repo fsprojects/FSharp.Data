@@ -170,7 +170,7 @@ module HtmlCssSelectors =
                     let s, t' = readString str t
                     tokenize' (TagName(getOffset t, s) :: acc) t'
                 | [] -> List.rev acc // TODO: refactor code to remove this
-                | c :: t when Char.IsLetterOrDigit c |> not ->
+                | c :: _ when Char.IsLetterOrDigit c |> not ->
                     []
                     //let offset = getOffset t
                     //failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
