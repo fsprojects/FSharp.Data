@@ -13,7 +13,7 @@
     <summary>@summary@</summary>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2015</copyright>
     <tags>@tags@</tags>
     <dependencies>
       <group targetFramework="portable-net40+sl5+wp8+win8">
@@ -38,17 +38,23 @@
     <file src="..\bin\FSharp.Data.DesignTime.dll" target="lib/net40" />
     <file src="..\bin\FSharp.Data.DesignTime.pdb" target="lib/net40" />
     <file src="..\bin\FSharp.Data.DesignTime.xml" target="lib/net40" />
-    <file src="..\bin\portable47\FSharp.Data.dll" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.pdb" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.xml" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
-    <!--<file src="..\bin\portable7\FSharp.Data.dll" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.pdb" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.xml" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.dll" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.xml" target="lib/portable-net45+win8" />-->
+    <file src="..\bin\portable47\FSharp.Data.dll" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable47\FSharp.Data.pdb" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable47\FSharp.Data.xml" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable47\FSharp.Data.DesignTime.dll" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable47\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable47\FSharp.Data.DesignTime.xml" target="lib/portable-net45+sl50+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.dll" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.pdb" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.xml" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable7\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45" />
+    <file src="..\bin\portable259\FSharp.Data.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
   </files>
 </package>

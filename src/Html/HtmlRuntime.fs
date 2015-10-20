@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.Runtime
+namespace FSharp.Data.Runtime
 
 open System
 open System.Globalization

@@ -9,7 +9,7 @@ namespace System.Runtime.InteropServices
 open System
 
 [<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
-type OptionalAttribute() = 
+type internal OptionalAttribute() = 
     inherit Attribute()
 
 #endif
@@ -21,6 +21,7 @@ open System.Globalization
 open System.IO
 open System.Net
 open System.Text
+open System.Text.RegularExpressions
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -87,6 +88,12 @@ module HttpRequestHeaders =
     let Allow (methods:string) = "Allow", methods
     /// Authentication credentials for HTTP authentication
     let Authorization (credentials:string) = "Authorization", credentials
+    /// Authentication header using Basic Auth encoding
+    let BasicAuth (username:string) (password:string) = 
+        let base64Encode (s:string) = 
+            let bytes = Encoding.UTF8.GetBytes(s)
+            Convert.ToBase64String(bytes)
+        sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization 
     /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain 
     let CacheControl (control:string) = "Cache-Control", control
     /// What type of connection the user-agent would prefer 
@@ -267,7 +274,7 @@ module HttpContentTypes =
     /// */*
     let [<Literal>] Any = "*/*"
     /// plain/text
-    let [<Literal>] Text = "plain/text"
+    let [<Literal>] Text = "text/plain"
     /// application/octet-stream
     let [<Literal>] Binary = "application/octet-stream"
     /// application/octet-stream
@@ -338,9 +345,9 @@ module private HttpHelpers =
         return output 
     }
 
-    let getProperty (typ:Type) obj prop =
+    let getProperty (typ:Type) obj prop =        
 #if FX_NET_CORE_REFLECTION
-        let prop = typ.GetRuntimeProperty(prop)
+        let prop = try typ.GetRuntimeProperty prop with _ -> null
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj) |> unbox |> Some
@@ -349,7 +356,7 @@ module private HttpHelpers =
         else
             None
 #else
-        let prop = typ.GetProperty(prop)
+        let prop = try typ.GetProperty prop with _ -> null
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj, [| |]) |> unbox |> Some
@@ -613,7 +620,9 @@ module private HttpHelpers =
                 let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
                     | "", "" -> HttpEncodings.ResponseDefaultEncoding
-                    | "", characterSet -> Encoding.GetEncoding characterSet
+                    // some web servers respond with broken things like Content-Type: text/xml; charset="UTF-8"
+                    // this goes against rfc2616, but it breaks Encoding.GetEncoding, so let us strip this char out
+                    | "", characterSet -> Encoding.GetEncoding (characterSet.Replace("\"",""))
                     | responseEncodingOverride, _ -> HttpEncodings.getEncoding responseEncodingOverride
                 use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
@@ -688,7 +697,16 @@ module private HttpHelpers =
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
-type Http private() = 
+type Http private() =
+
+    static let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+        RegexOptions.None
+#else
+        RegexOptions.Compiled
+#endif
+
+    static let charsetRegex = Regex("charset=([^;\s]*)", regexOptions)
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -700,7 +718,7 @@ type Http private() =
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest(url:string, toHttpResponse, [<Optional>] ?query, [<Optional>] ?headers:seq<_>, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies:seq<_>, [<Optional>] ?cookieContainer, 
-                                       ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
+                                       [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
@@ -739,23 +757,34 @@ type Http private() =
             if cookies.IsSome then
                 failwith "Cookies not supported by this platform"
 
+        let getEncoding contentType =
+            let charset = charsetRegex.Match(contentType)
+            if charset.Success then
+                Encoding.GetEncoding charset.Groups.[1].Value
+            else
+                HttpEncodings.PostDefaultEncoding
+
         let body = body |> Option.map (fun body ->
 
-            let defaultContentType, bytes =
+            let defaultContentType, (bytes: Encoding -> byte[]) =
                 match body with
-                | TextRequest text -> HttpContentTypes.Text, HttpEncodings.PostDefaultEncoding.GetBytes(text)
-                | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
-                | FormValues values -> 
-                    let bytes = 
+                | TextRequest text -> HttpContentTypes.Text, (fun e -> e.GetBytes(text))
+                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> bytes)
+                | FormValues values ->
+                    let bytes (e:Encoding) =
                         [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
                         |> String.concat "&"
-                        |> HttpEncodings.PostDefaultEncoding.GetBytes
+                        |> e.GetBytes
                     HttpContentTypes.FormValues, bytes
 
             // Set default content type if it is not specified by the user
-            if not hasContentType then req.ContentType <- defaultContentType
+            let encoding =
+                if not hasContentType then
+                    req.ContentType <- defaultContentType
 
-            bytes)
+                getEncoding req.ContentType
+
+            bytes encoding)
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
@@ -782,6 +811,8 @@ type Http private() =
 
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
+            let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
+
             let statusCode, characterSet = 
                 match resp with
                 | :? HttpWebResponse as resp -> 
@@ -801,7 +832,7 @@ type Http private() =
 
             let stream = resp.GetResponseStream()
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -836,11 +867,11 @@ type Http private() =
         let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             let! stream = async {
                 // this only applies when automatic decompression is off
-                if contentEncoding = "gzip" then 
+                if contentEncoding = "gzip" then
                     use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressGZip memoryStream :> Stream
-                elif contentEncoding = "deflate" then 
+                elif contentEncoding = "deflate" then
                     use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressDeflate memoryStream :> Stream
@@ -852,7 +883,7 @@ type Http private() =
                      Headers = headers
                      Cookies = cookies }
         }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                           ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
 
     /// Download an HTTP web resource from the specified URL synchronously

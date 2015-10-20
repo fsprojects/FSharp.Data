@@ -252,8 +252,12 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 #if FX_NET_CORE_REFLECTION
     cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #else
-    let runningOnMono = Type.GetType("Mono.Runtime") <> null
-    if runningOnMono then
+    try
+      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+    with :? ArgumentOutOfRangeException when Type.GetType("Mono.Runtime") <> null ->
+      // In Mono before 4.0, the above call was throwing ArgumentOurOfRange exception (see #426)
+      // Since Mono 4.0, the above method works, but the following workaround stopps working.
+      // So, we try the workaround *only* on Mono and *only* when we get out of range exception.
       let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
       let eraIndex =
         match era with
@@ -261,8 +265,6 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
         | x when x > 0 && x <= abbreviatedEraNames.Length -> era
         | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
       abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
-    else
-      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #endif
 
   let isFakeDate (date:DateTime) value =

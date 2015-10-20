@@ -24,7 +24,7 @@ let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
 // --------------------------------------------------------------------------------------
 
 let project = "FSharp.Data"
-let authors = ["Tomas Petricek"; "Gustavo Guerra"]
+let authors = ["Tomas Petricek"; "Gustavo Guerra"; "Colin Bull"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
@@ -60,11 +60,13 @@ Target "AssemblyInfo" <| fun () ->
         let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
         let title = 
             Path.GetFileNameWithoutExtension file
+            |> replace ".Portable259" ""
             |> replace ".Portable47" ""
             |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
         let versionSuffix =
-            if file.Contains ".Portable47" then ".47"
+            if file.Contains ".Portable259" then ".259"
+            elif file.Contains ".Portable47" then ".47"
             elif file.Contains ".Portable7" then ".7"
             else ".0"
         let version = release.AssemblyVersion + versionSuffix
@@ -96,10 +98,6 @@ Target "CleanInternetCaches" <| fun () ->
 
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
-#if MONO
-#else
-    ++ "FSharp.Data.Portable7.sln"
-#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -110,10 +108,6 @@ Target "BuildTests" <| fun () ->
 
 Target "BuildConsoleTests" <| fun () ->
     !! "TestApps.Console.sln"
-//#if MONO
-//#else
-//    ++ "TestApps.Console.Portable7.sln"
-//#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -129,7 +123,7 @@ let runTestTask name =
             { p with
                 DisableShadowCopy = true
                 TimeOut = TimeSpan.FromMinutes 20.
-                Framework = "4.0"
+                Framework = "4.5"
                 Domain = MultipleDomainModel
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
@@ -154,20 +148,18 @@ Target "SourceLink" <| id
 open SourceLink
 
 Target "SourceLink" <| fun () ->
-    use repo = new GitRepo(__SOURCE_DIRECTORY__)
     for file in !! "src/*.fsproj" do
-        let proj = VsProj.LoadRelease file
-        logfn "source linking %s" proj.OutputFilePdb
-        let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
-        repo.VerifyChecksums files
-        proj.VerifyPdbChecksums files
-        proj.CreateSrcSrv (sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName) repo.Revision (repo.Paths files)
-        Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
+        let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
+        let files = SetBaseDir __SOURCE_DIRECTORY__ proj.Compiles -- "**/paket-files/**"
+        let url = sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName
+        SourceLink.Index files proj.OutputFilePdb __SOURCE_DIRECTORY__ url
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
     CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
+    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
+    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 
@@ -307,5 +299,10 @@ Target "All" DoNothing
 "BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
 "RunConsoleTests" ==> "All"
+
+Target "BuildAndRunTests" DoNothing
+
+"BuildTests" ==> "BuildAndRunTests"
+"RunTests" ==> "BuildAndRunTests"
 
 RunTargetOrDefault "Help"

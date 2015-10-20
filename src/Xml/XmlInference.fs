@@ -35,10 +35,10 @@ let getInferedTypeFromValue inferTypesFromValues cultureInfo (element:XElement) 
         let value = element.Value
         let typ = getInferedTypeFromString cultureInfo value None
         match typ with
-        | InferedType.Primitive(t, _, optional) when t = typeof<string> && value.TrimStart().StartsWith "{" ->
+        | InferedType.Primitive(t, _, optional) when t = typeof<string> && let v = value.TrimStart() in v.StartsWith "{" || v.StartsWith "[" ->
             try
                 match JsonValue.Parse value with
-                | JsonValue.Record _ as json ->
+                | (JsonValue.Record _ | JsonValue.Array _) as json ->
                     let jsonType = json |> JsonInference.inferType true cultureInfo element.Name.LocalName
                     InferedType.Json(jsonType, optional)
                 | _ -> typ

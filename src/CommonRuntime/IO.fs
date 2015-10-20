@@ -109,24 +109,31 @@ let internal logTime category (instance:string) =
 #else
 
 let internal dummyDisposable = { new IDisposable with member __.Dispose() = () }
-let inline internal log _ = ()
-let inline internal logWithStackTrace _ = ()
-let inline internal logTime _ _ = dummyDisposable
+let inline internal log (_:string) = ()
+let inline internal logWithStackTrace (_:string) = ()
+let inline internal logTime (_:string) (_:string) = dummyDisposable
 
 #endif
 #endif
 
 type internal IDisposableTypeProvider =
-    abstract Invalidate : string -> unit
-    abstract AddDisposeAction : string -> (unit -> unit) -> unit
+    abstract InvalidateOneType : string -> unit
+    abstract AddDisposeAction : (string option -> unit) -> unit
     abstract Id : int
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
 
+// Use weak references to type provider instances that may get reactively invalidated.  A file watcher alone 
+// shouldn't keep a type provider instance alive.
+type private TypeProviderReference = WeakReference
+let private (|TypeProviderReference|_|) (x:TypeProviderReference) = match x.Target with null -> None | x -> Some (x :?> IDisposableTypeProvider)
+let private TypeProviderReference (x:IDisposableTypeProvider) = System.WeakReference x
+
+
 type private Watcher(uri:Uri) =
 
-    let typeProviders = ResizeArray<IDisposableTypeProvider*string>()
+    let typeProviders = ResizeArray<TypeProviderReference (* tp *) *string>()
 
     let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
     let lastWrite = ref (getLastWrite())
@@ -142,20 +149,25 @@ type private Watcher(uri:Uri) =
         if !lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
-            let typeProviders = Seq.toArray typeProviders
+            let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
-                tp.Invalidate typeName
+                match tp with 
+                | TypeProviderReference tp -> tp.InvalidateOneType typeName
+                | _ -> ()
 
     do
         watcher.Changed.Add checkForChanges
         watcher.Renamed.Add checkForChanges
         watcher.Deleted.Add checkForChanges
 
-    member __.Add = typeProviders.Add
+    member __.Add(tp:IDisposableTypeProvider, typeName) = 
+        typeProviders.Add(TypeProviderReference tp,typeName)
+
     member __.Remove (tp:IDisposableTypeProvider) typeName = 
         log (sprintf "Removing %s [%d] from watcher %s" typeName tp.Id uri.OriginalString) 
-        typeProviders.Remove (tp, typeName) |> ignore
-        if typeProviders.Count = 0 then
+        typeProviders.RemoveAll (Predicate(function (TypeProviderReference tp2, typeName2) -> obj.ReferenceEquals(tp,tp2) && typeName = typeName2 | _ -> false)) |> ignore
+        let alive = typeProviders.Exists(Predicate(function (TypeProviderReference _tp, _tn) -> true | _ -> false)) 
+        if not alive then
             log ("Disposing watcher " + uri.OriginalString) 
             watcher.Dispose()
             true
@@ -164,7 +176,7 @@ type private Watcher(uri:Uri) =
 
 open System.Collections.Generic
 
-let private watchers = Dictionary()
+let private watchers = Dictionary<string,Watcher>()
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
@@ -187,10 +199,11 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 
     watcher.Add key
     
-    tp.AddDisposeAction typeName <| fun () -> 
+    tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
 
-        if watcher.Remove tp typeName then
-            watchers.Remove uri.OriginalString |> ignore
+        if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
+            if watcher.Remove tp typeName then
+                watchers.Remove uri.OriginalString |> ignore
             
 #endif
     

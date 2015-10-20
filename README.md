@@ -10,28 +10,25 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Simply build FSharp.Data.sln in Visual Studio 2013, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+- Simply build FSharp.Data.sln in Visual Studio 2015, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
     * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
-    * [![TeamCity build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
   * Mono: Run *build.sh*
     * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
 
+## Supported F# Runtimes
+
+- FSharp.Core 4.3.0.0 (F# 3.0)
+- FSharp.Core 4.3.1.0 (F# 3.1)
+- FSharp.Core 4.4.0.0 (F# 3.0)
+
 ## Supported platforms
 
-- VS2012 compiling to FSharp.Core 4.3.0.0
-- VS2012 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
-- Mono F# 3.0 compiling to FSharp.Core 4.3.0.0
-- Mono F# 3.0 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
-- VS2013 compiling to FSharp.Core 4.3.0.0
-- VS2013 compiling to FSharp.Core 4.3.1.0
-- VS2013 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
-- VS2013 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
-- Mono F# 3.1 compiling to FSharp.Core 4.3.0.0
-- Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
-- Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
-- Mono F# 3.1 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
+- .NET Framework 4.0
+- PCL profile 7 (.NET Framework 4.5, Windows 8)
+- PCL profile 47 (.NET Framework 4.5, Silverlight 5, Windows 8)
+- PCL profile 259 (.NET Framework 4.5, Windows 8, Windows Phone 8.1, Windows Phone Silverlight 8)
 
 ## Documentation 
 
@@ -50,6 +47,12 @@ solution before trying out the samples to ensure that all needed packages are in
 ## Library license
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
+
+## Maintainers
+
+Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus) and [Tomas Petricek](http://github.com/tpetricek).
+
+
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content

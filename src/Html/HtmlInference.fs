@@ -1,4 +1,5 @@
-﻿module ProviderImplementation.HtmlInference
+/// Structural inference for HTML tables
+module FSharp.Data.Runtime.HtmlInference
 
 open System
 open System.Xml.Linq

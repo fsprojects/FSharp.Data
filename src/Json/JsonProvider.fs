@@ -22,12 +22,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some typeof<obj>)
+  let jsonProvTy = replacer.ProvidedTypeDefinition(asm, ns, "JsonProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
+    let tpType = replacer.ProvidedTypeDefinition(asm, ns, typeName, typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -59,9 +59,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
+          result.Convert <@@ JsonDocument.Create(%reader, cultureStr) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
+          result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
                  version this cfg replacer encodingStr resolutionFolder resource typeName None

@@ -251,8 +251,8 @@ printfn "%s (%d 回リツイートされました)\n:%s"
 
 *)
 
-
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+// GitHub.json downloaded from https://api.github.com/repos/fsharp/FSharp.Data/issues to prevent rate limit when generating these docs
+type GitHub = JsonProvider<"../../data/GitHub.json">
 
 let topRecentlyUpdatedIssues = 
     GitHub.GetSamples()

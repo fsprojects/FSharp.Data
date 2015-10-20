@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net40-Client/FsCheck.dll"
+#r "../../packages/FsCheck/lib/net45/FsCheck.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonParserProperties
@@ -129,9 +129,18 @@ let fixtureSetup() =
 fixtureSetup()
 #endif
 
+let unescape s =
+    let convert (m:Text.RegularExpressions.Match) =
+        match m.Value.[1] with
+        | x when x = 'u' -> m.Value.Substring(2) |> (fun i -> Convert.ToInt32(i, 16)) |> char |> Char.ToString
+        | x when x = 'U' -> m.Value.Substring(2) |> (fun i -> Convert.ToInt32(i, 16)) |> Char.ConvertFromUtf32
+        | _ -> failwith "not a unicode literal"
+    let r = new Text.RegularExpressions.Regex("(\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})")
+    r.Replace(s, convert)
+
 [<Test>]
 let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
-    let parseStringified (json: JsonValue) = 
+    let parseStringified (json: JsonValue) =
         json.ToString(JsonSaveOptions.DisableFormatting)
         |> JsonValue.Parse = json
 
@@ -142,8 +151,29 @@ let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
 let ``Stringifing parsed string returns the same string`` () =
     let stringifyParsed (s : string) =
         let jsonValue = JsonValue.Parse s
-        jsonValue.ToString(JsonSaveOptions.DisableFormatting) = s
+        let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        if jsonConverted = s then
+            true
+        else
+            unescape s = jsonConverted
+
     let jsonStringArb = Arb.fromGen (jsonStringGen)
-    
+
     Check.One ({Config.QuickThrowOnFailure with MaxTest = 10000},
               (Prop.forAll jsonStringArb stringifyParsed))
+
+[<Test>]
+let ``Stringifing parsed string returns the same string (unicode)`` () =
+    let input = "{\"=\\u21DB1's8\":27670116086083.0138369}"
+    let jsonValue = JsonValue.Parse input
+    let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)
+    Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
+    Assert.AreEqual(unescape input, jsonConverted)
+
+[<Test>]
+let ``Stringifing parsed string returns the same string (UNICODE)`` () =
+    let input = "{\"=\\U001000111's8\":27670116086083.0138369}"
+    let jsonValue = JsonValue.Parse input
+    let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)
+    Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
+    Assert.AreEqual(unescape input, jsonConverted)

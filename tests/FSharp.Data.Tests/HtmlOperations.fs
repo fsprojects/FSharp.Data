@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../bin/FSharp.Data.Experimental.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -54,7 +54,10 @@ let ``Checking for id works``() =
 
 [<Test>]
 let ``Checking for class works``() =
+    HtmlNode.hasClass "my_class" htmlFragment |> should equal true
+    HtmlNode.hasClass "highlighted" htmlFragment |> should equal true
     HtmlNode.hasClass "my_class highlighted" htmlFragment |> should equal true
+    HtmlNode.hasClass "highlighted my_class" htmlFragment |> should equal true
 
 [<Test>]
 let ``The children of a content node is an empty list``() =

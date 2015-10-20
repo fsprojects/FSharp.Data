@@ -1,16 +1,49 @@
-#### 2.2.1 - Unreleased
-* Tidyied up Html operations. 
-* Changed behaviour of elements to only return HtmlElements, added Nodes variant to replace existing functionality - Breaking change. 
-All previous calls to element -> nodes to keep existing behaviour.
-* Complete rework of HtmlProvider. Will now support micro-schema and nested types. So lists within tables and tables within tables ect...
+#### 2.3.0-beta1 - October 11 2015
+* Support for PCL profile 7 and PCL profile 259.
+* Added support for single column CSV files in CsvProvider.
+* Fix saving of CSV files with cells spanning multiple lines.
+* Fixed parsing of HTML tables with headers spanning multiple rows.
+* Fixed parsing of HTML definition lists without description elements.
 
-#### 2.2.0 - Unreleased
+#### 2.2.5 - July 12 2015
+* Fix HtmlNode.hasClass to work on multi class elements.
+
+#### 2.2.4 - July 11 2015
+* Relax the parsing of the charset field in HTTP response headers to accommodate servers not 100% compliant with RFC2616.
+* Fix parsing of HTML lists with links.
+* Fix parsing of HTML pages with tables and lists with the same name.
+* Fix parsing of HTML documents with missing closing tags.
+
+#### 2.2.3 - June 13 2015
+* Fixed compatibility with Mono 4.0.
+* Support for trailing empty columns in CsvProvider.
+* Fix datetime convertion when epoch date contains positive in timezone part.
+
+#### 2.2.2 - May 11 2015
+* Allow arrays in addition to objects when detecting Json values inside Xml documents.
+* Simplify generated API for collections in XmlProvider in more cases.
+
+#### 2.2.1 - May 4 2015
+* Improved performance of JsonValue.Parse().
+* Fixed crash processing HTTP responses without content type.
+* Fixed encoding from content type not being used on the POST requests.
+* Improved compatibility with different versions of FSharp.Core.
+* Added BasicAuth helper to HttpRequestHeaders.
+
+#### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element.
 * Improved global inference in XmlProvider.
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
+* Fix possible stack overflow in HTML parser.
+* Exclude elements with aria-hidden attribute when parsing tables in HtmlProvider.
+* Use ISO-8601 format when outputing dates.
+* Fix parsing of HTML closing tags with numbers.
+* Fixed handling of URI's with fragment but no query.
+* Fixed arrays created with XML provider having unneeded parent tags on some situations.
+* Allow to parse rows in CsvProvider without having to create a CsvFile.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.

@@ -88,7 +88,7 @@ type TextRuntime =
 
   static member ConvertDateTimeBack(cultureStr, value:DateTime option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
+    | Some value -> value.ToString("O", TextRuntime.GetCulture cultureStr)
     | None -> ""
 
   static member ConvertGuidBack(value:Guid option) = 
@@ -123,3 +123,4 @@ type TextRuntime =
   /// Turn a sync operation into an async operation
   static member AsyncMap<'T, 'R>(valueAsync:Async<'T>, mapping:Func<'T, 'R>) = 
     async { let! value = valueAsync in return mapping.Invoke value }
+

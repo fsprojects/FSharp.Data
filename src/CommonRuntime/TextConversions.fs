@@ -31,21 +31,21 @@ module private Helpers =
 #endif
   // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
   // is already taken care of before AsDateTime is called
-  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:-\d+)?\)/$", regexOptions)
+  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", regexOptions)
 
 // --------------------------------------------------------------------------------------
 
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions private() = 
 
-  /// `NaN` `NA` `#N/A` `:` `-` `TBA` `TBD`
-  static member DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
+  /// `NaN` `NA` `N/A` `#N/A` `:` `-` `TBA` `TBD`
+  static member val DefaultMissingValues = [| "NaN"; "NA"; "N/A"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
   
   /// `%` `‰` `‱`
-  static member DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
+  static member val DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
   
   /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
-  static member DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
+  static member val DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
 
   static member val private DefaultRemovableAdornerCharacters = 
     Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners

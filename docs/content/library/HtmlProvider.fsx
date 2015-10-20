@@ -1,4 +1,4 @@
-(** 
+﻿(** 
 # F# Data: HTML Type Provider
 
 This article demonstrates how to use the HTML type provider to read HTML tables files
@@ -117,9 +117,10 @@ let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Wh
 
 // Get the average number of viewers for each doctor
 let viewersByDoctor = 
-    doctorWho.Tables.``Overview of seasons and series``.Rows 
-    |> Seq.groupBy (fun season -> season.Doctor)
-    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Average viewers (millions)``))
+    doctorWho.Tables.Overview.Rows 
+    |> Seq.groupBy (fun season -> season.``Doctor(s)``)
+    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Viewers (millions) - Average``))
+    |> Seq.toArray
 
 // Visualize it
 (Chart.Column viewersByDoctor).WithYAxis(Title = "Millions")

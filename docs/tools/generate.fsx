@@ -22,18 +22,13 @@ let info =
 // --------------------------------------------------------------------------------------
 
 #I "../../packages/FSharp.Charting/lib/net40"
-#I "../../packages/FSharp.Compiler.Service/lib/net40"
-#I "../../packages/FSharp.Formatting/lib/net40"
-#I "../../packages/RazorEngine/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FAKE/tools/FakeLib.dll"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.Markdown.dll"
-#r "FSharp.MetadataFormat.dll"
+
+#r "../../packages/FAKE/tools/FakeLib.dll"
+
+#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+
 open System.IO
 open Fake
 open Fake.FileHelper
@@ -92,7 +87,7 @@ let buildReference () =
       layoutRootsEn, 
       parameters = ("root", root)::info,
       sourceRepo = repo,
-      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
+      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "../")
 
 let createFsiEvaluator root output =
 
@@ -118,7 +113,7 @@ let createFsiEvaluator root output =
     | _ -> None 
     
   // Create FSI evaluator, register transformations & return
-  let fsiEvaluator = FsiEvaluator()
+  let fsiEvaluator = FsiEvaluator(fsiObj = FsiEvaluatorConfig.CreateNoOpFsiObject())
   fsiEvaluator.RegisterTransformation(transformation)
   fsiEvaluator
 
@@ -135,7 +130,7 @@ let buildDocumentation () =
     let layoutRoots = if dir.Contains "ja" then layoutRootsJa else layoutRootsEn
     Literate.ProcessDirectory
       ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator )
+        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator, processRecursive = false )
 
 // Generate
 copyFiles()
