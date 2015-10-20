@@ -29,13 +29,14 @@ Then, for example, we could ensure we the HTML's structure is really compliant w
 using the direct descendants selector.
 *)
 
-let links = doc.CssSelect "div#search > div#ires li.g > div.s div.kv cite"
-            |> List.map (
-                    fun n -> 
-                        match n.InnerText() with
-                        | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
-                        | t -> "http://" + t
-            )
+let links = 
+    doc.CssSelect "div#search > div#ires li.g > div.s div.kv cite"
+    |> List.map (
+        fun n -> 
+            match n.InnerText() with
+            | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
+            | t -> "http://" + t
+    )
 
 (**
 "li.g > div.s" skips the 4 sub results targeting github pages.

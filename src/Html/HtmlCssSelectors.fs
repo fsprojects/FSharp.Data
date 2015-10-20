@@ -4,7 +4,7 @@ open System
 open FSharp.Data
 open System.Runtime.CompilerServices
 
-module HtmlCssSelectors =
+module internal HtmlCssSelectors =
     type SelectorToken =
         | ClassPrefix of int
         | IdPrefix of int
