@@ -35,6 +35,11 @@ module internal HtmlCssSelectors =
         | Hidden of int
         | Radio of int
         | Password of int
+        | Image of int
+        | Textbox of int
+        | Submit of int
+        | Even of int
+        | Odd of int
 
     type CssSelectorTokenizer() =
         let mutable charCount:int = 0
@@ -153,6 +158,12 @@ module internal HtmlCssSelectors =
                     tokenize' (Password(getOffset t + 1) :: acc) t
                 | StartsWith ":empty" t ->
                     tokenize' (EmptyNode(getOffset t + 1) :: acc) t
+                | StartsWith ":image" t ->
+                    tokenize' (Image(getOffset t + 1) :: acc) t
+                | StartsWith ":even" t ->
+                    tokenize' (Even(getOffset t + 1) :: acc) t
+                | StartsWith ":odd" t ->
+                    tokenize' (Odd(getOffset t + 1) :: acc) t
                 | TokenStr ":disabled" t ->
                     let _, t' = readString "" t
                     tokenize' (Disabled(getOffset t + 1) :: acc) t'
@@ -160,6 +171,9 @@ module internal HtmlCssSelectors =
                     tokenize' (Enabled(getOffset t + 1) :: acc) t
                 | StartsWith ":file" t ->
                     tokenize' (File(getOffset t + 1) :: acc) t
+                | StartsWith ":submit" t ->
+                    tokenize' (Submit(getOffset t + 1) :: acc) t
+                
                 | '>' :: t ->
                     let seqtoken = acc |> List.toSeq |> Seq.skip(1) |> Seq.toList
                     match acc.Head with
@@ -221,6 +235,18 @@ module internal HtmlCssSelectors =
                     level <- FilterLevel.Root
                     selectElements' selectedNodes t
 
+                let selectEvenOdd (isEven:bool) =
+                    acc 
+                    |> Seq.mapi(fun i n -> (i,n))
+                    |> Seq.filter(
+                        fun (i,_) -> 
+                            match isEven with
+                            | true -> i%2 = 0
+                            | false -> i%2 <> 0
+                    )
+                    |> Seq.map (fun (_,n) -> n)
+                    |> Seq.toList
+
                 match source with
                 | TagName(_, name) :: t -> 
                     let selectedNodes = searchTag acc name
@@ -274,12 +300,38 @@ module internal HtmlCssSelectors =
                     let selectedNodes = filterByAttr acc name (fun v -> v <> value)
                     level <- FilterLevel.Root
                     selectElements' selectedNodes t
+
+                | OpenAttribute _ ::  AttributeName(_, name) :: CloseAttribute _ :: t ->
+                    let selectedNodes = 
+                        acc
+                        |> List.filter(
+                            fun n -> 
+                                n.Attributes()
+                                |> List.exists(
+                                    fun a -> a.Name() = name
+                            )
+                        )
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
                 
                 | Checkbox _ :: t -> selectDescendantOfType "checkbox" t
                 | File _ :: t -> selectDescendantOfType "file" t
                 | Hidden _ :: t -> selectDescendantOfType "hidden" t
                 | Radio _ :: t -> selectDescendantOfType "radio" t
                 | Password _ :: t -> selectDescendantOfType "password" t
+                | Image _ :: t -> selectDescendantOfType "image" t
+                | Textbox _ :: t -> selectDescendantOfType "text" t
+                | Submit _ :: t -> selectDescendantOfType "submit" t
+                
+                | Even _ :: t ->
+                    let selectedNodes = selectEvenOdd true
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
+
+                | Odd _ :: t ->
+                    let selectedNodes = selectEvenOdd false
+                    level <- FilterLevel.Root
+                    selectElements' selectedNodes t
 
                 | Button _ :: t ->
                     let selectedNodes = filterByAttr acc "type" (fun v -> v = "button")

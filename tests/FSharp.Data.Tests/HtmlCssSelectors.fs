@@ -228,16 +228,17 @@ let htmlForms = """<!doctype html>
         <form>
           <fieldset>
             <input type="button" value="Input Button">
-            <input type="checkbox" id="check1">
+            <input type="checkbox" id="check1" data="test">
             <input type="hidden" id="hidden1">
             <input type="password" id="pass1">
             <input name="email" disabled="disabled">
             <input type="radio" id="radio1">
             <input type="checkbox" id="check2" checked="checked">
             <input type="file" id="uploader1">
+            <input type="image" id="img1">
             <input type="reset">
-            <input type="submit">
-            <input type="text">
+            <input type="submit" id="submit1">
+            <input type="text" id="login">
             <select><option>Option</option></select>
             <textarea class="comment box1">Type a comment here</textarea>
             <button>Go !</button>
@@ -378,5 +379,58 @@ let ``:password Selector``() =
     |> List.map (fun n -> n.AttributeValue("id"))
     |> should equal ["pass1"]
 
+/// tests jQuery selector documented here: http://api.jquery.com/image-selector/
+[<Test>]
+let ``:image Selector``() = 
+    let selection = htmlForms.CssSelect ":image"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["img1"]
+
+/// tests jQuery selector documented here: http://api.jquery.com/submit-selector/
+[<Test>]
+let ``:submit Selector``() = 
+    let selection = htmlForms.CssSelect ":submit"
+    selection 
+    |> List.map (fun n -> n.AttributeValue("id"))
+    |> should equal ["submit1"]
+
+let evenOddHtml = 
+    """
+        <!doctype html>
+        <html lang="en">
+        <body>
+        <table border="1">
+          <tr><td>Row with Index #0</td></tr>
+          <tr><td>Row with Index #1</td></tr>
+          <tr><td>Row with Index #2</td></tr>
+          <tr><td>Row with Index #3</td></tr>
+        </table>
+        </body>
+        </html>
+    """
+    |> HtmlDocument.Parse
+
+/// tests jQuery selector documented here: http://api.jquery.com/even-selector/
+[<Test>]
+let ``:even Selector``() = 
+    let selection = evenOddHtml.CssSelect "tr:even"
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Row with Index #0";"Row with Index #2"]
+
+/// tests jQuery selector documented here: http://api.jquery.com/odd-selector/
+[<Test>]
+let ``:odd Selector``() = 
+    let selection = evenOddHtml.CssSelect "tr:odd"
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Row with Index #1";"Row with Index #3"]
+
+
+/// tests jQuery selector documented here: http://api.jquery.com/has-attribute-selector/
+[<Test>]
+let ``has attribute Selector``() = 
+    let selection = htmlForms.CssSelect "input[data]"
+    let values = selection |> List.map (fun n -> n.AttributeValue("data"))
+    values |> should equal ["test"]
 
 
