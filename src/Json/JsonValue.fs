@@ -255,12 +255,20 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match TextConversions.AsDecimal cultureInfo (s.Substring(start,len)) with
-        | Some x -> JsonValue.Number x
-        | _ ->
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo (s.Substring(start,len)) with
-            | Some x -> JsonValue.Float x
-            | _ -> throw()
+        let sub = s.Substring(start,len)
+        let mutable x = 0L
+        if Int64.TryParse(sub, NumberStyles.Integer, cultureInfo, &x) then
+            JsonValue.Number (decimal x)
+        else
+        let mutable x = 0m
+        if Decimal.TryParse(sub, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, cultureInfo, &x) then
+            JsonValue.Number x
+        else
+            let mutable x = 0.0
+            if Double.TryParse(sub, NumberStyles.Float, cultureInfo, &x) then
+                JsonValue.Float x
+            else
+                throw()
 
     and parsePair() =
         let key = parseString()
