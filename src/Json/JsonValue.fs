@@ -149,10 +149,8 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     let mutable i = 0
     let s = jsonText
 
-    // pre-allocate buffers for strings, arrays and records
-    let buf = StringBuilder()
-    let pairs = ResizeArray<_>()
-    let vals = ResizeArray<_>()
+    
+    let buf = StringBuilder() // pre-allocate buffers for strings
 
     // Helper functions
     let skipWhitespace() =
@@ -256,19 +254,12 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             i <- i + 1
         let len = i - start
         let sub = s.Substring(start,len)
-        let mutable x = 0L
-        if Int64.TryParse(sub, NumberStyles.Integer, cultureInfo, &x) then
-            JsonValue.Number (decimal x)
-        else
-        let mutable x = 0m
-        if Decimal.TryParse(sub, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, cultureInfo, &x) then
-            JsonValue.Number x
-        else
-            let mutable x = 0.0
-            if Double.TryParse(sub, NumberStyles.Float, cultureInfo, &x) then
-                JsonValue.Float x
-            else
-                throw()
+        match TextConversions.AsDecimal cultureInfo sub with
+        | Some x -> JsonValue.Number x
+        | _ ->
+            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo sub with
+            | Some x -> JsonValue.Float x
+            | _ -> throw()
 
     and parsePair() =
         let key = parseString()
@@ -295,6 +286,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         ensure(i < s.Length && s.[i] = '{')
         i <- i + 1
         skipWhitespace()
+        let pairs = ResizeArray<_>()
         if i < s.Length && s.[i] = '"' then
             pairs.Add(parsePair())
             skipWhitespace()
@@ -310,14 +302,13 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
-        let arr = pairs.ToArray()
-        pairs.Clear()
-        JsonValue.Record(arr)
+        JsonValue.Record(pairs.ToArray())
 
     and parseArray() =
         ensure(i < s.Length && s.[i] = '[')
         i <- i + 1
         skipWhitespace()
+        let vals = ResizeArray<_>()
         if i < s.Length && s.[i] <> ']' then
             vals.Add(parseValue())
             skipWhitespace()
@@ -330,9 +321,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = ']')
         i <- i + 1
-        let arr = vals.ToArray()
-        vals.Clear()
-        JsonValue.Array(arr)
+        JsonValue.Array(vals.ToArray())
 
     and parseLiteral(expected, r) =
         ensure(i+expected.Length < s.Length)
