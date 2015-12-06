@@ -1,3 +1,6 @@
+#### 2.3.0-beta2 - Unreleased
+* Improved JSON parsing performance by 20%.
+
 #### 2.3.0-beta1 - October 11 2015
 * Support for PCL profile 7 and PCL profile 259.
 * Added support for single column CSV files in CsvProvider.
