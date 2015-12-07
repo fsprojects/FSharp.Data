@@ -671,9 +671,14 @@ module private HttpHelpers =
             |> Array.iteri (fun i cookiePart ->
                 let cookiePart = cookiePart.Trim()
                 if i = 0 then
-                    let firstEqual = cookiePart.IndexOf "="
-                    cookie.Name <- cookiePart.Substring(0, firstEqual)
-                    cookie.Value <- cookiePart.Substring(firstEqual + 1)
+                    // some cookies don't have values, or their value is seperated with ',' which is clobbered above.
+                    // e.g. "tmg_web_trends=meter_viewed_count:1,meter_updated:1;Version=1" becomes [...,"meter_updated:1"...,]
+                    // so index of '=' will be -1, however it seems 'valid' to set a cookie with no value
+                    if firstEqual = -1 then
+                        cookie.Name <- cookiePart
+                    else
+                        cookie.Value <- cookiePart.Substring(firstEqual + 1)
+                        cookie.Name <- cookiePart.Substring(0, firstEqual)
                 elif cookiePart.IndexOf("path", StringComparison.OrdinalIgnoreCase) = 0 then
                     let kvp = cookiePart.Split '='
                     if kvp.[1] <> "" && kvp.[1] <> "/" then
