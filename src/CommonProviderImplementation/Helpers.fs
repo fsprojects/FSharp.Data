@@ -327,7 +327,7 @@ module internal ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
+    let generateType zipper formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
@@ -360,6 +360,16 @@ module internal ProviderHelpers =
                                         |> spec.CreateFromTextReader )
           m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
           yield m :> MemberInfo
+
+          if zipper then
+              // Generate static New method
+              let args = [  ]
+              let m = replacer.ProvidedMethod("New", args, resultType, isStatic = true,
+                                        invokeCode  = fun _ -> 
+                                            <@ new StringReader("") :> TextReader @> 
+                                            |> spec.CreateFromTextReader )
+              m.AddXmlDoc <| sprintf "Create a new instance of the %s" formatName
+              yield m :> MemberInfo
           
           // Generate static Load stream method
           let args = [ replacer.ProvidedParameter("stream", typeof<Stream>) ]
