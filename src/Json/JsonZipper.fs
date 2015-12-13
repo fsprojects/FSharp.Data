@@ -1,11 +1,12 @@
 ﻿namespace ProviderImplementation
 
+open System
 open System.IO
-open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
@@ -15,13 +16,13 @@ open FSharp.Data.Runtime.StructuralTypes
 #nowarn "10001"
 
 [<TypeProvider>]
-type public XmlProvider(cfg:TypeProviderConfig) as this =
+type public JsonZipper(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
-  // Generate namespace and type 'FSharp.Data.XmlProvider'
+  // Generate namespace and type 'FSharp.Data.JsonZipper'
   let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let xmlProvTy = replacer.ProvidedTypeDefinition(asm, ns, "XmlProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
+  let jsonProvTy = replacer.ProvidedTypeDefinition(asm, ns, "JsonZipper", typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -30,7 +31,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
-    let globalInference = args.[2] :?> bool
+    let rootName = args.[2] :?> string
+    let rootName = if String.IsNullOrWhiteSpace rootName then "Root" else NameUtils.singularize rootName
     let cultureStr = args.[3] :?> string
     let encodingStr = args.[4] :?> string
     let resolutionFolder = args.[5] :?> string
@@ -38,39 +40,37 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let inferTypesFromValues = args.[7] :?> bool
 
     let cultureInfo = TextRuntime.GetCulture cultureStr
-    let parseSingle _ value = XDocument.Parse(value).Root
+    let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
     let parseList _ value = 
-        XmlElement.CreateList(new StringReader(value))
-        |> Array.map (fun doc -> doc.XElement)
-
+        JsonDocument.CreateList(new StringReader(value), cultureStr)
+        |> Array.map (fun doc -> doc.JsonValue)
+    
     let getSpecFromSamples samples = 
 
       let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
-        samples
-        |> Array.ofSeq
-        |> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference
+        [ for sampleJson in samples -> JsonInference.inferType inferTypesFromValues cultureInfo "" sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, replacer)  
-      let result = XmlTypeBuilder.generateXmlType ctx inferedType
+      let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
+      let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
 
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          result.Converter <@@ XmlElement.Create(%reader) @@>
+          result.Convert <@@ JsonDocument.Create(%reader, cultureStr) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          result.Converter <@@ XmlElement.CreateList(%reader) @@> }
+          result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
-    generateType false "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
+    generateType true "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
                  version this cfg replacer encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
-      ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false) 
+      ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
@@ -78,21 +78,20 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
 
   let helpText = 
-    """<summary>Typed representation of a XML file.</summary>
-       <param name='Sample'>Location of a XML sample file or a string containing a sample XML document.</param>
-       <param name='SampleIsList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>
-       <param name='Global'>If true, the inference unifies all XML elements with the same name.</param>                     
+    """<summary>Typed representation of a JSON document.</summary>
+       <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document.</param>
+       <param name='SampleIsList'>If true, sample should be a list of individual samples for the inference.</param>
+       <param name='RootName'>The name to be used to the root type. Defaults to `Root`.</param>
        <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
        <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>
        <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource 
-          (e.g. 'MyCompany.MyAssembly, resource_name.xml'). This is useful when exposing types generated by the type provider.</param>
+          (e.g. 'MyCompany.MyAssembly, resource_name.json'). This is useful when exposing types generated by the type provider.</param>
        <param name='InferTypesFromValues'>If true, turns on additional type inference from values. 
-          (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans. The XmlProvider also infers string values as JSON.)</param>"""
+          (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans.)</param>"""
 
-
-  do xmlProvTy.AddXmlDoc helpText
-  do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
+  do jsonProvTy.AddXmlDoc helpText
+  do jsonProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler
-  do this.AddNamespace(ns, [ xmlProvTy ])
+  do this.AddNamespace(ns, [ jsonProvTy ])

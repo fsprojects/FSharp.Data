@@ -117,7 +117,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
-    generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
+    generateType false "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
                  getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 

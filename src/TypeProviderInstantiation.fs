@@ -44,6 +44,16 @@ type JsonProviderArgs =
       EmbeddedResource : string 
       InferTypesFromValues : bool }
 
+type JsonZipperArgs = 
+    { Sample : string
+      SampleIsList : bool
+      RootName : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
+
 type HtmlProviderArgs = 
     { Sample : string
       PreferOptionals : bool
@@ -112,6 +122,7 @@ type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
+    | JsonZipper of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
 
@@ -148,6 +159,16 @@ type TypeProviderInstantiation =
                    box x.InferTypesFromValues |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.SampleIsList
+                   box x.RootName
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
+            | JsonZipper x -> 
+                (fun cfg -> new JsonZipper(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
@@ -194,6 +215,13 @@ type TypeProviderInstantiation =
              x.InferTypesFromValues.ToString() ]
         | Json x -> 
             ["Json"
+             x.Sample
+             x.SampleIsList.ToString()
+             x.RootName
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
+        | JsonZipper x -> 
+            ["JsonZipper"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
@@ -258,6 +286,16 @@ type TypeProviderInstantiation =
                   InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
+                   SampleIsList = args.[2] |> bool.Parse
+                   RootName = args.[3]
+                   Culture = args.[4] 
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" 
+                   InferTypesFromValues = args.[5] |> bool.Parse }
+        | "JsonZipper" ->
+            JsonZipper 
+                 { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 

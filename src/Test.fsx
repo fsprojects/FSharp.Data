@@ -72,6 +72,16 @@ Json { Sample = "optionals.json"
        InferTypesFromValues = true }
 |> dumpAll
 
+JsonZipper { Sample = "optionals.json"
+             SampleIsList = false
+             RootName = ""
+             Culture = ""
+             Encoding = ""
+             ResolutionFolder = ""
+             EmbeddedResource = ""
+             InferTypesFromValues = true }
+|> dumpAll
+
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
