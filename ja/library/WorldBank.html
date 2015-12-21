@@ -77,7 +77,7 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 
 <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">data</span>
   <span class="o">.</span><span class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
-  <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
+  <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">maxBy</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="f">fst</span>
 </code></pre></td>
 </tr>
@@ -91,7 +91,7 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 多くの指標には長い名前がつけられているため、
 名前を <code>\</code>`` で囲む必要があります。</p>
 
-<p><code>School enrollment, tertiary (% gross)</code> プロパティの結果は
+<p><code>Gross enrolment ratio, tertiary, both sexes (%)</code> プロパティの結果は
 異なる年毎の値のシーケンスです。
 <code>Seq.maxBy fst</code> とすることで直近で利用可能な最新のデータを取得できます。</p>
 
@@ -114,7 +114,7 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 <span class="l">3: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="i">data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
-    <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
+    <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="f">Line</span>
 </code></pre></td>
 </tr>
@@ -124,7 +124,7 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 そのため、世界銀行から受信したデータセットをそのまま渡せば
 Xが年、Yがその年の値になったチャートが作成できます。</p>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="/FSharp.Data/images/chart7.png" alt="Chart" /></p>
 
 <h2>世界銀行のデータを非同期的に使う</h2>
 
@@ -149,7 +149,7 @@ F# Dataライブラリには様々なstatic引数を受け取るような
 <p>上のコードではデータソース(一般的に利用可能な指標のコレクション)の名前として
 "World Development Indicators" を指定して、オプション引数 <code>Asynchronous</code> に
 <code>true</code> を設定しています。
-そうするとたとえば <code>School enrollment, tertiary (% gross)</code> などのプロパティが
+そうするとたとえば <code>Gross enrolment ratio, tertiary, both sexes (%)</code> などのプロパティが
 <code>Async&lt;(int * int)[]&gt;</code> になります。
 これはつまり非同期的に処理を始めることができ、最終的にデータを生成するような
 操作であることを示しています。</p>
@@ -214,7 +214,7 @@ F# Dataライブラリには様々なstatic引数を受け取るような
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">[ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs26', 59)" onmouseover="showTip(event, 'fs26', 59)" class="i">c</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs17', 60)" onmouseover="showTip(event, 'fs17', 60)" class="i">countries</span> <span class="k">-&gt;</span>
-    <span onmouseout="hideTip(event, 'fs26', 61)" onmouseover="showTip(event, 'fs26', 61)" class="i">c</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 62)" onmouseover="showTip(event, 'fs27', 62)" class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span> ]
+    <span onmouseout="hideTip(event, 'fs26', 61)" onmouseover="showTip(event, 'fs26', 61)" class="i">c</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 62)" onmouseover="showTip(event, 'fs27', 62)" class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span> ]
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 63)" onmouseover="showTip(event, 'fs28', 63)" class="t">Async</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 64)" onmouseover="showTip(event, 'fs29', 64)" class="f">Parallel</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 65)" onmouseover="showTip(event, 'fs28', 65)" class="t">Async</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 66)" onmouseover="showTip(event, 'fs30', 66)" class="f">RunSynchronously</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 68)" onmouseover="showTip(event, 'fs32', 68)" class="f">map</span> <span onmouseout="hideTip(event, 'fs11', 69)" onmouseover="showTip(event, 'fs11', 69)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 70)" onmouseover="showTip(event, 'fs12', 70)" class="f">Line</span>
@@ -227,7 +227,7 @@ F# Dataライブラリには様々なstatic引数を受け取るような
 それぞれのデータセットから1つの折れ線チャートを出力して、
 各チャートを <code>Chart.Combine</code> で1つの総合チャートにしています。</p>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="/FSharp.Data/images/chart8.png" alt="Chart" /></p>
 
 <h2>関連する記事</h2>
 

@@ -74,7 +74,7 @@ retrieves the percentage of population who attend universities in the UK:</p>
 
 <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">data</span>
   <span class="o">.</span><span class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
-  <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
+  <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">maxBy</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="f">fst</span>
 </code></pre></td>
 </tr>
@@ -86,7 +86,7 @@ dimensions are provided as properties, so you can use autocomplete to easily dis
 various data sources. Most of the indicators use longer names, so we need to wrap the name
 in <code>\</code>``.</p>
 
-<p>The result of the <code>School enrollment, tertiary (% gross)</code> property is a sequence with 
+<p>The result of the <code>Gross enrolment ratio, tertiary, both sexes (%)</code> property is a sequence with 
 values for different years. Using <code>Seq.maxBy fst</code> we get the most recent available value.</p>
 
 <h3>Charting World Bank data</h3>
@@ -108,7 +108,7 @@ values for different years. Using <code>Seq.maxBy fst</code> we get the most rec
 <span class="l">3: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="i">data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
-    <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
+    <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="f">Line</span>
 </code></pre></td>
 </tr>
@@ -118,7 +118,7 @@ values for different years. Using <code>Seq.maxBy fst</code> we get the most rec
 can call it directly with the World Bank data set using the year as the X value and the
 value as a Y value.</p>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="/FSharp.Data/images/chart4.png" alt="Chart" /></p>
 
 <h2>Using World Bank data asynchronously</h2>
 
@@ -140,7 +140,7 @@ type provider generates all operations as asynchronous:</p>
 <p>The above snippet specified "World Development Indicators" as the name of the data 
 source (a collection of commonly available indicators) and it set the optional argument
 <code>Asynchronous</code> to <code>true</code>. As a result, properties such as 
-<code>School enrollment, tertiary (% gross)</code> will now have a type <code>Async&lt;(int * int)[]&gt;</code> meaning
+<code>Gross enrolment ratio, tertiary, both sexes (%)</code> will now have a type <code>Async&lt;(int * int)[]&gt;</code> meaning
 that they represent an asynchronous computation that can be started and will eventually
 produce the data.</p>
 
@@ -204,7 +204,7 @@ computation to perform all the downloads:</p>
 <span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp">[ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs26', 59)" onmouseover="showTip(event, 'fs26', 59)" class="i">c</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs17', 60)" onmouseover="showTip(event, 'fs17', 60)" class="i">countries</span> <span class="k">-&gt;</span>
-    <span onmouseout="hideTip(event, 'fs26', 61)" onmouseover="showTip(event, 'fs26', 61)" class="i">c</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 62)" onmouseover="showTip(event, 'fs27', 62)" class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span> ]
+    <span onmouseout="hideTip(event, 'fs26', 61)" onmouseover="showTip(event, 'fs26', 61)" class="i">c</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 62)" onmouseover="showTip(event, 'fs27', 62)" class="i">Indicators</span><span class="o">.</span><span class="i">``Gross enrolment ratio, tertiary, both sexes (%)``</span> ]
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 63)" onmouseover="showTip(event, 'fs28', 63)" class="t">Async</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 64)" onmouseover="showTip(event, 'fs29', 64)" class="f">Parallel</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs28', 65)" onmouseover="showTip(event, 'fs28', 65)" class="t">Async</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 66)" onmouseover="showTip(event, 'fs30', 66)" class="f">RunSynchronously</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 68)" onmouseover="showTip(event, 'fs32', 68)" class="f">map</span> <span onmouseout="hideTip(event, 'fs11', 69)" onmouseover="showTip(event, 'fs11', 69)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 70)" onmouseover="showTip(event, 'fs12', 70)" class="f">Line</span>
@@ -217,7 +217,7 @@ computation to perform all the downloads:</p>
 it also turns every single downloaded data set into a line chart (using <code>Chart.Line</code>) 
 and then creates a single composed chart using <code>Chart.Combine</code>.</p>
 
-<table class="pre"><tr><td><pre><code>No value has been returned</code></pre></td></tr></table>
+<p><img src="/FSharp.Data/images/chart5.png" alt="Chart" /></p>
 
 <h2>Related articles</h2>
 
