@@ -32,7 +32,7 @@ let getTestData() = async {
             return [| |]
     }
 #endif
-    let! indicator = WorldBankDataProvider<Asynchronous=true>.GetDataContext().Countries.``United Kingdom``.Indicators.``School enrollment, tertiary (% gross)``
+    let! indicator = WorldBankDataProvider<Asynchronous=true>.GetDataContext().Countries.``United Kingdom``.Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
     let result = 
         [ 
           [ for row in Seq.truncate 5 stocks.Rows -> sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close ]
