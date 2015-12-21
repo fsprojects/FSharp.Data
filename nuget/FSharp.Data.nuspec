@@ -16,12 +16,15 @@
     <copyright>Copyright 2015</copyright>
     <tags>@tags@</tags>
     <dependencies>
-      <group targetFramework="portable-net40+sl5+wp8+win8">
-        <dependency id="Zlib.Portable" version="1.10.0" />
+      <group targetFramework="portable-net45+sl50+netcore45">
+        <dependency id="Zlib.Portable" version="1.11.0" />
       </group>
-      <!--<group targetFramework="portable-net45+win8">
-        <dependency id="Zlib.Portable" version="1.9.2" />
-      </group>-->
+      <group targetFramework="portable-net45+netcore45">
+        <dependency id="Zlib.Portable" version="1.11.0" />
+      </group>
+      <group targetFramework="portable-net45+netcore45+wpa81+wp8">
+        <dependency id="Zlib.Portable" version="1.11.0" />
+      </group>      
       <group targetFramework="net40" />
     </dependencies>
     <references>
