@@ -4,8 +4,8 @@ source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 nuget Zlib.Portable
 nuget FSharp.Charting
 nuget FSharp.Formatting
-nuget NUnit
-nuget NUnit.Runners
+nuget NUnit 2.6.4
+nuget NUnit.Runners 2.6.4
 nuget FsCheck
 nuget Nancy.Hosting.Self
 nuget FAKE
