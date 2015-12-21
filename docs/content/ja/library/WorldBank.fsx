@@ -29,7 +29,7 @@ let data = WorldBankData.GetDataContext()
 
 data
   .Countries.``United Kingdom``
-  .Indicators.``School enrollment, tertiary (% gross)``
+  .Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
 |> Seq.maxBy fst
 
 (**
@@ -41,7 +41,7 @@ data
 多くの指標には長い名前がつけられているため、
 名前を `\`\`` で囲む必要があります。
 
-`School enrollment, tertiary (% gross)` プロパティの結果は
+`Gross enrolment ratio, tertiary, both sexes (%)` プロパティの結果は
 異なる年毎の値のシーケンスです。
 `Seq.maxBy fst` とすることで直近で利用可能な最新のデータを取得できます。
 
@@ -58,7 +58,7 @@ open FSharp.Charting
 (*** define-output:chart1 ***)
 
 data.Countries.``United Kingdom``
-    .Indicators.``School enrollment, tertiary (% gross)``
+    .Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
 |> Chart.Line
 
 (**
@@ -90,7 +90,7 @@ WorldBank.GetDataContext()
 上のコードではデータソース(一般的に利用可能な指標のコレクション)の名前として
 "World Development Indicators" を指定して、オプション引数 `Asynchronous` に
 `true` を設定しています。
-そうするとたとえば `School enrollment, tertiary (% gross)` などのプロパティが
+そうするとたとえば `Gross enrolment ratio, tertiary, both sexes (%)` などのプロパティが
 `Async<(int * int)[]>` になります。
 これはつまり非同期的に処理を始めることができ、最終的にデータを生成するような
 操作であることを示しています。
@@ -131,7 +131,7 @@ let countries =
 (*** define-output:chart2 ***)
 
 [ for c in countries ->
-    c.Indicators.``School enrollment, tertiary (% gross)`` ]
+    c.Indicators.``Gross enrolment ratio, tertiary, both sexes (%)`` ]
 |> Async.Parallel
 |> Async.RunSynchronously
 |> Array.map Chart.Line

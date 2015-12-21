@@ -26,7 +26,7 @@ let data = WorldBankData.GetDataContext()
 
 data
   .Countries.``United Kingdom``
-  .Indicators.``School enrollment, tertiary (% gross)``
+  .Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
 |> Seq.maxBy fst
 
 (**
@@ -36,7 +36,7 @@ dimensions are provided as properties, so you can use autocomplete to easily dis
 various data sources. Most of the indicators use longer names, so we need to wrap the name
 in `\`\``.
 
-The result of the `School enrollment, tertiary (% gross)` property is a sequence with 
+The result of the `Gross enrolment ratio, tertiary, both sexes (%)` property is a sequence with 
 values for different years. Using `Seq.maxBy fst` we get the most recent available value.
 
 ### Charting World Bank data
@@ -52,7 +52,7 @@ open FSharp.Charting
 (*** define-output:chart1 ***)
 
 data.Countries.``United Kingdom``
-    .Indicators.``School enrollment, tertiary (% gross)``
+    .Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
 |> Chart.Line
 
 (**
@@ -81,7 +81,7 @@ WorldBank.GetDataContext()
 The above snippet specified "World Development Indicators" as the name of the data 
 source (a collection of commonly available indicators) and it set the optional argument
 `Asynchronous` to `true`. As a result, properties such as 
-`School enrollment, tertiary (% gross)` will now have a type `Async<(int * int)[]>` meaning
+`Gross enrolment ratio, tertiary, both sexes (%)` will now have a type `Async<(int * int)[]>` meaning
 that they represent an asynchronous computation that can be started and will eventually
 produce the data.
 
@@ -121,7 +121,7 @@ computation to perform all the downloads:
 (*** define-output:chart2 ***)
 
 [ for c in countries ->
-    c.Indicators.``School enrollment, tertiary (% gross)`` ]
+    c.Indicators.``Gross enrolment ratio, tertiary, both sexes (%)`` ]
 |> Async.Parallel
 |> Async.RunSynchronously
 |> Array.map Chart.Line
