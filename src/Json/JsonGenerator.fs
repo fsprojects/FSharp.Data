@@ -275,7 +275,7 @@ module JsonTypeBuilder =
     | InferedType.Record(name, props, optional) -> getOrCreateType ctx inferedType <| fun () ->
         
         if optional && not optionalityHandledByParent then
-          failwith "generateJsonType: optionality not handled for %A" inferedType
+          failwithf "generateJsonType: optionality not handled for %A" inferedType
 
         let name = 
             if String.IsNullOrEmpty nameOverride
