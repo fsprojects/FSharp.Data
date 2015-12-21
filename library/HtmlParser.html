@@ -122,29 +122,30 @@ and <code>Seq.map</code>.</p>
 <table class="pre"><tr><td><pre><code>[|("F# Data: Library for Data Access", "http://fsharp.github.io/FSharp.Data/");
   ("JSON Type Provider",
    "http://fsharp.github.io/FSharp.Data/library/JsonProvider.html");
-  ("CSV Parser", "http://fsharp.github.io/FSharp.Data/library/CsvFile.html");
+  ("F# Data: CSV Parser",
+   "http://fsharp.github.io/FSharp.Data/library/CsvFile.html");
   ("CSV Type Provider",
-   "http://fsharp.github.io/FSharp.Data/library/CsvProvider.html");
+   "https://fsharp.github.io/FSharp.Data/library/CsvProvider.html");
   ("XML Type Provider",
    "http://fsharp.github.io/FSharp.Data/library/XmlProvider.html");
   ("fsharp/FSharp.Data · GitHub", "https://github.com/fsharp/FSharp.Data");
   ("NuGet Gallery | F# Data 2.2.5",
    "https://www.nuget.org/packages/FSharp.Data/");
+  ("Microsoft.FSharp.Data.TypeProviders Namespace (F#) - MSDN",
+   "https://msdn.microsoft.com/en-GB/library/hh362324.aspx");
   ("Guide - Data Access | The F# Software Foundation - Fsharp.org",
    "http://fsharp.org/guides/data-access/");
-  ("Microsoft.FSharp.Data.TypeProviders Namespace (F#) - MSDN",
-   "https://msdn.microsoft.com/en-us/library/hh362324.aspx");
   ("F# Data: New type provider library - Tomas Petricek",
    "http://tomasp.net/blog/fsharp-data.aspx/");
-  ("Newest 'f#-data' Questions - Stack Overflow",
-   "http://stackoverflow.com/questions/tagged/f%2523-data");
-  ("F# Charting: Library for Data Visualization - FsLab",
-   "http://fslab.org/FSharp.Charting/")|]</code></pre></td></tr></table>
+  ("f# - scripts don't recognize FSharp.Data - Stack Overflow",
+   "http://stackoverflow.com/questions/16343876/scripts-dont-recognize-fsharp-data");
+  ("fsharp-data-science - Google Groups",
+   "https://groups.google.com/forum/%23!forum/fsharp-data-science")|]</code></pre></td></tr></table>
 
-<div class="tip" id="fs1">namespace FSharp</div>
-<div class="tip" id="fs2">namespace FSharp.Data</div>
+<div class="tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
 <div class="tip" id="fs3">val results : HtmlDocument<br /><br />Full name: HtmlParser.results</div>
-<div class="tip" id="fs4">Multiple items<br />module HtmlDocument<br /><br />from FSharp.Data<br /><br />--------------------<br />type HtmlDocument =<br />&#160;&#160;private | HtmlDocument of docType: string * elements: HtmlNode list<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member _Print : string<br />&#160;&#160;static member AsyncLoad : uri:string -&gt; Async&lt;HtmlDocument&gt;<br />&#160;&#160;static member Load : uri:string -&gt; HtmlDocument<br />&#160;&#160;static member Load : reader:TextReader -&gt; HtmlDocument<br />&#160;&#160;static member Load : stream:Stream -&gt; HtmlDocument<br />&#160;&#160;static member New : children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member New : docType:string * children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member Parse : text:string -&gt; HtmlDocument<br /><br />Full name: FSharp.Data.HtmlDocument</div>
+<div class="tip" id="fs4">Multiple items<br />module HtmlDocument<br /><br />from FSharp.Data<br /><br />--------------------<br />type HtmlDocument =<br />&#160;&#160;private | HtmlDocument of docType: string * elements: HtmlNode list<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;static member AsyncLoad : uri:string -&gt; Async&lt;HtmlDocument&gt;<br />&#160;&#160;static member Load : uri:string -&gt; HtmlDocument<br />&#160;&#160;static member Load : reader:TextReader -&gt; HtmlDocument<br />&#160;&#160;static member Load : stream:Stream -&gt; HtmlDocument<br />&#160;&#160;static member New : children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member New : docType:string * children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member Parse : text:string -&gt; HtmlDocument<br /><br />Full name: FSharp.Data.HtmlDocument</div>
 <div class="tip" id="fs5">static member HtmlDocument.Load : uri:string -&gt; HtmlDocument<br />static member HtmlDocument.Load : reader:System.IO.TextReader -&gt; HtmlDocument<br />static member HtmlDocument.Load : stream:System.IO.Stream -&gt; HtmlDocument</div>
 <div class="tip" id="fs6">val links : seq&lt;string * string&gt;<br /><br />Full name: HtmlParser.links</div>
 <div class="tip" id="fs7">static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * predicate:(HtmlNode -&gt; bool) -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * names:seq&lt;string&gt; -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * name:string -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * predicate:(HtmlNode -&gt; bool) * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * names:seq&lt;string&gt; * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * name:string * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;</div>
