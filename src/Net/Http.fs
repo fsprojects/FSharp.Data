@@ -680,8 +680,13 @@ module private HttpHelpers =
                         cookie.Path <- kvp.[1]
                 elif cookiePart.IndexOf("domain", StringComparison.OrdinalIgnoreCase) = 0 then
                     let kvp = cookiePart.Split '='
-                    if kvp.[1] <> "" then
-                        cookie.Domain <- kvp.[1]
+                    let domain = // handle errant protocol in domain
+                        if kvp.[1].StartsWith("http://", StringComparison.OrdinalIgnoreCase) then
+                          kvp.[1].Substring(7)
+                        else
+                          kvp.[1]
+                    if domain <> "" then
+                        cookie.Domain <- domain
                 elif cookiePart.Equals("secure", StringComparison.OrdinalIgnoreCase) then
                     cookie.Secure <- true
                 elif cookiePart.Equals("httponly", StringComparison.OrdinalIgnoreCase) then

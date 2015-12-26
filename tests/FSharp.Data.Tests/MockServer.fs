@@ -120,3 +120,9 @@ type FakeServer() as self =
                 let response = "body" |> Nancy.Response.op_Implicit
                 response.StatusCode <- HttpStatusCode.OK
                 response :> obj
+
+        self.Get.["BadCookieDomain"] <-
+            fun _ ->
+                let response = "body" |> Nancy.Response.op_Implicit
+                response.WithCookie("gift", "krampus", Nullable<DateTime>(), "http://localhost", "/")
+                        .WithStatusCode(HttpStatusCode.OK) :> obj
