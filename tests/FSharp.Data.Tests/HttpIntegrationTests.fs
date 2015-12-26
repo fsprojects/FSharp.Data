@@ -73,6 +73,11 @@ let ``all details of the response should be available`` () =
     response.Headers.["X-New-Fangled-Header"] |> should equal "some value"
 
 [<Test>]
+let ``cookies with protocol-prefixed domains should be handled`` () =
+    let response = Http.Request("http://localhost:1235/TestServer/BadCookieDomain", silentHttpErrors=true)
+    response.Cookies.["gift"] |> should equal "krampus"
+
+[<Test>]
 let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
