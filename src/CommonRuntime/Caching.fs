@@ -27,7 +27,7 @@ let createInMemoryCache expiration =
       member __.TryRetrieve(key) =
         lock dict <| fun () ->
           match dict.TryGetValue(key) with
-          | true, (value, timestamp) when timestamp - DateTime.UtcNow < expiration -> Some value
+          | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
           | _ -> None }
 
 #else
@@ -42,7 +42,7 @@ let createInMemoryCache expiration =
         dict.[key] <- (value, DateTime.UtcNow)
       member __.TryRetrieve(key) =
         match dict.TryGetValue(key) with
-        | true, (value, timestamp) when timestamp - DateTime.UtcNow < expiration -> Some value
+        | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
         | _ -> None }
 
 #endif
