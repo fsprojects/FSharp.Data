@@ -685,7 +685,7 @@ module private HttpHelpers =
                             domain.Substring(prefix.Length)
                         else
                             domain
-                    let domain = kvp.[0] |> stripPrefix "http://" |> stripPrefix "https://"
+                    let domain = kvp.[1] |> stripPrefix "http://" |> stripPrefix "https://"
                     if domain <> "" then
                         cookie.Domain <- domain
                 elif cookiePart.Equals("secure", StringComparison.OrdinalIgnoreCase) then
