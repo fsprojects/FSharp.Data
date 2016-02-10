@@ -37,7 +37,8 @@ let init (cfg : TypeProviderConfig) =
 
     if not initialized then
         initialized <- true
-        WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
+        if WebRequest.DefaultWebProxy <> null then // avoid NRE
+            WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
     let bindingContext = cfg.GetTypeProviderBindingContext()
