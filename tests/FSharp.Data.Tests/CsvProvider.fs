@@ -473,3 +473,11 @@ let ``Multiline cells saved correctly``() =
     let csv = CsvProvider<csvWithMultilineCells>.GetSample()
     csv.Rows |> Seq.map (fun r -> r.Id, r.Text.Replace("\r", "")) |> Seq.toList |> should equal [1, "abc,"; 2, "def\nghi"]
     csv.SaveToString().Replace("\r", "") |> should equal (csvWithMultilineCells.Replace("\r", ""))
+
+[<Test>]
+let ``Fields with quotes should be quoted and escaped when saved``() =
+    let rowWithQuoteInField = new SimpleWithStrCsv.Row(true, "f\"oo", 1.3M)
+    let csv = new SimpleWithStrCsv([rowWithQuoteInField])
+    let roundTripped = SimpleWithStrCsv.Parse(csv.SaveToString())
+    let rowRoundTripped = roundTripped.Rows |> Seq.exactlyOne
+    rowRoundTripped |> should equal rowWithQuoteInField
