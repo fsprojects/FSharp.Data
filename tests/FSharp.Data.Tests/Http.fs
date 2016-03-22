@@ -46,3 +46,8 @@ let ``Two custom header with different names don't throw an exception`` () =
 let ``A request with an invalid url throws an exception`` () =
     (fun() -> Http.Request "www.google.com" |> ignore) |> should throw typeof<UriFormatException>
 
+[<Test>]
+let ``Web request's timeout is used`` () = 
+    let exc = Assert.Throws<System.Net.WebException> (fun () -> 
+        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+    Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
