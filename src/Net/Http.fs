@@ -554,20 +554,35 @@ module private HttpHelpers =
         hasContentType.Value
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
-        if defaultArg silentHttpErrors false then
+
+        let getResponseAsync (req:HttpWebRequest) =
             async {
+                let! child = 
+                    Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+                    |> fun x -> Async.StartChild(x, req.Timeout)
                 try
-                    return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+                    return! child
                 with
-                    | :? WebException as exn -> 
-                        if exn.Response <> null then 
-                           return exn.Response
-                        else 
-                            reraisePreserveStackTrace exn
-                            return Unchecked.defaultof<_>
+                | :? TimeoutException as exc -> 
+                    raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
+                    return Unchecked.defaultof<_>
             }
-        else 
-            Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+
+        if defaultArg silentHttpErrors false 
+            then
+                async {
+                    try
+                        return! getResponseAsync req
+                    with
+                        | :? WebException as exc -> 
+                            if exc.Response <> null then 
+                               return exc.Response
+                            else 
+                                reraisePreserveStackTrace exc
+                                return Unchecked.defaultof<_>
+                }
+            else getResponseAsync req
+            
 
     // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
     [<MethodImpl(MethodImplOptions.NoInlining)>]
