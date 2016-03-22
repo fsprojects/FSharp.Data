@@ -15,6 +15,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_EXPECT</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_IFMODIFIEDSINCE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_RANGE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_TIMEOUT</DefineConstants>    
     <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_GETENCODING_BY_CODEPAGE</DefineConstants>

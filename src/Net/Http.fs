@@ -557,15 +557,19 @@ module private HttpHelpers =
 
         let getResponseAsync (req:HttpWebRequest) =
             async {
-                let! child = 
-                    Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-                    |> fun x -> Async.StartChild(x, req.Timeout)
-                try
-                    return! child
-                with
-                | :? TimeoutException as exc -> 
-                    raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
-                    return Unchecked.defaultof<_>
+                #if FX_NO_WEBREQUEST_TIMEOUT
+                    return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+                #else
+                    let! child = 
+                        Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+                        |> fun x -> Async.StartChild(x, req.Timeout)
+                    try
+                        return! child
+                    with
+                    | :? TimeoutException as exc -> 
+                        raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
+                        return Unchecked.defaultof<_>
+                #endif
             }
 
         if defaultArg silentHttpErrors false 
