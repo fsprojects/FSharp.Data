@@ -58,6 +58,7 @@
     <file src="..\bin\portable259\FSharp.Data.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
     <file src="..\bin\portable259\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
     <file src="..\bin\portable259\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />        
+    <file src="linqpad-samples\*.*" target="linqpad-samples" />
   </files>
 </package>
