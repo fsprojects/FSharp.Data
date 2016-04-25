@@ -56,7 +56,7 @@
     <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\AssemblyReader.fs" />
     <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\AssemblyReaderReflection.fs" />
     <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesContext.fs" />
-    <Compile Include="CommonProviderImplementation\DebugProvidedTypes-modified.fs" />
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesTesting.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
     <Compile Include="CommonProviderImplementation\Helpers.fs" />

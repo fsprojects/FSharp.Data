@@ -39,3 +39,4 @@ GITHUB
     src/ProvidedTypes.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
     src/ProvidedTypes.fsi (ea733039c168a8e2d441e298a1c67d98f63b00f6)
     src/ProvidedTypesContext.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
+    src/ProvidedTypesTesting.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)

@@ -18,3 +18,4 @@ github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReader.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReaderReflection.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesContext.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs

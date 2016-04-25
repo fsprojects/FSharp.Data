@@ -4,6 +4,7 @@ open System
 open System.IO
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.ProvidedTypesTesting
 open FSharp.Data.Runtime
 
 type CsvProviderArgs = 
@@ -170,7 +171,8 @@ type TypeProviderInstantiation =
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |] 
-        Debug.generate resolutionFolder runtimeAssembly runtimeAssemblyRefs f args
+        
+        Testing.GenerateProvidedTypeInstantiation(resolutionFolder, runtimeAssembly, runtimeAssemblyRefs, f, args)
 
     override x.ToString() =
         match x with
@@ -217,8 +219,8 @@ type TypeProviderInstantiation =
     member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
-            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+            let tp = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
+            Testing.FormatProvidedType(tp, signatureOnly, ignoreOutput, 10, 100)
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
             |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
