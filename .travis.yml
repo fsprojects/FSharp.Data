@@ -1,6 +1,13 @@
-language: csharp
+language: objective-c
 
-sudo: false
+env:
+  global:
+    - MONO_VERSION=4.2.0
+    - MONO_MANAGED_WATCHER=disabled
+
+install:
+  - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script:
   - ./build.sh CleanInternetCaches && ./build.sh All
