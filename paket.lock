@@ -34,9 +34,8 @@ GITHUB
     modules/Octokit/Octokit.fsx (5bcf8d23e8f29314b31b728b6549e02dbec999b2)
       Octokit
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-  specs:
-    src/AssemblyReader.fs (77fda2a5ce7efbcc84011210553924af5ff961b3)
-    src/AssemblyReaderReflection.fs (77fda2a5ce7efbcc84011210553924af5ff961b3)
-    src/ProvidedTypes.fs (77fda2a5ce7efbcc84011210553924af5ff961b3)
-    src/ProvidedTypes.fsi (77fda2a5ce7efbcc84011210553924af5ff961b3)
-    src/ProvidedTypesContext.fs (77fda2a5ce7efbcc84011210553924af5ff961b3)
+    src/AssemblyReader.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
+    src/AssemblyReaderReflection.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
+    src/ProvidedTypes.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
+    src/ProvidedTypes.fsi (ea733039c168a8e2d441e298a1c67d98f63b00f6)
+    src/ProvidedTypesContext.fs (ea733039c168a8e2d441e298a1c67d98f63b00f6)
