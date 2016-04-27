@@ -183,14 +183,10 @@ module internal HtmlCssSelectors =
                     let str = c.ToString()
                     let s, t' = readString str t
                     tokenize' (TagName(getOffset t, s) :: acc) t'
-                | [] -> List.rev acc // TODO: refactor code to remove this
-                | c :: _ when Char.IsLetterOrDigit c |> not ->
-                    []
-                    //let offset = getOffset t
-                    //failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
-                | _ ->
-                    //failwith "Invalid css selector syntax"
-                    []
+                | [] -> List.rev acc 
+                | c::t ->
+                    let offset = getOffset (c::t)
+                    failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
             tokenize' [] source
 
     type FilterLevel = 
