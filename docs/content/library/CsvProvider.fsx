@@ -296,11 +296,16 @@ consider that row as a data row. In that case, the columns will be named `Column
 names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
 and still have the provider infer the type for you. Example:
 *)
+type OneTwoThree = 
+  CsvProvider<"1,2,3", HasHeaders = false, 
+    Schema = "Duration (float<second>),foo,float option">
 
-let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
+let csv = OneTwoThree.GetSample()
 for row in csv.Rows do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.Foo (defaultArg row.Column3 1.0)
-
+  printfn "%f %d %f" 
+    (row.Duration/1.0<second>) 
+    row.Foo 
+    (defaultArg row.Column3 1.0)
 (**
 
 You don't need to override all the columns, you can skip the ones to leave as default.
@@ -310,21 +315,28 @@ if you want to rename the 3rd column (the `PClass` column) to `Passenger Class` 
 the other columns blank in the schema (you also don't need to add all the trailing commas).
 
 *)
+type Titanic1 = 
+  CsvProvider<"../data/Titanic.csv", 
+    Schema=",,Passenger Class,,,float">
 
-let titanic1 = CsvProvider<"../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
+let titanic1 = Titanic1.GetSample()
 for row in titanic1.Rows do
-  printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
+  printfn "%s Class = %d Fare = %g" 
+    row.Name row.``Passenger Class`` row.Fare
 
 (**
 
 Alternatively, you can rename and override the type of any column by name instead of by position:
 
 *)
+type Titanic2 = 
+  CsvProvider<"../data/Titanic.csv", 
+    Schema="Fare=float,PClass->Passenger Class">
 
-let titanic2 = CsvProvider<"../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
+let titanic2 = Titanic2.GetSample()
 for row in titanic2.Rows do
-  printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
-
+  printfn "%s Class = %d Fare = %g" 
+    row.Name row.``Passenger Class`` row.Fare
 (**
 
 You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,PClass->Passenger Class=string"`
@@ -339,10 +351,12 @@ the `Save` method. You can also use the `SaveToString()` to get the output direc
 *)
 
 // Saving the first 10 rows that don't have missing values to a new csv file
-airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) && 
-                             not (Double.IsNaN row.``Solar.R``))
-          .Truncate(10)
-          .SaveToString()
+airQuality
+  .Filter(fun row -> 
+    not (Double.IsNaN row.Ozone) && 
+    not (Double.IsNaN row.``Solar.R``))
+  .Truncate(10)
+  .SaveToString()
 
 (** 
 
@@ -351,12 +365,10 @@ It's also possible to transform the columns themselves by using `Map` and the co
 *)
 
 let doubleOzone = 
-    airQuality.Map(fun row -> AirQuality.Row(row.Ozone * 2.0, 
-                                             row.``Solar.R``, 
-                                             row.Wind, 
-                                             row.Temp, 
-                                             row.Month, 
-                                             row.Day))
+  airQuality.Map(fun row -> 
+    AirQuality.Row
+      ( row.Ozone * 2.0, row.``Solar.R``, 
+        row.Wind, row.Temp, row.Month, row.Day))
 
 (**
 
@@ -364,10 +376,13 @@ You can also append new rows, either by creating them directly as in the previou
 
 *)
 
-let newRows = AirQuality.ParseRows("""1.0, 2.0, 3M, 20, 1, 1
-                                      1.3, 2.1, 3M, 21, 1, 2\n""")
+let newRows = 
+  AirQuality.ParseRows
+    ("""1.0, 2.0, 3M, 20, 1, 1
+        1.3, 2.1, 3M, 21, 1, 2\n""")
 
-let airQualityWithExtraRows = airQuality.Append newRows
+let airQualityWithExtraRows = 
+  airQuality.Append newRows
 
 (**
 
@@ -375,10 +390,15 @@ It's even possible to create csv files without parsing at all:
 
 *)
 
-type MyCsvType = CsvProvider<Schema = "A (int), B (string), C (date option)", HasHeaders=false>
+type MyCsvType = 
+  CsvProvider<Schema = "A (int), B (string), C (date option)", 
+    HasHeaders=false>
 
-let myCsv = new MyCsvType( [ MyCsvType.Row(1, "a", None)
-                             MyCsvType.Row(2, "B", Some DateTime.Now) ])
+let myRows = 
+  [ MyCsvType.Row(1, "a", None)
+    MyCsvType.Row(2, "B", Some DateTime.Now) ]
+
+let myCsv = new MyCsvType(myRows)
 myCsv.SaveToString()
 
 (**
@@ -391,8 +411,10 @@ to `false`. If the number of rows is very big, you have to do this otherwise you
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
 *)
+let [<Literal>] MSFT = 
+  "http://ichart.finance.yahoo.com/table.csv?s=MSFT"
 
-let stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>.GetSample()
+let stocks = CsvProvider<MSFT, CacheRows=false>.GetSample()
 stocks.Take(10).Cache()
 
 (**
