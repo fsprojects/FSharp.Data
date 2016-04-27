@@ -5,12 +5,11 @@ This article demonstrates how to use HTML CSS selectors to browse the DOM of par
 
 Usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
 The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.com/category/selectors/).
-To use CSS selectors, reference the F# Data library. You then need to open
-`FSharp.Data.CssSelectorExtensions` module, which will allow you to use CSS selectors.
+To use CSS selectors, reference the F# Data library. You then need to open `FSharp.Data` namespace, which
+automatically exposes extension methods that implement the CSS selectors.
 *)
 #r "../../../bin/FSharp.Data.dll"
 open FSharp.Data
-open FSharp.Data.CssSelectorExtensions
 
 (**
 
@@ -27,7 +26,7 @@ Then we can , for example, use the direct descendants selector to select another
 id `ires`. The CSS selector to do so is `div#search > div#ires`:
 *)
 let links = 
-  doc.CssSelect "div#search > div#ires li.g > div.s div.kv cite"
+  doc.CssSelect("div#search > div#ires li.g > div.s div.kv cite")
   |> List.map (fun n -> 
       match n.InnerText() with
       | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
@@ -41,7 +40,7 @@ Now we might want the pages titles associated with their URLs. To do this, we ca
 *)
 
 let searchResults = 
-    doc.CssSelect "div#search > div#ires li.g > h3"
+    doc.CssSelect("div#search > div#ires li.g > h3")
     |> List.map (fun n -> n.InnerText())
     |> List.zip (links)
 
