@@ -1,3 +1,10 @@
+#### 2.3.0-beta3 - Unreleased
+* Handle cookies with "http://"-prefixed domain value correctly.
+
+#### 2.3.0-beta2 - December 21 2015
+* Improved JSON parsing performance by 20%.
+* Fixed dependencies of NuGet package for PCL profiles 7 and 259.
+
 #### 2.3.0-beta1 - October 11 2015
 * Support for PCL profile 7 and PCL profile 259.
 * Added support for single column CSV files in CsvProvider.

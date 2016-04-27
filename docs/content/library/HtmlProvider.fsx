@@ -115,11 +115,11 @@ Chart.Bar stats
 
 let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials">()
 
-// Get the average number of viewers for each doctor
+// Get the average number of viewers for each doctor finale
 let viewersByDoctor = 
-    doctorWho.Tables.Overview.Rows 
+    doctorWho.Tables.``Series overview``.Rows 
     |> Seq.groupBy (fun season -> season.``Doctor(s)``)
-    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Viewers (millions) - Average``))
+    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Viewers (millions) - Finale``))
     |> Seq.toArray
 
 // Visualize it

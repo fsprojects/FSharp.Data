@@ -149,6 +149,9 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     let mutable i = 0
     let s = jsonText
 
+    
+    let buf = StringBuilder() // pre-allocate buffers for strings
+
     // Helper functions
     let skipWhitespace() =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
@@ -191,7 +194,6 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     and parseString() =
         ensure(i < s.Length && s.[i] = '"')
         i <- i + 1
-        let buf = new StringBuilder()
         while i < s.Length && s.[i] <> '"' do
             if s.[i] = '\\' then
                 ensure(i+1 < s.Length)
@@ -242,17 +244,20 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                 i <- i + 1
         ensure(i < s.Length && s.[i] = '"')
         i <- i + 1
-        buf.ToString()
+        let str = buf.ToString()
+        buf.Clear() |> ignore
+        str
 
     and parseNum() =
         let start = i
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match TextConversions.AsDecimal cultureInfo (s.Substring(start,len)) with
+        let sub = s.Substring(start,len)
+        match TextConversions.AsDecimal cultureInfo sub with
         | Some x -> JsonValue.Number x
         | _ ->
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo (s.Substring(start,len)) with
+            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo sub with
             | Some x -> JsonValue.Float x
             | _ -> throw()
 

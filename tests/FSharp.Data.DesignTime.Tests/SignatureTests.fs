@@ -8,6 +8,7 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 
 open System
 open System.IO
+open System.Reflection
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
@@ -38,46 +39,42 @@ let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" +
 
 [<Test>]
 let ``test basic binding context net40``() = 
-   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Net40)
+   let ctxt1 = ProvidedTypesContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Net40)
 
-   ctxt1.SystemRuntimeScopeRef |> ignore
-   match ctxt1.TryBindAssembly("mscorlib") with 
+   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable7``() = 
-   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable7)
+   let ctxt1 = ProvidedTypesContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable7)
 
-   ctxt1.SystemRuntimeScopeRef |> ignore
-   match ctxt1.TryBindAssembly("System.Runtime") with 
+   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly("mscorlib") with 
+   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable47``() = 
-   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable47)
+   let ctxt1 = ProvidedTypesContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable47)
 
-   ctxt1.SystemRuntimeScopeRef |> ignore
-   match ctxt1.TryBindAssembly("mscorlib") with 
+   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable259``() = 
-   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable259)
+   let ctxt1 = ProvidedTypesContext (TypeProviderInstantiation.GetRuntimeAssemblyRefs Portable259)
 
-   ctxt1.SystemRuntimeScopeRef |> ignore
-   match ctxt1.TryBindAssembly("System.Runtime") with 
+   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly("mscorlib") with 
+   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly("mscorlib") with 
+   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with 
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 

@@ -21,7 +21,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 - FSharp.Core 4.3.0.0 (F# 3.0)
 - FSharp.Core 4.3.1.0 (F# 3.1)
-- FSharp.Core 4.4.0.0 (F# 3.0)
+- FSharp.Core 4.4.0.0 (F# 4.0)
 
 ## Supported platforms
 

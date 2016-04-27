@@ -20,7 +20,7 @@ open FSharp.Data.Runtime.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit DisposableTypeProviderForNamespaces()
 
-    let asm, _version, replacer = AssemblyResolver.init cfg 
+    let asm, _version, bindingContext = AssemblyResolver.init cfg 
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
@@ -33,26 +33,26 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  
-        let resTy = replacer.ProvidedTypeDefinition(asm, ns, worldBankTypeName, typeof<obj>, hideObjectMethods = true, nonNullable = true)
+        let resTy = bindingContext.ProvidedTypeDefinition(asm, ns, worldBankTypeName, None, hideObjectMethods = true, nonNullable = true)
 
         let serviceTypesType = 
-            let t = replacer.ProvidedTypeDefinition("ServiceTypes", typeof<obj>, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("ServiceTypes", None, hideObjectMethods = true, nonNullable = true)
             t.AddXmlDoc("<summary>Contains the types that describe the data service</summary>")
             resTy.AddMember t
             t
 
         let indicatorsType =
-            let t = replacer.ProvidedTypeDefinition("Indicators", typeof<Indicators>, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Indicators", Some typeof<Indicators>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for indicator in connection.Indicators do
                       let indicatorIdVal = indicator.Id
                       let prop = 
                         if asynchronous then 
-                          replacer.ProvidedProperty
+                          bindingContext.ProvidedProperty
                             ( indicator.Name, typeof<Async<Indicator>> , 
                               getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Indicators) :> IIndicators).AsyncGetIndicator(indicatorIdVal) @@>))
                         else
-                          replacer.ProvidedProperty
+                          bindingContext.ProvidedProperty
                             ( indicator.Name, typeof<Indicator>, 
                               getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Indicators) :> IIndicators).GetIndicator(indicatorIdVal) @@>))
 
@@ -62,12 +62,12 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let indicatorsDescriptionsType =
-            let t = replacer.ProvidedTypeDefinition("IndicatorsDescriptions", typeof<IndicatorsDescriptions> , hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("IndicatorsDescriptions", Some typeof<IndicatorsDescriptions> , hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for indicator in connection.Indicators do
                       let indicatorIdVal = indicator.Id
                       let prop = 
-                          replacer.ProvidedProperty
+                          bindingContext.ProvidedProperty
                             ( indicator.Name, 
                               typeof<IndicatorDescription> , 
                               getterCode = (fun (Singleton arg) -> <@@ ((%%arg : IndicatorsDescriptions) :> IIndicatorsDescriptions).GetIndicator(indicatorIdVal) @@>))
@@ -77,9 +77,9 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let countryType =
-            let t = replacer.ProvidedTypeDefinition("Country", baseType=(typeof<Country>), hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Country", Some typeof<Country>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
-                [ let prop = replacer.ProvidedProperty("Indicators", indicatorsType, 
+                [ let prop = bindingContext.ProvidedProperty("Indicators", indicatorsType, 
                               getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Country) :> ICountry).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the country</summary>")
                   yield prop ] )
@@ -88,13 +88,13 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let countriesType =
             let countryCollectionType = ProvidedTypeBuilder.MakeGenericType(typedefof<CountryCollection<_>>, [ countryType ])
-            let t = replacer.ProvidedTypeDefinition("Countries", countryCollectionType, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Countries", Some countryCollectionType, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for country in connection.Countries do
                     let countryIdVal = country.Id
                     let name = country.Name
                     let prop = 
-                        replacer.ProvidedProperty
+                        bindingContext.ProvidedProperty
                           ( name, countryType, 
                             getterCode = (fun (Singleton arg) -> <@@ ((%%arg : CountryCollection<Country>) :> ICountryCollection).GetCountry(countryIdVal, name) @@>))
                     prop.AddXmlDoc (sprintf "The data for country '%s'" country.Name)
@@ -103,13 +103,13 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let regionType =
-            let t = replacer.ProvidedTypeDefinition("Region", typeof<Region>, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Region", Some typeof<Region>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
-                [ let prop = replacer.ProvidedProperty("Indicators", indicatorsType, 
+                [ let prop = bindingContext.ProvidedProperty("Indicators", indicatorsType, 
                                getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Region) :> IRegion).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the region</summary>")
                   yield prop 
-                  let prop = replacer.ProvidedProperty("Countries", countriesType, 
+                  let prop = bindingContext.ProvidedProperty("Countries", countriesType, 
                                getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Region) :> IRegion).GetCountries() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the region</summary>")
                   yield prop ] )
@@ -118,11 +118,11 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let regionsType =
             let regionCollectionType = ProvidedTypeBuilder.MakeGenericType(typedefof<RegionCollection<_>>, [ regionType ])
-            let t = replacer.ProvidedTypeDefinition("Regions", regionCollectionType, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Regions", Some regionCollectionType, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for code, name in connection.Regions do
                     let prop = 
-                        replacer.ProvidedProperty
+                        bindingContext.ProvidedProperty
                           ( name, regionType, 
                             getterCode = (fun (Singleton arg) -> <@@ ((%%arg : RegionCollection<Region>) :> IRegionCollection).GetRegion(code) @@>)) 
                     prop.AddXmlDoc (sprintf "The data for region '%s'" name)
@@ -131,9 +131,9 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
   
         let topicType =
-            let t = replacer.ProvidedTypeDefinition("Topic", typeof<Topic>, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Topic", Some typeof<Topic>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
-                [ let prop = replacer.ProvidedProperty("Indicators", indicatorsDescriptionsType, 
+                [ let prop = bindingContext.ProvidedProperty("Indicators", indicatorsDescriptionsType, 
                               getterCode = (fun (Singleton arg) -> <@@ ((%%arg : Topic) :> ITopic).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the topic</summary>")
                   yield prop ] )
@@ -142,12 +142,12 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let topicsType =
             let topicCollectionType = ProvidedTypeBuilder.MakeGenericType(typedefof<TopicCollection<_>>, [ topicType ])
-            let t = replacer.ProvidedTypeDefinition("Topics", topicCollectionType, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("Topics", Some topicCollectionType, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for topic in connection.Topics do
                     let topicIdVal = topic.Id
                     let prop = 
-                        replacer.ProvidedProperty
+                        bindingContext.ProvidedProperty
                           ( topic.Name, topicType, 
                             getterCode = (fun (Singleton arg) -> <@@ ((%%arg : TopicCollection<Topic>) :> ITopicCollection).GetTopic(topicIdVal) @@>))
                     if not (String.IsNullOrEmpty topic.Description) then prop.AddXmlDoc(topic.Description)
@@ -156,18 +156,18 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let worldBankDataServiceType =
-            let t = replacer.ProvidedTypeDefinition("WorldBankDataService", typeof<WorldBankData>, hideObjectMethods = true, nonNullable = true)
+            let t = bindingContext.ProvidedTypeDefinition("WorldBankDataService", Some typeof<WorldBankData>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
-                [ yield replacer.ProvidedProperty("Countries", countriesType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
-                  yield replacer.ProvidedProperty("Regions", regionsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
-                  yield replacer.ProvidedProperty("Topics", topicsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetTopics() @@>)) ])
+                [ yield bindingContext.ProvidedProperty("Countries", countriesType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
+                  yield bindingContext.ProvidedProperty("Regions", regionsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
+                  yield bindingContext.ProvidedProperty("Topics", topicsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetTopics() @@>)) ])
             serviceTypesType.AddMember t
             t
 
         resTy.AddMembersDelayed (fun () -> 
             [ let urlVal = defaultServiceUrl
               let sourcesVal = sources |> String.concat ";"
-              yield replacer.ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, isStatic=true,
+              yield bindingContext.ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, isStatic=true,
                                        invokeCode = (fun _ -> <@@ WorldBankData(urlVal, sourcesVal) @@>)) 
             ])
 
@@ -180,7 +180,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.</summary>"
 
     let paramWorldBankType = 
-        let t = replacer.ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", typeof<obj>, hideObjectMethods = true, nonNullable = true)
+        let t = bindingContext.ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", None, hideObjectMethods = true, nonNullable = true)
         
         let defaultSourcesStr = String.Join(";", defaultSources)
         let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters. See http://www.worldbank.org for terms and conditions.</summary>

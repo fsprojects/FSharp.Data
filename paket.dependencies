@@ -4,8 +4,8 @@ source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 nuget Zlib.Portable
 nuget FSharp.Charting
 nuget FSharp.Formatting
-nuget NUnit
-nuget NUnit.Runners
+nuget NUnit 2.6.4
+nuget NUnit.Runners 2.6.4
 nuget FsCheck
 nuget Nancy.Hosting.Self
 nuget FAKE
@@ -15,4 +15,7 @@ nuget Nuget.CommandLine
 github fsharp/FAKE modules/Octokit/Octokit.fsx
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.StarterPack src/DebugProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReader.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReaderReflection.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesContext.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
