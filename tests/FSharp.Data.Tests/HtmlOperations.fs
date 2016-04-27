@@ -14,6 +14,7 @@ open System
 open FSharp.Data
 open FSharp.Data.HtmlNode
 open FSharp.Data.HtmlAttribute
+open FSharp.Data.CssSelectorExtensions
 
 [<Test>]
 let ``Can get the name of a HtmlAttribute``() = 
@@ -153,3 +154,4 @@ let ``Inner text on a style should be String.Empty``() =
 let ``Inner text on a script should be String.Empty``() = 
     let comment = HtmlNode.NewElement("script", [HtmlNode.NewText "Hello World"])
     HtmlNode.innerText comment |> should equal String.Empty
+
