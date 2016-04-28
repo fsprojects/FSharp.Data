@@ -505,6 +505,28 @@ let ``Can parse nested lists correctly when continues on recurse``() =
     result |> should equal [ "12"; "1"; "2"; "3"; "4" ]
 
 [<Test>]
+let ``Can parse pre blocks``() = 
+    let html = "<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>"
+    
+    let result = 
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed true [ "pre" ]
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
+    result |> should equal [ "\r\n        This code should be indented and\r\n        have line feeds in it" ]
+
+[<Test>]
+let ``Can parse code blocks``() = 
+    let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
+    
+    let result = 
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed true [ "code" ]
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
+    result |> should equal [ "\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30" ]
+
+[<Test>]
 let ``Can parse national rail mobile site correctly``() = 
     HtmlDocument.Load "data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
