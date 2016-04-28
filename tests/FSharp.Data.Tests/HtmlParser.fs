@@ -506,9 +506,7 @@ let ``Can parse nested lists correctly when continues on recurse``() =
 
 [<Test>]
 let ``Can parse pre blocks``() = 
-    let html = """<pre>
-        This code should be indented and
-        have line feeds in it</pre>"""
+    let html = "<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>"
     
     let result = 
         (HtmlDocument.Parse html)
@@ -519,9 +517,7 @@ let ``Can parse pre blocks``() =
 
 [<Test>]
 let ``Can parse code blocks``() = 
-    let html = """<code>
-        let f a b = a * b
-        f 5 6 |> should equal 30</code>"""
+    let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
     
     let result = 
         (HtmlDocument.Parse html)
