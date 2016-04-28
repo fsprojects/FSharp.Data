@@ -242,6 +242,7 @@ module internal HtmlParser =
 
     type InsertionMode = 
         | DefaultMode
+        | FormattedMode
         | ScriptMode
         | CharRefMode
         | CommentMode
@@ -250,6 +251,7 @@ module internal HtmlParser =
         override x.ToString() =
             match x with
             | DefaultMode -> "default"
+            | FormattedMode -> "formatted"
             | ScriptMode -> "script"
             | CharRefMode -> "charref"
             | CommentMode -> "comment"
@@ -318,6 +320,12 @@ module internal HtmlParser =
             x.Attributes := []
             x.Tokens := result :: !x.Tokens 
 
+        member x.IsFormattedTag 
+            with get() = 
+               match x.CurrentTagName() with
+               | "pre" | "code" -> true
+               | _ -> false
+
         member x.IsScriptTag 
             with get() = 
                match x.CurrentTagName() with
@@ -335,8 +343,8 @@ module internal HtmlParser =
                 else Tag(false, name, x.GetAttributes())
 
             x.InsertionMode :=
-                if x.IsScriptTag && (not isEnd)
-                then ScriptMode
+                if x.IsFormattedTag && (not isEnd) then FormattedMode
+                elif x.IsScriptTag && (not isEnd) then ScriptMode
                 else DefaultMode
 
             x.CurrentTag := CharList.Empty
@@ -358,6 +366,7 @@ module internal HtmlParser =
                 | DefaultMode -> 
                     let normalizedContent = wsRegex.Value.Replace(content, " ")
                     if normalizedContent = " " then Text "" else Text normalizedContent
+                | FormattedMode -> content |> Text
                 | ScriptMode -> content |> Text
                 | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
                 | CommentMode -> Comment content
@@ -400,6 +409,7 @@ module internal HtmlParser =
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
                 | ScriptMode -> script state;
+                | FormattedMode -> state.Cons(); data state
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
                 | CommentMode -> comment state
