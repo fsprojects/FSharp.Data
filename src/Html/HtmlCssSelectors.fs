@@ -5,6 +5,7 @@ open FSharp.Data
 open System.Runtime.CompilerServices
 
 module internal HtmlCssSelectors =
+
     type SelectorToken =
         | ClassPrefix of int
         | IdPrefix of int
@@ -187,7 +188,6 @@ module internal HtmlCssSelectors =
             source <- Array.toList(cssSelector.ToCharArray())
             charCount <- source.Length
             tokenize()
-            
 
     type FilterLevel = 
         | Root
@@ -216,7 +216,6 @@ module internal HtmlCssSelectors =
         |> getTargets level
         |> Seq.filter (fun x -> x.Attributes() |> Seq.exists(fun a -> a.Name() = attr))
         |> Seq.toList
-
 
     let selectCssElements (tokens:SelectorToken list) (nodes:HtmlNode list) = 
         let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]            
@@ -353,15 +352,15 @@ module internal HtmlCssSelectors =
 
         selectElements' FilterLevel.Descendants nodes tokens
 
-
 [<AutoOpen>]
 module CssSelectorExtensions =
+
     open HtmlCssSelectors
 
     [<Extension>]
     type CssSelectorExtensions =
 
-        static member private Select (nodes:HtmlNode seq) selector =
+        static member private Select nodes selector =
             let tokenizer = CssSelectorTokenizer()
             match tokenizer.Tokenize selector with
             | [] -> []
@@ -375,7 +374,7 @@ module CssSelectorExtensions =
         
         /// Gets descendants matched by Css selector
         [<Extension>]
-        static member CssSelect(nodes, selector) = 
+        static member CssSelect(nodes:HtmlNode seq, selector) = 
             CssSelectorExtensions.Select (List.ofSeq nodes) selector
 
         /// Gets descendants matched by Css selector

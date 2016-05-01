@@ -824,4 +824,3 @@ module HtmlExtensions =
     /// Gets the value of an attribute from an HTML element
     let (?) (node : HtmlNode) name = 
         HtmlNode.attributeValue name node 
-

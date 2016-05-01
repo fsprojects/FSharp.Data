@@ -31,7 +31,7 @@ let description = """
   in your F# applications and scripts. It implements F# type providers for working with
   structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data.
   It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
-let tags = "F# fsharp data typeprovider WorldBank CSV HTML JSON XML HTTP linqpad-samples"
+let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
 
 let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner

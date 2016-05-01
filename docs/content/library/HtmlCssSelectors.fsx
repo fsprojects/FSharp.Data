@@ -150,7 +150,7 @@ let manStartElems =
 (**
 ### Forms helpers
 
-There are some syntax shorcuts to find forms controls.
+There are some syntax shortcuts to find forms controls.
 *)
 
 let htmlForm = HtmlDocument.Parse("""
