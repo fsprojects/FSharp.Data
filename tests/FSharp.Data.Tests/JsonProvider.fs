@@ -97,6 +97,34 @@ let ``Optional records correctly handled when null``() =
   json.[0].Milestone.IsNone |> should equal true
   json.[0].Milestone.IsSome |> should equal false
 
+[<Literal>]
+let person = """
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "address":
+    {
+        "state": "Texas",
+        "city": "Dallas"
+    }
+  }
+,
+{
+    "firstName": "Bas",
+    "lastName": "Rutten",
+    "address": ""
+  }
+]
+"""
+
+[<Test>]
+let ``Optional records correctly handled when empty string``() =
+    let j = JsonProvider<person>.GetSamples()
+    j.[0].Address.IsSome |> should equal true
+    j.[0].Address.Value.City |> should equal "Dallas"
+    j.[1].Address |> should equal None
+
 [<Test>]
 let ``Optional collections correctly handled when null``() = 
   let withCoords, withoutCoords =         
@@ -622,3 +650,4 @@ let ``Weird UnitSystem case``() =
 let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
+
