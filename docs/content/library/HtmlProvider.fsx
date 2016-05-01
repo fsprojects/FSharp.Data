@@ -44,9 +44,13 @@ entities exist then the table will simply be named `Tablexx` where xx is the pos
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
 *)
- 
+let bmr = 
+  "http://www.bmreports.com/servlet/" +
+    "com.logica.neta.bwp_MarketDepthServlet"
+
 // Download the latest market depth information
-let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table1
+let mrktDepth = 
+  MarketDepth.Load(bmr).Tables.Table1
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -57,7 +61,8 @@ let acceptedOffer = firstRow.``Accepted Offer Vol``
 
 // Print the bid / offer volumes for each row
 for row in mrktDepth.Rows do
-  printfn "Bid/Offer: (%A, %A, %A)" row.``Settlement Day`` row.``Bid Volume`` row.``Offer Volume``
+  printfn "Bid/Offer: (%A, %A, %A)" 
+    row.``Settlement Day`` row.``Bid Volume`` row.``Offer Volume``
 
 (**
 The generated type has a property `Rows` that returns the data from the HTML file as a
@@ -82,19 +87,23 @@ Note that we're using the live URL as the sample, so we can just use the default
 (*** define-output:nugetChart ***)
 
 // Configure the type provider
-type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
+type NugetStats = 
+  HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
 let rawStats = NugetStats().Tables.``Version History``
 
 // helper function to analyze version numbers from nuget
-let getMinorVersion (v:string) =  System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
+let getMinorVersion (v:string) =  
+  System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
 
 // group by minor version and calculate download count
 let stats = 
-    rawStats.Rows
-    |> Seq.groupBy (fun r -> getMinorVersion r.Version)
-    |> Seq.map (fun (k, xs) -> k, xs |> Seq.sumBy (fun x -> x.Downloads))
+  rawStats.Rows
+  |> Seq.groupBy (fun r -> 
+      getMinorVersion r.Version)
+  |> Seq.map (fun (k, xs) -> 
+      k, xs |> Seq.sumBy (fun x -> x.Downloads))
 
 // Load the FSharp.Charting library
 #load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
@@ -112,18 +121,26 @@ Chart.Bar stats
 *)
 
 (*** define-output:doctorWhoChart ***)
+let [<Literal>] DrWho = 
+  "http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials"
 
-let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials">()
+let doctorWho = new HtmlProvider<DrWho>()
 
 // Get the average number of viewers for each doctor finale
 let viewersByDoctor = 
-    doctorWho.Tables.``Series overview``.Rows 
-    |> Seq.groupBy (fun season -> season.``Doctor(s)``)
-    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Viewers (millions) - Finale``))
-    |> Seq.toArray
+  doctorWho.Tables.``Series overview``.Rows 
+  |> Seq.groupBy (fun season -> season.``Doctor(s)``)
+  |> Seq.map (fun (doctor, seasons) -> 
+      let averaged = 
+        seasons 
+        |> Seq.averageBy (fun season -> 
+            season.``Viewers (millions) - Finale``)
+      doctor, averaged)
+  |> Seq.toArray
 
 // Visualize it
-(Chart.Column viewersByDoctor).WithYAxis(Title = "Millions")
+Chart.Column(viewersByDoctor)
+  .WithYAxis(Title = "Millions")
 
 (*** include-it:doctorWhoChart ***)
 
