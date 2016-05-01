@@ -153,7 +153,7 @@ type JsonRuntime =
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
     doc.JsonValue.TryGetProperty(name)
-    |> Option.bind (function JsonValue.Null -> None | x -> Some x) 
+    |> Option.bind (function JsonValue.Null | JsonValue.String "" -> None | x -> Some x) 
 
   /// Get optional json property and wrap it together with path
   static member TryGetPropertyUnpackedWithPath(doc:IJsonDocument, name) =

@@ -1,3 +1,6 @@
+#### 2.3.1 - Unreleased
+* Fix runtime parsing of optional records with empty strings in JsonProvider.
+
 #### 2.3.0 - May 1 2016
 * Handle cookies with "http://"-prefixed domain value correctly.
 * Fixed Pre and Code HTML tags loosing the formating.
