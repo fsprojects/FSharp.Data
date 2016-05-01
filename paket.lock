@@ -1,42 +1,43 @@
 NUGET
   remote: http://www.nuget.org/api/v2
   specs:
-    FAKE (4.22.0)
-    FsCheck (2.2.4)
+    FAKE (4.25.5)
+    FsCheck (2.4)
       FSharp.Core (>= 3.1.2.5)
-    FSharp.Charting (0.90.13)
+    FSharp.Charting (0.90.14)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Core (4.0.0.1)
-    FSharp.Formatting (2.14.0)
-      FSharp.Compiler.Service (>= 2.0.0.3 < 2.1.0)
-      FSharpVSPowerTools.Core (>= 2.3.0 < 2.4.0)
-    FSharpVSPowerTools.Core (2.3.0)
+    FSharp.Formatting (2.14.2)
+      FSharp.Compiler.Service (2.0.0.6)
+      FSharpVSPowerTools.Core (>= 2.3 < 2.4)
+    FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
-    Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40
+    Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl.Build (>= 1.0.14)
-    Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40
-    Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40
+    Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     Nancy (1.4.3)
     Nancy.Hosting.Self (1.4.1)
       Nancy (>= 1.4.1)
-    NuGet.CommandLine (3.3.0)
+    NuGet.CommandLine (3.4.3)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
-    Octokit (0.19.0)
-      Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40
-    SourceLink.Fake (1.1.0)
-    Zlib.Portable (1.11.0)
+    Octokit (0.19)
+      Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
+    SourceLink.Fake (1.1)
+    Zlib.Portable (1.11)
 GITHUB
   remote: fsharp/FAKE
   specs:
-    modules/Octokit/Octokit.fsx (5bcf8d23e8f29314b31b728b6549e02dbec999b2)
+    modules/Octokit/Octokit.fsx (b6f259615a85b9b4b715be927e7f60a34967e8fa)
       Octokit
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/AssemblyReader.fs (dec7c310becf04605868cb4e916b7755e9960744)
-    src/AssemblyReaderReflection.fs (dec7c310becf04605868cb4e916b7755e9960744)
-    src/ProvidedTypes.fs (dec7c310becf04605868cb4e916b7755e9960744)
-    src/ProvidedTypes.fsi (dec7c310becf04605868cb4e916b7755e9960744)
-    src/ProvidedTypesContext.fs (dec7c310becf04605868cb4e916b7755e9960744)
-    src/ProvidedTypesTesting.fs (dec7c310becf04605868cb4e916b7755e9960744)
+  specs:
+    src/AssemblyReader.fs (efc98fd681d2b4247b015d33e3ad5ff87bd16240)
+    src/AssemblyReaderReflection.fs (efc98fd681d2b4247b015d33e3ad5ff87bd16240)
+    src/ProvidedTypes.fs (efc98fd681d2b4247b015d33e3ad5ff87bd16240)
+    src/ProvidedTypes.fsi (efc98fd681d2b4247b015d33e3ad5ff87bd16240)
+    src/ProvidedTypesContext.fs (efc98fd681d2b4247b015d33e3ad5ff87bd16240)
+    src/ProvidedTypesTesting.fs (efc98fd681d2b4247b015d33e3ad5ff87bd16240)

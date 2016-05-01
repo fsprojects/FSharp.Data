@@ -1,5 +1,9 @@
-#### 2.3.0-beta3 - Unreleased
+#### 2.3.0 - May 1 2016
 * Handle cookies with "http://"-prefixed domain value correctly.
+* Fixed Pre and Code HTML tags loosing the formating.
+* Added LINQPad samples.
+* Fixed quotes not being escaped when saving CSV files.
+* Fixed crash on systems where WebRequest.DefaultWebProxy is null.
 
 #### 2.3.0-beta2 - December 21 2015
 * Improved JSON parsing performance by 20%.
