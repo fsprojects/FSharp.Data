@@ -325,6 +325,7 @@
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlCssSelectors.fs" />
     <Compile Include="HtmlProvider.fs" />
     <Compile Include="HtmlProviderList.fs" />
     <None Include="app.config" />

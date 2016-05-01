@@ -24,9 +24,7 @@ let info =
 #I "../../packages/FSharp.Charting/lib/net40"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-
 #r "../../packages/FAKE/tools/FakeLib.dll"
-
 #load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
 
 open System.IO

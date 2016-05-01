@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82
 	ProjectSection(SolutionItems) = preProject
 		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
 		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
+		docs\content\library\HtmlCssSelectors.fsx = docs\content\library\HtmlCssSelectors.fsx
 		docs\content\library\HtmlParser.fsx = docs\content\library\HtmlParser.fsx
 		docs\content\library\HtmlProvider.fsx = docs\content\library\HtmlProvider.fsx
 		docs\content\library\Http.fsx = docs\content\library\Http.fsx
