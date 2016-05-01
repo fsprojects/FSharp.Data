@@ -74,7 +74,7 @@ module internal HtmlCssSelectors =
                 failwithf "Invalid css selector syntax at: %s" (new String(Array.ofList c))
             
         let (|StartsWith|_|) (s:string) (items:char list) = 
-            let candidates = s.ToCharArray() |> Seq.toList
+            let candidates = s.ToCharArray()
             if items.Length < candidates.Length then
                 None
             else
@@ -85,7 +85,7 @@ module internal HtmlCssSelectors =
                     None
 
         let (|TokenStr|_|) (s:string) x  =
-            let chars = s.ToCharArray() |> Seq.toList
+            let chars = s.ToCharArray() |> Array.toList
 
             let rec equal x s =
                 match x, s with
@@ -185,7 +185,7 @@ module internal HtmlCssSelectors =
 
         member public x.Tokenize(pCssSelector:string) =
             cssSelector <- pCssSelector
-            source <- Array.toList(cssSelector.ToCharArray())
+            source <- cssSelector.ToCharArray() |> Array.toList
             charCount <- source.Length
             tokenize()
 
@@ -221,28 +221,33 @@ module internal HtmlCssSelectors =
         let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]            
         let rec selectElements' level (acc:HtmlNode list) source =
 
+            // if we already have an empty list, terminate early
+            if acc.Length = 0 then [] else 
+
             let selectDescendantOfType ty t = 
                 let selectedNodes = filterByAttr level acc "type" (fun v -> v = ty)
                 selectElements' FilterLevel.Root selectedNodes t
 
             let selectEvenOdd (isEven:bool) =
                 acc 
-                |> Seq.mapi(fun i n -> (i,n))
-                |> Seq.filter(
+                |> List.mapi(fun i n -> (i,n))
+                |> List.filter(
                     fun (i,_) -> 
                         match isEven with
                         | true -> i%2 = 0
                         | false -> i%2 <> 0
                 )
-                |> Seq.map (fun (_,n) -> n)
-                |> Seq.toList
+                |> List.map (fun (_,n) -> n)
+
+            let containsIgnoreCase (value:string) (word:string) = word.IndexOf(value, StringComparison.OrdinalIgnoreCase) <> -1
+            let equalsIgnoreCase (value:string) (word:string) = word.Equals(value, StringComparison.OrdinalIgnoreCase)
 
             match source with
             | TagName(_, name) :: t -> 
                 let selectedNodes = searchTag level acc name
                 selectElements' FilterLevel.Root selectedNodes t
             | ClassPrefix _ :: CssClass(_, className) :: t -> 
-                let selectedNodes = filterByAttr level acc "class" (fun v -> v.Split(whiteSpaces) |> Seq.exists (fun c -> c = className))
+                let selectedNodes = filterByAttr level acc "class" (fun v -> v.Split(whiteSpaces) |> Array.exists ((=) className))
                 selectElements' FilterLevel.Root selectedNodes t
 
             | IdPrefix _ :: CssId(_, id) :: t ->
@@ -269,11 +274,11 @@ module internal HtmlCssSelectors =
                 selectElements' FilterLevel.Root selectedNodes t
 
             | OpenAttribute _ :: AttributeName(_, name) :: AttributeContains _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
-                let selectedNodes = filterByAttr level acc name (fun v -> v.ToLowerInvariant().Contains(value.ToLowerInvariant()))
+                let selectedNodes = filterByAttr level acc name (containsIgnoreCase value)
                 selectElements' FilterLevel.Root selectedNodes t
                 
             | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsWord _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
-                let selectedNodes = filterByAttr level acc name (fun v -> v.Split(whiteSpaces) |> Seq.exists(fun word -> word.ToLowerInvariant() = value.ToLowerInvariant()))
+                let selectedNodes = filterByAttr level acc name (fun v -> v.Split(whiteSpaces) |> Array.exists (equalsIgnoreCase value))
                 selectElements' FilterLevel.Root selectedNodes t
 
             | OpenAttribute _ :: AttributeName(_, name) :: AttributeNotEqual _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
