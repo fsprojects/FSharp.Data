@@ -26,7 +26,7 @@ Then we can , for example, use the direct descendants selector to select another
 id `ires`. The CSS selector to do so is `div#search > div#ires`:
 *)
 let links = 
-  doc.CssSelect("div#search > div#ires li.g > div.s div.kv cite")
+  doc.CssSelect("div#search > div#ires div.g > div.s div.kv cite")
   |> List.map (fun n -> 
       match n.InnerText() with
       | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
@@ -40,7 +40,7 @@ Now we might want the pages titles associated with their URLs. To do this, we ca
 *)
 
 let searchResults = 
-    doc.CssSelect("div#search > div#ires li.g > h3")
+    doc.CssSelect("div#search > div#ires div.g > h3")
     |> List.map (fun n -> n.InnerText())
     |> List.zip (links)
 
