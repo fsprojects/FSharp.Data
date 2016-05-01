@@ -98,7 +98,7 @@ let ``Optional records correctly handled when null``() =
   json.[0].Milestone.IsSome |> should equal false
 
 [<Literal>]
-let person = """
+let personJson = """
 [
   {
     "firstName": "John",
@@ -120,7 +120,7 @@ let person = """
 
 [<Test>]
 let ``Optional records correctly handled when empty string``() =
-    let j = JsonProvider<person>.GetSamples()
+    let j = JsonProvider<personJson>.GetSamples()
     j.[0].Address.IsSome |> should equal true
     j.[0].Address.Value.City |> should equal "Dallas"
     j.[1].Address |> should equal None
