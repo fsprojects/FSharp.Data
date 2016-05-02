@@ -1,6 +1,7 @@
-#### 2.3.1-beta1 - Unreleased
+#### 2.3.1-beta1 - May 2 2016
 * Fix runtime parsing of optional records with empty strings in JsonProvider.
 * Added HTML CSS selectors to browse the DOM of parsed HTML files using the jQuery selectors syntax.
+* Fix round tripping of XmlProvider generated types.
 
 #### 2.3.0 - May 1 2016
 * Handle cookies with "http://"-prefixed domain value correctly.

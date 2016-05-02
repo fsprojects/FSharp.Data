@@ -197,7 +197,14 @@ type XmlRuntime =
             (^a : (member ToString : IFormatProvider -> string) (v, cultureInfo)) 
         let serialize (v:obj) =
             match v with
-            | :? XmlElement as v -> box v.XElement
+            | :? XmlElement as v ->
+                let xElement = 
+                    if v.XElement.Parent = null then
+                        v.XElement
+                    else 
+                        // clone, as element is connected to previous parent
+                        XElement(v.XElement)
+                box xElement
             | _ ->
                 match v with
                 | :? string        as v -> v
