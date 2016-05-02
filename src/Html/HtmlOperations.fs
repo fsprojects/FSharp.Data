@@ -220,7 +220,7 @@ module HtmlNode =
         let classesToLookFor = cssClass.Split [|' '|]
         classesToLookFor |> Array.forall (fun cssClass -> presentClasses |> Array.exists ((=) cssClass))
 
-    let innerTextExcluding exclusions n = 
+    let private innerTextExcluding' recurse exclusions n = 
         let exclusions = "style" :: "script" :: exclusions
         let isAriaHidden (n:HtmlNode) = 
             match tryGetAttribute "aria-hidden" n with
@@ -237,17 +237,30 @@ module HtmlNode =
                         match e with
                         | HtmlText(text) -> yield text
                         | HtmlComment(_) -> yield ""
-                        | elem -> yield innerText' false elem }
+                        | elem -> 
+                            if recurse then
+                                yield innerText' false elem 
+                            else
+                                yield "" }
                 |> String.Concat
             | HtmlText(text) -> text
             | _ -> ""
         innerText' true n
+
+    let innerTextExcluding exclusions n =
+        innerTextExcluding' true exclusions n
 
     /// Returns the inner text of the current node
     /// Parameters:
     /// * n - The given node
     let inline innerText n = 
         innerTextExcluding [] n
+
+    /// Returns the direct inner text of the current node
+    /// Parameters:
+    /// * n - The given node
+    let directInnerText n = 
+        innerTextExcluding' false [] n
 
 // --------------------------------------------------------------------------------------
 
@@ -584,6 +597,11 @@ type HtmlNodeExtensions =
     [<Extension>]
     static member InnerText(n:HtmlNode) = 
         HtmlNode.innerText n
+
+    /// Returns the direct inner text of the current node
+    [<Extension>]
+    static member DirectInnerText(n:HtmlNode) = 
+        HtmlNode.directInnerText n
 
 // --------------------------------------------------------------------------------------
 

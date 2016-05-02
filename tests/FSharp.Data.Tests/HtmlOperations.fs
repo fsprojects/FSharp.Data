@@ -140,6 +140,12 @@ let ``Can extract the inner text from a node``() =
     ]
 
 [<Test>]
+let ``Can get direct inner text``() = 
+    let html = "<div>21 minutes ago<span> LIVE</span> x</div>" |> HtmlNode.Parse |> Seq.exactlyOne
+    html.InnerText() |> should equal "21 minutes ago LIVE x"
+    html.DirectInnerText() |> should equal "21 minutes ago x"
+
+[<Test>]
 let ``Inner text on a comment should be String.Empty``() = 
     let comment = HtmlNode.NewComment "Hello World"
     HtmlNode.innerText comment |> should equal String.Empty

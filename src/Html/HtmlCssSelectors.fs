@@ -326,7 +326,7 @@ module internal HtmlCssSelectors =
                     |> Seq.collect(fun n -> 
                         n.DescendantsAndSelf() 
                         |> Seq.filter(fun d ->
-                              String.IsNullOrWhiteSpace (d.InnerText()) && d.Descendants() |> Seq.isEmpty))
+                            String.IsNullOrWhiteSpace (d.DirectInnerText()) && d.Descendants() |> Seq.isEmpty))
                     |> Seq.toList
                 selectElements' FilterLevel.Root selectedNodes t
 
