@@ -534,3 +534,24 @@ let ``Serializing nested arrays do not introduce multiple outer tags``() =
     let t2 = Runtime.XmlRuntime.CreateRecord("translation", [| "language", "en" :> obj |], [| "", "more text" :> obj |], "")
     let root = Runtime.XmlRuntime.CreateRecord("root", [| |], [| "translations|translation", [|t1; t2|] :> obj |], "")
     root.XElement.ToString(SaveOptions.DisableFormatting) |> should equal "<root><translations><translation language=\"nl\">some text</translation><translation language=\"en\">more text</translation></translations></root>"
+
+type RoundtripXmlDocument = XmlProvider<"""<?xml version="1.0"?>
+<doc>
+    <assembly><name>lala</name></assembly>
+    <members>
+        <member name="">
+            <summary>ala</summary>
+            <param name="">lala</param>
+            <param name="">lala</param>
+            <returns>lala</returns>
+        </member>
+        <member name=""></member>
+    </members>
+</doc>
+""">
+
+[<Test>]
+let ``Roundtripping works correctly``() =
+    let original = RoundtripXmlDocument.GetSample()
+    let afterRoundtrip = new RoundtripXmlDocument.Doc(original.Assembly, original.Members)
+    original.XElement.ToString() |> should equal <| afterRoundtrip.XElement.ToString()
