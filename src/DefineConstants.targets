@@ -18,6 +18,9 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_GETENCODING_BY_CODEPAGE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_IS_FROM_CACHE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_IS_MUTUALLY_AUTHENTICATED</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CLOSE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>

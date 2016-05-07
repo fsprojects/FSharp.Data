@@ -348,18 +348,26 @@ module private HttpHelpers =
             outputStream.Position <- 0L
             outputStream
 
-        let mutable responseStream = res.GetResponseStream() |> copyToMemoryStream
+        let responseStream = res.GetResponseStream() |> copyToMemoryStream
 
         override x.Headers = res.Headers
-        override x.IsFromCache = res.IsFromCache
-        override x.IsMutuallyAuthenticated = res.IsMutuallyAuthenticated
         override x.ResponseUri = res.ResponseUri
         override x.SupportsHeaders = res.SupportsHeaders
         override x.ContentType = res.ContentType
         override x.ContentLength = responseStream.Length
+#if FX_NO_WEBRESPONSE_IS_FROM_CACHE
+#else
+        override x.IsFromCache = res.IsFromCache   
+#endif
+#if FX_NO_WEBRESPONSE_IS_MUTUALLY_AUTHENTICATED
+#else
+        override x.IsMutuallyAuthenticated = res.IsMutuallyAuthenticated
+#endif
+#if FX_NO_WEBRESPONSE_CLOSE
+#else
         override x.Close () = res.Close()
+#endif
         override x.GetResponseStream () = responseStream :> Stream
-        //member x.SetResponseStream (stream : Stream) = responseStream <- stream |> copyToMemoryStream
         member x.ResetResponseStream () = responseStream.Position <- 0L
 
         interface IDisposable with
