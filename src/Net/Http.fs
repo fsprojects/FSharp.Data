@@ -352,12 +352,14 @@ module private HttpHelpers =
 
         override x.Headers = res.Headers
         override x.ResponseUri = res.ResponseUri
-        override x.SupportsHeaders = res.SupportsHeaders
         override x.ContentType = res.ContentType
         override x.ContentLength = responseStream.Length
+#if FX_HAS_WEBRESPONSE_SUPPORTS_HEADERS
+        override x.SupportsHeaders = res.SupportsHeaders
+#endif
 #if FX_NO_WEBRESPONSE_IS_FROM_CACHE
 #else
-        override x.IsFromCache = res.IsFromCache   
+        override x.IsFromCache = res.IsFromCache
 #endif
 #if FX_NO_WEBRESPONSE_IS_MUTUALLY_AUTHENTICATED
 #else
@@ -369,9 +371,13 @@ module private HttpHelpers =
 #endif
         override x.GetResponseStream () = responseStream :> Stream
         member x.ResetResponseStream () = responseStream.Position <- 0L
-
+        
         interface IDisposable with
-            member x.Dispose () = res.Dispose ()
+            member x.Dispose () = 
+                match res :> obj with
+                | :? IDisposable as res -> res.Dispose ()
+                | _ -> ()
+                responseStream.Dispose ()
 
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content
