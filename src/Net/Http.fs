@@ -327,6 +327,58 @@ module HttpEncodings =
 [<AutoOpen>]
 module private HttpHelpers =
 
+    /// Decorator for System.Net.WebResponse class
+    /// used to make response stream seekable 
+    /// in order to preserve it in the new response
+    type WebResponse(res : System.Net.WebResponse) = 
+        inherit System.Net.WebResponse()
+
+        let copyToMemoryStream (inputStream : Stream) =
+            let bufferLen : int = 4096
+            let buffer : byte array = Array.zeroCreate bufferLen
+
+            let outputStream = new MemoryStream()
+            let rec copy () =
+                match inputStream.Read(buffer, 0, bufferLen) with
+                | count when count > 0 ->
+                    outputStream.Write(buffer, 0, count)
+                    copy ()
+                | _ -> ()
+            copy ()
+            outputStream.Position <- 0L
+            outputStream
+
+        let responseStream = res.GetResponseStream() |> copyToMemoryStream
+
+        override x.Headers = res.Headers
+        override x.ResponseUri = res.ResponseUri
+        override x.ContentType = res.ContentType
+        override x.ContentLength = responseStream.Length
+#if FX_HAS_WEBRESPONSE_SUPPORTS_HEADERS
+        override x.SupportsHeaders = res.SupportsHeaders
+#endif
+#if FX_NO_WEBRESPONSE_IS_FROM_CACHE
+#else
+        override x.IsFromCache = res.IsFromCache
+#endif
+#if FX_NO_WEBRESPONSE_IS_MUTUALLY_AUTHENTICATED
+#else
+        override x.IsMutuallyAuthenticated = res.IsMutuallyAuthenticated
+#endif
+#if FX_NO_WEBRESPONSE_CLOSE
+#else
+        override x.Close () = res.Close()
+#endif
+        override x.GetResponseStream () = responseStream :> Stream
+        member x.ResetResponseStream () = responseStream.Position <- 0L
+        
+        interface IDisposable with
+            member x.Dispose () = 
+                match res :> obj with
+                | :? IDisposable as res -> res.Dispose ()
+                | _ -> ()
+                responseStream.Dispose ()
+
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content
     let asyncRead (stream:Stream) = async {
@@ -440,15 +492,13 @@ module private HttpHelpers =
               if exn.Response = null then reraisePreserveStackTrace exn
               let responseExn =
                   try
-                    use responseStream = exn.Response.GetResponseStream()
-                    use streamReader = new StreamReader(responseStream)
-                    let response = streamReader.ReadToEnd()
-                    try 
-                      // on some platforms this fails
-                      responseStream.Position <- 0L
-                    with _ -> ()
-                    if String.IsNullOrEmpty response then None
-                    else Some(WebException(sprintf "%s\nResponse from %s:\n%s" exn.Message exn.Response.ResponseUri.OriginalString response, exn, exn.Status, exn.Response))
+                    let newResponse = new WebResponse(exn.Response)
+                    let responseStream = newResponse.GetResponseStream()
+                    let streamReader = new StreamReader(responseStream)
+                    let responseText = streamReader.ReadToEnd()
+                    newResponse.ResetResponseStream ()
+                    if String.IsNullOrEmpty responseText then None
+                    else Some(WebException(sprintf "%s\nResponse from %s:\n%s" exn.Message newResponse.ResponseUri.OriginalString responseText, exn, exn.Status, newResponse))
                   with _ -> None
               match responseExn with
               | Some e -> raise e
