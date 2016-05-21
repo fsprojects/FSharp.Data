@@ -1,4 +1,4 @@
-#### 2.3.2-beta2 - May 21 2016
+#### 2.3.1-beta2 - May 21 2016
 * Preserve response stream in case of HTTP failures.
 * Handle cookies with commas in their value correctly.
 
