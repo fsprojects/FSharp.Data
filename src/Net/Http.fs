@@ -702,45 +702,66 @@ module private HttpHelpers =
             | _ -> false
 #endif
 
+module internal CookieHandling = 
+
     // .NET has trouble parsing some cookies. See http://stackoverflow.com/a/22098131/165633
-    let getAllCookiesFromHeader (header:string) (responseUri:Uri) (cookieContainer:CookieContainer) =
+    let getAllCookiesFromHeader (header:string) (responseUri:Uri) =
+        
         let cookiesWithWrongSplit = header.Replace("\r", "").Replace("\n", "").Split(',')
+
+        let isInvalidCookie (cookieStr:string) = 
+            let equalsPos = cookieStr.IndexOf '='
+            equalsPos = -1
+            ||
+                let semicolonPos = cookieStr.IndexOf ';' 
+                semicolonPos <> -1 && semicolonPos < equalsPos
+
         let cookies = ResizeArray()
         let mutable i = 0
         while i < cookiesWithWrongSplit.Length do
-            // the next command is not a new cookie but part of the current one
-            if cookiesWithWrongSplit.[i].IndexOf("expires=", StringComparison.OrdinalIgnoreCase) > 0 then
-                cookies.Add(cookiesWithWrongSplit.[i] + "," + cookiesWithWrongSplit.[i + 1])
+            // the next one is not a new cookie but part of the current one
+            let mutable currentCookie = cookiesWithWrongSplit.[i]
+            while i < cookiesWithWrongSplit.Length - 1 && isInvalidCookie cookiesWithWrongSplit.[i + 1] do
+                currentCookie <- currentCookie + "," + cookiesWithWrongSplit.[i + 1]
                 i <- i + 1
-            else
-                cookies.Add(cookiesWithWrongSplit.[i])
+            cookies.Add(currentCookie)
             i <- i + 1
-        for cookieStr in cookies do
-            let cookie = new Cookie()
+
+        let inline startsWithIgnoreCase prefix (str:string) = str.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+        let inline equalsIgnoreCase other (str:string) = str.Equals(other, StringComparison.OrdinalIgnoreCase)
+        let stripPrefix prefix str = 
+            if startsWithIgnoreCase prefix str
+            then str.Substring(prefix.Length)
+            else str
+
+        [| for cookieStr in cookies do
+            let cookie = Cookie()
             cookieStr.Split ';'
             |> Array.iteri (fun i cookiePart ->
                 let cookiePart = cookiePart.Trim()
                 if i = 0 then
-                    let firstEqual = cookiePart.IndexOf "="
-                    cookie.Name <- cookiePart.Substring(0, firstEqual)
-                    cookie.Value <- cookiePart.Substring(firstEqual + 1)
-                elif cookiePart.IndexOf("path", StringComparison.OrdinalIgnoreCase) = 0 then
                     let kvp = cookiePart.Split '='
-                    if kvp.[1] <> "" && kvp.[1] <> "/" then
+                    if kvp.Length > 0 then
+                        cookie.Name <- kvp.[0]
+                        if kvp.Length > 1 then
+                            cookie.Value <- kvp.[1]
+                elif cookiePart |> startsWithIgnoreCase "path" then
+                    let kvp = cookiePart.Split '='
+                    if kvp.Length > 1 && kvp.[1] <> "" && kvp.[1] <> "/" then
                         cookie.Path <- kvp.[1]
-                elif cookiePart.IndexOf("domain", StringComparison.OrdinalIgnoreCase) = 0 then
+                elif cookiePart |> startsWithIgnoreCase "domain" then
                     let kvp = cookiePart.Split '='
-                    let stripPrefix prefix (domain:string) = // remove errant domain prefixes
-                        if domain.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) then
-                            domain.Substring(prefix.Length)
-                        else
-                            domain
-                    let domain = kvp.[1] |> stripPrefix "http://" |> stripPrefix "https://"
-                    if domain <> "" then
-                        cookie.Domain <- domain
-                elif cookiePart.Equals("secure", StringComparison.OrdinalIgnoreCase) then
+                    if kvp.Length > 1 then                                
+                        let domain = 
+                            kvp.[1] 
+                            // remove spurious domain prefixes
+                            |> stripPrefix "http://"
+                            |> stripPrefix "https://"
+                        if domain <> "" then
+                            cookie.Domain <- domain
+                elif cookiePart |> equalsIgnoreCase "secure" then
                     cookie.Secure <- true
-                elif cookiePart.Equals("httponly", StringComparison.OrdinalIgnoreCase) then
+                elif cookiePart |> equalsIgnoreCase "httponly" then
                     cookie.HttpOnly <- true
             )
 
@@ -748,7 +769,7 @@ module private HttpHelpers =
                 cookie.Domain <- responseUri.Host
 
             let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path)
-            cookieContainer.Add(uri, cookie)
+            yield uri, cookie |]
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
@@ -801,7 +822,7 @@ type Http private() =
     #endif
 
         // set cookies
-        let cookieContainer = defaultArg cookieContainer (new CookieContainer())
+        let cookieContainer = defaultArg cookieContainer <| CookieContainer()
 
         match cookies with
         | None -> ()
@@ -862,7 +883,9 @@ type Http private() =
                 |> Map.ofList
                 
             match headers.TryFind HttpResponseHeaders.SetCookie with
-            | Some cookieHeader -> getAllCookiesFromHeader cookieHeader resp.ResponseUri cookieContainer
+            | Some cookieHeader -> 
+                CookieHandling.getAllCookiesFromHeader cookieHeader resp.ResponseUri 
+                |> Array.iter cookieContainer.Add
             | None -> ()
 
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  

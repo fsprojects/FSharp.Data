@@ -1,3 +1,7 @@
+#### 2.3.2-beta2 - May 21 2016
+* Preserve response stream in case of HTTP failures.
+* Handle cookies with commas in their value correctly.
+
 #### 2.3.1-beta1 - May 2 2016
 * Fix runtime parsing of optional records with empty strings in JsonProvider.
 * Added HTML CSS selectors to browse the DOM of parsed HTML files using the jQuery selectors syntax.
