@@ -84,7 +84,9 @@ following example uses two records - one with `name` and `age` and the second wi
 If we want to just use the same text used for the schema at runtime, we can use the `GetSamples` method:
 *)
 
-type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
+type People = JsonProvider<""" 
+  [ { "name":"John", "age":94 }, 
+    { "name":"Tomas" } ] """>
 
 for item in People.GetSamples() do 
   printf "%s " item.Name 
@@ -150,8 +152,12 @@ let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
+let wbReq = 
+  "http://api.worldbank.org/country/cz/indicator/" + 
+    "GC.DOD.TOTL.GD.ZS?format=json"
 
-let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
+let docAsync = 
+  WorldBank.AsyncLoad(wbReq)
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
@@ -206,7 +212,9 @@ Let's start by listing the 5 most recently updated open issues in the FSharp.Dat
 
 *)
 
-// GitHub.json downloaded from https://api.github.com/repos/fsharp/FSharp.Data/issues to prevent rate limit when generating these docs
+// GitHub.json downloaded from 
+// https://api.github.com/repos/fsharp/FSharp.Data/issues 
+// to prevent rate limit when generating these docs
 type GitHub = JsonProvider<"../data/GitHub.json">
 
 let topRecentlyUpdatedIssues = 
@@ -250,11 +258,13 @@ create an instance, and send a POST request:
 
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
-let newIssue = GitHubIssue.Issue("Test issue",
-                                 "This is a test issue created in F# Data documentation", 
-                                 assignee = "",
-                                 labels = [| |], 
-                                 milestone = 0)
+let newIssue = 
+  GitHubIssue.Issue
+    ( "Test issue",
+      "This is a test issue created in F# Data documentation", 
+      assignee = "",
+      labels = [| |], 
+      milestone = 0)
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**
@@ -272,7 +282,8 @@ For this reason, the JSON provider lets you specify samples as embedded resource
 static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
 
 *)
-type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldbank.json">
+type WB = JsonProvider<"../data/WorldBank.json", 
+  EmbeddedResource="MyLib, worldbank.json">
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 

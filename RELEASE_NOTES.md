@@ -1,5 +1,18 @@
-#### 2.3.0-beta3 - Unreleased
+#### 2.3.1-beta2 - May 21 2016
+* Preserve response stream in case of HTTP failures.
+* Handle cookies with commas in their value correctly.
+
+#### 2.3.1-beta1 - May 2 2016
+* Fix runtime parsing of optional records with empty strings in JsonProvider.
+* Added HTML CSS selectors to browse the DOM of parsed HTML files using the jQuery selectors syntax.
+* Fix round tripping of XmlProvider generated types.
+
+#### 2.3.0 - May 1 2016
 * Handle cookies with "http://"-prefixed domain value correctly.
+* Fixed Pre and Code HTML tags loosing the formating.
+* Added LINQPad samples.
+* Fixed quotes not being escaped when saving CSV files.
+* Fixed crash on systems where WebRequest.DefaultWebProxy is null.
 
 #### 2.3.0-beta2 - December 21 2015
 * Improved JSON parsing performance by 20%.

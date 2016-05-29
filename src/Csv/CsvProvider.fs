@@ -22,9 +22,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let asm, version, bindingContext = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let csvProvTy = replacer.ProvidedTypeDefinition(asm, ns, "CsvProvider", typeof<obj>, hideObjectMethods=true, nonNullable = true)
+  let csvProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -77,7 +77,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) bindingContext 
 
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
@@ -89,16 +89,16 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
 
       let ctor = 
-          replacer.ProvidedConstructor(
-              [ replacer.ProvidedParameter("rows", paramType) ], 
+          bindingContext.ProvidedConstructor(
+              [ bindingContext.ProvidedParameter("rows", paramType) ], 
               invokeCode = (fun (Singleton paramValue) ->
                 let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
                 Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
 
       let parseRows = 
-          replacer.ProvidedMethod("ParseRows", 
-              [replacer.ProvidedParameter("text", typeof<string>)], 
+          bindingContext.ProvidedMethod("ParseRows", 
+              [bindingContext.ProvidedParameter("text", typeof<string>)], 
               rowType.MakeArrayType(), 
               isStatic = true,
               invokeCode = fun (Singleton text) ->         
@@ -118,7 +118,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName maxNumberOfRows
+                 getSpecFromSamples version this cfg bindingContext encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

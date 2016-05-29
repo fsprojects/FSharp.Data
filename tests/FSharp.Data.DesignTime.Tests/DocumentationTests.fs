@@ -45,13 +45,13 @@ let processFile file =
   fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
 #else
-  //let fsiEvaluator = FsiEvaluator(fsiObj=FsiEvaluatorConfig.CreateNoOpFsiObject())
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
 #endif
   Seq.append
     (literateDoc.Errors 
      |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" &&
+          not (msg.Contains("Possible incorrect indentation: this token is offside of context started at position")) then
          Some <| sprintf "%A %s (%s)" (startl, endl) msg file
        else None))
     (evaluationErrors |> Seq.map (fun x -> x.ToString()))

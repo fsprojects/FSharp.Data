@@ -19,3 +19,4 @@ paket-files
 *.bak
 .vs
 .fake
+TestResults
