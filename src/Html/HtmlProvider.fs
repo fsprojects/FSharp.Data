@@ -18,9 +18,9 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces()
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm, version, replacer = AssemblyResolver.init cfg
+    let asm, version, bindingContext = AssemblyResolver.init cfg
     let ns = "FSharp.Data"
-    let htmlProvTy = replacer.ProvidedTypeDefinition(asm, ns, "HtmlProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
+    let htmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
     
     let buildTypes (typeName:string) (args:obj[]) =
 
@@ -45,7 +45,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       PreferOptionals  = preferOptionals }
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
+                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) bindingContext
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
@@ -55,7 +55,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName None
+                     getSpecFromSamples version this cfg bindingContext encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

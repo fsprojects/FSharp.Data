@@ -50,7 +50,9 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="GET")
+Http.RequestString
+  ( "http://httpbin.org/get", 
+    query=["test", "foo"], httpMethod="GET" )
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -233,7 +235,8 @@ let clientCert =
 // Send the request with certificate
 Http.Request
   ( "http://yourprotectedresouce.com/data",
-    customizeHttpRequest = fun req -> req.ClientCertificates.Add(clientCert) |> ignore; req)
+    customizeHttpRequest = fun req -> 
+        req.ClientCertificates.Add(clientCert) |> ignore; req)
 
 (**
 ## Related articles

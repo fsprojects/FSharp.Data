@@ -47,6 +47,18 @@ let ``A request with an invalid url throws an exception`` () =
     (fun() -> Http.Request "www.google.com" |> ignore) |> should throw typeof<UriFormatException>
 
 [<Test>]
+let ``Cookies with commas are parsed correctly`` () =
+    let uri = Uri "http://www.nasdaq.com/symbol/ibm/dividend-history"
+    let cookieHeader = "selectedsymboltype=IBM,COMMON STOCK,NYSE; domain=.nasdaq.com; expires=Sun, 21-May-2017 15:29:03 GMT; path=/,selectedsymbolindustry=IBM,technology; domain=.nasdaq.com; expires=Sun, 21-May-2017 15:29:03 GMT; path=/,NSC_W.TJUFEFGFOEFS.OBTEBR.80=ffffffffc3a08e3045525d5f4f58455e445a4a423660;expires=Sat, 21-May-2016 15:39:03 GMT;path=/;httponly"
+    let cookies = 
+        CookieHandling.getAllCookiesFromHeader cookieHeader uri 
+        |> Array.map (snd >> (fun c -> c.Name, c.Value))
+    cookies |> should equal
+        [| "selectedsymboltype", "IBM,COMMON STOCK,NYSE"
+           "selectedsymbolindustry", "IBM,technology"
+           "NSC_W.TJUFEFGFOEFS.OBTEBR.80", "ffffffffc3a08e3045525d5f4f58455e445a4a423660" |]
+
+[<Test>]
 let ``Web request's timeout is used`` () = 
     let exc = Assert.Throws<System.Net.WebException> (fun () -> 
         Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)

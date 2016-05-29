@@ -20,14 +20,14 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let asm, version, bindingContext = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let jsonProvTy = replacer.ProvidedTypeDefinition(asm, ns, "JsonProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
+  let jsonProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = replacer.ProvidedTypeDefinition(asm, ns, typeName, typeof<obj>, hideObjectMethods=true, nonNullable=true)
+    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -53,7 +53,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
+      let ctx = JsonGenerationContext.Create(cultureStr, tpType, bindingContext)
       let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
 
       { GeneratedType = tpType
@@ -64,7 +64,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
           result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg replacer encodingStr resolutionFolder resource typeName None
+                 version this cfg bindingContext encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
