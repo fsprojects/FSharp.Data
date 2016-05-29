@@ -560,6 +560,7 @@ module private HttpHelpers =
 
         let getResponseAsync (req:HttpWebRequest) =
 #if FX_NO_WEBREQUEST_TIMEOUT
+            ignore <| req // Keeping compiler happy.     
             getResponseFromBeginEnd
 #else
             if req.Timeout = System.Threading.Timeout.Infinite 
@@ -830,7 +831,7 @@ type Http private() =
             bytes encoding)
 
 #if FX_NO_WEBREQUEST_TIMEOUT
-        /// Tough luck.
+        ignore <| timeout /// Tough luck.
 #else
         /// Set timeout, use Timeout.Infinite if not provided with one.
         let timeout = defaultArg timeout System.Threading.Timeout.Infinite
