@@ -40,7 +40,7 @@ let init (cfg : TypeProviderConfig) =
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
-    let bindingContext = ProvidedTypesContext.Create(cfg)
+    let bindingContext = ProvidedTypesContext.Create(cfg, [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     let runtimeFSharpCoreVersion = bindingContext.TryGetFSharpCoreAssemblyVersion()
 
