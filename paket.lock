@@ -35,9 +35,9 @@ GITHUB
       Octokit
   remote: fsprojects/FSharp.TypeProviders.StarterPack
   specs:
-    src/AssemblyReader.fs (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
-    src/AssemblyReaderReflection.fs (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
-    src/ProvidedTypes.fs (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
-    src/ProvidedTypes.fsi (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
-    src/ProvidedTypesContext.fs (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
-    src/ProvidedTypesTesting.fs (9f0c159defa1d3d9cf554c44acd55fe5b231fb12)
+    src/AssemblyReader.fs (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
+    src/AssemblyReaderReflection.fs (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
+    src/ProvidedTypes.fs (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
+    src/ProvidedTypes.fsi (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
+    src/ProvidedTypesContext.fs (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
+    src/ProvidedTypesTesting.fs (56cd9eb1399c51ac6f05601cd7010bbe8261ef9a)
