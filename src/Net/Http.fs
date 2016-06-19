@@ -604,20 +604,44 @@ module private HttpHelpers =
         hasContentType.Value
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
-        if defaultArg silentHttpErrors false then
-            async {
-                try
-                    return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-                with
-                    | :? WebException as exn -> 
-                        if exn.Response <> null then 
-                           return exn.Response
-                        else 
-                            reraisePreserveStackTrace exn
-                            return Unchecked.defaultof<_>
-            }
-        else 
+
+        let getResponseFromBeginEnd = 
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+
+        let getResponseAsync (req:HttpWebRequest) =
+#if FX_NO_WEBREQUEST_TIMEOUT
+            ignore <| req // Keeping compiler happy.     
+            getResponseFromBeginEnd
+#else
+            if req.Timeout = System.Threading.Timeout.Infinite 
+                then getResponseFromBeginEnd
+                else 
+                    async {
+                        let! child = Async.StartChild(getResponseFromBeginEnd, req.Timeout)
+                        try 
+                            return! child
+                        with
+                        | :? TimeoutException as exc -> 
+                            raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
+                            return Unchecked.defaultof<_>
+                    }
+#endif
+
+        if defaultArg silentHttpErrors false 
+            then
+                async {
+                    try
+                        return! getResponseAsync req
+                    with
+                        | :? WebException as exc -> 
+                            if exc.Response <> null then 
+                               return exc.Response
+                            else 
+                                reraisePreserveStackTrace exc
+                                return Unchecked.defaultof<_>
+                }
+            else getResponseAsync req
+            
 
     // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
     [<MethodImpl(MethodImplOptions.NoInlining)>]
@@ -794,8 +818,22 @@ type Http private() =
             + if url.Contains "?" then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
-    static member private InnerRequest(url:string, toHttpResponse, [<Optional>] ?query, [<Optional>] ?headers:seq<_>, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies:seq<_>, [<Optional>] ?cookieContainer, 
-                                       [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
+    static member private InnerRequest
+            (
+                url:string, 
+                toHttpResponse, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers:seq<_>, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies:seq<_>, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?responseEncodingOverride, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) =
+
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
@@ -863,6 +901,15 @@ type Http private() =
 
             bytes encoding)
 
+#if FX_NO_WEBREQUEST_TIMEOUT
+        ignore <| timeout /// Tough luck.
+#else
+        /// Set timeout, use Timeout.Infinite if not provided with one.
+        let timeout = defaultArg timeout System.Threading.Timeout.Infinite
+        
+        req.Timeout <- timeout
+#endif
+
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
 
@@ -919,30 +966,69 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequest(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
+    static member AsyncRequest
+            (
+                url, 
+                [<Optional>] ?query,
+                [<Optional>] ?headers, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?responseEncodingOverride, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = async {
-        let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
-                                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
-        return
-            match response.Body with
-            | Text text -> text
-            | Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
-    }
+    static member AsyncRequestString
+            (
+                url, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?responseEncodingOverride, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) = 
+        async {
+            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+                                              ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
+            return
+                match response.Body with
+                | Text text -> text
+                | Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        }
 
     /// Download an HTTP web resource from the specified URL synchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) =
+    static member AsyncRequestStream
+            (
+                url, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) =
         let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             let! stream = async {
                 // this only applies when automatic decompression is off
@@ -963,16 +1049,29 @@ type Http private() =
                      Cookies = cookies }
         }
         Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
-                          ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL synchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member Request(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
+    static member Request
+            (  
+                url, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?responseEncodingOverride, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) = 
         Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -980,9 +1079,22 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member RequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
+    static member RequestString
+            (
+                url, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies, 
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?responseEncodingOverride, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                                ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -990,7 +1102,19 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member RequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) = 
+    static member RequestStream
+            (
+                url, 
+                [<Optional>] ?query, 
+                [<Optional>] ?headers, 
+                [<Optional>] ?httpMethod, 
+                [<Optional>] ?body, 
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer, 
+                [<Optional>] ?silentHttpErrors, 
+                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?timeout
+            ) = 
         Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
+                                ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously

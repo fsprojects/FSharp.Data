@@ -57,3 +57,24 @@ let ``Cookies with commas are parsed correctly`` () =
         [| "selectedsymboltype", "IBM,COMMON STOCK,NYSE"
            "selectedsymbolindustry", "IBM,technology"
            "NSC_W.TJUFEFGFOEFS.OBTEBR.80", "ffffffffc3a08e3045525d5f4f58455e445a4a423660" |]
+
+[<Test>]
+let ``Web request's timeout is used`` () = 
+    let exc = Assert.Throws<System.Net.WebException> (fun () -> 
+        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+    Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
+
+[<Test>]
+let ``Timeout argument is used`` () = 
+    let exc = Assert.Throws<System.Net.WebException> (fun () -> 
+        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", timeout = 1) |> ignore)
+    Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
+
+[<Test>]
+let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () = 
+    let response =
+        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", silentHttpErrors = true,
+            customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
+    
+    response.StatusCode |> should equal 401
+    response.Body |> should equal (Text """{"status_code":7,"status_message":"Invalid API key: You must be granted a valid key."}""")
