@@ -1,3 +1,6 @@
+#### 2.3.1 - June 19 2016
+* Add support for specifying timeouts when doing HTTP request.
+
 #### 2.3.1-beta2 - May 21 2016
 * Preserve response stream in case of HTTP failures.
 * Handle cookies with commas in their value correctly.
