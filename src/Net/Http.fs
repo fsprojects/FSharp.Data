@@ -792,8 +792,11 @@ module internal CookieHandling =
             if cookie.Domain = "" then
                 cookie.Domain <- responseUri.Host
 
-            let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path)
-            yield uri, cookie |]
+            let uriString = (if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path
+            match Uri.TryCreate(uriString, UriKind.Absolute) with
+                    | true, uri -> yield uri, cookie
+                    | _ -> ()
+        |]
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
