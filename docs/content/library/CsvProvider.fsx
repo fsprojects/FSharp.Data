@@ -37,7 +37,7 @@ and the next rows define the data. We can pass reference to the file to `CsvProv
 get a strongly typed view of the file:
 *)
 
-type Stocks = CsvProvider<"../data/MSFT.csv">
+type Stocks = CsvProvider< const(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv") >
 
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
