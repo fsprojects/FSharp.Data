@@ -1,5 +1,6 @@
-#### 2.3.2 - Unreleased
+#### 2.3.2 - July 24 2016
 * Add support for HTML entities with Unicode characters above 65535.
+* Improve resilience when parsing invalid Set-Cookie headers.
 
 #### 2.3.1 - June 19 2016
 * Add support for specifying timeouts when doing HTTP request.
