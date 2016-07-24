@@ -1,3 +1,6 @@
+#### 2.3.2 - Unreleased
+* Add support for HTML entities with Unicode characters above 65535.
+
 #### 2.3.1 - June 19 2016
 * Add support for specifying timeouts when doing HTTP request.
 

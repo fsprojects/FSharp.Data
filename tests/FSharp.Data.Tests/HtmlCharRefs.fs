@@ -43,3 +43,7 @@ let ``Should substitute char references in attribute``() =
 [<Test>]
 let ``Should handle indeterminate CharRefs``() =
     HtmlCharRefs.substitute "&#xD;" |> should equal "&#xD;"
+
+[<Test>]
+let ``Should handle Unicode characters above 655355``() =
+    HtmlCharRefs.substitute "&#128516;" |> should equal "😄"
