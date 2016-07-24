@@ -2,8 +2,8 @@
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #endif
 
 open NUnit.Framework
@@ -70,9 +70,9 @@ let ``Inference of numbers with empty values`` () =
   let f6:float = row.Float6
   let d:option<DateTime> = row.Date
   
-  let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, None
+  let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, (None: DateTime option)
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date    
-  actual |> shouldEqual expected
+  actual |> should equal expected
 
   let row = rows.[1]
   let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Some(new DateTime(2010, 01,10)) 
@@ -80,9 +80,9 @@ let ``Inference of numbers with empty values`` () =
   actual |> should equal expected
 
   let row = rows.[2]
-  let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, None
+  let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, (None: DateTime option)
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
-  actual |> shouldEqual expected
+  actual |> should equal expected
 
 [<Test>] 
 let ``Can create type for small document``() =
@@ -110,13 +110,13 @@ let ``Can parse sample file with whitespace in the name``() =
 let ``Infers type of an emtpy CSV file`` () = 
   let csv = CsvProvider<"Column1, Column2">.GetSample()
   let actual : string list = [ for r in csv.Rows -> r.Column1 ]
-  actual |> shouldEqual []
+  actual |> should equal []
 
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
   let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="fr-FR">.GetSample()
   let row = csv.Rows |> Seq.head
-  (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
+  (row.Dato, row.USD) |> should equal (DateTime(2013, 2, 7), "5.4970")
 
 [<Test>]
 let ``Empty lines are skipped and don't make everything optional`` () =
@@ -394,7 +394,7 @@ let ``Can set created rows``() =
 
   csv.Headers.Value.[1]  |> should equal "ColumnB"
   let s = csv.SaveToString()
-  s |> should notEqual ""
+  s |> should not' (equal "")
 
 
 type CsvUom = CsvProvider<"Data/SmallTest.csv">

@@ -15,6 +15,7 @@ open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
+open Fake.Testing.NUnit3
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
@@ -119,13 +120,9 @@ let runTestTask name =
     let taskName = sprintf "RunTest_%s" name
     Target taskName <| fun () ->
         !! (sprintf "tests/*/bin/Release/%s.dll" name)
-        |> NUnit (fun p ->
+        |> NUnit3 (fun p ->
             { p with
-                DisableShadowCopy = true
-                TimeOut = TimeSpan.FromMinutes 20.
-                Framework = "4.5"
-                Domain = MultipleDomainModel
-                OutputFile = "TestResults.xml" })
+                TimeOut = TimeSpan.FromMinutes 20. })
     taskName ==> "RunTests" |> ignore
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]

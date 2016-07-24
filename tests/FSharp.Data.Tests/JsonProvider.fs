@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonProvider
 #endif
@@ -88,7 +88,7 @@ let ``Optional strings correctly handled when missing or null``() =
 let ``Optional records correctly handled when missing``() = 
   let tweets = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
   tweets.[0].Place |> should equal None
-  tweets.[13].Place |> should notEqual None
+  tweets.[13].Place |> should not' (equal None)
   tweets.[13].Place.Value.Id |> should equal "741e21eeea82f00a"
 
 [<Test>]
@@ -205,7 +205,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[3].B.Array    |> should equal (Some [|1|])
     j.[3].C.Boolean  |> should equal None
     j.[3].C.Number   |> should equal None
-    j.[3].C.Record   |> should notEqual None
+    j.[3].C.Record   |> should not' (equal None)
     j.[3].C.Record.Value.Z |> should equal 1
 
 [<Test>]
@@ -340,7 +340,7 @@ let ``Can compare typed JSON documents``() =
     let nested = NestedJSON.GetSample()
 
     simple1 |> should equal simple2
-    nested |> should notEqual simple2
+    nested |> should not' (equal simple2)
 
 type JsonArray = JsonProvider<"""["Adam","Eve","Bonnie","Clyde","Donald","Daisy","Han","Leia"]""">
 
@@ -644,7 +644,7 @@ let ``Can construct heterogeneous arrays with optionals``() =
 let ``Weird UnitSystem case``() =
     let comments = JsonProvider<"Data/reddit.json">.GetSample()
     let data = comments.Data.Children.[0].Data
-    data.LinkId |> shouldEqual "t3_2424px"
+    data.LinkId |> should equal "t3_2424px"
 
 [<Test>]
 let ``Whitespace is preserved``() =

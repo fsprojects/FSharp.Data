@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.SignatureTests
 #endif

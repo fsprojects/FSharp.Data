@@ -1,8 +1,8 @@
 ﻿
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
@@ -397,7 +397,7 @@ let ``Can parse non-self-closing tags of elements that can't have children when 
     let html = """<hr class="hr4"><!--comment1--><!--comment2--><hr class="hr5" />"""
     let expected = """<hr class="hr4" /><!--comment1--><!--comment2--><hr class="hr5" />"""
     let result = (HtmlDocument.Parse html).ToString()
-    result |> shouldEqual expected
+    result |> should equal expected
 
 [<Test>]
 let ``Ignores spurious closing tags``() = 
@@ -416,14 +416,14 @@ let ``Ignores spurious closing tags``() =
   </a>
 </li>"""
     let result = (HtmlDocument.Parse html).ToString().Replace("\r", null)
-    result |> shouldEqual (expected.Replace("\r", null))
+    result |> should equal (expected.Replace("\r", null))
 
 [<Test>]
 let ``Renders textarea closing tag``() =
     let html = """<textarea cols="40" rows="2"></textarea>"""
     let result = (HtmlDocument.Parse html).ToString()
 
-    result |> shouldEqual """<textarea cols="40" rows="2"></textarea>"""
+    result |> should equal """<textarea cols="40" rows="2"></textarea>"""
 
 [<Test>]
 let ``Can handle CDATA blocks``() = 

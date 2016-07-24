@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net45/FsCheck.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonParserProperties
 #endif
@@ -35,8 +35,8 @@ let rec isValidJsonString s =
 
 let validJsonStringGen = 
     Arb.generate<string> 
-    |> Gen.suchThat ((<>) null)
-    |> Gen.suchThat (Seq.toList >> isValidJsonString)
+    |> Gen.filter ((<>) null)
+    |> Gen.filter (Seq.toList >> isValidJsonString)
 
 let jsonValueGen : Gen<JsonValue> =  
 
@@ -121,7 +121,7 @@ type Generators =
                 | JsonValue.Record props -> seq {for n in props -> JsonValue.Record([|n|])}
                 | _ -> Seq.empty }
 
-[<TestFixtureSetUp>]
+[<OneTimeSetUp>]
 let fixtureSetup() =
     Arb.register<Generators>() |> ignore
 
@@ -148,7 +148,7 @@ let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
                parseStringified)
 
 [<Test>]
-let ``Stringifing parsed string returns the same string`` () =
+let ``Stringifying parsed string returns the same string`` () =
     let stringifyParsed (s : string) =
         let jsonValue = JsonValue.Parse s
         let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)

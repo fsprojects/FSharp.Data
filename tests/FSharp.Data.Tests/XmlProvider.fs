@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.XmlProvider
 #endif
@@ -69,7 +69,7 @@ let ``Jim should have an age of 24``() =
 
 [<Test>]
 let ``Type of attribute with empty value is string`` = 
-  XmlProvider<"Data/emptyValue.xml">.GetSample().A |> shouldEqual ""
+  XmlProvider<"Data/emptyValue.xml">.GetSample().A |> should equal ""
 
 [<Test>]
 let ``Xml with namespaces``() = 
@@ -194,7 +194,7 @@ let ``Optionality inferred correctly for child elements``() =
     child1.B |> should equal None
     child2.B |> should equal (Some "some")
 
-    child1.Inner |> should notEqual None
+    child1.Inner |> should not' (equal None)
     child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
@@ -213,7 +213,7 @@ let ``Global inference with empty elements doesn't crash``() =
     child1.B |> should equal None
     child2.B |> should equal (Some "some")
 
-    child1.Inner |> should notEqual None
+    child1.Inner |> should not' (equal None)
     child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
@@ -253,12 +253,12 @@ type AnyFeed = XmlProvider<"Data/AnyFeed.xml",SampleIsList=true>
 [<Test>]
 let ``Infers type and reads mixed RSS/Atom feed document`` () =
   let atomFeed = AnyFeed.GetSamples().[0]
-  atomFeed.Feed.IsSome |> shouldEqual true
-  atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
+  atomFeed.Feed.IsSome |> should equal true
+  atomFeed.Feed.Value.Title |> should equal "Example Feed"
 
   let rssFeed = AnyFeed.GetSamples().[1]
-  rssFeed.Rss.IsSome |> shouldEqual true
-  rssFeed.Rss.Value.Channel.Title |> shouldEqual "W3Schools Home Page"
+  rssFeed.Rss.IsSome |> should equal true
+  rssFeed.Rss.Value.Channel.Title |> should equal "W3Schools Home Page"
   
 
 [<Test>]

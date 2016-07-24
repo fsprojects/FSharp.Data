@@ -22,11 +22,11 @@ let nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
-[<TestFixtureSetUp>]
+[<OneTimeSetUp>]
 let fixtureSetup() =
     nancyHost.Start()
 
-[<TestFixtureTearDown>]
+[<OneTimeTearDown>]
 let fixtureTearDown() =
     nancyHost.Stop()
 
@@ -41,7 +41,7 @@ let ``should set everything correctly in the HTTP request`` ()=
                  headers = [ Accept "application/xml" ],
                  cookies = ["SESSIONID", "1234"],
                  body = TextRequest "some JSON or whatever") |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Query?search.ToString() |> should equal "jeebus"
     MockServer.recordedRequest.Value.Query?qs2.ToString() |> should equal "hi mum"
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("application/xml", 1m)
@@ -112,7 +112,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
                              Warning "199 Miscellaneous warning"
                              "X-Greeting", "Happy Birthday" ]) |> ignore
 
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("application/xml", 1m)
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("text/html", 0.3m)
     MockServer.recordedRequest.Value.Headers.AcceptCharset |> should contain ("utf-8", 1m)
@@ -151,7 +151,7 @@ let ``Encoding from content-type used`` () =
         "http://localhost:1235/TestServer/RecordRequest", 
         body = TextRequest "Hi Müm", 
         headers = [ ContentType "application/bike; charset=utf-8"]) |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     use bodyStream = new StreamReader(MockServer.recordedRequest.Value.Body,Encoding.GetEncoding("utf-8"))
     bodyStream.ReadToEnd() |> should equal "Hi Müm"
     MockServer.recordedRequest.Value.Headers.ContentLength |> should equal 7
@@ -159,13 +159,13 @@ let ``Encoding from content-type used`` () =
 [<Test>]
 let ``Content-Length header is set automatically for Posts with a body`` () =
     Http.Request("http://localhost:1235/TestServer/RecordRequest", body = TextRequest "Hi Mum") |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.ContentLength |> should equal 6
 
 [<Test>]
 let ``accept-encoding header is set automatically when decompression scheme is set`` () =
     Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "gzip"
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "deflate"
 

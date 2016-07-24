@@ -7,8 +7,8 @@
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
 #r "FSharp.MetadataFormat.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.DocumentationTests
 #endif
