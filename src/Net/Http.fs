@@ -543,9 +543,9 @@ module private HttpHelpers =
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)) then req.Headers.[HeaderEnum.Date] <- value
 #else
-            | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "date" -> req.Date <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
             | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
