@@ -433,4 +433,19 @@ let ``has attribute Selector``() =
     let values = selection |> List.map (fun n -> n.AttributeValue("data"))
     values |> should equal ["test"]
 
-
+[<Test>]
+let ``special characters can be escaped``() =
+    let html =
+        """
+            <!doctype html>
+            <html lang="en">
+            <body>
+            <p id="id-has:column-and.dot">Matched paragraph text</p>
+            <p id="ignore">Other text</p>
+            </body>
+            </html>
+        """ |> HtmlDocument.Parse
+    let selection = html.CssSelect "#id-has\\:column-and\\.dot"
+    selection |> should haveLength 1
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Matched paragraph text"]
