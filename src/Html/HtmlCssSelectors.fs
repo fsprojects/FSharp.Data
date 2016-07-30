@@ -51,6 +51,14 @@ module internal HtmlCssSelectors =
         let getOffset (t:List<char>) = 
             charCount - 1 - t.Length
 
+        let isEscapable (c:char) =
+            (* CSS 2.1: Any character (except a hexadecimal digit, linefeed,
+               carriage return, or form feed) can be escaped with a backslash to
+               remove its special meaning *)
+            let isHexadecimalDigit = Char.IsDigit(c) || (Char.ToLower(c) >= 'a' && Char.ToLower(c) <= 'f')
+            (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r')
+            |> not
+
         let rec readString acc = function
             | c :: t when Char.IsLetterOrDigit(c) || c.Equals('-') || c.Equals('_') 
                 || c.Equals('+') || c.Equals('/')
@@ -62,9 +70,8 @@ module internal HtmlCssSelectors =
                 else
                     inQuotes <- true
                     readString acc t
-            | '\\' :: '\'' :: t when inQuotes ->
-                readString (acc + ('\''.ToString())) t
-
+            | '\\' :: c :: t when isEscapable c ->
+                readString (acc + (c.ToString())) t
             | c :: t when inQuotes ->
                 readString (acc + (c.ToString())) t
             | c :: t -> acc, c :: t
