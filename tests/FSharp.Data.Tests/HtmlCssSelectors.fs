@@ -450,5 +450,3 @@ let ``special characters can be escaped``() =
     selection |> should haveLength 1
     let values = selection |> List.map (fun n -> n.InnerText())
     values |> should equal ["Some text"]
-
-``Special characters can be escaped``()
