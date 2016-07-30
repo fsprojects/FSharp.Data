@@ -440,12 +440,13 @@ let ``special characters can be escaped``() =
             <!doctype html>
             <html lang="en">
             <body>
-            <p id="id-has:column-and.dot">Matched paragraph text</p>
-            <p id="ignore">Other text</p>
+            <p id="has-id-with:column-and.dot" class="has-class">Matched, has id and class</p>
+            <p id="has-id-with:column-and.dot">Not matched, has id only</p>
+            <p id="ignore">Ignore</p>
             </body>
             </html>
         """ |> HtmlDocument.Parse
-    let selection = html.CssSelect "#id-has\\:column-and\\.dot"
+    let selection = html.CssSelect ".has-class#has-id-with\\:column-and\\.dot"
     selection |> should haveLength 1
-    let values = selection |> List.map (fun n -> n.InnerText())
-    values |> should equal ["Matched paragraph text"]
+    let values = selection |> List.map (fun n -> n.InnerText()) |> Seq.exactlyOne
+    values |> should equal "Matched, has id and class"
