@@ -448,5 +448,5 @@ let ``special characters can be escaped``() =
         """ |> HtmlDocument.Parse
     let selection = html.CssSelect ".has-class#has-id-with\\:column-and\\.dot"
     selection |> should haveLength 1
-    let values = selection |> List.map (fun n -> n.InnerText()) |> Seq.exactlyOne
+    let values = selection |> Seq.exactlyOne |> HtmlNode.innerText
     values |> should equal "Matched, has id and class"
