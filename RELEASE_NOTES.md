@@ -1,5 +1,6 @@
 #### 2.3.3 - Unreleased
-* Specify kind on Date header to UTC
+* Specify kind on Date header to UTC.
+* Support for escaping special characters in CSS selectors.
 
 #### 2.3.2 - July 24 2016
 * Add support for HTML entities with Unicode characters above 65535.

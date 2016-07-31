@@ -433,4 +433,20 @@ let ``has attribute Selector``() =
     let values = selection |> List.map (fun n -> n.AttributeValue("data"))
     values |> should equal ["test"]
 
-
+[<Test>]
+let ``special characters can be escaped``() =
+    let html =
+        """
+            <!doctype html>
+            <html lang="en">
+            <body>
+            <p id="has-id-with:column-and.dot" class="has-class">Matched, has id and class</p>
+            <p id="has-id-with:column-and.dot">Not matched, has id only</p>
+            <p id="ignore">Ignore</p>
+            </body>
+            </html>
+        """ |> HtmlDocument.Parse
+    let selection = html.CssSelect ".has-class#has-id-with\\:column-and\\.dot"
+    selection |> should haveLength 1
+    let values = selection |> Seq.exactlyOne |> HtmlNode.innerText
+    values |> should equal "Matched, has id and class"
