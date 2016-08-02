@@ -181,8 +181,8 @@ module HtmlRuntime =
                     let getContents contents = 
                         contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat |> normalizeWs
                     match cell with
-                    | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
-                    | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
+                    | HtmlElement("td", _, contents, _) -> Cell (false, getContents contents)
+                    | HtmlElement("th", _, contents, _) -> Cell (true, getContents contents)
                     | _ -> Empty
                 let col_i = ref colindex
                 while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)

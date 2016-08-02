@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data
+namespace FSharp.Data
 
 open System
 open FSharp.Data
@@ -6,6 +6,12 @@ open System.Runtime.CompilerServices
 
 module internal HtmlCssSelectors =
 
+    type NthChildParameter =
+        | Number of int
+        | Odd
+        | Even
+        | Formula of int * int // a and b from (a*n + b)
+        
     type SelectorToken =
         | ClassPrefix of int
         | IdPrefix of int
@@ -41,6 +47,8 @@ module internal HtmlCssSelectors =
         | Submit of int
         | Even of int
         | Odd of int
+        | NthChild of int * NthChildParameter
+        | NthLastChild of int * NthChildParameter
 
     type CssSelectorTokenizer() =
         let mutable charCount:int = 0
@@ -56,8 +64,7 @@ module internal HtmlCssSelectors =
                carriage return, or form feed) can be escaped with a backslash to
                remove its special meaning *)
             let isHexadecimalDigit = Char.IsDigit(c) || (Char.ToLower(c) >= 'a' && Char.ToLower(c) <= 'f')
-            (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r')
-            |> not
+            not (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r')
 
         let rec readString acc = function
             | c :: t when Char.IsLetterOrDigit(c) || c.Equals('-') || c.Equals('_') 
@@ -165,6 +172,8 @@ module internal HtmlCssSelectors =
                     tokenize' (Even(getOffset t + 1) :: acc) t
                 | StartsWith ":odd" t ->
                     tokenize' (Odd(getOffset t + 1) :: acc) t
+                | StartsWith ":first-child" t ->
+                    tokenize' (NthChild(getOffset t + 1, NthChildParameter.Number 1) :: acc) t
                 | TokenStr ":disabled" t ->
                     let _, t' = readString "" t
                     tokenize' (Disabled(getOffset t + 1) :: acc) t'
@@ -308,6 +317,20 @@ module internal HtmlCssSelectors =
             | Textbox _ :: t -> selectDescendantOfType "text" t
             | Submit _ :: t -> selectDescendantOfType "submit" t
                 
+            | NthChild(_, parameter:NthChildParameter) :: t ->
+                let test = 
+                    match parameter with
+                    | NthChildParameter.Number n ->
+                        fun (node:HtmlNode) -> node.Position() + 1 = n
+                    | NthChildParameter.Even ->
+                        fun node -> (node.Position() + 1) % 2 = 0
+                    | NthChildParameter.Odd ->
+                        fun node -> (node.Position() + 1) % 2 <> 0
+                    | NthChildParameter.Formula(a, b) ->
+                        fun _ -> false // Not implemented
+                let selectedNodes = acc |> List.filter test
+                selectElements' FilterLevel.Root selectedNodes t
+                            
             | Even _ :: t ->
                 let selectedNodes = selectEvenOdd true
                 selectElements' FilterLevel.Root selectedNodes t
@@ -394,4 +417,4 @@ module CssSelectorExtensions =
         static member CssSelect(node:HtmlNode, selector) = 
             CssSelectorExtensions.Select [node] selector
 
-
+            

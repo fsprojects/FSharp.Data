@@ -450,3 +450,33 @@ let ``special characters can be escaped``() =
     selection |> should haveLength 1
     let values = selection |> Seq.exactlyOne |> HtmlNode.innerText
     values |> should equal "Matched, has id and class"
+
+[<Test>]
+let ``:first-child Selector``() =
+    let html =
+        """
+            <!doctype html>
+            <html lang="en">
+            <body>
+            <div>
+              <div>First child div</div>
+              <p>Second child paragraph</p>
+              <p>Third child paragraph</p>
+            </div>
+            <div>
+              <p>First child paragraph</p>
+              <p>Another second child paragraph</p>
+            </div>
+            <div>
+              <p>Yet another first child paragraph</p>
+              <p>Yet another second child paragraph</p>
+            </div>
+            </body>
+            </html>
+        """ |> HtmlDocument.Parse
+    let selection = html.CssSelect "p:first-child"
+    selection |> should haveLength 2
+    let values = selection |> Seq.map HtmlNode.innerText
+    values |> should equal ["First child paragraph";"Yet another first child paragraph"]
+
+let result = ``:first-child Selector``()
