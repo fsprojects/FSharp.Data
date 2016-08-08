@@ -139,6 +139,7 @@ let unescape s =
     r.Replace(s, convert)
 
 [<Test>]
+[<Ignore("#977")>]
 let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
     let parseStringified (json: JsonValue) =
         json.ToString(JsonSaveOptions.DisableFormatting)
