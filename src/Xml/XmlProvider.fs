@@ -24,10 +24,10 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   let xmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
-
+    
     // Generate the required type
-    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
-
+    let tpType = lazy(bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true))
+    
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let globalInference = args.[2] :?> bool
@@ -53,10 +53,10 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, bindingContext)  
+      let ctx = XmlGenerationContext.Create(cultureStr, tpType.Force(), globalInference, bindingContext)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
-      { GeneratedType = tpType
+      { GeneratedType = tpType.Force()
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
           result.Converter <@@ XmlElement.Create(%reader) @@>
@@ -91,7 +91,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
           (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans. The XmlProvider also infers string values as JSON.)</param>"""
 
 
-  do xmlProvTy.AddXmlDoc helpText
+  do xmlProvTy.AddXmlDocDelayed(fun () -> helpText)
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler

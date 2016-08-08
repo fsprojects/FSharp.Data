@@ -21,11 +21,12 @@ open System.Collections.Generic
 /// Creates a cache that uses in-memory collection
 let createInMemoryCache expiration = 
   let dict = new Dictionary<_, _>()
+  let dictLock = obj()
   { new ICache<_> with
       member __.Set(key, value) = 
-        lock dict <| fun () -> dict.[key] <- (value, DateTime.UtcNow)
+        lock dictLock <| fun () -> dict.[key] <- (value, DateTime.UtcNow)
       member __.TryRetrieve(key) =
-        lock dict <| fun () ->
+        lock dictLock <| fun () ->
           match dict.TryGetValue(key) with
           | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
           | _ -> None }
@@ -35,16 +36,19 @@ let createInMemoryCache expiration =
 open System.Collections.Concurrent
 
 /// Creates a cache that uses in-memory collection
-let createInMemoryCache expiration = 
+let createInMemoryCache (expiration:TimeSpan) = 
   let dict = new ConcurrentDictionary<_, _>()
   { new ICache<_> with
       member __.Set(key, value) = 
-        dict.[key] <- (value, DateTime.UtcNow)
+        dict.AddOrUpdate(key, (value, DateTime.UtcNow), (fun _ _ -> value, DateTime.UtcNow)) |> ignore
+        async { do! Async.Sleep (expiration.Milliseconds)
+                if dict <> null then
+                    dict.TryRemove(key) |> ignore } |> Async.Start
       member __.TryRetrieve(key) =
         match dict.TryGetValue(key) with
         | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
         | _ -> None }
-
+        
 #endif
 
 #if FX_NO_LOCAL_FILESYSTEM

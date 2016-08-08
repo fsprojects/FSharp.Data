@@ -375,9 +375,10 @@ module private HttpHelpers =
         interface IDisposable with
             member x.Dispose () = 
                 match res :> obj with
-                | :? IDisposable as res -> res.Dispose ()
+                | :? IDisposable as res when res <> null -> res.Dispose ()
                 | _ -> ()
-                responseStream.Dispose ()
+                if responseStream<>null then
+                    responseStream.Dispose ()
 
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content

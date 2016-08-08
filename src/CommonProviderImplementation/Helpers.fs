@@ -74,6 +74,7 @@ type DisposableTypeProviderForNamespaces() as x =
     inherit TypeProviderForNamespaces()
   
     let disposeActions = ResizeArray()
+    let dictLock = obj()
   
     static let idCount = ref 0
   
@@ -83,14 +84,14 @@ type DisposableTypeProviderForNamespaces() as x =
   
     do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
 
-    let addDisposeAction action = lock disposeActions <| fun () -> disposeActions.Add action
+    let addDisposeAction action = lock dictLock <| fun () -> disposeActions.Add action
 
-    let dispose typeName = lock disposeActions <| fun () -> 
+    let dispose typeName = lock dictLock <| fun () -> 
         log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
         for dispose in disposeActions do
             dispose (Some typeName)
 
-    let disposeAll() = lock disposeActions <| fun () ->
+    let disposeAll() = lock dictLock <| fun () ->
         log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
         for dispose in disposeActions do
             dispose None
@@ -135,7 +136,7 @@ module internal ProviderHelpers =
     let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
     
     type private ParseTextResult<'T> =
-        { TypedSamples : 'T []
+        { TypedSamples : Lazy<'T []>
           SampleIsUri : bool
           SampleIsWebUri : bool
           SampleIsResource : bool }
@@ -171,9 +172,10 @@ module internal ProviderHelpers =
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
+            lazy(
             if String.IsNullOrWhiteSpace(optResource)
             then None 
-            else ReadResource(cfg, optResource)
+            else ReadResource(cfg, optResource))
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -182,7 +184,7 @@ module internal ProviderHelpers =
                 if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str
                 then None else Some uri
     
-        match tryGetResource() with
+        match tryGetResource().Force() with
         | Some res -> { TypedSamples = parseFunc "" res
                         SampleIsUri = false
                         SampleIsWebUri = false
@@ -208,6 +210,7 @@ module internal ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
+                lazy(
                 use reader = 
                     asyncRead (Some (tp, fullTypeName)) resolver formatName encodingStr uri
                     |> Async.RunSynchronously
@@ -223,7 +226,7 @@ module internal ProviderHelpers =
                         else
                             line |> sb.AppendLine |> ignore
                             decr max
-                    sb.ToString()
+                    sb.ToString())
     
             try
               
@@ -232,10 +235,10 @@ module internal ProviderHelpers =
                         match webUrisCache.TryRetrieve uri.OriginalString with
                         | Some value -> value, true
                         | None ->
-                            let value = readText()
+                            let value = readText().Force()
                             webUrisCache.Set(uri.OriginalString, value)
                             value, true
-                    else readText(), false
+                    else readText().Force(), false
                     
                 { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
                   SampleIsUri = true
@@ -302,10 +305,11 @@ module internal ProviderHelpers =
                         providedTypesCache.TryRemove key |> ignore
                     else
                         log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
-                        providedTypesCache.[key] <- CacheValue (providedType, fullKey)
+                        providedTypesCache.AddOrUpdate(key, CacheValue (providedType, fullKey), fun _ _ -> CacheValue (providedType, fullKey)) |> ignore
                         // Remove the cache entry in 10 seconds
                         async { do! Async.Sleep (10000)
-                                providedTypesCache.TryRemove(key) |> ignore } |> Async.StartImmediate
+                                if providedTypesCache <> null then
+                                    providedTypesCache.TryRemove(key) |> ignore } |> Async.Start
             providedType
       else 
           f() 
@@ -332,17 +336,18 @@ module internal ProviderHelpers =
         let defaultResolutionFolder = cfg.ResolutionFolder
         
         let parse extension (value:string) = using (logTime "Parsing" sampleOrSampleUri) <| fun _ ->
-            if sampleIsList then
-                parseList extension value
-            else
-                [| parseSingle extension value |]
+            lazy(
+                if sampleIsList then
+                    parseList extension value
+                else
+                    [| parseSingle extension value |])
         
         getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
         
-        let spec = getSpecFromSamples parseResult.TypedSamples
+        let spec = getSpecFromSamples (parseResult.TypedSamples.Force())
         
         let resultType = spec.RepresentationType
         let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) 
