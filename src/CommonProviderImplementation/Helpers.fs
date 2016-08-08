@@ -210,7 +210,6 @@ module internal ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                lazy(
                 use reader = 
                     asyncRead (Some (tp, fullTypeName)) resolver formatName encodingStr uri
                     |> Async.RunSynchronously
@@ -226,7 +225,7 @@ module internal ProviderHelpers =
                         else
                             line |> sb.AppendLine |> ignore
                             decr max
-                    sb.ToString())
+                    sb.ToString()
     
             try
               
@@ -235,10 +234,10 @@ module internal ProviderHelpers =
                         match webUrisCache.TryRetrieve uri.OriginalString with
                         | Some value -> value, true
                         | None ->
-                            let value = readText().Force()
+                            let value = readText()
                             webUrisCache.Set(uri.OriginalString, value)
                             value, true
-                    else readText().Force(), false
+                    else readText(), false
                     
                 { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
                   SampleIsUri = true
@@ -308,8 +307,7 @@ module internal ProviderHelpers =
                         providedTypesCache.AddOrUpdate(key, CacheValue (providedType, fullKey), fun _ _ -> CacheValue (providedType, fullKey)) |> ignore
                         // Remove the cache entry in 10 seconds
                         async { do! Async.Sleep (10000)
-                                if providedTypesCache <> null then
-                                    providedTypesCache.TryRemove(key) |> ignore } |> Async.Start
+                                providedTypesCache.TryRemove(key) |> ignore } |> Async.Start
             providedType
       else 
           f() 
