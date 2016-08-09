@@ -1,7 +1,7 @@
 NUGET
   remote: http://www.nuget.org/api/v2
-    FAKE (4.35)
-    FsCheck (2.5)
+    FAKE (4.36)
+    FsCheck (2.6)
       FSharp.Core (>= 3.1.2.5)
     FSharp.Charting (0.90.14)
     FSharp.Compiler.Service (2.0.0.6)
@@ -38,18 +38,18 @@ NUGET
       NUnit.Extension.NUnitV2ResultWriter (>= 3.4.1)
       NUnit.Extension.TeamCityEventListener (>= 1.0.1)
       NUnit.Extension.VSProjectLoader (>= 3.4.1)
-    Octokit (0.20)
+    Octokit (0.21.1)
       Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
     SourceLink.Fake (1.1)
     Zlib.Portable (1.11)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (6fd8b4d79012bde7c3210031b5017b6c9fc05fda)
+    modules/Octokit/Octokit.fsx (8fd20ae42c996060bc8bedb821edfb50517cdd8b)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/AssemblyReader.fs (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
-    src/AssemblyReaderReflection.fs (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
-    src/ProvidedTypes.fs (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
-    src/ProvidedTypes.fsi (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
-    src/ProvidedTypesContext.fs (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
-    src/ProvidedTypesTesting.fs (dfbca9b83fb70067e85abddcb8b89332aae4c28d)
+    src/AssemblyReader.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/AssemblyReaderReflection.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/ProvidedTypes.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/ProvidedTypes.fsi (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/ProvidedTypesContext.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/ProvidedTypesTesting.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
