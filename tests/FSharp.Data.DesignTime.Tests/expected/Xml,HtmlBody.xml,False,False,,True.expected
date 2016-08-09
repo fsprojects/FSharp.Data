@@ -1,30 +1,30 @@
 class XmlProvider : obj
-    static member AsyncGetSample: () -> XmlProvider+Div async
+    static member AsyncGetSample: () -> XmlProvider+Div2 async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "HtmlBody.xml"), f)
 
-    static member AsyncLoad: uri:string -> XmlProvider+Div async
+    static member AsyncLoad: uri:string -> XmlProvider+Div2 async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
-    static member GetSample: () -> XmlProvider+Div
+    static member GetSample: () -> XmlProvider+Div2
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "HtmlBody.xml")))
 
-    static member Load: stream:System.IO.Stream -> XmlProvider+Div
+    static member Load: stream:System.IO.Stream -> XmlProvider+Div2
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
-    static member Load: reader:System.IO.TextReader -> XmlProvider+Div
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Div2
     XmlElement.Create(reader)
 
-    static member Load: uri:string -> XmlProvider+Div
+    static member Load: uri:string -> XmlProvider+Div2
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
-    static member Parse: text:string -> XmlProvider+Div
+    static member Parse: text:string -> XmlProvider+Div2
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-class XmlProvider+Div : FDR.BaseTypes.XmlElement
-    new : id:string -> span:string -> divs:XmlProvider+Div2[] -> XmlProvider+Div
+class XmlProvider+Div2 : FDR.BaseTypes.XmlElement
+    new : id:string -> span:string -> divs:XmlProvider+Div[] -> XmlProvider+Div2
     XmlRuntime.CreateRecord("div", 
                             [| ("id",
                                 (id :> obj)) |], 
@@ -33,10 +33,10 @@ class XmlProvider+Div : FDR.BaseTypes.XmlElement
                                ("div",
                                 (divs :> obj)) |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div2
     XmlElement.Create(xElement)
 
-    member Divs: XmlProvider+Div2[] with get
+    member Divs: XmlProvider+Div[] with get
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 
     member Id: string with get
@@ -48,8 +48,8 @@ class XmlProvider+Div : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
-class XmlProvider+Div2 : FDR.BaseTypes.XmlElement
-    new : id:string -> spans:string[] -> div:string option -> XmlProvider+Div2
+class XmlProvider+Div : FDR.BaseTypes.XmlElement
+    new : id:string -> spans:string[] -> div:string option -> XmlProvider+Div
     XmlRuntime.CreateRecord("div", 
                             [| ("id",
                                 (id :> obj)) |], 
@@ -58,7 +58,7 @@ class XmlProvider+Div2 : FDR.BaseTypes.XmlElement
                                ("div",
                                 (div :> obj)) |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div2
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
     XmlElement.Create(xElement)
 
     member Div: string option with get
