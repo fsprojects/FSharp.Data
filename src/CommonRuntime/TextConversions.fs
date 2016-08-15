@@ -33,6 +33,11 @@ module private Helpers =
   // is already taken care of before AsDateTime is called
   let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", regexOptions)
 
+  let ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles =
+    match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
+    | true, d -> d |> Some
+    | false, _ -> None
+
 // --------------------------------------------------------------------------------------
 
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
@@ -98,13 +103,9 @@ type TextConversions private() =
     else
       // Parse ISO 8601 format, fixing time zone if needed
       let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
-      match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
-      | true, d ->
-          if d.Kind = DateTimeKind.Unspecified then 
-            new DateTime(d.Ticks, DateTimeKind.Local) |> Some
-          else 
-            Some d
-      | _ -> None
+      match ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles with
+      | Some d when d.Kind = DateTimeKind.Unspecified -> new DateTime(d.Ticks, DateTimeKind.Local) |> Some
+      | x -> x
 
   static member AsGuid (text:string) = 
     Guid.TryParse(text.Trim()) |> asOption
