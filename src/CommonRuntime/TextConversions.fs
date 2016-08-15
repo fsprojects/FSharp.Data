@@ -31,11 +31,11 @@ module private Helpers =
 #endif
   // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
   // is already taken care of before AsDateTime is called
-  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", regexOptions)
+  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)([-+]\d+)?\)/$", regexOptions)
 
   let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
-  let ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles =
+  let ParseISO8601FormattedDateTime text cultureInfo =
     match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
     | true, d -> d |> Some
     | false, _ -> None
@@ -104,17 +104,40 @@ type TextConversions private() =
       |> Some
     else
       // Parse ISO 8601 format, fixing time zone if needed
-      match ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles with
+      match ParseISO8601FormattedDateTime text cultureInfo with
       | Some d when d.Kind = DateTimeKind.Unspecified -> new DateTime(d.Ticks, DateTimeKind.Local) |> Some
       | x -> x
 
   static member AsDateTimeOffset cultureInfo (text:string) =
-    match ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles with
-    | Some d when d.Kind <> DateTimeKind.Unspecified -> 
+    // get TimeSpan presentation from 4-digt integers like 0000 or -0600
+    let getTimeSpanFromHourMin (hourMin:int) =
+      let hr = (hourMin/100) |> float |> TimeSpan.FromHours 
+      let min = (hourMin%100) |> float |> TimeSpan.FromMinutes 
+      hr.Add min
+
+    let offset str = 
+      match Int32.TryParse str with
+      | true, v -> getTimeSpanFromHourMin v |> Some
+      | false, _ -> None
+
+    let matchesMS = msDateRegex.Value.Match (text.Trim())
+    if matchesMS.Success && matchesMS.Groups.[2].Success && matchesMS.Groups.[2].Value.Length = 5 then
+    // only if the timezone offset is specified with '-' or '+' prefix, after the millis
+    // e.g. 1231456+1000, 123123+0000, 123123-0500, etc.
+      match offset matchesMS.Groups.[2].Value with
+      | Some ofst ->
+        matchesMS.Groups.[1].Value 
+        |> Double.Parse 
+        |> DateTimeOffset(1970, 1, 1, 0, 0, 0, ofst).AddMilliseconds
+        |> Some
+      | None -> None
+    else
+      match ParseISO8601FormattedDateTime text cultureInfo with
+      | Some d when d.Kind <> DateTimeKind.Unspecified -> 
         match DateTimeOffset.TryParse(text, cultureInfo, dateTimeStyles) with
         | true, dto -> dto |> Some
         | false, _ -> None
-    | _ -> None
+      | _ -> None
 
   static member AsGuid (text:string) = 
     Guid.TryParse(text.Trim()) |> asOption
