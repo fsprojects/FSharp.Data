@@ -237,7 +237,7 @@ module Options =
 
     /// Get the datetime offset value of an element (assuming that the value is a string
     /// containing well-formed ISO date time with offset)
-    member x.AsDateTime(?cultureInfo) = 
+    member x.AsDateTimeOffset(?cultureInfo) = 
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
       JsonConversions.AsDateTimeOffset cultureInfo x
   
