@@ -263,6 +263,7 @@ type JsonRuntime =
 
     | :? option<string>          as v -> optionToJson JsonValue.String v
     | :? option<DateTime>        as v -> optionToJson (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<DateTimeOffset>  as v -> optionToJson (fun (dt:DateTimeOffset) -> dt.ToString(cultureInfo) |> JsonValue.String) v
     | :? option<int>             as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<int64>           as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<float>           as v -> optionToJson (decimal >> JsonValue.Number) v
