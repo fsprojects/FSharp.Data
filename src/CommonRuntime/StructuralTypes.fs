@@ -122,6 +122,7 @@ type InferedTypeTag with
     | Boolean -> "Boolean"
     | String -> "String"
     | DateTime -> "DateTime"
+    | DateTimeOffset -> "DateTimeOffset"
     | Guid -> "Guid"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"

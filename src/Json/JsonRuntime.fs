@@ -199,6 +199,9 @@ type JsonRuntime =
     | InferedTypeTag.DateTime -> 
         JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
+    | InferedTypeTag.DateTimeOffset ->
+        JsonConversions.AsDateTimeOffset (TextRuntime.GetCulture cultureStr)
+        >> Option.isSome
     | InferedTypeTag.Guid -> 
         JsonConversions.AsGuid >> Option.isSome
     | InferedTypeTag.Collection -> 
