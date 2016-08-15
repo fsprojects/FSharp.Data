@@ -219,7 +219,7 @@
     <Content Include="Data/projects.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data/Contacts.json">
+    <Content Include="Data/contacts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/Dates.json">
@@ -284,7 +284,7 @@
     <None Include="Data\WikiData.json" />
     <None Include="Data\Empty.json" />
     <None Include="Data\projects.json" />
-    <None Include="Data\Contacts.json" />
+    <None Include="Data\contacts.json" />
     <None Include="Data\Dates.json" />
     <None Include="Data\WorldBank.json" />
     <None Include="Data\TwitterStream.json" />

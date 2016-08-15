@@ -58,7 +58,7 @@ let ``Can create type for simple table``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 1`` |> should equal 1
 
-type MarketDepth = HtmlProvider<"data/marketdepth.htm">
+type MarketDepth = HtmlProvider<const(__SOURCE_DIRECTORY__ + "/Data/MarketDepth.htm")>
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
@@ -68,7 +68,7 @@ let ``Can infer tables out of the market depth file``() =
 
 [<Test>]
 let ``NuGet table gets all rows``() =
-    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.``Version History``
+    let table = HtmlProvider<const(__SOURCE_DIRECTORY__ + "/Data/NuGet.html")>.GetSample().Tables.``Version History``
     table.Rows.Length |> should equal 35
 
 [<Test>]
@@ -310,7 +310,7 @@ let ``Handles closing tag with number in script (Bug 800)``() =
     let data = html.Html.Descendants ["a"] |> Seq.toList
     data.Length |> should equal 4
 
-type DoctorWho = FSharp.Data.HtmlProvider<"data/doctor_who2.html">
+type DoctorWho = FSharp.Data.HtmlProvider<const(__SOURCE_DIRECTORY__ + "/Data/doctor_who2.html")>
 
 [<Test>]   
 let ``List and Table with same nome don't clash``() =
