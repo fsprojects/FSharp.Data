@@ -77,6 +77,16 @@ let ``Can parse document with timezone and fraction iso date``() =
     let j = JsonValue.Parse "{\"anniversary\": \"1997-07-16T19:20:30.45+01:00\"}"
     j?anniversary.AsDateTime().ToUniversalTime() |> should equal (new DateTime(1997, 07, 16, 18, 20, 30, 450, DateTimeKind.Utc))
 
+[<Test>]
+let ``Can parse document with datetime offset as ticks and timezones`` () =
+    let j = JsonValue.Parse "{\"anniversary\": \"\\/Date(869080830450+1000)\\/\"}"
+    j?anniversary.AsDateTimeOffset() |> should equal <| DateTimeOffset (1997, 07, 16, 19, 20, 30, 450, TimeSpan.FromHours 10.)
+
+[<Test>]
+let ``Can parse document with datetime offset from iso date format``() =
+    let j = JsonValue.Parse "{\"anniversary\": \"2009-05-19 14:39:22+0600\"}"
+    j?anniversary.AsDateTimeOffset() |> should equal <| DateTimeOffset(2009, 05, 19, 14, 39, 22, TimeSpan.FromHours 6.)
+
 // TODO: Due to limitations in the current ISO 8601 datetime parsing these fail, and should be made to pass
 //[<Test>]
 //let ``Cant Yet parse document with basic iso date``() =
