@@ -288,6 +288,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>
   | Parse asGuid _ -> typeof<Guid>
+  | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) -> typeof<DateTimeOffset>
   | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | _ -> typeof<string>
 

@@ -107,6 +107,15 @@ type TextConversions private() =
       | Some d when d.Kind = DateTimeKind.Unspecified -> new DateTime(d.Ticks, DateTimeKind.Local) |> Some
       | x -> x
 
+  static member AsDateTimeOffset cultureInfo (text:string) =
+    let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
+    match ParseISO8601FormattedDateTime text cultureInfo dateTimeStyles with
+    | Some d when d.Kind <> DateTimeKind.Unspecified -> 
+        match DateTimeOffset.TryParse(text, cultureInfo, dateTimeStyles) with
+        | true, dto -> dto |> Some
+        | false, _ -> None
+    | _ -> None
+
   static member AsGuid (text:string) = 
     Guid.TryParse(text.Trim()) |> asOption
 
