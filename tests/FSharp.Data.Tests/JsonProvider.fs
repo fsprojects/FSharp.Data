@@ -472,12 +472,12 @@ let ``Can parse microsoft format dates``() =
 [<Test>]
 let ``Can parse ISO 8601 dates``() =
     let dates = DateJSON.GetSample()
-    dates.Anniversary.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 18, 20, 30, 450)) 
+    dates.Anniversary |> should equal (new DateTimeOffset(1997, 7, 16, 19, 20, 30, 450, TimeSpan.FromHours 1.)) 
 
 [<Test>]
 let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
-    dates.UtcTime.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 19, 50, 30, 0)) 
+    dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero)) 
 
 [<Test>]
 [<SetCulture("zh-CN")>]
@@ -560,7 +560,7 @@ let ``Can construct complex objects``() =
     let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
     let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
     let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
-                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
+                            JsonValue.Null, JsonValue.Null, 2, DateTimeOffset(2013,03,15,0,0,0,TimeSpan.Zero), DateTimeOffset(2013,03,16,0,0,0,TimeSpan.Zero), JsonValue.Null, pullRequest, None)
     json.JsonValue.ToString() |> normalize |> should equal (normalize """{
   "url": "url",
   "labels_url": "labelsUrl",
@@ -604,8 +604,8 @@ let ``Can construct complex objects``() =
   "assignee": null,
   "milestone": null,
   "comments": 2,
-  "created_at": "2013-03-15T00:00:00.0000000",
-  "updated_at": "2013-03-16T00:00:00.0000000",
+  "created_at": "2013-03-15T00:00:00.0000000+00:00",
+  "updated_at": "2013-03-16T00:00:00.0000000+00:00",
   "closed_at": null,
   "pull_request": {
     "html_url": null,
