@@ -31,7 +31,7 @@ module List =
 let private numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int64>; typeof<decimal>; typeof<float>]
 
 /// List of primitive types that can be returned as a result of the inference
-let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
+let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<DateTimeOffset>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
@@ -49,6 +49,7 @@ let typeTag = function
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
+      elif typ = typeof<DateTimeOffset> then InferedTypeTag.DateTimeOffset
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
@@ -65,12 +66,13 @@ let typeTag = function
 /// are also `decimal` (and `float`) values, but not the other way round.
 
 let private conversionTable =
-    [ typeof<Bit>,     [ typeof<Bit0>; typeof<Bit1>]
-      typeof<bool>,    [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
-      typeof<int>,     [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
-      typeof<int64>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
-      typeof<decimal>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
-      typeof<float>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>] ]
+    [ typeof<Bit>,              [ typeof<Bit0>; typeof<Bit1>]
+      typeof<bool>,             [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
+      typeof<int>,              [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
+      typeof<int64>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
+      typeof<decimal>,          [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
+      typeof<float>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>]
+      typeof<DateTimeOffset>,   [ typeof<DateTime> ] ]
 
 let private subtypePrimitives typ1 typ2 = 
   Debug.Assert(List.exists ((=) typ1) primitiveTypes)

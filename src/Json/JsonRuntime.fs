@@ -115,6 +115,9 @@ type JsonRuntime =
   static member ConvertBoolean(json) = 
     json |> Option.bind JsonConversions.AsBoolean
 
+  static member ConvertDateTimeOffset(cultureStr, json) = 
+    json |> Option.bind (JsonConversions.AsDateTimeOffset (TextRuntime.GetCulture cultureStr))
+  
   static member ConvertDateTime(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
 

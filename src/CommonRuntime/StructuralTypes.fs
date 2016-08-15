@@ -32,6 +32,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | String
   | Json
   | DateTime
+  | DateTimeOffset
   | Guid
   // Collections and sum types
   | Collection 
