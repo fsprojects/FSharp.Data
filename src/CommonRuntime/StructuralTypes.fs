@@ -146,6 +146,7 @@ type InferedTypeTag with
     | "Boolean" -> Boolean
     | "String" -> String 
     | "DateTime" -> DateTime
+    | "DateTimeOffset" -> DateTimeOffset
     | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous
