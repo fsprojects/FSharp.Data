@@ -32,7 +32,6 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | String
   | Json
   | DateTime
-  | DateTimeOffset
   | Guid
   // Collections and sum types
   | Collection 
@@ -122,7 +121,6 @@ type InferedTypeTag with
     | Boolean -> "Boolean"
     | String -> "String"
     | DateTime -> "DateTime"
-    | DateTimeOffset -> "DateTimeOffset"
     | Guid -> "Guid"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
@@ -146,7 +144,6 @@ type InferedTypeTag with
     | "Boolean" -> Boolean
     | "String" -> String 
     | "DateTime" -> DateTime
-    | "DateTimeOffset" -> DateTimeOffset
     | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous

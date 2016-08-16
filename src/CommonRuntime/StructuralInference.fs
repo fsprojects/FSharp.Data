@@ -48,8 +48,7 @@ let typeTag = function
       if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
-      elif typ = typeof<DateTime> then InferedTypeTag.DateTime
-      elif typ = typeof<DateTimeOffset> then InferedTypeTag.DateTimeOffset
+      elif typ = typeof<DateTime> || typ = typeof<DateTimeOffset> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
@@ -72,7 +71,7 @@ let private conversionTable =
       typeof<int64>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
       typeof<decimal>,          [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
       typeof<float>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>]
-      typeof<DateTimeOffset>,   [ typeof<DateTime> ] ]
+      typeof<DateTime>,   [ typeof<DateTimeOffset> ] ]
 
 let private subtypePrimitives typ1 typ2 = 
   Debug.Assert(List.exists ((=) typ1) primitiveTypes)
