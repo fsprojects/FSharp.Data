@@ -16,17 +16,16 @@ open FSharp.Data.HttpRequestHeaders
 let ``Don't throw exceptions on http error`` () = 
     let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
     response.StatusCode |> should equal 401
-    response.Body |> should equal (Text """{"status_message":"Invalid API key: You must be granted a valid key.","status_code":7}""")
 
 [<Test>]
 let ``Throw exceptions on http error`` () = 
-    let exn =
+    let throwsException =
         try
             Http.RequestString("http://api.themoviedb.org/3/search/movie") |> ignore
-            ""
+            false
         with e -> 
-            e.Message
-    exn |> should contain """{"status_message":"Invalid API key: You must be granted a valid key.","status_code":7}"""
+            true
+    throwsException |> should equal true
 
 [<Test>]
 let ``If the same header is added multiple times, throws an exception`` () =
@@ -77,4 +76,3 @@ let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
             customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
     
     response.StatusCode |> should equal 401
-    response.Body |> should equal (Text """{"status_message":"Invalid API key: You must be granted a valid key.","status_code":7}""")
