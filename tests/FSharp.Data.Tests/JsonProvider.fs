@@ -651,3 +651,12 @@ let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
 
+[<Test>]
+let ``DateTime and DateTimeOffset mix results in DateTime`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "2016-10-05T04:05:03", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTime>) |> should equal true
+
+[<Test>]
+let ``Collection of DateTimeOffset should have the type DateTimeOffset`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "/Date(123123+0600)/", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTimeOffset>) |> should equal true
