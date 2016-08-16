@@ -509,44 +509,39 @@ let ``Having null in a cell should not fail saving to string (issue#978)`` () =
                     output.SaveToString()
 
     
-    let mutable counter = 1
     let data = seq {
         yield {
-            Indicator = {Name = "Ind-" + counter.ToString() }
-            Country = {Name = "Cnt-" + counter.ToString() }
-            RelationshipType = {Name = "RT-" + counter.ToString() }
-            Code = "code" + counter.ToString()
+            Indicator = {Name = "Ind-1" }
+            Country = {Name = "Cnt-1" }
+            RelationshipType = {Name = "RT-2" }
+            Code = "code-1"
         }
 
-        counter <- counter + 1
         yield {
-            Indicator = {Name = "Ind-" + counter.ToString() }
-            Country = {Name = "Cnt-" + counter.ToString() }
-            RelationshipType = {Name = "RT-" + counter.ToString() }
+            Indicator = {Name = "Ind-2" }
+            Country = {Name = "Cnt-2" }
+            RelationshipType = {Name = "RT-2" }
             Code = ""
         }
 
-        counter <- counter + 1
         yield {
-            Indicator = {Name = "Ind-" + counter.ToString() }
-            Country = {Name = "Cnt-" + counter.ToString() }
-            RelationshipType = {Name = "RT-" + counter.ToString() }
+            Indicator = {Name = "Ind-3" }
+            Country = {Name = "Cnt-3" }
+            RelationshipType = {Name = "RT-3" }
             Code = null
         }
         
-        counter <- counter + 1
         yield {
-            Indicator = {Name = "Ind-" + counter.ToString() }
-            Country = {Name = "Cnt-" + counter.ToString() }
-            RelationshipType = {Name = "RT-" + counter.ToString() }
+            Indicator = {Name = "Ind-4" }
+            Country = {Name = "Cnt-4" }
+            RelationshipType = {Name = "RT-4" }
             Code = "null"
         }
 
-        counter <- counter + 1
         yield {
-            Indicator = {Name = "Ind-" + counter.ToString() }
-            Country = {Name = "Cnt-" + counter.ToString() }
-            RelationshipType = {Name = "RT-" + counter.ToString() }
+            Indicator = { Name = "Ind-5" }
+            Country = {Name = "Cnt-5" }
+            RelationshipType = {Name = "RT-5" }
             Code = "[null]"
         }
     }
