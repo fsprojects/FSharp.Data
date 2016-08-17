@@ -305,7 +305,7 @@ module internal ProviderHelpers =
                         providedTypesCache.[key] <- CacheValue (providedType, fullKey)
                         // Remove the cache entry in 10 seconds
                         async { do! Async.Sleep (10000)
-                                providedTypesCache.TryRemove(key) |> ignore } |> Async.StartImmediate
+                                providedTypesCache.TryRemove(key) |> ignore } |> Async.Start
             providedType
       else 
           f() 
