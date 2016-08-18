@@ -19,12 +19,15 @@ let createNonCachingCache() =
 open System.Collections.Generic
 
 /// Creates a cache that uses in-memory collection
-let createInMemoryCache expiration = 
+let createInMemoryCache (expiration:TimeSpan) = 
   let dict = new Dictionary<_, _>()
   let dictLock = obj()
   { new ICache<_> with
       member __.Set(key, value) = 
         lock dictLock <| fun () -> dict.[key] <- (value, DateTime.UtcNow)
+        async { do! Async.Sleep (expiration.Milliseconds) 
+                if dict <> null then 
+                    lock dict <| fun () -> dict.Remove(key) |> ignore } |> Async.Start 
       member __.TryRetrieve(key) =
         lock dictLock <| fun () ->
           match dict.TryGetValue(key) with
@@ -41,9 +44,9 @@ let createInMemoryCache (expiration:TimeSpan) =
   { new ICache<_> with
       member __.Set(key, value) = 
         dict.AddOrUpdate(key, (value, DateTime.UtcNow), (fun _ _ -> value, DateTime.UtcNow)) |> ignore
-        async { do! Async.Sleep (expiration.Milliseconds)
-                if dict <> null then
-                    dict.TryRemove(key) |> ignore } |> Async.Start
+        async { do! Async.Sleep (expiration.Milliseconds) 
+                if dict <> null then 
+                    dict.TryRemove(key) |> ignore } |> Async.Start 
       member __.TryRetrieve(key) =
         match dict.TryGetValue(key) with
         | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value

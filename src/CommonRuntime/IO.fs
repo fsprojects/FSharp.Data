@@ -178,7 +178,7 @@ type private Watcher(uri:Uri) =
 open System.Collections.Generic
 
 #if FX_NO_CONCURRENT
-let private watchers = Dictionary<string,Watcher>()
+let private watchers = Dictionary<string,Watcher>() 
 #else
 open System.Collections.Concurrent
 let private watchers = ConcurrentDictionary<string,Watcher>()
@@ -201,9 +201,9 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
             log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
             let watcher = Watcher uri
 #if FX_NO_CONCURRENT
-            watchers.Add(uri.OriginalString, watcher)
-#else
-            watchers.AddOrUpdate(uri.OriginalString, watcher, fun _ _ -> watcher) |> ignore
+            lock watchers <| fun () -> watchers.Add(uri.OriginalString, watcher)
+#else 
+            watchers.[uri.OriginalString] <- watcher
 #endif
             watcher
 
@@ -214,7 +214,7 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
         if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
             if watcher.Remove tp typeName then
 #if FX_NO_CONCURRENT
-                watchers.Remove uri.OriginalString |> ignore
+                lock watchers <| fun () -> watchers.Remove uri.OriginalString |> ignore
 #else
                 watchers.TryRemove(uri.OriginalString) |> ignore
 #endif

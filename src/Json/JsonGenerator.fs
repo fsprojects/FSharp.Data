@@ -16,6 +16,7 @@ open ProviderImplementation
 open ProviderImplementation.JsonInference
 open ProviderImplementation.JsonConversionsGenerator
 open ProviderImplementation.ProvidedTypes
+open System.Collections.Concurrent
 
 #nowarn "10001"
 
@@ -95,6 +96,9 @@ module JsonTypeBuilder =
     let typ = 
       ctx.TypeCache.GetOrAdd(inferedType, fun inferedType ->
         let typ = createType()
+        async { do! Async.Sleep (10000) 
+                if ctx.TypeCache <> null then 
+                    ctx.TypeCache.TryRemove(inferedType) |> ignore } |> Async.Start 
         typ)
 
     { ConvertedType = typ
