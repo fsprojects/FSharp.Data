@@ -23,7 +23,10 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   let ns = "FSharp.Data"
   let xmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
-  let buildTypes (typeName:string) (args:obj[]) =
+  let cache = System.Collections.Concurrent.ConcurrentDictionary<string, ProvidedTypeDefinition>()
+
+  let buildTypes (typeName:string) (args:obj[]) = 
+   cache.GetOrAdd(typeName, fun typeName ->
 
     // Generate the required type
     let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
@@ -63,8 +66,13 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
+    let result =
+        generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
                  version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+    async { do! Async.Sleep (10000)
+            if cache <> null then cache.TryRemove(typeName) |> ignore } |> Async.Start
+    result
+   )
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
