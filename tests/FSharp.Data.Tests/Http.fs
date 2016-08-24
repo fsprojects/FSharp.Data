@@ -19,13 +19,14 @@ let ``Don't throw exceptions on http error`` () =
 
 [<Test>]
 let ``Throw exceptions on http error`` () = 
-    let throwsException =
+    let exceptionThrown = 
         try
             Http.RequestString("http://api.themoviedb.org/3/search/movie") |> ignore
             false
         with e -> 
             true
-    throwsException |> should equal true
+
+    exceptionThrown |> should equal true
 
 [<Test>]
 let ``If the same header is added multiple times, throws an exception`` () =
