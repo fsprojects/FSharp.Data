@@ -35,7 +35,7 @@ module private Helpers =
 
 // --------------------------------------------------------------------------------------
 
-/// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
+/// Conversions from string to string/int/int64/decimal/float/boolean/datetime/timespan/guid options
 type TextConversions private() = 
 
   /// `NaN` `NA` `N/A` `#N/A` `:` `-` `TBA` `TBD`
@@ -105,6 +105,11 @@ type TextConversions private() =
           else 
             Some d
       | _ -> None
+
+  static member AsTimeSpan (cultureInfo: CultureInfo) (text:string) =
+    match TimeSpan.TryParse(text, cultureInfo) with
+    | true, t -> Some t
+    | _ -> None
 
   static member AsGuid (text:string) = 
     Guid.TryParse(text.Trim()) |> asOption

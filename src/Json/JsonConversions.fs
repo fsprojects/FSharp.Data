@@ -8,7 +8,7 @@ open System
 open FSharp.Data
 open FSharp.Data.Runtime
 
-/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
+/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/timespan/guid options
 type JsonConversions =
 
   static member AsString useNoneForNullOrEmpty (cultureInfo:IFormatProvider) = function
@@ -52,6 +52,10 @@ type JsonConversions =
 
   static member AsDateTime cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTime cultureInfo s
+    | _ -> None
+
+  static member AsTimeSpan cultureInfo = function
+    | JsonValue.String s -> TextConversions.AsTimeSpan cultureInfo s
     | _ -> None
 
   static member AsGuid = function

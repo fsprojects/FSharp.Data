@@ -118,6 +118,9 @@ type JsonRuntime =
   static member ConvertDateTime(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
 
+  static member ConvertTimeSpan(cultureStr, json) = 
+    json |> Option.bind (JsonConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr))
+
   static member ConvertGuid(json) = 
     json |> Option.bind JsonConversions.AsGuid
 
@@ -196,6 +199,9 @@ type JsonRuntime =
     | InferedTypeTag.DateTime -> 
         JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
+    | InferedTypeTag.TimeSpan -> 
+        JsonConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr)
+        >> Option.isSome
     | InferedTypeTag.Guid -> 
         JsonConversions.AsGuid >> Option.isSome
     | InferedTypeTag.Collection -> 
@@ -246,6 +252,7 @@ type JsonRuntime =
 
     | :? string                  as v -> JsonValue.String v
     | :? DateTime                as v -> v.ToString("O", cultureInfo) |> JsonValue.String
+    | :? TimeSpan                as v -> v.ToString("g", cultureInfo) |> JsonValue.String
     | :? int                     as v -> JsonValue.Number(decimal v)
     | :? int64                   as v -> JsonValue.Number(decimal v)
     | :? float                   as v -> JsonValue.Number(decimal v)
@@ -257,6 +264,7 @@ type JsonRuntime =
 
     | :? option<string>          as v -> optionToJson JsonValue.String v
     | :? option<DateTime>        as v -> optionToJson (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<TimeSpan>        as v -> optionToJson (fun (ts:TimeSpan) -> ts.ToString("g", cultureInfo) |> JsonValue.String) v
     | :? option<int>             as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<int64>           as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<float>           as v -> optionToJson (decimal >> JsonValue.Number) v

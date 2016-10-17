@@ -209,6 +209,7 @@ type XmlRuntime =
                 match v with
                 | :? string        as v -> v
                 | :? DateTime      as v -> v.ToString("O", cultureInfo)
+                | :? TimeSpan      as v -> v.ToString("g", cultureInfo)
                 | :? int           as v -> strWithCulture v
                 | :? int64         as v -> strWithCulture v
                 | :? float         as v -> strWithCulture v
@@ -224,6 +225,7 @@ type XmlRuntime =
         | :? option<XmlElement>    as v -> optionToArray serialize v
         | :? option<string>        as v -> optionToArray serialize v
         | :? option<DateTime>      as v -> optionToArray serialize v
+        | :? option<TimeSpan>      as v -> optionToArray serialize v
         | :? option<int>           as v -> optionToArray serialize v
         | :? option<int64>         as v -> optionToArray serialize v
         | :? option<float>         as v -> optionToArray serialize v

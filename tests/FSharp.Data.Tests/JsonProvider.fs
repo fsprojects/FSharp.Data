@@ -166,11 +166,12 @@ let ``Nulls, Missing, and "" should make the type optional``() =
 
 [<Test>]
 let ``Heterogeneous types with Nulls, Missing, and "" should return None on all choices``() =
-    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}}]""">.GetSamples()
+    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}},{"b":"00:30:00"}]""">.GetSamples()
     j.[0].A.Boolean  |> should equal None
     j.[0].A.Number   |> should equal None
     j.[0].A.Array    |> should equal None
     j.[0].B.DateTime |> should equal None
+    j.[0].B.TimeSpan |> should equal None
     j.[0].B.Number   |> should equal None
     j.[0].B.Array    |> should equal None
     j.[0].C.Boolean  |> should equal None
@@ -181,6 +182,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
     j.[1].B.DateTime |> should equal (Some (DateTime(DateTime.Today.Year,3,4)))
+    j.[1].B.TimeSpan |> should equal None
     j.[1].B.Number   |> should equal (Some 3.4m)
     j.[1].B.Array    |> should equal None
     j.[1].C.Boolean  |> should equal (Some true)
@@ -191,6 +193,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[2].A.Number   |> should equal None
     j.[2].A.Array    |> should equal None
     j.[2].B.DateTime |> should equal (Some (DateTime(2002,10,10)))
+    j.[2].B.TimeSpan |> should equal None
     j.[2].B.Number   |> should equal None
     j.[2].B.Array    |> should equal None
     j.[2].C.Boolean  |> should equal None
@@ -201,12 +204,15 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[3].A.Number   |> should equal None
     j.[3].A.Array    |> should equal (Some (Array.zeroCreate<IJsonDocument> 0))
     j.[3].B.DateTime |> should equal None
+    j.[3].B.TimeSpan |> should equal None
     j.[3].B.Number   |> should equal None
     j.[3].B.Array    |> should equal (Some [|1|])
     j.[3].C.Boolean  |> should equal None
     j.[3].C.Number   |> should equal None
     j.[3].C.Record   |> should not' (equal None)
     j.[3].C.Record.Value.Z |> should equal 1
+
+    j.[4].B.TimeSpan |> should equal (Some (TimeSpan(0, 30, 0)))
 
 [<Test>]
 let ``SampleIsList for json correctly handled``() = 
@@ -492,6 +498,28 @@ let ``Can parse ISO 8601 dates in the specified culture``() =
     dates.Birthdate.Month |> should equal 1
     let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
     dates.Birthdate.Month |> should equal 2
+
+type TimeSpanJSON = JsonProvider<"Data/TimeSpans.json">
+
+[<Test>]
+let ``Can parse positive time span with day and fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.PositiveWithDayWithFraction |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
+let ``Can parse positive time span without day and without fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.PositiveWithoutDayWithoutFraction |> should equal (new TimeSpan(0, 30, 0))
+
+[<Test>]
+let ``Can parse negative time span with day and fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.NegativeWithDayWithFraction |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
+
+[<Test>]
+let ``Can parse time span in different culture``() =
+    let timeSpans = JsonProvider<"""{"frTimeSpan": "1:3:16:50,5"}""", Culture="fr">.GetSample()
+    timeSpans.FrTimeSpan |> should equal (new TimeSpan(1, 3, 16, 50, 500))
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =

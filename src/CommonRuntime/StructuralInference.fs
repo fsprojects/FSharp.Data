@@ -31,7 +31,7 @@ module List =
 let private numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int64>; typeof<decimal>; typeof<float>]
 
 /// List of primitive types that can be returned as a result of the inference
-let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
+let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<TimeSpan>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
@@ -49,6 +49,7 @@ let typeTag = function
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
+      elif typ = typeof<TimeSpan> then InferedTypeTag.TimeSpan
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
@@ -238,7 +239,7 @@ module private Helpers =
     |> Seq.length
 
 /// Infers the type of a simple string value
-/// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<string>
+/// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<TimeSpan>|typeof<string>
 let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
@@ -288,6 +289,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>
   | Parse asGuid _ -> typeof<Guid>
+  | Parse TextConversions.AsTimeSpan _ -> typeof<TimeSpan>
   | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | _ -> typeof<string>
 
