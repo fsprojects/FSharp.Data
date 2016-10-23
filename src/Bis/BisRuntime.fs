@@ -1,4 +1,5 @@
-﻿// --------------------------------------------------------------------------------------
+﻿
+// --------------------------------------------------------------------------------------
 // Bank for International Settlements (BIS) type provider - runtime components 
 // --------------------------------------------------------------------------------------
 
@@ -6,7 +7,7 @@ namespace FSharp.Data.Runtime.Bis
 
 open System.Collections.Generic
 open System.IO
-open System.Linq
+open System.Linq 
 
 open Microsoft.FSharp.Core.Operators
 
@@ -14,7 +15,7 @@ open FSharp.Data
 
 [<AutoOpen>]
 module Implementation =
-
+    
     // Representation of a dataset dimension
     type public Dimension(dimensionName: string, position: int, memberList: string[]) =  
         class
@@ -30,7 +31,7 @@ module Implementation =
             member this.periods = periods
         end
        
-    // representation of a filter 
+    // representation of a filter
     type ObservationFilter(dimension : string, dimensionPosition : int, memberFilter : option<string list>) = 
         class
             member this.dimension = dimension
@@ -38,11 +39,24 @@ module Implementation =
             member this.memberFilter = memberFilter
         end
 
+    type ObservationValue(periodString : string, value : option<float>) =
+        class
+            member this.value = value
+            member this.periodString = periodString
+            member this.year = System.Int32.Parse(periodString.Substring(0,4))
+            member this.period = 
+                let periodPosition = periodString.IndexOf '-' + 2 
+                let periodLength = periodString.Length - periodPosition 
+                System.Int32.Parse(periodString.Substring(periodPosition, periodLength))
+        end
+
     // Representation of an observation an values per period
     type Observation(key : string, values : Map<string, option<float>>) =
         class
             member this.key = key
-            member this.values = values
+            member this.values = 
+                values 
+                    |> Seq.map (fun obs -> new ObservationValue(obs.Key, obs.Value))
         end
         
     // Base class for parsers
@@ -213,3 +227,8 @@ module Implementation =
             | dset when dset.Contains("_total_credit_") -> new CreditNonFinancialSectorParser(pathToDatasetFile) :> Parser
             | dset when dset.Contains("_dsr_") -> new DebtServiceRatioParser(pathToDatasetFile) :> Parser
             | _ -> failwith("Dataset not yet supported. File: " + pathToDatasetFile)
+
+    
+    let query observationFilter pathToDatasetFile =
+        let fileParser = createPraser pathToDatasetFile
+        fileParser.filter (observationFilter)
