@@ -15,7 +15,7 @@ open FSharp.Data
 
 [<AutoOpen>]
 module Implementation =
-    
+
     // Representation of a dataset dimension
     type public Dimension(dimensionName: string, position: int, memberList: string[]) =  
         class
@@ -39,6 +39,7 @@ module Implementation =
             member this.memberFilter = memberFilter
         end
 
+    // Representation of period and value
     type ObservationValue(periodString : string, value : option<float>) =
         class
             member this.value = value
@@ -54,9 +55,7 @@ module Implementation =
     type Observation(key : string, values : Map<string, option<float>>) =
         class
             member this.key = key
-            member this.values = 
-                values 
-                    |> Seq.map (fun obs -> new ObservationValue(obs.Key, obs.Value))
+            member this.values = values |> Seq.map (fun obs -> new ObservationValue(obs.Key, obs.Value))
         end
         
     // Base class for parsers
@@ -117,18 +116,18 @@ module Implementation =
                     | None ->   let lines = File.ReadLines(filePath)
                                 let dimNames = x.getHeader()
 
-                                // Get observations and split by dimension separator.
+                                // Get observations and split by dimension separator
                                 let observations = 
                                     lines
                                         |> Seq.skip (x.headerRowCount + 1)
                                         |> Seq.map (fun o -> x.splitDimensions(o, dimNames.Length + 1))
                                         |> Array.ofSeq
                 
-                                // Get dimensions and related available members.
+                                // Get dimensions and related available members
                                 let dimensions = 
                                     [1 .. dimNames.Length]
                                         |> Seq.mapi
-                                            (fun i d -> 
+                                            (fun i _ -> 
                                                 observations
                                                     |> Seq.map (fun obs -> Array.get obs i)
                                                     |> Seq.distinct
@@ -228,7 +227,7 @@ module Implementation =
             | dset when dset.Contains("_dsr_") -> new DebtServiceRatioParser(pathToDatasetFile) :> Parser
             | _ -> failwith("Dataset not yet supported. File: " + pathToDatasetFile)
 
-    
+    // Query data out of file
     let query observationFilter pathToDatasetFile =
         let fileParser = createPraser pathToDatasetFile
         fileParser.filter (observationFilter)

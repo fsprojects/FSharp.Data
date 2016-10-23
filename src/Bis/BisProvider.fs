@@ -44,12 +44,6 @@ type public BisProvider(cfg:TypeProviderConfig) as this =
 
             dimesionTys
             
-//        type Observation(key : string, values : Map<string, option<float>>) =
-//        class
-//            member this.key = key
-//            member this.values = values
-//        end
-
         let observationType =
             let obsTy = ProvidedTypeDefinition("Observation", Some typeof<obj>)
             obsTy.AddMember <| ProvidedProperty("key", typeof<string>, GetterCode = (fun (_) -> <@@ "adf" @@>))
@@ -85,7 +79,6 @@ type public BisProvider(cfg:TypeProviderConfig) as this =
             let getFilterMeth = ProvidedMethod("Get", [], typeof<Dictionary<string, string list>>) //Observation 
             getFilterMeth.InvokeCode <- (fun args -> 
                                 <@@ 
-                                        
                                     let dict = ((%%args.[0] : obj) :?> System.Collections.Generic.Dictionary<string,string list>)
                                     let obsFilter = new Dictionary<string, string list>()
                                     for f in dict.Where((fun d -> d.Value.Length > 0)) do
@@ -98,7 +91,7 @@ type public BisProvider(cfg:TypeProviderConfig) as this =
 
         
         let provider = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
-        provider.AddMember <| ProvidedConstructor(parameters = [], InvokeCode = fun args -> <@@ new Dictionary<string, string list>() @@>)
+        provider.AddMember <| ProvidedConstructor(parameters = [], InvokeCode = fun _ -> <@@ new Dictionary<string, string list>() @@>)
         let alltypes = dimensionTypes.Union([filterProvider]).ToList() 
         alltypes.Add(observationType)
         provider.AddMembers(alltypes |> Seq.toList)
