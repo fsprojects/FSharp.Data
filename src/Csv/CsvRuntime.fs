@@ -322,6 +322,11 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     use writer = writer
 
+    let nullSafeguard str =
+      match str with
+      | null -> String.Empty
+      | _ -> str
+
     let writeLine writeItem (items:string[]) =
       for i = 0 to items.Length-2 do
         writeItem items.[i]
@@ -335,6 +340,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     for row in x.Rows do
       row |> rowToStringArray.Invoke |> writeLine (fun item -> 
+        let item = item |> nullSafeguard
         if item.Contains separator || item.Contains quote || item.Contains "\n"  then
           writer.Write quote
           writer.Write (item.Replace(quote, doubleQuote))
