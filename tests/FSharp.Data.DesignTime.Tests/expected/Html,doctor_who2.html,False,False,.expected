@@ -614,19 +614,25 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table26: HtmlProvider+Table26 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Awards for Doctor Who", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Awards for Doctor Who", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Awards for Doctor Who 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table26", true)
 
     member Table28: HtmlProvider+Table28 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("BAFTA TV Award for Best Drama Series", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("BAFTA TV Award for Best Drama Series", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("BAFTA TV Award for Best Drama Series 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table28", true)
 
     member Table30: HtmlProvider+Table30 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Hugo Award for Best Dramatic Presentation, Short Form", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Hugo Award for Best Dramatic Presentation, Short Form", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Hugo Award for Best Dramatic Presentation, Short Form 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table30", true)
 
     member Table32: HtmlProvider+Table32 with get
@@ -640,7 +646,9 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table34: HtmlProvider+Table34 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Saturn Award for Best Television Presentation", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Saturn Award for Best Television Presentation", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Saturn Award for Best Television Presentation 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table34", true)
 
     member ``Theme music``: HtmlProvider+ThemeMusic with get
@@ -973,19 +981,28 @@ class HtmlProvider+Table24+Row : string * string
     (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table26+Row : string
+class HtmlProvider+Table26+Row : string * string
     member ``Awards for Doctor Who``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Awards for Doctor Who 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table28+Row : string
+class HtmlProvider+Table28+Row : string * string
     member ``BAFTA TV Award for Best Drama Series``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``BAFTA TV Award for Best Drama Series 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table30+Row : string
+class HtmlProvider+Table30+Row : string * string
     member ``Hugo Award for Best Dramatic Presentation, Short Form``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Hugo Award for Best Dramatic Presentation, Short Form 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table32+Row : string * string
@@ -996,9 +1013,12 @@ class HtmlProvider+Table32+Row : string * string
     (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table34+Row : string
+class HtmlProvider+Table34+Row : string * string
     member ``Saturn Award for Best Television Presentation``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Saturn Award for Best Television Presentation 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+ThemeMusic+Row : string * string

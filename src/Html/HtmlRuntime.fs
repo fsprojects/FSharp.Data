@@ -149,6 +149,10 @@ module HtmlRuntime =
             i
 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+        let rowSpan cell = 
+            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) 
+        let colSpan cell = 
+            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0)
         let rows =
             let header =
                 match table.Descendants("thead", false) |> Seq.toList with
@@ -160,11 +164,11 @@ module HtmlRuntime =
                 | _ -> []
             header @ (table.Descendants("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i,r)
-        
+
         if rows.Length <= 1 then None else
 
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
-        let rowLengths = cells |> List.map (fun x -> x.Length)
+        let rowLengths = cells |> List.map (fun row -> row |> List.map (fun (_, col) -> colSpan col ) |> List.fold (+) 0)
         let numberOfColumns = List.max rowLengths
         
         if not includeLayoutTables && (numberOfColumns < 1) then None else
@@ -174,9 +178,6 @@ module HtmlRuntime =
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
-                let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
-                let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
-
                 let data =
                     let getContents contents = 
                         contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat |> normalizeWs
@@ -186,8 +187,8 @@ module HtmlRuntime =
                     | _ -> Empty
                 let col_i = ref colindex
                 while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
-                for j in [!col_i..(!col_i + colSpan)] do
-                    for i in [rowindex..(rowindex + rowSpan)] do
+                for j in [!col_i..(!col_i + colSpan cell - 1)] do
+                    for i in [rowindex..(rowindex + rowSpan cell - 1)] do
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
