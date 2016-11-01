@@ -81,7 +81,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, (*globalInference*)true, bindingContext)  
+      let ctx = XmlGenerationContext.Create(cultureStr, tpType, (*globalInference*)true)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
