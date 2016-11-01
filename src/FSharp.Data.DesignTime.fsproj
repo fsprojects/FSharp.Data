@@ -75,6 +75,7 @@
     <Compile Include="Json\JsonProvider.fs" />
     <Compile Include="Xml\XmlRuntime.fs" />
     <Compile Include="Xml\XmlInference.fs" />
+	<Compile Include="Xml\XsdInference.fs" />
     <Compile Include="Xml\XmlGenerator.fs" />
     <Compile Include="Xml\XmlProvider.fs" />
     <Compile Include="Csv\CsvRuntime.fs" />
