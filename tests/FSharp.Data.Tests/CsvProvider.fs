@@ -481,3 +481,71 @@ let ``Fields with quotes should be quoted and escaped when saved``() =
     let roundTripped = SimpleWithStrCsv.Parse(csv.SaveToString())
     let rowRoundTripped = roundTripped.Rows |> Seq.exactlyOne
     rowRoundTripped |> should equal rowWithQuoteInField
+
+
+
+type MappingType = CsvProvider<"IndicatorName, CountryName, Type, Code", 
+                                                        Schema = "IndicatorName (string), CountryName (string), Type (string), Code (string)", 
+                                                        Encoding="windows-1252", 
+                                                        HasHeaders=true, 
+                                                        SkipRows=0>
+type WithName = {
+    Name: string
+}
+
+type Mapping = {
+    Indicator: WithName
+    Country: WithName
+    RelationshipType: WithName
+    Code: string
+}
+
+[<Test>]
+let ``Having null in a cell should not fail saving to string (issue#978)`` () =
+    
+    let Stringify (mappings:seq<Mapping>) =
+                    let rows = mappings |> Seq.map(fun x -> MappingType.Row(x.Indicator.Name, x.Country.Name, x.RelationshipType.ToString(), x.Code )) 
+                    let output = new MappingType( rows )
+                    output.SaveToString()
+
+    
+    let data = seq {
+        yield {
+            Indicator = {Name = "Ind-1" }
+            Country = {Name = "Cnt-1" }
+            RelationshipType = {Name = "RT-2" }
+            Code = "code-1"
+        }
+
+        yield {
+            Indicator = {Name = "Ind-2" }
+            Country = {Name = "Cnt-2" }
+            RelationshipType = {Name = "RT-2" }
+            Code = ""
+        }
+
+        yield {
+            Indicator = {Name = "Ind-3" }
+            Country = {Name = "Cnt-3" }
+            RelationshipType = {Name = "RT-3" }
+            Code = null
+        }
+        
+        yield {
+            Indicator = {Name = "Ind-4" }
+            Country = {Name = "Cnt-4" }
+            RelationshipType = {Name = "RT-4" }
+            Code = "null"
+        }
+
+        yield {
+            Indicator = { Name = "Ind-5" }
+            Country = {Name = "Cnt-5" }
+            RelationshipType = {Name = "RT-5" }
+            Code = "[null]"
+        }
+    }
+
+    data
+    |> Stringify 
+    |> ignore

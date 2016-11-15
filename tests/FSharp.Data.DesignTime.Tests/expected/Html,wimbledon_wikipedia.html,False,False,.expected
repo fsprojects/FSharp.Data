@@ -420,19 +420,25 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table10: HtmlProvider+Table10 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Wimbledon (Amateur Era)", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Wimbledon (Amateur Era)", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Wimbledon (Amateur Era) 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table10", true)
 
     member Table22: HtmlProvider+Table22 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Wimbledon (Open Era)", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Wimbledon (Open Era)", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Wimbledon (Open Era) 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table22", true)
 
     member Table30: HtmlProvider+Table30 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Wimbledon drawsheets", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Wimbledon drawsheets", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Wimbledon drawsheets 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table30", true)
 
     member Table31: HtmlProvider+Table31 with get
@@ -474,7 +480,9 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table34: HtmlProvider+Table34 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Grand Slam tournaments (Majors)", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Grand Slam tournaments (Majors)", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Grand Slam tournaments (Majors) 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table34", true)
 
     member Table36: HtmlProvider+Table36 with get
@@ -490,31 +498,41 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table38: HtmlProvider+Table38 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Grand Slam tournament champions", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Grand Slam tournament champions", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Grand Slam tournament champions 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table38", true)
 
     member Table39: HtmlProvider+Table39 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Australasian and Australian Championships / Australian Open", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Australasian and Australian Championships / Australian Open", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Australasian and Australian Championships / Australian Open 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table39", true)
 
     member Table40: HtmlProvider+Table40 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("French Championships / French Open", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("French Championships / French Open", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("French Championships / French Open 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table40", true)
 
     member Table41: HtmlProvider+Table41 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table41", true)
 
     member Table42: HtmlProvider+Table42 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("U.S. National Championships / US Open", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("U.S. National Championships / US Open", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("U.S. National Championships / US Open 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table42", true)
 
     member Table44: HtmlProvider+Table44 with get
@@ -742,19 +760,28 @@ class HtmlProvider+Table1+Row : string * string
     (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table10+Row : string
+class HtmlProvider+Table10+Row : string * string
     member ``Wimbledon (Amateur Era)``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Wimbledon (Amateur Era) 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table22+Row : string
+class HtmlProvider+Table22+Row : string * string
     member ``Wimbledon (Open Era)``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Wimbledon (Open Era) 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table30+Row : string
+class HtmlProvider+Table30+Row : string * string
     member ``Wimbledon drawsheets``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Wimbledon drawsheets 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table31+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
@@ -821,9 +848,12 @@ class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * 
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
-class HtmlProvider+Table34+Row : string
+class HtmlProvider+Table34+Row : string * string
     member ``Grand Slam tournaments (Majors)``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Grand Slam tournaments (Majors) 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table36+Row : string * string * string
@@ -837,29 +867,44 @@ class HtmlProvider+Table36+Row : string * string * string
     (let _,_,t3 = this in t3)
 
 
-class HtmlProvider+Table38+Row : string
+class HtmlProvider+Table38+Row : string * string
     member ``Grand Slam tournament champions``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Grand Slam tournament champions 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table39+Row : string
+class HtmlProvider+Table39+Row : string * string
     member ``Australasian and Australian Championships / Australian Open``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Australasian and Australian Championships / Australian Open 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table40+Row : string
+class HtmlProvider+Table40+Row : string * string
     member ``French Championships / French Open``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``French Championships / French Open 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table41+Row : string
+class HtmlProvider+Table41+Row : string * string
     member ``The Championships, Wimbledon``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``The Championships, Wimbledon 2``: string with get
+    (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table42+Row : string
+class HtmlProvider+Table42+Row : string * string
     member ``U.S. National Championships / US Open``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``U.S. National Championships / US Open 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table44+Row : string * string

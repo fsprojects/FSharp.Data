@@ -621,7 +621,8 @@ module private HttpHelpers =
                         try 
                             return! child
                         with
-                        | :? TimeoutException as exc -> 
+                        | :? TimeoutException as exc ->
+                            req.Abort() 
                             raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
                             return Unchecked.defaultof<_>
                     }
