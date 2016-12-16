@@ -567,3 +567,12 @@ let ``Doesn't insert whitespace on attribute name when there are two whitespace 
     |> HtmlNode.attributeValue "data-modal-iframe"
     |> should equal "https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27"
 
+[<Test>]
+let ``Includes DOCTYPE when transforming HtmlDocument to string``() = 
+    let html = """<!DOCTYPE html><html lang="en"><head><title>Test</title></head><body>I Just Love F#</body></html>"""
+    let doc = HtmlDocument.Parse html
+    let typ = doc |> HtmlDocument.docType
+    let newDoc = HtmlDocument.New(typ, doc.Elements())
+    newDoc 
+    |> string
+    |> should startWith "<!DOCTYPE html>"

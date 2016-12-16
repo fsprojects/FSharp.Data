@@ -164,7 +164,7 @@ type HtmlDocument =
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
-            (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">" + Environment.NewLine)
+            (if String.IsNullOrEmpty docType then "" else "<!DOCTYPE " + docType + ">" + Environment.NewLine)
             +
             (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
 
