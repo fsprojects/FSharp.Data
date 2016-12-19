@@ -576,3 +576,9 @@ let ``Includes DOCTYPE when transforming HtmlDocument to string``() =
     newDoc 
     |> string
     |> should startWith "<!DOCTYPE html>"
+
+[<Test>]
+let ``Can create new CData element``() = 
+    HtmlNode.NewCData("some element content")
+    |> string
+    |> should equal "<![CDATA[some element content]]>"

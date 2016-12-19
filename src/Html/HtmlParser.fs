@@ -80,6 +80,12 @@ type HtmlNode =
     /// <param name="content">The actual content</param>
     static member NewComment content = HtmlComment(content)
 
+    /// <summary>
+    /// Creates a CData element
+    /// </summary>
+    /// <param name="content">The actual content</param>
+    static member NewCData content = HtmlCData(content)
+
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
             let append (str:string) = sb.Append str |> ignore
