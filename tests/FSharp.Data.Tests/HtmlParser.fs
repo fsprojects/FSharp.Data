@@ -427,6 +427,15 @@ let ``Renders textarea closing tag``() =
 
 [<Test>]
 let ``Can handle CDATA blocks``() = 
+    let cData = """
+      Trying to provoke the CDATA parser with almost complete CDATA end tags
+      ]
+      >
+      ]]
+      ]>
+      All done!
+"""
+
     let html = """
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/">
@@ -435,13 +444,9 @@ let ``Can handle CDATA blocks``() =
             var google_tag_params = { PROP_intent: "RENT", PROP_use: "RES", PROP_loc: "London", PROP_minprice: "1500", PROP_maxprice: "1750", PROP_beds: "1" };
         </script>
 
-        <script type="text/javascript">
-         <![CDATA[
-            var google_conversion_id = 964294565;
-            var google_custom_params = window.google_tag_params;
-            var google_remarketing_only = true;
-         ]]>
-        </script>
+        <p>
+         <![CDATA[""" + cData + """]]>
+        </p>
      </head>
      <body>
          <ul>
@@ -453,12 +458,55 @@ let ``Can handle CDATA blocks``() =
     """
     
     let doc = HtmlDocument.Parse html
-    let result = 
+    let result =
         doc
         |> HtmlDocument.descendantsNamed false [ "li" ]
         |> Seq.map (HtmlNode.innerText)
         |> Seq.toList
     result |> should equal [ "1"; "2"]
+
+    let cDataResult =
+        doc
+        |> HtmlDocument.descendantsNamed false [ "p" ]
+        |> Seq.collect HtmlNode.elements
+        |> Seq.filter (function HtmlCData _ -> true | _ -> false)
+        |> Seq.map (function HtmlCData s -> s | _ -> "")
+        |> Seq.toList
+    cDataResult |> should equal [ cData ]
+
+[<Test>]
+let ``Can handle large CDATA blocks``() =
+    let bigString : string = new System.String ('a', 100000)
+    let html = """
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/">
+     <head>
+        <p>
+         <![CDATA[""" + bigString + """]]>
+        </p>
+     </head>
+    </html>
+    """
+
+    let sw = System.Diagnostics.Stopwatch ()
+    sw.Start ()
+    let doc = HtmlDocument.Parse html
+    sw.Stop ()
+    let elapsed = sw.ElapsedMilliseconds
+
+    let result =
+        doc
+        |> HtmlDocument.descendantsNamed false [ "p" ]
+        |> Seq.collect HtmlNode.elements
+        |> Seq.filter (function HtmlCData _ -> true | _ -> false)
+        |> Seq.map (function HtmlCData s -> s | _ -> "")
+        |> Seq.toList
+    result |> should equal [ bigString ]
+
+    // Timing tests are difficult in unit tests but parsing 100,000 CDATA characters
+    //  should take a lot less time than 1 second.
+    //  The old implementation took a lot more than 1 second
+    elapsed |> should lessThan 1000L
 
 [<Test>]
 let ``Can parse nested lists correctly when stops on recurse``() = 
