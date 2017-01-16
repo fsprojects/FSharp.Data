@@ -2,23 +2,23 @@ language: csharp
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      mono: 4.4.2
     - os: osx
       mono: 4.2.0
     - os: osx
+      mono: 4.4.2
+    - os: osx
       mono: latest
+  # The whole build matrix fails when any individual builds fail
+  # (except those which have been allowed with allow_failures).
   fast_finish: true
 
+# Compilation on Linux fails because of lack of installed PCL libraries.  We should reference the FSharp.Core package as a dependency
+# to fix this.
+#    - os: linux
+#      dist: trusty
+#      sudo: required
+#      mono: 4.4.2
 
-# # Allow builds which fail only on OSX (macOS) to succeed for now
-#  # while we're working on getting macOS CI builds working.
-#  allow_failures:
-#    - os: osx
-#  # The whole build matrix fails when any individual builds fail
-#  # (except those which have been allowed with allow_failures).
 
 env:
   global:
