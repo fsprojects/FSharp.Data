@@ -5,15 +5,11 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
-      mono:
-        - latest
-        - 4.4.2
-        - 4.2.0
+      mono: 4.4.2
     - os: osx
-      mono:
-        - latest
-        - 4.4.2
-        - 4.2.0
+      mono: 4.2.0
+    - os: osx
+      mono: latest
   fast_finish: true
 
 
