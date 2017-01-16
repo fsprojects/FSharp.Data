@@ -14,6 +14,8 @@ matrix:
         - latest
         - 4.4.2
         - 4.2.0
+  fast_finish: true
+
 
 # # Allow builds which fail only on OSX (macOS) to succeed for now
 #  # while we're working on getting macOS CI builds working.
@@ -21,7 +23,6 @@ matrix:
 #    - os: osx
 #  # The whole build matrix fails when any individual builds fail
 #  # (except those which have been allowed with allow_failures).
-  fast_finish: true
 
 env:
   global:
