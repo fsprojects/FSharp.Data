@@ -1,13 +1,31 @@
-language: objective-c
+language: csharp
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      mono:
+        - latest
+        - 4.4.2
+        - 4.2.0
+    - os: osx
+      mono:
+        - latest
+        - 4.4.2
+        - 4.2.0
+
+# # Allow builds which fail only on OSX (macOS) to succeed for now
+#  # while we're working on getting macOS CI builds working.
+#  allow_failures:
+#    - os: osx
+#  # The whole build matrix fails when any individual builds fail
+#  # (except those which have been allowed with allow_failures).
+  fast_finish: true
 
 env:
   global:
-    - MONO_VERSION=4.2.0
     - MONO_MANAGED_WATCHER=disabled
-
-install:
-  - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
-  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script:
   - ./build.sh CleanInternetCaches && ./build.sh All
