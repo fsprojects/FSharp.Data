@@ -284,7 +284,9 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Presidents of the United States", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Presidents of the United States 2", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Presidents of the United States 2", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Presidents of the United States 3", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table10", true)
 
     member Table12: HtmlProvider+Table12 with get
@@ -298,7 +300,9 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table6: HtmlProvider+Table6 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Topics related to List of Presidents of the United States", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Topics related to List of Presidents of the United States", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Topics related to List of Presidents of the United States 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table6", true)
 
     member Table8: HtmlProvider+Table8 with get
@@ -435,12 +439,15 @@ class HtmlProvider+LivingFormerPresidents+Row : string * string * string
     (let _,t2,_ = this in t2)
 
 
-class HtmlProvider+Table10+Row : string * string
+class HtmlProvider+Table10+Row : string * string * string
     member ``Presidents of the United States``: string with get
-    (let t1,_ = this in t1)
+    (let t1,_,_ = this in t1)
 
     member ``Presidents of the United States 2``: string with get
-    (let _,t2 = this in t2)
+    (let _,t2,_ = this in t2)
+
+    member ``Presidents of the United States 3``: string with get
+    (let _,_,t3 = this in t3)
 
 
 class HtmlProvider+Table12+Row : string * string
@@ -451,9 +458,12 @@ class HtmlProvider+Table12+Row : string * string
     (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table6+Row : string
+class HtmlProvider+Table6+Row : string * string
     member ``Topics related to List of Presidents of the United States``: string with get
-    this
+    (let t1,_ = this in t1)
+
+    member ``Topics related to List of Presidents of the United States 2``: string with get
+    (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table8+Row : string * string
