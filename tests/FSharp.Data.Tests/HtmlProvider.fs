@@ -317,3 +317,30 @@ let ``List and Table with same nome don't clash``() =
     DoctorWho().Lists.``Reference websites``.Values.[0] |> should equal "Doctor Who on TARDIS Data Core, an external wiki"
     DoctorWho().Tables.``Reference websites``.Rows.[0].Awards |> should equal "Preceded by The Bill"
 
+[<Test>]
+let ``Count columns correctly in the presence of colspans (Bug 989)``() =
+    let html = HtmlProvider<"""
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                   <table>
+                            <tbody>
+                                <tr>
+                                    <th scope="col" colspan="2">Double</th>
+                                    <th scope="col" colspan="1">Single</th>
+                                </tr>
+                                <tr>
+                                    <td>Single</th>
+                                    <td colspan="2">Double</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </body>
+                </body>
+            </html>""">.GetSample()
+    let table = html.Tables.Table1
+    match table.Headers with
+    | None -> failwith "No headers found"
+    | Some headers -> headers |> should equal [| "Double"; "Double"; "Single" |]

@@ -561,9 +561,9 @@ module private HttpHelpers =
 #endif       
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
-            | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "if-modified-since" -> req.IfModifiedSince <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)
 #endif
             | "if-none-match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
             | "if-range" -> req.Headers.[HeaderEnum.IfRange] <- value
@@ -621,7 +621,8 @@ module private HttpHelpers =
                         try 
                             return! child
                         with
-                        | :? TimeoutException as exc -> 
+                        | :? TimeoutException as exc ->
+                            req.Abort() 
                             raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
                             return Unchecked.defaultof<_>
                     }
