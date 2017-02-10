@@ -678,6 +678,24 @@ module HtmlDocument =
         | [] -> None
         | body:: _ -> Some body
 
+    /// Finds the html element of the given document,
+    /// this throws an exception if no html element exists.
+    /// Parameters:
+    /// * x - The given document
+    let inline html (x:HtmlDocument) = 
+        match List.ofSeq <| descendantsNamed false ["html"] x with
+        | [] -> failwith "No element html found!"
+        | html:: _ -> html
+
+    /// Tries to find the html element of the given document.
+    /// Parameters:
+    /// * x - The given document
+    let inline tryGetHtml (x:HtmlDocument) = 
+        match List.ofSeq <| descendantsNamed false ["html"] x with
+        | [] -> None
+        | html:: _ -> Some html
+
+
 [<Extension>]
 /// Extension methods with operations on HTML documents
 type HtmlDocumentExtensions =
@@ -832,6 +850,17 @@ type HtmlDocumentExtensions =
     [<Extension>]
     static member TryGetBody(doc:HtmlDocument) = 
         HtmlDocument.tryGetBody doc
+
+    /// Finds the html element of the given document,
+    /// this throws an exception if no html element exists.
+    [<Extension>]
+    static member Html(doc:HtmlDocument) = 
+        HtmlDocument.html doc
+
+    /// Tries to find the html element of the given document.
+    [<Extension>]
+    static member TryGetHtml(doc:HtmlDocument) = 
+        HtmlDocument.tryGetHtml doc
 
 // --------------------------------------------------------------------------------------
 
