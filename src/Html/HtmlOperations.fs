@@ -53,6 +53,11 @@ module HtmlNode =
         match n with
         | HtmlElement(name = name) -> name
         | _ -> ""
+
+    let position n =
+        match n with
+        | HtmlElement(position = position) -> position
+        | _ -> 0
         
     /// Gets all of the nodes immediately under this node
     let elements n =
@@ -232,7 +237,7 @@ module HtmlNode =
         let rec innerText' inRoot n =
             let exclusions = if inRoot then ["style"; "script"] else exclusions
             match n with
-            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
+            | HtmlElement(name, _, content, _) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
                 seq { for e in content do
                         match e with
                         | HtmlText(text) -> yield text
@@ -272,6 +277,11 @@ type HtmlNodeExtensions =
     [<Extension>]
     static member Name(n:HtmlNode) = 
         HtmlNode.name n
+
+    /// Gets the given node's position
+    [<Extension>]
+    static member Position(n:HtmlNode) = 
+        HtmlNode.position n
         
     /// Gets all of the nodes immediately under this node
     [<Extension>]
