@@ -134,6 +134,13 @@ module internal ProviderHelpers =
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
     let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
     
+    /// Extract path from message of exception FileNotFoundException or DirectoryNotFoundException 
+    let private getPathFrom msg = 
+        let pathMatcher = RegularExpressions.Regex(@"[^']+")
+        try 
+            pathMatcher.Matches(msg).[1].Value
+        with e -> ""
+
     type private ParseTextResult<'T> =
         { TypedSamples : 'T []
           SampleIsUri : bool
@@ -242,7 +249,12 @@ module internal ProviderHelpers =
                   SampleIsWebUri = isWeb
                   SampleIsResource = false }
     
-            with e ->
+            with 
+                | :? FileNotFoundException as e->
+                    failwithf "Cannot read sample %s from '%s'" formatName (getPathFrom e.Message) 
+                | :? DirectoryNotFoundException as e ->
+                    failwithf "Cannot read sample %s from '%s'" formatName (getPathFrom e.Message) 
+                | e ->
     
                 if not uri.IsAbsoluteUri then
                     // even if it's a valid uri, it could be sample text
