@@ -266,7 +266,7 @@ let ``AssumeMissingValues works when inferRows limit is reached``() =
     let parentId : Option<int> = rowWithMissingParentIdOptional.``Parent ID``
     parentId |> should equal None
 
-type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
+type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";", InlineSample=true>
 
 [<Test>]
 let ``Sample which also is a valid filename``() = 

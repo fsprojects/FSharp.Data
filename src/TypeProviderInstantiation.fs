@@ -23,7 +23,8 @@ type CsvProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string
+      InlineSample : bool }
 
 type XmlProviderArgs = 
     { Sample : string
@@ -33,7 +34,8 @@ type XmlProviderArgs =
       Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string 
-      InferTypesFromValues : bool }
+      InferTypesFromValues : bool
+      InlineSample : bool }
 
 type JsonProviderArgs = 
     { Sample : string
@@ -43,7 +45,8 @@ type JsonProviderArgs =
       Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string 
-      InferTypesFromValues : bool }
+      InferTypesFromValues : bool 
+      InlineSample : bool }
 
 type HtmlProviderArgs = 
     { Sample : string
@@ -53,7 +56,8 @@ type HtmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string 
+      InlineSample : bool }
 
 type WorldBankProviderArgs =
     { Sources : string
@@ -136,7 +140,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |] 
+                   box x.EmbeddedResource
+                   box x.InlineSample |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -146,7 +151,8 @@ type TypeProviderInstantiation =
                    box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |] 
+                   box x.InferTypesFromValues
+                   box x.InlineSample |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -156,7 +162,8 @@ type TypeProviderInstantiation =
                    box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |] 
+                   box x.InferTypesFromValues
+                   box x.InlineSample |] 
             | Html x -> 
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -166,7 +173,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |]
+                   box x.EmbeddedResource 
+                   box x.InlineSample |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -186,27 +194,31 @@ type TypeProviderInstantiation =
              x.PreferOptionals.ToString()
              x.MissingValues
              x.Culture
-             x.Encoding ]
+             x.Encoding
+             x.InlineSample.ToString() ]
         | Xml x -> 
             ["Xml"
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture
-             x.InferTypesFromValues.ToString() ]
+             x.InferTypesFromValues.ToString()
+             x.InlineSample.ToString() ]
         | Json x -> 
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
              x.Culture
-             x.InferTypesFromValues.ToString() ]
+             x.InferTypesFromValues.ToString()
+             x.InlineSample.ToString() ]
         | Html x -> 
             ["Html"
              x.Sample
              x.PreferOptionals.ToString()
              x.IncludeLayoutTables.ToString()
-             x.Culture]
+             x.Culture
+             x.InlineSample.ToString() ]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -248,7 +260,8 @@ type TypeProviderInstantiation =
                   Encoding = args.[9]
                   CacheRows = false
                   ResolutionFolder = ""
-                  EmbeddedResource = "" }
+                  EmbeddedResource = "" 
+                  InlineSample = false }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
@@ -257,7 +270,8 @@ type TypeProviderInstantiation =
                   Encoding = ""
                   ResolutionFolder = ""
                   EmbeddedResource = "" 
-                  InferTypesFromValues = args.[5] |> bool.Parse }
+                  InferTypesFromValues = args.[5] |> bool.Parse 
+                  InlineSample = false}
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -266,7 +280,8 @@ type TypeProviderInstantiation =
                    Encoding = ""
                    ResolutionFolder = ""
                    EmbeddedResource = "" 
-                   InferTypesFromValues = args.[5] |> bool.Parse }
+                   InferTypesFromValues = args.[5] |> bool.Parse
+                   InlineSample = false }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
@@ -275,7 +290,8 @@ type TypeProviderInstantiation =
                    Culture = args.[4] 
                    Encoding = ""
                    ResolutionFolder = ""
-                   EmbeddedResource = "" }
+                   EmbeddedResource = ""
+                   InlineSample = false }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }

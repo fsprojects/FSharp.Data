@@ -52,7 +52,7 @@ let getTestDataAsTask() =
 
 
 // A small test for single-column CSV text with only one line
-type OneLineOneColumnCsvHeader = CsvProvider<"COLUMN", HasHeaders = true>
+type OneLineOneColumnCsvHeader = CsvProvider<"COLUMN", HasHeaders = true, InlineSample=true>
 let sample1 = OneLineOneColumnCsvHeader.GetSample()
 let getLine1() : string = (sample1.Rows |> Seq.head).COLUMN
  
@@ -69,7 +69,7 @@ module Stress =
       "yes", "false", 1.92 """
 
     type SimpleCsv = CsvProvider<simpleCsv>
-    type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
+    type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";", InlineSample=true>
 
     let [<Literal>] percentageCsv = """
         Column1,Column2,Column3
