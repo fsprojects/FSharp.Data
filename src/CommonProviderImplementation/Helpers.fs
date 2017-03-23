@@ -165,7 +165,7 @@ module internal ProviderHelpers =
     /// 
     /// Parameters:
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
-    /// * inlineSample - true if the sample is string, false if sample is file or url.
+    /// * isSampleUri - evaluate whether given string is a uri or not
     /// * parseFunc - receives the file/url extension (or ""  if not applicable) and the text value 
     /// * formatName - the description of what is being parsed (for the error message)
     /// * tp - the type provider
@@ -173,11 +173,12 @@ module internal ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
-    let private parseTextAtDesignTime sampleOrSampleUri inlineSample parseFunc formatName (tp:IDisposableTypeProvider) 
+    let private parseTextAtDesignTime sampleOrSampleUri isSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
                                       (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
-    
+        let inlineSample = isSampleUri sampleOrSampleUri
+
         let tryGetResource() = 
             if String.IsNullOrWhiteSpace(optResource)
             then None 
@@ -187,7 +188,9 @@ module internal ProviderHelpers =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
             | false, _ -> None
             | true, uri ->
-                if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str
+                if not inlineSample
+                    || str.Trim() = "" 
+                    || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str
                 then None else Some uri
     
         match tryGetResource() with
@@ -231,7 +234,6 @@ module internal ProviderHelpers =
                             line |> sb.AppendLine |> ignore
                             decr max
                     sb.ToString()
-    
             try
                 let sample, isWeb = 
                     if isWeb uri then
@@ -325,7 +327,7 @@ module internal ProviderHelpers =
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
     /// * sampleIsList - true if the sample consists of several samples put together
-    /// * inlineSample - true if the sample is string, false if sample is file or url.
+    /// * isSampleUri - evaluate whether given string is a uri or not
     /// * parseSingle - receives the file/url extension (or ""  if not applicable) and the text value 
     /// * parseList - receives the file/url extension (or ""  if not applicable) and the text value 
     /// * getSpecFromSamples - receives a seq of parsed samples and returns a TypeProviderSpec
@@ -336,7 +338,7 @@ module internal ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList inlineSample parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
+    let generateType formatName sampleOrSampleUri sampleIsList isSampleUri parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (bindingContext:ProvidedTypesContext) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
@@ -352,7 +354,7 @@ module internal ProviderHelpers =
         getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri inlineSample parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
+        let parseResult = parseTextAtDesignTime sampleOrSampleUri isSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
         
         let spec = getSpecFromSamples parseResult.TypedSamples
         
