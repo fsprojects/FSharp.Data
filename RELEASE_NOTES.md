@@ -1,3 +1,6 @@
+#### 2.3.4 - Unreleased
+* Fix css selectors not working outside the body element.
+
 #### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.
 * Support for escaped special characters in CSS selectors.
