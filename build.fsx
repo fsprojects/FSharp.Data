@@ -123,7 +123,7 @@ let runTestTask name =
         |> NUnit3 (fun p ->
             { p with
                 TimeOut = TimeSpan.FromMinutes 20. })
-    "BuildTests" ==> taskName ==> "RunTests" |> ignore
+    taskName ==> "RunTests" |> ignore
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask

@@ -1,6 +1,6 @@
 NUGET
   remote: http://www.nuget.org/api/v2
-    FAKE (4.57.4)
+    FAKE (4.58.3)
     FsCheck (2.6)
       FSharp.Core (>= 3.1.2.5)
     FSharp.Charting (0.90.14)
