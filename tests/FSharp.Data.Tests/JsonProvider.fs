@@ -493,6 +493,21 @@ let ``Can parse ISO 8601 dates in the specified culture``() =
     let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
     dates.Birthdate.Month |> should equal 2
 
+type TimeSpanJSON = JsonProvider<"Data/TimeSpans.json">
+
+[<Test>]
+let ``Can parse time spans``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.PositiveWithDayWithFraction |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+    timeSpans.PositiveWithoutDayWithoutFraction |> should equal (new TimeSpan(0, 30, 0))
+    timeSpans.NegativeWithDayWithFraction |> should equal (new TimeSpan(-1, 3, 16, 50, 500))
+
+[<Test>]
+[<SetCulture("fr")>]
+let ``Can parse time span in different culture``() =
+    let timeSpans = JsonProvider<"""{"frTimeSpan": "1:3:16:50,5"}""">.GetSample()
+    timeSpans.FrTimeSpan |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+    
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
     let objs = JsonProvider<"""[{"a": "01/02/2000"}, {"a" : "3"}]""">.GetSamples()

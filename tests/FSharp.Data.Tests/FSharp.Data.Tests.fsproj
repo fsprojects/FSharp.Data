@@ -302,6 +302,7 @@
     <None Include="Data\SimpleHtmlLists.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\TimeSpans.json" />
     <Content Include="Data/TypeInference.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
