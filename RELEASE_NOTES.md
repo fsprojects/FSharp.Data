@@ -1,6 +1,16 @@
-#### 2.3.3 - Unreleased
+#### 2.3.4 - Unreleased
+* Fix css selectors not working outside the body element.
+
+#### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.
-* Support for escaping special characters in CSS selectors.
+* Support for escaped special characters in CSS selectors.
+* Fix crash when saving CSV files with nulls.
+* Fix leakage of connections when HTTP requests time out.
+* Fixed numbers not being preserved correctly when generating names.
+* Fixed DOCTYPE being dropped when saving HTML documents.
+* Added omission on the API that prevented creating HTML CDATA elements.
+* Improved performance when parsing CDATA in HTML documents.
+* Improve performance of number and DateTime parsing.
 
 #### 2.3.2 - July 24 2016
 * Add support for HTML entities with Unicode characters above 65535.

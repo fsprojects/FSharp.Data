@@ -450,3 +450,19 @@ let ``special characters can be escaped``() =
     selection |> should haveLength 1
     let values = selection |> Seq.exactlyOne |> HtmlNode.innerText
     values |> should equal "Matched, has id and class"
+
+
+[<Test>]
+let ``selector outside body tag``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <title>Page Title</title>
+        </head>
+        <body>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "title"
+    selection |> should haveLength 1
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Page Title"]

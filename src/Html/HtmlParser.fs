@@ -555,21 +555,23 @@ module internal HtmlParser =
             | current -> 
                 match new String(Array.append current (state.Pop(5))) with
                 | "DOCTYPE" -> docType state
-                | "[CDATA[" -> state.Cons("<![CDATA[".ToCharArray()); cData state
+                | "[CDATA[" -> state.Cons("<![CDATA[".ToCharArray()); cData 0 state
                 | _ -> bogusComment state
-        and cData (state:HtmlState) = 
-            if ((!state.Content).ToString().EndsWith("]]>"))
-            then 
-               state.InsertionMode := CDATAMode
-               state.Emit()
-            else 
-               match state.Peek() with
-               | ']' -> state.Cons();  cData state 
-               | '>' -> state.Cons();  cData state
-               | TextParser.EndOfFile _ -> 
-                    state.InsertionMode := CDATAMode
-                    state.Emit()
-               | _ -> state.Cons(); cData state
+        and cData i (state:HtmlState) =
+            match state.Peek() with
+            | ']' when i = 0 || i = 1 ->
+                state.Cons()
+                cData (i + 1) state
+            | '>' when i = 2 ->
+                state.Cons()
+                state.InsertionMode := CDATAMode
+                state.Emit()
+            | TextParser.EndOfFile _ ->
+                state.InsertionMode := CDATAMode
+                state.Emit()
+            | _ ->
+                state.Cons()
+                cData 0 state
         and docType state =
             match state.Peek() with
             | '>' -> 
