@@ -5,6 +5,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Collections.Concurrent
 open System.Reflection
 open Microsoft.FSharp.Quotations
 open FSharp.Data
@@ -15,6 +16,7 @@ open ProviderImplementation
 open ProviderImplementation.JsonInference
 open ProviderImplementation.JsonConversionsGenerator
 open ProviderImplementation.ProvidedTypes
+open System.Collections.Concurrent
 
 #nowarn "10001"
 
@@ -28,11 +30,11 @@ type internal JsonGenerationContext =
     IJsonDocumentType : Type
     JsonValueType : Type
     JsonRuntimeType : Type
-    TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
+    TypeCache : ConcurrentDictionary<InferedType, ProvidedTypeDefinition>
     GenerateConstructors : bool }
   static member Create(cultureStr, tpType, bindingContext, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
-    let typeCache = defaultArg typeCache (Dictionary())
+    let typeCache = defaultArg typeCache (ConcurrentDictionary())
     JsonGenerationContext.Create(cultureStr, tpType, bindingContext, uniqueNiceName, typeCache, true)
   static member Create(cultureStr, tpType, bindingContext, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
@@ -92,12 +94,12 @@ module JsonTypeBuilder =
 
     let inferedType = normalize true inferedType
     let typ = 
-      match ctx.TypeCache.TryGetValue inferedType with
-      | true, typ -> typ
-      | _ -> 
+      ctx.TypeCache.GetOrAdd(inferedType, fun inferedType ->
         let typ = createType()
-        ctx.TypeCache.Add(inferedType, typ)
-        typ
+        async { do! Async.Sleep (10000) 
+                if ctx.TypeCache <> null then 
+                    ctx.TypeCache.TryRemove(inferedType) |> ignore } |> Async.Start 
+        typ)
 
     { ConvertedType = typ
       OptionalConverter = None

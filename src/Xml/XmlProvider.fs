@@ -23,11 +23,14 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   let ns = "FSharp.Data"
   let xmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
-  let buildTypes (typeName:string) (args:obj[]) =
+  let cache = System.Collections.Concurrent.ConcurrentDictionary<string, ProvidedTypeDefinition>()
 
+  let buildTypes (typeName:string) (args:obj[]) = 
+   cache.GetOrAdd(typeName, fun typeName ->
+    
     // Generate the required type
-    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
-
+    let tpType = lazy(bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true))
+    
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let globalInference = args.[2] :?> bool
@@ -53,18 +56,23 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, bindingContext)  
+      let ctx = XmlGenerationContext.Create(cultureStr, tpType.Force(), globalInference, bindingContext)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
-      { GeneratedType = tpType
+      { GeneratedType = tpType.Force()
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
           result.Converter <@@ XmlElement.Create(%reader) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
+    let result =
+        generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
                  version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+    async { do! Async.Sleep (10000)
+            if cache <> null then cache.TryRemove(typeName) |> ignore } |> Async.Start
+    result
+   )
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
@@ -91,7 +99,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
           (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans. The XmlProvider also infers string values as JSON.)</param>"""
 
 
-  do xmlProvTy.AddXmlDoc helpText
+  do xmlProvTy.AddXmlDocDelayed(fun () -> helpText)
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler

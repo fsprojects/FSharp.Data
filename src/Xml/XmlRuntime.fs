@@ -112,6 +112,11 @@ open System
 open System.IO
 open System.Xml.Linq
 open FSharp.Data.Runtime.BaseTypes
+#if FX_NO_CONCURRENT
+open System.Collections.Generic
+#else
+open System.Collections.Concurrent
+#endif
 
 /// Static helper methods called from the generated code for working with XML
 type XmlRuntime = 
@@ -256,7 +261,11 @@ type XmlRuntime =
         | [| |] -> ()
         | [| v |] when v :? string && element.Attribute(xname) = null -> element.SetAttributeValue(xname, v)
         | _ -> failwithf "Unexpected attribute value: %A" value
-    let parents = System.Collections.Generic.Dictionary()
+#if FX_NO_CONCURRENT
+    let parents = Dictionary()
+#else
+    let parents = ConcurrentDictionary()
+#endif
     for nameWithNS, value in elements do
         if nameWithNS = "" then // it's the value
             match toXmlContent value with
@@ -279,7 +288,11 @@ type XmlRuntime =
                                     | true, parent -> parent
                                     | false, _ -> 
                                         let parent = createElement null nameWithNS 
-                                        parents.Add(key, parent)
+#if FX_NO_CONCURRENT
+                                        parents.[key] <- parent
+#else
+                                        parents.AddOrUpdate(key, parent, fun _ _ -> parent) |> ignore
+#endif
                                         parent
                                 parent.Add element
                                 parent

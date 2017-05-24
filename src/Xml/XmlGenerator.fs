@@ -5,6 +5,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Collections.Concurrent
 open System.IO
 open System.Reflection
 open System.Xml.Linq
@@ -17,6 +18,7 @@ open ProviderImplementation
 open ProviderImplementation.JsonInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open System.Collections.Concurrent
 
 // --------------------------------------------------------------------------------------
 
@@ -30,8 +32,8 @@ type internal XmlGenerationContext =
       // to nameclash type names
       UniqueNiceName : string -> string 
       UnifyGlobally : bool
-      XmlTypeCache : Dictionary<string, XmlGenerationResult>
-      JsonTypeCache : Dictionary<InferedType, ProvidedTypeDefinition> }
+      XmlTypeCache : ConcurrentDictionary<string, XmlGenerationResult>
+      JsonTypeCache : ConcurrentDictionary<InferedType, ProvidedTypeDefinition> }
     static member Create(cultureStr, tpType, unifyGlobally, bindingContext) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
         uniqueNiceName "XElement" |> ignore
@@ -40,8 +42,8 @@ type internal XmlGenerationContext =
           BindingContext = bindingContext
           UniqueNiceName = uniqueNiceName
           UnifyGlobally = unifyGlobally
-          XmlTypeCache = Dictionary()
-          JsonTypeCache = Dictionary() }
+          XmlTypeCache = ConcurrentDictionary()
+          JsonTypeCache = ConcurrentDictionary() }
     member x.ConvertValue prop =
         let typ, _, conv, _ = ConversionsGenerator.convertStringValue "" x.CultureStr prop
         typ, conv
@@ -153,11 +155,12 @@ module internal XmlTypeBuilder =
     let rec generateXmlType ctx inferedType = 
     
         let bindingContext = ctx.BindingContext
+        let mutable cacheItem = Unchecked.defaultof<_> 
         match inferedType with
        
-        // If we already generated object for this type, return it
-        | InferedType.Record(Some nameWithNs, _, false) when ctx.XmlTypeCache.ContainsKey nameWithNs -> 
-            ctx.XmlTypeCache.[nameWithNs]
+        // If we already generated object for this type, return it. We want to access ctx.XmlTypeCache only once.
+        | InferedType.Record(Some nameWithNs, _, false) when ctx.XmlTypeCache.TryGetValue(nameWithNs,&cacheItem) -> 
+            cacheItem
         
         // If the element does not have any children and always contains only primitive type
         // then we turn it into a primitive value of type such as int/string/etc.
@@ -175,8 +178,8 @@ module internal XmlTypeBuilder =
         | HeterogeneousRecords cases ->
        
             // Generate new choice type for the element
-            let objectTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some typeof<XmlElement>, hideObjectMethods = true, nonNullable = true)
-            ctx.ProvidedType.AddMember objectTy
+            let objectTyL = lazy(bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some typeof<XmlElement>, hideObjectMethods = true, nonNullable = true))
+            ctx.ProvidedType.AddMemberDelayed(fun () -> objectTyL.Force())
        
             // to nameclash property names
             let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
@@ -200,7 +203,8 @@ module internal XmlTypeBuilder =
                      bindingContext.ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)) ]
 
             let properties, parameters = List.unzip members            
-            objectTy.AddMembers properties
+            let objectTy = objectTyL.Force()
+            objectTy.AddMembersDelayed (fun () -> properties)
 
             let cultureStr = ctx.CultureStr
 
@@ -211,12 +215,12 @@ module internal XmlTypeBuilder =
                     else
                         let arg = Expr.Coerce(arg, typeof<obj>)
                         <@@ XmlRuntime.CreateValue(nameWithNS, %%arg, cultureStr) @@>)
-                objectTy.AddMember ctor
+                objectTy.AddMemberDelayed(fun () -> ctor)
 
-            objectTy.AddMember <| 
+            objectTy.AddMemberDelayed <| (fun () -> 
               bindingContext.ProvidedConstructor(
                   [bindingContext.ProvidedParameter("xElement",typeof<XElement>)], 
-                  invokeCode = fun (Singleton arg) -> <@@ XmlElement.Create(%%arg:XElement) @@>)
+                  invokeCode = fun (Singleton arg) -> <@@ XmlElement.Create(%%arg:XElement) @@>))
 
             { ConvertedType = objectTy
               Converter = id }
@@ -226,15 +230,19 @@ module internal XmlTypeBuilder =
        
             let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
 
-            let objectTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName names.[0],
+            let objectTy = lazy(bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName names.[0],
                                                                  Some typeof<XmlElement>, 
-                                                                 hideObjectMethods = true, nonNullable = true)
-            ctx.ProvidedType.AddMember objectTy
+                                                                 hideObjectMethods = true, nonNullable = true))
+            ctx.ProvidedType.AddMemberDelayed (fun () -> objectTy.Force())
        
             // If we unify types globally, then save type for this record
             if ctx.UnifyGlobally then
-                ctx.XmlTypeCache.Add(nameWithNS, { ConvertedType = objectTy 
-                                                   Converter = id })
+                let itm = { ConvertedType = objectTy.Force()
+                            Converter = id }
+                ctx.XmlTypeCache.AddOrUpdate(nameWithNS, itm, fun _ _ -> itm) |> ignore
+                async { do! Async.Sleep (10000) 
+                        if ctx.XmlTypeCache <> null then 
+                            ctx.XmlTypeCache.TryRemove(nameWithNS) |> ignore } |> Async.Start 
                 
             // Split the properties into attributes and a 
             // special property representing the content
@@ -269,7 +277,7 @@ module internal XmlTypeBuilder =
                         // a choice type that is erased to 'option<string>' (for simplicity, assuming that
                         // the attribute is always optional)
                         let choiceTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some typeof<option<string>>, hideObjectMethods = true, nonNullable = true)
-                        ctx.ProvidedType.AddMember choiceTy
+                        ctx.ProvidedType.AddMemberDelayed(fun () -> choiceTy)
                 
                         for KeyValue(tag, typ) in types do 
                       
@@ -280,20 +288,20 @@ module internal XmlTypeBuilder =
                             | InferedType.Primitive(primTyp, unit, false) ->
                         
                                 let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true, unit)
-                                choiceTy.AddMember <|
+                                choiceTy.AddMemberDelayed <| (fun () -> 
                                     bindingContext.ProvidedProperty(tag.NiceName, typ , getterCode = fun (Singleton attrVal) -> 
-                                        attrVal |> Expr.Cast |> conv)
+                                        attrVal |> Expr.Cast |> conv))
 
                                 let typ, convBack = ctx.ConvertValueBack <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, false, unit)
-                                choiceTy.AddMember <|
+                                choiceTy.AddMemberDelayed <| (fun () -> 
                                     let parameter = bindingContext.ProvidedParameter("value", typ)
                                     bindingContext.ProvidedConstructor([parameter], invokeCode = fun (Singleton arg) -> 
-                                        arg |> convBack |> ProviderHelpers.some typeof<string> )
+                                        arg |> convBack |> ProviderHelpers.some typeof<string> ))
 
                             | _ -> failwithf "generateXmlType: A choice type of an attribute can only contain primitive types, got %A" typ
 
                         let defaultCtor = bindingContext.ProvidedConstructor([], invokeCode = fun _ -> <@@ option<string>.None @@>)
-                        choiceTy.AddMember defaultCtor
+                        choiceTy.AddMemberDelayed (fun () -> defaultCtor)
 
                         createMember choiceTy (fun x -> x :> Expr)
                 
@@ -397,13 +405,13 @@ module internal XmlTypeBuilder =
             let primitiveElemProperties, primitiveElemParameters = List.unzip primitiveResults
             let childElemNames, childElemProperties, childElemParameters = List.unzip3 childResults
 
-            objectTy.AddMembers (attrProperties @ primitiveElemProperties @ childElemProperties)
+            objectTy.Force().AddMembersDelayed (fun () -> (attrProperties @ primitiveElemProperties @ childElemProperties))
             
             let createConstrutor primitiveParam = 
                 let parameters = match primitiveParam with
                                  | Some primitiveParam -> attrParameters @ [primitiveParam] @ childElemParameters
                                  | None -> attrParameters @ childElemParameters
-                objectTy.AddMember <|                
+                objectTy.Force().AddMemberDelayed <| (fun () ->              
                     bindingContext.ProvidedConstructor(parameters, invokeCode = fun args -> 
                         let attributes = 
                             Expr.NewArray(typeof<string * obj>, 
@@ -429,7 +437,7 @@ module internal XmlTypeBuilder =
 
                         let cultureStr = ctx.CultureStr
                         <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
-                       )
+                       ))
             
             if primitiveElemParameters.Length = 0 then
                 createConstrutor None
@@ -437,13 +445,13 @@ module internal XmlTypeBuilder =
                 for primitiveParam in primitiveElemParameters do
                     createConstrutor (Some primitiveParam)
 
-            objectTy.AddMember <| 
+            objectTy.Force().AddMemberDelayed <| (fun () -> 
               bindingContext.ProvidedConstructor(
                   [bindingContext.ProvidedParameter("xElement", typeof<XElement>)], 
                   invokeCode = fun (Singleton arg) -> 
-                      <@@ XmlElement.Create(%%arg:XElement) @@>)
+                      <@@ XmlElement.Create(%%arg:XElement) @@>))
 
-            { ConvertedType = objectTy 
+            { ConvertedType = objectTy.Force()
               Converter = id }
        
         | _ -> failwithf "generateXmlType: Infered type should be record type: %A" inferedType

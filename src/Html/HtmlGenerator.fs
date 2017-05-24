@@ -173,19 +173,16 @@ module internal HtmlGenerator =
 
         let htmlType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, Some typeof<HtmlDocument>, hideObjectMethods = true, nonNullable = true)
         
-        let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
+        let containerTypes = System.Collections.Concurrent.ConcurrentDictionary<string, ProvidedTypeDefinition>()
 
         let getTypeName = typeNameGenerator()
 
         let getOrCreateContainer name = 
-            match containerTypes.TryGetValue(name) with
-            | true, t -> t
-            | false, _ ->
+            containerTypes.GetOrAdd(name, fun name ->
                 let containerType = bindingContext.ProvidedTypeDefinition(name + "Container", Some typeof<HtmlDocument>, hideObjectMethods = true, nonNullable = true)
                 htmlType.AddMember <| bindingContext.ProvidedProperty(name, containerType, getterCode = fun (Singleton doc) -> doc)
                 htmlType.AddMember containerType
-                containerTypes.Add(name, containerType)
-                containerType
+                containerType)
 
         for htmlObj in htmlObjects do
             match htmlObj with

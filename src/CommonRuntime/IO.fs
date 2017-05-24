@@ -169,14 +169,20 @@ type private Watcher(uri:Uri) =
         let alive = typeProviders.Exists(Predicate(function (TypeProviderReference _tp, _tn) -> true | _ -> false)) 
         if not alive then
             log ("Disposing watcher " + uri.OriginalString) 
-            watcher.Dispose()
+            if watcher <> null then
+                watcher.Dispose()
             true
         else
             false 
 
 open System.Collections.Generic
 
-let private watchers = Dictionary<string,Watcher>()
+#if FX_NO_CONCURRENT
+let private watchers = Dictionary<string,Watcher>() 
+#else
+open System.Collections.Concurrent
+let private watchers = ConcurrentDictionary<string,Watcher>()
+#endif
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
@@ -194,7 +200,11 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
                    
             log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
             let watcher = Watcher uri
-            watchers.Add(uri.OriginalString, watcher)
+#if FX_NO_CONCURRENT
+            lock watchers <| fun () -> watchers.Add(uri.OriginalString, watcher)
+#else 
+            watchers.[uri.OriginalString] <- watcher
+#endif
             watcher
 
     watcher.Add key
@@ -203,7 +213,11 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 
         if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
             if watcher.Remove tp typeName then
-                watchers.Remove uri.OriginalString |> ignore
+#if FX_NO_CONCURRENT
+                lock watchers <| fun () -> watchers.Remove uri.OriginalString |> ignore
+#else
+                watchers.TryRemove(uri.OriginalString) |> ignore
+#endif
             
 #endif
     

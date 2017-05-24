@@ -38,7 +38,7 @@ class XmlProvider+PropertyBag : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
-    new : x:XmlProvider+X[] -> blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
+    new : x:XmlProvider+X[] -> blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo3 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo2 option -> XmlProvider+BlahData
     XmlRuntime.CreateRecord("BlahData", 
                             [| |], 
                             [| ("X",
@@ -55,13 +55,13 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahData
     XmlElement.Create(xElement)
 
-    member BlahDataSomethingFoo2: XmlProvider+BlahDataSomethingFoo2 with get
+    member BlahDataSomethingFoo2: XmlProvider+BlahDataSomethingFoo3 with get
     XmlRuntime.GetChild(this, "BlahDataSomethingFoo2")
 
     member BlahDataSomethingFoo3: XmlProvider+BlahDataSomethingFoo4 with get
     XmlRuntime.GetChild(this, "BlahDataSomethingFoo3")
 
-    member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo3 option with get
+    member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo2 option with get
     XmlRuntime.ConvertOptional(this, "BlahDataSomethingFoo4", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
 
     member BlahDataSomethingFoos: XmlProvider+BlahDataSomethingFoo[] with get
@@ -89,37 +89,14 @@ class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
-    new : number:int -> XmlProvider+BlahDataSomethingFoo2
-    XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
-                            [| |], 
-                            [| ("",
-                                (number :> obj)) |], "")
-
-    new : json:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo2
-    XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
-                            [| |], 
-                            [| ("",
-                                (json :> obj)) |], "")
-
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo2
-    XmlElement.Create(xElement)
-
-    member Json: XmlProvider+BlahDataSomethingFoo3 option with get
-    XmlRuntime.TryGetJsonValue(this, "")
-
-    member Number: int option with get
-    TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
-
-
-class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
-    new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
+class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.IJsonDocument
+    new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo2
     JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
 
-    new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo3
+    new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo2
     JsonDocument.Create(jsonValue, "")
 
     member Results: XmlProvider+Results2 with get
@@ -130,8 +107,31 @@ class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.XmlElement
+    new : number:int -> XmlProvider+BlahDataSomethingFoo3
+    XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
+                            [| |], 
+                            [| ("",
+                                (number :> obj)) |], "")
+
+    new : json:XmlProvider+BlahDataSomethingFoo2 -> XmlProvider+BlahDataSomethingFoo3
+    XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
+                            [| |], 
+                            [| ("",
+                                (json :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo3
+    XmlElement.Create(xElement)
+
+    member Json: XmlProvider+BlahDataSomethingFoo2 option with get
+    XmlRuntime.TryGetJsonValue(this, "")
+
+    member Number: int option with get
+    TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
+
+
 class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
-    new : size:int -> value:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo4
+    new : size:int -> value:XmlProvider+BlahDataSomethingFoo2 -> XmlProvider+BlahDataSomethingFoo4
     XmlRuntime.CreateRecord("BlahDataSomethingFoo3", 
                             [| ("size",
                                 (size :> obj)) |], 
@@ -145,7 +145,7 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetAttribute(this, "size")
     TextRuntime.GetNonOptionalValue("Attribute size", TextRuntime.ConvertInteger("", value), value)
 
-    member Value: XmlProvider+BlahDataSomethingFoo3 with get
+    member Value: XmlProvider+BlahDataSomethingFoo2 with get
     XmlRuntime.GetJsonValue(this, "")
 
 
