@@ -14,10 +14,10 @@ NUGET
     FsUnit (2.3.1)
       FSharp.Core (>= 3.1.2.5)
       NUnit (3.4.1)
-    Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl (1.1.10) - restriction: || (== net10) (== net11) (== net20) (== net30) (== net35) (== net40)
       Microsoft.Bcl.Build (>= 1.0.14)
-    Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
-    Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl.Build (1.0.21) - import_targets: false, restriction: || (== net10) (== net11) (== net20) (== net30) (== net35) (== net40)
+    Microsoft.Net.Http (2.2.29) - restriction: || (== net10) (== net11) (== net20) (== net30) (== net35) (== net40)
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     Nancy (1.4.3)
@@ -39,7 +39,7 @@ NUGET
       NUnit.Extension.TeamCityEventListener (>= 1.0.1)
       NUnit.Extension.VSProjectLoader (>= 3.4.1)
     Octokit (0.21.1)
-      Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
+      Microsoft.Net.Http  - restriction: || (== net10) (== net11) (== net20) (== net30) (== net35) (== net40)
     SourceLink.Fake (1.1)
     Zlib.Portable (1.11)
 GITHUB
