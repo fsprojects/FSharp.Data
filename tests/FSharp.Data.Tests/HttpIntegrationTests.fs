@@ -241,8 +241,17 @@ open System.IO
 
 [<Test>]
 let ``can send multipart without blowing up`` () = 
+    let normalizeNewlines (s: string) = s.Replace("\r\n", "\n")
     let text = "I am some file bytes"
+    let expected = """--test
+Content-Disposition: form-data; name="file"; filename="thing.txt"
+Content-Type: text/plain
+
+I am some file bytes
+--test--"""
     let body = Multipart("test", ["file", "thing.txt", new MemoryStream(System.Text.Encoding.UTF8.GetBytes text) :> Stream])
     let response = Http.RequestStream("http://localhost:1235/TestServer/Multipart", silentHttpErrors = true, httpMethod = "Post", body = body)
     response.StatusCode |> should equal 200
-    response.ResponseStream |> StreamReader |> fun s -> s.ReadToEnd() |> should equal text
+    let contents = (new StreamReader(response.ResponseStream)).ReadToEnd() |> normalizeNewlines
+    contents |> should equal (normalizeNewlines expected)
+ 
