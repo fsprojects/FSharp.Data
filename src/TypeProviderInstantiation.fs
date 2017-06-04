@@ -73,7 +73,7 @@ module private RuntimeAssemblies =
         match System.Environment.OSVersion.Platform with
         | PlatformID.MacOSX -> osxMonoRoot
         | PlatformID.Unix -> linuxMonoRoot
-        | _ -> failwith "unknown platform"
+        | _ -> ""
 
     let referenceAssembliesPath =
         (if runningOnMono then monoRoot else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86)
