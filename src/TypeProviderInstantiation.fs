@@ -71,7 +71,8 @@ module private RuntimeAssemblies =
 
     let monoRoot =
         match System.Environment.OSVersion.Platform with
-        | PlatformID.MacOSX -> osxMonoRoot
+        // /usr/bin/osascript is the applescript interpreter for osx
+        | PlatformID.MacOSX | PlatformID.Unix when System.IO.File.Exists "/usr/bin/osascript"-> osxMonoRoot
         | PlatformID.Unix -> linuxMonoRoot
         | _ -> ""
 
