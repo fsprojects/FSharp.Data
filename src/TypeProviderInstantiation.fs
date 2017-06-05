@@ -66,6 +66,7 @@ module private RuntimeAssemblies =
     let (++) a b = Path.Combine(a, b)
 
     let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
     let osxMonoRoot = "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono"
     let linuxMonoRoot = "/usr/lib/mono"
 
@@ -81,16 +82,17 @@ module private RuntimeAssemblies =
         ++ "Reference Assemblies"
         ++ "Microsoft"
 
-    let fsharp31PortableAssembliesPath profile =
+    let fsharpPackagePath solutionRoot = solutionRoot ++ "packages" ++ "FSharp.Core" ++ "lib"
+
+    let fsharp31PortableAssembliesPath root profile =
          match profile with
-         | 47 -> referenceAssembliesPath ++ "FSharp" ++ ".NETPortable" ++ "2.3.5.1" ++ "FSharp.Core.dll"
-         | 7 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.3.1.0" ++ "FSharp.Core.dll"
-         | 259 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.259.3.1" ++ "FSharp.Core.dll"
+         | 47 -> fsharpPackagePath root ++ "portable-net45+sl5+netcore45" ++ "FSharp.Core.dll"
+         | 7 -> fsharpPackagePath root ++ "portable-net45+netcore45" ++ "FSharp.Core.dll"
+         | 259 -> fsharpPackagePath root ++ "portable-net45+netcore45+wpa81+wp8" ++ "FSharp.Core.dll"
          | _ -> failwith "unimplemented portable profile"
 
-    let fsharp31AssembliesPath =
-        if runningOnMono then monoRoot ++ "gac" ++ "FSharp.Core" ++ "4.3.1.0__b03f5f7f11d50a3a"
-        else referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
+    let fsharp31AssembliesPath root =
+        fsharpPackagePath root ++ "net40"
 
     let net45AssembliesPath =
         if runningOnMono then monoRoot ++ "4.5"
@@ -103,17 +105,17 @@ module private RuntimeAssemblies =
         | 7 | 259 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ (sprintf "Profile%d" profile)
         | _ -> failwith "unimplemented portable profile"
 
-    let net40FSharp31Refs = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
-    let portable47FSharp31Refs = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath 47]
+    let net40FSharp31Refs root = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath root ++ "FSharp.Core.dll"]
+    let portable47FSharp31Refs root = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath root 47]
 
-    let portableCoreFSharp31Refs profile =
+    let portableCoreFSharp31Refs root profile =
         [ for asm in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions";
                        "System.Linq.Queryable"; "System.Net"; "System.Net.NetworkInformation"; "System.Net.Primitives"; "System.Net.Requests"; "System.ObjectModel"; "System.Reflection";
                        "System.Reflection.Extensions"; "System.Reflection.Primitives"; "System.Resources.ResourceManager"; "System.Runtime.Extensions";
                        "System.Runtime.InteropServices.WindowsRuntime"; "System.Runtime.Serialization"; "System.Threading"; "System.Threading.Tasks"; "System.Xml"; "System.Xml.Linq"; "System.Xml.XDocument";
                        "System.Runtime.Serialization.Json"; "System.Runtime.Serialization.Primitives"; "System.Windows" ] do
              yield portableAssembliesPath profile ++ asm + ".dll"
-          yield fsharp31PortableAssembliesPath profile ]
+          yield fsharp31PortableAssembliesPath root profile ]
 
 type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
@@ -287,12 +289,12 @@ type TypeProviderInstantiation =
                         Asynchronous = args.[2] |> bool.Parse }
         | _ -> failwithf "Unknown: %s" args.[0]
 
-    static member GetRuntimeAssemblyRefs platform =
+    static member GetRuntimeAssemblyRefs root platform =
         match platform with
-        | Net40 -> RuntimeAssemblies.net40FSharp31Refs
-        | Portable7 -> RuntimeAssemblies.portableCoreFSharp31Refs 7
-        | Portable259 -> RuntimeAssemblies.portableCoreFSharp31Refs 259
-        | Portable47 -> RuntimeAssemblies.portable47FSharp31Refs
+        | Net40 -> RuntimeAssemblies.net40FSharp31Refs root
+        | Portable7 -> RuntimeAssemblies.portableCoreFSharp31Refs root 7
+        | Portable259 -> RuntimeAssemblies.portableCoreFSharp31Refs root 259
+        | Portable47 -> RuntimeAssemblies.portable47FSharp31Refs root
 
 open System.Runtime.CompilerServices
 
