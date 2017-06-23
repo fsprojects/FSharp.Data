@@ -4,10 +4,10 @@ sudo: required
 dist: trusty
 
 mono:
-  - 4.4.2
-  - 4.6.2
   - 4.8.1
   - 5.0.1
+  - latest
+  - nightly
 
 os:
   - linux
@@ -24,6 +24,7 @@ matrix:
   fast_finish: true
   allow_failures:
   - os: linux
+  - mono: nightly
 
 env:
   global:
