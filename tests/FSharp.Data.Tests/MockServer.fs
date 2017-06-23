@@ -143,6 +143,8 @@ type FakeServer() as self =
                     response.Contents <- 
                         fun stream -> 
                             for part in multipart.GetBoundaries() do
+                                printfn "%s: %s" part.Filename (part.Value |> StreamReader |> fun s -> s.ReadToEnd())
+                                part.Value.Seek(0L, SeekOrigin.Begin) |> ignore
                                 part.Value.CopyTo stream
                                 stream.Flush()
                     response :> _
