@@ -247,13 +247,15 @@ module HttpResponseHeaders =
     /// Indicates the authentication scheme that should be used to access the requested entity.
     let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
 
+type MultipartItem = | MultipartItem of formField: string * filename: string * content: Stream
+
 /// The body to send in an HTTP request
 type HttpRequestBody =
     | TextRequest of string
     | BinaryUpload of byte[]
     | FormValues of seq<string * string>
     /// A sequence of formParamName * fileName * fileContent groups
-    | Multipart of boundary: string * parts: seq<string * string * Stream>
+    | Multipart of boundary: string * parts: seq<MultipartItem>
 
 /// The response body returned by an HTTP request
 type HttpResponseBody =
@@ -1070,10 +1072,10 @@ module private HttpHelpers =
     ///         c) write newline
     ///         d) write section data
     ///     3) write trailing boundary
-    let writeMultipart (boundary: string) (parts: seq<string * string * Stream>) (e : Encoding) =
+    let writeMultipart (boundary: string) (parts: seq<MultipartItem>) (e : Encoding) =
         let newlineStream () = new MemoryStream(e.GetBytes "\r\n") :> Stream
         let prefixedBoundary = sprintf "--%s" boundary
-        let segments = parts |> Seq.map (fun (name, fileName, fileStream) ->
+        let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
             let fileExt =
 #if FX_NO_LOCAL_FILESYSTEM
                 fileName.[fileName.LastIndexOf('.')..]
@@ -1082,7 +1084,7 @@ module private HttpHelpers =
 #endif
             let headerpart =
                 [ prefixedBoundary
-                  HttpRequestHeaders.ContentDisposition("form-data", Some name, Some fileName) |> fun (h,v) -> sprintf "%s: %s" h v
+                  HttpRequestHeaders.ContentDisposition("form-data", Some formField, Some fileName) |> fun (h,v) -> sprintf "%s: %s" h v
                   HttpRequestHeaders.ContentType(defaultArg (fileExt |> MimeTypes.tryFind) "application/octet-stream") |> fun (h,v) -> sprintf "%s: %s" h v  ]
                 |> String.concat Environment.NewLine
             let headerStream =
