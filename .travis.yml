@@ -23,7 +23,6 @@ matrix:
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
   fast_finish: true
   allow_failures:
-  - os: linux
   - mono: nightly
 
 env:
