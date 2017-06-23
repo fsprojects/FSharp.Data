@@ -236,3 +236,13 @@ let ``if a response character encoding is NOT specified, and character encoding 
 let ``if a response character encoding is NOT specified, and the character encoding specified in the response's content-type header is invalid, an exception is thrown`` () =
     (fun() -> Http.Request "http://localhost:1235/TestServer/MoonLanguageInvalidEncoding"  |> ignore) 
     |> should throw typeof<ArgumentException>
+
+open System.IO
+
+[<Test>]
+let ``can send multipart without blowing up`` () = 
+    let text = "I am some file bytes"
+    let body = Multipart("test", ["file", "thing.txt", new MemoryStream(System.Text.Encoding.UTF8.GetBytes text) :> Stream])
+    let response = Http.RequestStream("http://localhost:1235/TestServer/Multipart", silentHttpErrors = true, httpMethod = "Post", body = body)
+    response.StatusCode |> should equal 200
+    response.ResponseStream |> StreamReader |> fun s -> s.ReadToEnd() |> should equal text
