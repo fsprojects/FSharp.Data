@@ -106,7 +106,7 @@
     <Content Include="Data/Philosophy.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data/Search.Atom.xml">
+    <Content Include="Data/search.atom.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/optionals1.xml">
