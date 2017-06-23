@@ -280,167 +280,167 @@ module Stress =
         let [<Literal>] philosophyXml = "../../FSharp.Data.Tests/Data/Philosophy.xml"
 
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
 
     module XmlGroup2 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
     module XmlGroup3 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
     module XmlGroup4 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
-            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
+            type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<philosophyXml>
 
 
