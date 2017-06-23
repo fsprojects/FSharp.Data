@@ -63,6 +63,9 @@ let getLine2() : int = (sample2.Rows |> Seq.head).COLUMN
 
 // A whole bunch of uses of type providers to use for stress testing compilation performance and editing reactivity
 module Stress =
+    let [<Literal>] searchXml = "../../FSharp.Data.Tests/Data/search.atom.xml"
+    let [<Literal>] philosophyXml = "../../FSharp.Data.Tests/Data/Philosophy.xml"
+
     let [<Literal>] simpleCsv = """
       Column1,Column2,Column3
       TRUE,no,3
@@ -276,9 +279,6 @@ module Stress =
             let nextPerson = PersonXml.Parse(newXml2).Author
 
     module XmlGroup1 =
-        let [<Literal>] searchXml = "../../FSharp.Data.Tests/Data/search.atom.xml"
-        let [<Literal>] philosophyXml = "../../FSharp.Data.Tests/Data/Philosophy.xml"
-
         module XmlFiles1 =
             type AtomSearch = XmlProvider<searchXml, SampleIsList=true>
             type philosophyType = XmlProvider<philosophyXml>
