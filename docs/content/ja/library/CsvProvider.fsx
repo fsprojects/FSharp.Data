@@ -58,7 +58,7 @@ URLを使って `Load` メソッドを呼び出しています：
 *)
  
 // 株価データをダウンロード
-let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+let msft = Stocks.Load("http://www.google.com/finance/historical?q=MSFT&output=csv")
 
 // 最新の行をチェックする。なお 'Date' プロパティは
 // 'DateTime' 型で、 'Open' プロパティは 'decimal' 型であることに注意
@@ -405,7 +405,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 データセットを小さなサイズに変形した後に限定すべきです：
 *)
 
-let stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>.GetSample()
+let stocks = CsvProvider<"http://www.google.com/finance/historical?q=MSFT&output=csv", CacheRows=false>.GetSample()
 stocks.Take(10).Cache()
 
 (**
