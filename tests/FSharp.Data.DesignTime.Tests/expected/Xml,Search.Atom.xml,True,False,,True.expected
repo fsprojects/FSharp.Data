@@ -1,14 +1,14 @@
 class XmlProvider : obj
     static member AsyncGetSamples: () -> XmlProvider+Choice[] async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "Search.Atom.xml"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "search.atom.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Choice async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
     static member GetSamples: () -> XmlProvider+Choice[]
-    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "Search.Atom.xml")))
+    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "search.atom.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Choice
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
