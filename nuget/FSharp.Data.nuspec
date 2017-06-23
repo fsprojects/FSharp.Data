@@ -16,6 +16,9 @@
     <copyright>Copyright 2015</copyright>
     <tags>@tags@</tags>
     <dependencies>
+      <group>
+        <dependency id="FSharp.Core" version="4.0.0.1"/>
+      </group>
       <group targetFramework="portable-net45+sl50+netcore45">
         <dependency id="Zlib.Portable" version="1.11.0" />
       </group>
@@ -24,7 +27,7 @@
       </group>
       <group targetFramework="portable-net45+netcore45+wpa81+wp8">
         <dependency id="Zlib.Portable" version="1.11.0" />
-      </group>      
+      </group>
       <group targetFramework="net40" />
     </dependencies>
     <references>
@@ -58,7 +61,7 @@
     <file src="..\bin\portable259\FSharp.Data.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
     <file src="..\bin\portable259\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
     <file src="..\bin\portable259\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />        
+    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
     <file src="linqpad-samples\*.*" target="linqpad-samples" />
   </files>
 </package>
