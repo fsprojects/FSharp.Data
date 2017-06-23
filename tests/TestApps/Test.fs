@@ -276,168 +276,171 @@ module Stress =
             let nextPerson = PersonXml.Parse(newXml2).Author
 
     module XmlGroup1 =
+        let [<Literal>] searchXml = "../../FSharp.Data.Tests/Data/search.atom.xml"
+        let [<Literal>] philosophyXml = "../../FSharp.Data.Tests/Data/Philosophy.xml"
+
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
 
     module XmlGroup2 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
     module XmlGroup3 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
     module XmlGroup4 =
         module XmlFiles1 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles2 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles3 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles4 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles5 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles6 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles7 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles8 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles9 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
         module XmlFiles10 =
-            type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/Search.Atom.xml", SampleIsList=true>
-            type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
+            type AtomSearch = XmlProvider<XmlGroup1.searchXml, SampleIsList=true>
+            type philosophyType = XmlProvider<XmlGroup1.philosophyXml>
 
 
