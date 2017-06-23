@@ -3,7 +3,7 @@
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
-type Stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT">
+type Stocks = CsvProvider<"http://www.google.com/finance/historical?q=MSFT&output=csv">
 
 type RSS = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 
@@ -13,7 +13,7 @@ let getTestData() = async {
     do! Http.AsyncRequest("https://accounts.coursera.org/api/v1/login",
                           headers = [ Origin "https://accounts.coursera.org"
                                       "X-CSRFToken", "something"
-                                      Referer "https://accounts.coursera.org/signin" ], 
+                                      Referer "https://accounts.coursera.org/signin" ],
                           body = FormValues [ "email", "a"; "password", "b" ],
                           cookies = [ "csrftoken", "something" ],
                           silentHttpErrors = true)
@@ -28,13 +28,13 @@ let getTestData() = async {
         try
             // doesn't work on Win8 (#548)
             return! GitHub.AsyncGetSamples()
-        with _ -> 
+        with _ ->
             return [| |]
     }
 #endif
     let! indicator = WorldBankDataProvider<Asynchronous=true>.GetDataContext().Countries.``United Kingdom``.Indicators.``Gross enrolment ratio, tertiary, both sexes (%)``
-    let result = 
-        [ 
+    let result =
+        [
           [ for row in Seq.truncate 5 stocks.Rows -> sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close ]
           [ for item in Seq.truncate 5 rss.Channel.Items -> item.Title ]
 #if GITHUB
@@ -44,10 +44,10 @@ let getTestData() = async {
         ]
         |> List.collect id
         |> String.concat "\n"
-    return result 
+    return result
 }
 
-let getTestDataAsTask() = 
+let getTestDataAsTask() =
     getTestData() |> Async.StartAsTask
 
 
@@ -55,14 +55,14 @@ let getTestDataAsTask() =
 type OneLineOneColumnCsvHeader = CsvProvider<"COLUMN", HasHeaders = true>
 let sample1 = OneLineOneColumnCsvHeader.GetSample()
 let getLine1() : string = (sample1.Rows |> Seq.head).COLUMN
- 
+
 // A small test for single-column CSV text with two lines
 type TwoLineOneColumnCsvHeader = CsvProvider<"COLUMN\n10", HasHeaders = true>
 let sample2 = TwoLineOneColumnCsvHeader.GetSample()
 let getLine2() : int = (sample2.Rows |> Seq.head).COLUMN
-    
+
 // A whole bunch of uses of type providers to use for stress testing compilation performance and editing reactivity
-module Stress = 
+module Stress =
     let [<Literal>] simpleCsv = """
       Column1,Column2,Column3
       TRUE,no,3
@@ -75,7 +75,7 @@ module Stress =
         Column1,Column2,Column3
         TRUE,no,3
         "yes", "false", 1.92%"""
-  
+
     let [<Literal>] simpleWithStrCsv = """
         Column1,ColumnB,Column3
         TRUE,abc,3
@@ -86,8 +86,8 @@ module Stress =
         £1, $2, £3
         £4, $5, £6"""
 
-    module CsvFiles1 = 
-        module CSV1 = 
+    module CsvFiles1 =
+        module CSV1 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -96,8 +96,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV2 = 
+
+        module CSV2 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -106,8 +106,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV3 = 
+
+        module CSV3 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -116,9 +116,9 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-    module CsvFiles2 = 
-        module CSV1 = 
+
+    module CsvFiles2 =
+        module CSV1 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -127,8 +127,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV2 = 
+
+        module CSV2 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -137,8 +137,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV3 = 
+
+        module CSV3 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -147,9 +147,9 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-    module CsvFiles3 = 
-        module CSV1 = 
+
+    module CsvFiles3 =
+        module CSV1 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -158,8 +158,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV2 = 
+
+        module CSV2 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -168,8 +168,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV3 = 
+
+        module CSV3 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -178,9 +178,9 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-    module CsvFiles4 = 
-        module CSV1 = 
+
+    module CsvFiles4 =
+        module CSV1 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -189,8 +189,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV2 = 
+
+        module CSV2 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -199,8 +199,8 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-        module CSV3 = 
+
+        module CSV3 =
             type UTF8 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
             type CP932 = CsvProvider<"../../FSharp.Data.Tests/Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
             type PercentageCsv = CsvProvider<percentageCsv>
@@ -209,9 +209,9 @@ module Stress =
             let currencySample = Currency.GetSample()
             type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
             type CsvUom = CsvProvider<"../../FSharp.Data.Tests/Data/SmallTest.csv">
-    
-    module XmlText1 = 
-        module Person1 = 
+
+    module XmlText1 =
+        module Person1 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -219,7 +219,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person2 = 
+        module Person2 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="30" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -227,7 +227,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person3 = 
+        module Person3 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="31" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -235,7 +235,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person4 = 
+        module Person4 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="32" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -243,7 +243,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person5 = 
+        module Person5 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="33" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -251,7 +251,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person6 = 
+        module Person6 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="34" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -259,7 +259,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person7 = 
+        module Person7 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="35" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -267,7 +267,7 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-        module Person8 = 
+        module Person8 =
             type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="36" /></authors>""">
             let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
             let newXml2 = """<authors><author name="Jim" surname="Smith" age="24" /></authors>"""
@@ -275,168 +275,168 @@ module Stress =
             let firstPerson = PersonXml.Parse(newXml).Author
             let nextPerson = PersonXml.Parse(newXml2).Author
 
-    module XmlGroup1 = 
-        module XmlFiles1 = 
+    module XmlGroup1 =
+        module XmlFiles1 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles2 = 
+        module XmlFiles2 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles3 = 
+        module XmlFiles3 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles4 = 
+        module XmlFiles4 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles5 = 
+        module XmlFiles5 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles6 = 
+        module XmlFiles6 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles7 = 
+        module XmlFiles7 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles8 = 
+        module XmlFiles8 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles9 = 
+        module XmlFiles9 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles10 = 
+        module XmlFiles10 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
 
-    module XmlGroup2 = 
-        module XmlFiles1 = 
+    module XmlGroup2 =
+        module XmlFiles1 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles2 = 
+        module XmlFiles2 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles3 = 
+        module XmlFiles3 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles4 = 
+        module XmlFiles4 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles5 = 
+        module XmlFiles5 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles6 = 
+        module XmlFiles6 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles7 = 
+        module XmlFiles7 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles8 = 
+        module XmlFiles8 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles9 = 
+        module XmlFiles9 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles10 = 
+        module XmlFiles10 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-    module XmlGroup3 = 
-        module XmlFiles1 = 
+    module XmlGroup3 =
+        module XmlFiles1 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles2 = 
+        module XmlFiles2 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles3 = 
+        module XmlFiles3 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles4 = 
+        module XmlFiles4 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles5 = 
+        module XmlFiles5 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles6 = 
+        module XmlFiles6 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles7 = 
+        module XmlFiles7 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles8 = 
+        module XmlFiles8 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles9 = 
+        module XmlFiles9 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles10 = 
+        module XmlFiles10 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-    module XmlGroup4 = 
-        module XmlFiles1 = 
+    module XmlGroup4 =
+        module XmlFiles1 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles2 = 
+        module XmlFiles2 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles3 = 
+        module XmlFiles3 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles4 = 
+        module XmlFiles4 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles5 = 
+        module XmlFiles5 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles6 = 
+        module XmlFiles6 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles7 = 
+        module XmlFiles7 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles8 = 
+        module XmlFiles8 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles9 = 
+        module XmlFiles9 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
-        module XmlFiles10 = 
+        module XmlFiles10 =
             type AtomSearch = XmlProvider<"../../FSharp.Data.Tests/Data/search.atom.xml", SampleIsList=true>
             type philosophyType = XmlProvider<"../../FSharp.Data.Tests/Data/Philosophy.xml">
 
