@@ -44,54 +44,54 @@ let firstPerson = PersonXml.Parse(newXml).Author
 let nextPerson = PersonXml.Parse(newXml2).Author
 
 [<Test>]
-let ``Jane should have first name of Jane``() = 
+let ``Jane should have first name of Jane``() =
     firstPerson.Name |> should equal "Jane"
 
 [<Test>]
-let ``Jane should have a last name of Doe``() = 
+let ``Jane should have a last name of Doe``() =
     firstPerson.Surname |> should equal "Doe"
 
 [<Test>]
-let ``Jane should have an age of 23``() = 
+let ``Jane should have an age of 23``() =
     firstPerson.Age |> should equal 23
 
 [<Test>]
-let ``Jim should have a first name of Jim``() = 
+let ``Jim should have a first name of Jim``() =
     nextPerson.Name |> should equal "Jim"
 
 [<Test>]
-let ``Jim should have a last name of Smith``() = 
+let ``Jim should have a last name of Smith``() =
     nextPerson.Surname |> should equal "Smith"
 
 [<Test>]
-let ``Jim should have an age of 24``() = 
+let ``Jim should have an age of 24``() =
     nextPerson.Age |> should equal 24
 
 [<Test>]
-let ``Type of attribute with empty value is string`` = 
+let ``Type of attribute with empty value is string`` =
   XmlProvider<"Data/emptyValue.xml">.GetSample().A |> should equal ""
 
 [<Test>]
-let ``Xml with namespaces``() = 
-  let feed = XmlProvider<"Data/search.atom.xml">.GetSample()
+let ``Xml with namespaces``() =
+  let feed = XmlProvider<"Data/Search.Atom.xml">.GetSample()
   feed.Title |> should equal "Windows8 - Twitter Search"
   feed.Entries.[0].Metadata.ResultType |> should equal "recent"
 
 [<Test>]
 let ``Can read config with heterogeneous attribute types``() =
   let config = XmlProvider<"Data/heterogeneous.xml">.GetSample()
-  let opts = 
-    [ for opt in config.Options -> 
+  let opts =
+    [ for opt in config.Options ->
         let set = opt.Node.Set in set.Boolean, set.Number, set.String ]
   opts |> should equal [ (None, None, Some "wales.css");
-                         (Some true, None, Some "true"); 
+                         (Some true, None, Some "true");
                          (None, Some 42, Some "42")
                          (None, None, None) ]
 
 let inlined = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" /></authors>""">.GetSample()
 
 [<Test>]
-let ``Can get author name in inlined xml``() = 
+let ``Can get author name in inlined xml``() =
     let author = inlined.Author
     author.Name |> should equal "Ludwig"
     author.Surname |> should equal "Wittgenstein"
@@ -100,35 +100,35 @@ type philosophyType = XmlProvider<"Data/Philosophy.xml">
 let authors = philosophyType.GetSample().Authors
 
 [<Test>]
-let ``Can get author names in philosophy.xml``() = 
+let ``Can get author names in philosophy.xml``() =
     authors.[0].Name |> should equal "Ludwig"
     authors.[1].Name |> should equal "Rene"
 
 [<Test>]
-let ``Can get author surnames in philosophy.xml``() = 
+let ``Can get author surnames in philosophy.xml``() =
     authors.[0].Surname |> should equal "Wittgenstein"
     authors.[1].Surname |> should equal "Descartes"
 
 [<Test>]
-let ``Can get the optional author birthday in philosophy.xml``() = 
+let ``Can get the optional author birthday in philosophy.xml``() =
     authors.[0].Birth |> should equal None
     authors.[1].Birth |> should equal (Some 1596)
 
 [<Test>]
-let ``Can get Descartes books in philosophy.xml``() = 
+let ``Can get Descartes books in philosophy.xml``() =
     let books = authors.[0].Books
     books.[0].Title |> should equal "Tractatus Logico-Philosophicus"
     books.[1].Title |> should equal "Philosophical Investigations"
 
 [<Test>]
-let ``Can get manuscripts in philosophy.xml``() = 
+let ``Can get manuscripts in philosophy.xml``() =
     authors.[0].Manuscript.Value.Title |> should equal "Notes on Logic"
     authors.[1].Manuscript |> should equal None
- 
+
 let topicDocument = XmlProvider<"""<topics><topic><title>My Topic Title</title></topic><topic><title>Another Topic Title</title></topic></topics>""">.GetSample()
 
 [<Test>]
-let ``Can get the title of the topics``() = 
+let ``Can get the title of the topics``() =
     let topics = topicDocument.Topics
     topics.[0].Title |> should equal "My Topic Title"
     topics.[1].Title |> should equal "Another Topic Title"
@@ -150,12 +150,12 @@ let ``Can access the project title``() =
 type Html = XmlProvider<"""
 <div>
     <span>
-        <ul> 
-            <li/>          
+        <ul>
+            <li/>
         </ul>
-    </span>  
+    </span>
 </div>""">
- 
+
 [<Test>]
 let ``Nested xml types compile when only used in type annotations``() =
     let divWorks (div:Html.Div) = ()
@@ -183,14 +183,14 @@ let ``XML elements with same name in different namespaces``() =
 let ``Optionality inferred correctly for child elements``() =
 
     let items = XmlProvider<"Data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
-    
+
     items.Length |> should equal 2
     let child1 = items.[0]
     let child2 = items.[1]
 
     child1.A |> should equal (Some 1)
     child2.A |> should equal None
-    
+
     child1.B |> should equal None
     child2.B |> should equal (Some "some")
 
@@ -202,14 +202,14 @@ let ``Optionality inferred correctly for child elements``() =
 let ``Global inference with empty elements doesn't crash``() =
 
     let items = XmlProvider<"Data/missingInnerValue.xml", SampleIsList=true, Global=true>.GetSamples()
-    
+
     items.Length |> should equal 2
     let child1 = items.[0]
     let child2 = items.[1]
 
     child1.A |> should equal (Some 1)
     child2.A |> should equal None
-    
+
     child1.B |> should equal None
     child2.B |> should equal (Some "some")
 
@@ -221,17 +221,17 @@ type Cars = XmlProvider<"Data/Cars.xml", SampleIsList=true, Global=true>
 
 [<Test>]
 let ``Global inference unifies element types across multiple samples``() =
-  let readCars str = 
+  let readCars str =
     let doc = Cars.Parse(str)
     match doc.Car, doc.ArrayOfCar with
     | Some car, _ -> [ car.Type ]
     | _, Some cars -> [ for c in cars.Cars -> c.Type ]
     | _ -> []
-  
-  readCars "<Car><Type>Audi</Type></Car>" 
+
+  readCars "<Car><Type>Audi</Type></Car>"
   |> should equal ["Audi"]
 
-  readCars "<ArrayOfCar><Car><Type>Audi</Type></Car><Car><Type>BMW</Type></Car></ArrayOfCar>" 
+  readCars "<ArrayOfCar><Car><Type>Audi</Type></Car><Car><Type>BMW</Type></Car></ArrayOfCar>"
   |> should equal ["Audi"; "BMW"]
 
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
@@ -259,7 +259,7 @@ let ``Infers type and reads mixed RSS/Atom feed document`` () =
   let rssFeed = AnyFeed.GetSamples().[1]
   rssFeed.Rss.IsSome |> should equal true
   rssFeed.Rss.Value.Channel.Title |> should equal "W3Schools Home Page"
-  
+
 
 [<Test>]
 let ``Optional value elements should work at runtime when attribute is missing`` () =
@@ -379,9 +379,9 @@ type Customer = XmlProvider<"""
 
 [<Test>]
 let ``Can construct complex objects``() =
-    let customer = 
+    let customer =
         Customer.Customer(
-            "ACME", 
+            "ACME",
             [| Customer.Order(Some "A012345", None)
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice(2), None)))
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice("xpto"), Some 2))) |],
@@ -418,13 +418,13 @@ let ``Can construct collapsed primitive collections``() =
 
 [<Test>]
 let ``Can construct collapsed non-primitive collections and elements with json``() =
-    let pb = 
+    let pb =
         JsonInXml.PropertyBag(
             JsonInXml.BlahData(
                 [| JsonInXml.X(2, "bar") |],
-                [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
-                Unchecked.defaultof<_>, 
-                Unchecked.defaultof<_>, 
+                [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |],
+                Unchecked.defaultof<_>,
+                Unchecked.defaultof<_>,
                 None))
     pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
   <BlahDataArray>
@@ -455,14 +455,14 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   </channel>
 </rss>""")
 
-    let atom = 
+    let atom =
         AnyFeed.Choice(
-            AnyFeed.Feed("title", 
-                         "subtitle", 
-                         [| |], 
-                         "id", 
-                         DateTime(2014, 04, 27), 
-                         AnyFeed.Entry("title2", 
+            AnyFeed.Feed("title",
+                         "subtitle",
+                         [| |],
+                         "id",
+                         DateTime(2014, 04, 27),
+                         AnyFeed.Entry("title2",
                                        [| |],
                                        "id2",
                                        DateTime(2014, 04, 28),
@@ -485,7 +485,7 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   </entry>
 </feed>""")
 
-type AtomSearch = XmlProvider<"Data/search.atom.xml", SampleIsList=true>
+type AtomSearch = XmlProvider<"Data/Search.Atom.xml", SampleIsList=true>
 
 [<Test>]
 let ``Can construct elements with heterogeneous records with primitives``() =
@@ -499,10 +499,10 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000</updated>"""
     let itemsPerPage = AtomSearch.Choice(2)
     itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
-    let entry = AtomSearch.Entry("id", 
-                                 DateTime(2000, 2, 2), 
-                                 [| |], 
-                                 "title", 
+    let entry = AtomSearch.Entry("id",
+                                 DateTime(2000, 2, 2),
+                                 [| |],
+                                 "title",
                                  AtomSearch.Content("type", "value"),
                                  DateTime(2000, 3, 3),
                                  Unchecked.defaultof<_>,
