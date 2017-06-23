@@ -73,7 +73,7 @@ let ``Type of attribute with empty value is string`` =
 
 [<Test>]
 let ``Xml with namespaces``() =
-  let feed = XmlProvider<"Data/Search.Atom.xml">.GetSample()
+  let feed = XmlProvider<"Data/search.atom.xml">.GetSample()
   feed.Title |> should equal "Windows8 - Twitter Search"
   feed.Entries.[0].Metadata.ResultType |> should equal "recent"
 
@@ -485,7 +485,7 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   </entry>
 </feed>""")
 
-type AtomSearch = XmlProvider<"Data/Search.Atom.xml", SampleIsList=true>
+type AtomSearch = XmlProvider<"Data/search.atom.xml", SampleIsList=true>
 
 [<Test>]
 let ``Can construct elements with heterogeneous records with primitives``() =
