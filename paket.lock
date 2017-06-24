@@ -1,6 +1,7 @@
+REDIRECTS: ON
 NUGET
   remote: http://www.nuget.org/api/v2
-    FAKE (4.58.3)
+    FAKE (4.61.3)
     FsCheck (2.6)
       FSharp.Core (>= 3.1.2.5)
     FSharp.Charting (0.90.14)
@@ -14,10 +15,10 @@ NUGET
     FsUnit (2.3.1)
       FSharp.Core (>= 3.1.2.5)
       NUnit (3.4.1)
-    Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl (1.1.10) - restriction: && (< net45) (< win8) (< portable-win81+wpa81)
       Microsoft.Bcl.Build (>= 1.0.14)
-    Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
-    Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
+    Microsoft.Bcl.Build (1.0.21) - import_targets: false, restriction: && (< net45) (< win8) (< portable-win81+wpa81)
+    Microsoft.Net.Http (2.2.29) - restriction: && (< net45) (< win8) (< portable-win81+wpa81)
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     Nancy (1.4.3)
@@ -39,17 +40,17 @@ NUGET
       NUnit.Extension.TeamCityEventListener (>= 1.0.1)
       NUnit.Extension.VSProjectLoader (>= 3.4.1)
     Octokit (0.21.1)
-      Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
+      Microsoft.Net.Http  - restriction: && (< net45) (< win8) (< portable-win81+wpa81)
     SourceLink.Fake (1.1)
     Zlib.Portable (1.11)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (8fd20ae42c996060bc8bedb821edfb50517cdd8b)
+    modules/Octokit/Octokit.fsx (395ce583e1261e08848e9492ba42a5c1203511bc)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/AssemblyReader.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
-    src/AssemblyReaderReflection.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
-    src/ProvidedTypes.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
-    src/ProvidedTypes.fsi (8f647a4cde71bdeda10e7f5b534ec3c879601570)
-    src/ProvidedTypesContext.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
-    src/ProvidedTypesTesting.fs (8f647a4cde71bdeda10e7f5b534ec3c879601570)
+    src/AssemblyReader.fs (1dab4f94411500794342f61f877feab772e5a754)
+    src/AssemblyReaderReflection.fs (1dab4f94411500794342f61f877feab772e5a754)
+    src/ProvidedTypes.fs (1dab4f94411500794342f61f877feab772e5a754)
+    src/ProvidedTypes.fsi (1dab4f94411500794342f61f877feab772e5a754)
+    src/ProvidedTypesContext.fs (1dab4f94411500794342f61f877feab772e5a754)
+    src/ProvidedTypesTesting.fs (1dab4f94411500794342f61f877feab772e5a754)

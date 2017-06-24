@@ -14,7 +14,7 @@ open FSharp.Data.HtmlNode
 open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
-    JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
+    JsonValue.Load(__SOURCE_DIRECTORY__ + "/Data/charrefs.json")?items.AsArray()
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 [<Test>]

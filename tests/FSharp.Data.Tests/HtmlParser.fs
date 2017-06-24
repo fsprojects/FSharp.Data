@@ -365,7 +365,7 @@ let ``Can handle html with doctype and xml namespaces``() =
 [<Test>]
 let ``Can find header when nested in a div``() = 
     let tables = 
-        HtmlDocument.Load "data/wimbledon_wikipedia.html"
+        HtmlDocument.Load "Data/wimbledon_wikipedia.html"
         |> getTables false
         |> List.map (fun t -> t.Name, t)
         |> Map.ofList
@@ -375,7 +375,7 @@ let ``Can find header when nested in a div``() =
 
 [<Test>]
 let ``Can parse tables imdb chart``() = 
-    let imdb = HtmlDocument.Load "data/imdb_chart.htm"
+    let imdb = HtmlDocument.Load "Data/imdb_chart.htm"
     let tables = imdb |> getTables false
     tables.Length |> should equal 2
     tables.[0].Name |> should equal "Top 250"
@@ -384,12 +384,12 @@ let ``Can parse tables imdb chart``() =
 
 [<Test>]
 let ``Can parse tables ebay cars``() = 
-    let ebay = HtmlDocument.Load "data/ebay_cars.htm"
+    let ebay = HtmlDocument.Load "Data/ebay_cars.htm"
     true |> should equal true
 
 [<Test>]
 let ``Does not crash when parsing us presidents``() = 
-    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> getTables false
+    let table = HtmlDocument.Load "Data/us_presidents_wikipedia.html" |> getTables false
     true |> should equal true
 
 [<Test>]
@@ -576,33 +576,33 @@ let ``Can parse code blocks``() =
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() = 
-    HtmlDocument.Load "data/UKDepartures.html"
+    HtmlDocument.Load "Data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
     |> Seq.length
     |> should equal 68
-    HtmlDocument.Load "data/UKLiveProgress.html"
+    HtmlDocument.Load "Data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
     |> Seq.length
     |> should equal 15
-    HtmlDocument.Load "data/UKDepartures.html"
+    HtmlDocument.Load "Data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
     |> Seq.length
     |> should equal 69
-    HtmlDocument.Load "data/UKLiveProgress.html"
+    HtmlDocument.Load "Data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
     |> Seq.length
     |> should equal 17
 
 [<Test>]
 let ``Can parse old zoopla site correctly``() = 
-    HtmlDocument.Load "data/zoopla.html"
+    HtmlDocument.Load "Data/zoopla.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Place" x)
     |> Seq.length 
     |> should equal 100
 
 [<Test>]
 let ``Can parse new zoopla site correctly``() = 
-    HtmlDocument.Load "data/zoopla2.html"
+    HtmlDocument.Load "Data/zoopla2.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Residence" x)
     |> Seq.length 
     |> should equal 10
