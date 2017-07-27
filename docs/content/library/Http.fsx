@@ -16,8 +16,8 @@ the response URL, or the returned headers and cookies.
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
 
-To use the type, we first need to reference the library using `#r` (in an F# interactive) 
-or add reference to a project. The type is located in `FSharp.Net` namespace:
+To use the type, we first need to reference the library using `#r` (in an F# interactive)
+or add reference to a project. The type is located in `FSharp.Data` namespace:
 *)
 
 #r "../../../bin/FSharp.Data.dll"

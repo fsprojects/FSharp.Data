@@ -122,7 +122,8 @@ let runTestTask name =
         !! (sprintf "tests/*/bin/Release/%s.dll" name)
         |> NUnit3 (fun p ->
             { p with
-                TimeOut = TimeSpan.FromMinutes 20. })
+                TimeOut = TimeSpan.FromMinutes 20. 
+                TraceLevel = NUnit3TraceLevel.Info})
     taskName ==> "RunTests" |> ignore
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]

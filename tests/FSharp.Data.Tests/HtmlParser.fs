@@ -324,6 +324,135 @@ let ``Extracts data and headers with thead and tbody``() =
                                       [ "February"; "$80" ] ]
 
 [<Test>]
+let ``Extracts data and headers with unclosed tr th and td``() = 
+    let html = """<table id="savings_table">
+                    <thead>
+                      <tr>
+                        <th>Month
+                        <th>Savings
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <td>Sum
+                        <td>$180
+                    </tfoot>
+                    <tbody>
+                      <tr>
+                        <td>January
+                        <td>$100
+                      <tr>
+                        <td>February
+                        <td>$80
+                    </tbody>
+                  </table>"""
+    
+    let tables = 
+        html
+        |> HtmlDocument.Parse
+        |> getTables true
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "savings_table"
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [ [ "Month"; "Savings" ]
+                                      [ "Sum"; "$180" ]
+                                      [ "January"; "$100" ]
+                                      [ "February"; "$80" ] ]
+
+[<Test>]
+let ``Extracts data and headers with unclosed tr``() = 
+    let html = """<table id="savings_table">
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        <th>Savings</th>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <td>Sum</td>
+                        <td>$180</td>
+                    </tfoot>
+                    <tbody>
+                      <tr>
+                        <td>January</td>
+                        <td>$100</td>
+                      <tr>
+                        <td>February</td>
+                        <td>$80</td>
+                    </tbody>
+                  </table>"""
+    
+    let tables = 
+        html
+        |> HtmlDocument.Parse
+        |> getTables true
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "savings_table"
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [ [ "Month"; "Savings" ]
+                                      [ "Sum"; "$180" ]
+                                      [ "January"; "$100" ]
+                                      [ "February"; "$80" ] ]
+
+[<Test>]
+let ``Extracts data and headers with unclosed tr th and td without tbody``() = 
+    let html = """<table id="savings_table">
+                      <tr>
+                        <th>Month
+                        <th>Savings
+                      <tr>
+                        <td>Sum
+                        <td>$180
+                      <tr>
+                        <td>January
+                        <td>$100
+                      <tr>
+                        <td>February
+                        <td>$80
+                  </table>"""
+    
+    let tables = 
+        html
+        |> HtmlDocument.Parse
+        |> getTables true
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "savings_table"
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [ [ "Month"; "Savings" ]
+                                      [ "Sum"; "$180" ]
+                                      [ "January"; "$100" ]
+                                      [ "February"; "$80" ] ]
+
+[<Test>]
+let ``Extracts data and headers with unclosed tr without tbody``() = 
+    let html = """<table id="savings_table">
+                      <tr>
+                        <th>Month</th>
+                        <th>Savings</th>
+                      <tr>
+                        <td>Sum</td>
+                        <td>$180</td>
+                      <tr>
+                        <td>January</td>
+                        <td>$100</td>
+                      <tr>
+                        <td>February</td>
+                        <td>$80</td>
+                  </table>"""
+    
+    let tables = 
+        html
+        |> HtmlDocument.Parse
+        |> getTables true
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "savings_table"
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [ [ "Month"; "Savings" ]
+                                      [ "Sum"; "$180" ]
+                                      [ "January"; "$100" ]
+                                      [ "February"; "$80" ] ]
+
+
+[<Test>]
 let ``Extracts tables in malformed html``() = 
     let html = """<html>
                     <body> >>
@@ -365,7 +494,7 @@ let ``Can handle html with doctype and xml namespaces``() =
 [<Test>]
 let ``Can find header when nested in a div``() = 
     let tables = 
-        HtmlDocument.Load "data/wimbledon_wikipedia.html"
+        HtmlDocument.Load "Data/wimbledon_wikipedia.html"
         |> getTables false
         |> List.map (fun t -> t.Name, t)
         |> Map.ofList
@@ -375,7 +504,7 @@ let ``Can find header when nested in a div``() =
 
 [<Test>]
 let ``Can parse tables imdb chart``() = 
-    let imdb = HtmlDocument.Load "data/imdb_chart.htm"
+    let imdb = HtmlDocument.Load "Data/imdb_chart.htm"
     let tables = imdb |> getTables false
     tables.Length |> should equal 2
     tables.[0].Name |> should equal "Top 250"
@@ -384,12 +513,12 @@ let ``Can parse tables imdb chart``() =
 
 [<Test>]
 let ``Can parse tables ebay cars``() = 
-    let ebay = HtmlDocument.Load "data/ebay_cars.htm"
+    let ebay = HtmlDocument.Load "Data/ebay_cars.htm"
     true |> should equal true
 
 [<Test>]
 let ``Does not crash when parsing us presidents``() = 
-    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> getTables false
+    let table = HtmlDocument.Load "Data/us_presidents_wikipedia.html" |> getTables false
     true |> should equal true
 
 [<Test>]
@@ -553,6 +682,25 @@ let ``Can parse nested lists correctly when continues on recurse``() =
     result |> should equal [ "12"; "1"; "2"; "3"; "4" ]
 
 [<Test>]
+let ``Can parse nested lists correctly when continues closing tags are missing``() = 
+    let html = """
+        <ul>
+            <li>
+                <ul><li>1<li>2</ul>
+            <li>3
+            <li>4
+       </ul>
+    """
+    
+    let result = 
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed true [ "li" ]
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
+    result |> should equal [ "12"; "1"; "2"; "3 "; "4 " ]
+
+
+[<Test>]
 let ``Can parse pre blocks``() = 
     let html = "<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>"
     
@@ -576,33 +724,33 @@ let ``Can parse code blocks``() =
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() = 
-    HtmlDocument.Load "data/UKDepartures.html"
+    HtmlDocument.Load "Data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
     |> Seq.length
     |> should equal 68
-    HtmlDocument.Load "data/UKLiveProgress.html"
+    HtmlDocument.Load "Data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
     |> Seq.length
     |> should equal 15
-    HtmlDocument.Load "data/UKDepartures.html"
+    HtmlDocument.Load "Data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
     |> Seq.length
     |> should equal 69
-    HtmlDocument.Load "data/UKLiveProgress.html"
+    HtmlDocument.Load "Data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
     |> Seq.length
     |> should equal 17
 
 [<Test>]
 let ``Can parse old zoopla site correctly``() = 
-    HtmlDocument.Load "data/zoopla.html"
+    HtmlDocument.Load "Data/zoopla.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Place" x)
     |> Seq.length 
     |> should equal 100
 
 [<Test>]
 let ``Can parse new zoopla site correctly``() = 
-    HtmlDocument.Load "data/zoopla2.html"
+    HtmlDocument.Load "Data/zoopla2.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Residence" x)
     |> Seq.length 
     |> should equal 10

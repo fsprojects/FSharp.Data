@@ -48,7 +48,7 @@ The following sample calls the `Load` method with an URL that points to a live C
 *)
  
 // Download the stock prices
-let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+let msft = Stocks.Load("http://www.google.com/finance/historical?q=MSFT&output=csv")
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -412,7 +412,7 @@ You can still cache the data at some point by using the `Cache` method, but only
 transformed the dataset to be smaller:
 *)
 let [<Literal>] MSFT = 
-  "http://ichart.finance.yahoo.com/table.csv?s=MSFT"
+  "http://www.google.com/finance/historical?q=MSFT&output=csv"
 
 let stocks = CsvProvider<MSFT, CacheRows=false>.GetSample()
 stocks.Take(10).Cache()
