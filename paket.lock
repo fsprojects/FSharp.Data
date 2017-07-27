@@ -1,7 +1,7 @@
 REDIRECTS: ON
 NUGET
   remote: http://www.nuget.org/api/v2
-    FAKE (4.61.3)
+    FAKE (4.62.5)
     FsCheck (2.6)
       FSharp.Core (>= 3.1.2.5)
     FSharp.Charting (0.90.14)
