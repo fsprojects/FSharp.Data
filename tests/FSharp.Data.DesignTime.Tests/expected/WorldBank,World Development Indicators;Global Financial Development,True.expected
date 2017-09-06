@@ -2352,10 +2352,10 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("FS.AST.DOMS.GD.ZS")
 
     member ``Domestic credit to private sector (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("GFDD.DI.14")
+    (this :> IIndicators).AsyncGetIndicator("FS.AST.PRVT.GD.ZS")
 
     member ``Domestic credit to private sector (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("FS.AST.PRVT.GD.ZS")
+    (this :> IIndicators).AsyncGetIndicator("GFDD.DI.14")
 
     member ``Domestic credit to private sector by banks (% of GDP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FD.AST.PRVT.GD.ZS")
@@ -7268,10 +7268,10 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("FS.AST.DOMS.GD.ZS")
 
     member ``Domestic credit to private sector (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.14")
+    (this :> IIndicatorsDescriptions).GetIndicator("FS.AST.PRVT.GD.ZS")
 
     member ``Domestic credit to private sector (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("FS.AST.PRVT.GD.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.14")
 
     member ``Domestic credit to private sector by banks (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FD.AST.PRVT.GD.ZS")
