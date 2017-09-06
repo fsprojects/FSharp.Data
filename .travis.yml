@@ -1,30 +1,38 @@
 language: csharp
 
+sudo: required
+dist: trusty
+
+mono:
+  - 4.8.1
+  - 5.0.1
+  - latest
+  - nightly
+
+os:
+  - linux
+  - osx
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y referenceassemblies-pcl; fi
+
 matrix:
-  include:
-    - os: osx
-      mono: 4.4.2
-    - os: osx
-      mono: latest
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
   fast_finish: true
-
-# Compilation on Linux fails because of lack of installed PCL libraries.  We should reference the FSharp.Core package as a dependency
-# to fix this.
-#    - os: linux
-#      dist: trusty
-#      sudo: required
-#      mono: 4.4.2
-
+  allow_failures:
+  - mono: nightly
 
 env:
   global:
-    - MONO_MANAGED_WATCHER=disabled
+  - MONO_MANAGED_WATCHER=disabled
 
 script:
   - ./build.sh CleanInternetCaches && ./build.sh All
 
 branches:
   except:
-    - gh-pages
-    - release
+  - gh-pages
+  - release

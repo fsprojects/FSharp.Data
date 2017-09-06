@@ -28,6 +28,9 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     static member Parse: text:string -> HtmlProvider
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
+    member Tables: HtmlProvider+TablesContainer with get
+    this
+
 
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!.``: HtmlProvider+2002Rover75ClubSeANiceOne with get
@@ -91,9 +94,21 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "See also")
 
 
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
+    member ``Additional site navigation``: HtmlProvider+AdditionalSiteNavigation with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Additional site navigation", false)
+
+
 class HtmlProvider+2002Rover75ClubSeANiceOne : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+2002Rover75ClubSeANiceOne2 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+AdditionalSiteNavigation : FDR.BaseTypes.HtmlTable<HtmlProvider+AdditionalSiteNavigation+Row>
 
 class HtmlProvider+GfL : FDR.BaseTypes.HtmlList<string>
 
@@ -110,4 +125,12 @@ class HtmlProvider+Menu4 : FDR.BaseTypes.HtmlList<string>
 class HtmlProvider+Menu5 : FDR.BaseTypes.HtmlList<int>
 
 class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+AdditionalSiteNavigation+Row : string * string
+    member Column1: string with get
+    (let t1,_ = this in t1)
+
+    member Column2: string with get
+    (let _,t2 = this in t2)
+
 

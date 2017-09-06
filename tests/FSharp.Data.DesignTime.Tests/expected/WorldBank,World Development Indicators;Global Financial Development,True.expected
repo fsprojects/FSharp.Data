@@ -444,7 +444,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     (this :> ICountryCollection).GetCountry("KOR", "Korea, Rep.")
 
     member Kosovo: WorldBankDataProvider+ServiceTypes+Country with get
-    (this :> ICountryCollection).GetCountry("KSV", "Kosovo")
+    (this :> ICountryCollection).GetCountry("XKX", "Kosovo")
 
     member Kuwait: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("KWT", "Kuwait")
@@ -2789,6 +2789,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Fuel imports (% of merchandise imports)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("TM.VAL.FUEL.ZS.UN")
 
+    member ``GDP (constant 2010 US$)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.MKTP.KD")
+
     member ``GDP (constant LCU)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.MKTP.KN")
 
@@ -2797,9 +2800,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``GDP (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.MKTP.CD")
-
-    member ``GDP at market prices (constant 2010 US$)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.MKTP.KD")
 
     member ``GDP deflator (base year varies by country)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.DEFL.ZS")
@@ -7471,6 +7471,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Fuel imports (% of merchandise imports)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("TM.VAL.FUEL.ZS.UN")
 
+    member ``GDP (constant 2010 US$)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MKTP.KD")
+
     member ``GDP (constant LCU)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MKTP.KN")
 
@@ -7479,9 +7482,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``GDP (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MKTP.CD")
-
-    member ``GDP at market prices (constant 2010 US$)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MKTP.KD")
 
     member ``GDP deflator (base year varies by country)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.DEFL.ZS")
