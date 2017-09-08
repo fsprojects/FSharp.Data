@@ -1406,7 +1406,8 @@ module private HttpHelpers =
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
-        let! memoryStream = asyncRead stream
+        use stream = stream
+        use! memoryStream = asyncRead stream
 
         let memoryStream =
             // this only applies when automatic decompression is off
@@ -1685,7 +1686,7 @@ type Http private() =
                 if !nativeAutomaticDecompression then ""
                 else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
-            use stream = resp.GetResponseStream()
+            let stream = resp.GetResponseStream()
 
             return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
         }
