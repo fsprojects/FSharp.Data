@@ -1008,6 +1008,7 @@ module private HttpHelpers =
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content
     let asyncRead (stream:Stream) = async {
+        use stream = stream
         // Allocate 4kb buffer for downloading data
         let buffer = Array.zeroCreate (4 * 1024)
         let output = new MemoryStream()
@@ -1373,6 +1374,7 @@ module private HttpHelpers =
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let decompressGZip (memoryStream:MemoryStream) =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        use memoryStream = memoryStream
         new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
 #else
         failwith "Automatic gzip decompression failed"
@@ -1383,6 +1385,7 @@ module private HttpHelpers =
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let decompressDeflate (memoryStream:MemoryStream) =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        use memoryStream = memoryStream
         new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
 #else
         failwith "Automatic deflate decompression failed"
@@ -1406,10 +1409,8 @@ module private HttpHelpers =
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
-        use stream = stream
         use! memoryStream = asyncRead stream
-
-        let memoryStream =
+        use memoryStream =
             // this only applies when automatic decompression is off
             if contentEncoding = "gzip" then decompressGZip memoryStream
             elif contentEncoding = "deflate" then decompressDeflate memoryStream
@@ -1763,11 +1764,9 @@ type Http private() =
             let! stream = async {
                 // this only applies when automatic decompression is off
                 if contentEncoding = "gzip" then
-                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressGZip memoryStream :> Stream
                 elif contentEncoding = "deflate" then
-                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressDeflate memoryStream :> Stream
                 else
