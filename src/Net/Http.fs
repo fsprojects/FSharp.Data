@@ -920,15 +920,10 @@ module MimeTypes =
             (".xwd", "image/x-xwindowdump")
             (".z", "application/x-compress")
             (".zip", "application/zip") |]
-    let private map =
-        let d = Dictionary<string,string>(StringComparer.OrdinalIgnoreCase)
-        for (k,v) in pairs do
-            d.Add(k,v)
-        d
-    let tryFind ext =
-        match map.TryGetValue(ext) with
-        | true, mime -> Some mime
-        | _ -> None
+
+    let private map = Map.ofArray pairs
+        
+    let tryFind (ext: string) = Map.tryFind (ext.ToLowerInvariant()) map
 
 /// Constants for common HTTP encodings
 module HttpEncodings =
@@ -1035,10 +1030,9 @@ module private HttpHelpers =
             let mutable streams = streams |> Seq.cache
 
             let rec readFromStream buffer offset count =
-                match streams |> Seq.isEmpty with
-                | true ->
-                    0
-                | false ->
+                if Seq.isEmpty streams 
+                then 0
+                else
                     let stream = Seq.head streams
                     let read = stream.Read(buffer, offset, max count (int stream.Length))
                     if read < count
@@ -1048,7 +1042,6 @@ module private HttpHelpers =
                         let readFromRest = readFromStream buffer (offset + read) (count - read)
                         read + readFromRest
                     else read
-
 
             override x.CanRead = true
             override x.CanSeek = false
@@ -1078,14 +1071,18 @@ module private HttpHelpers =
         let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
             let fileExt =
 #if FX_NO_LOCAL_FILESYSTEM
-                fileName.[fileName.LastIndexOf('.')..]
+                match fileName.LastIndexOf('.') with
+                | -1 -> ""
+                | n -> fileName.Substring(n)
 #else
                 Path.GetExtension fileName
 #endif
+            let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
+            let printHeader (header, value) = sprintf "%s: %s" header value
             let headerpart =
                 [ prefixedBoundary
-                  HttpRequestHeaders.ContentDisposition("form-data", Some formField, Some fileName) |> fun (h,v) -> sprintf "%s: %s" h v
-                  HttpRequestHeaders.ContentType(defaultArg (fileExt |> MimeTypes.tryFind) "application/octet-stream") |> fun (h,v) -> sprintf "%s: %s" h v  ]
+                  HttpRequestHeaders.ContentDisposition("form-data", Some formField, Some fileName) |> printHeader
+                  HttpRequestHeaders.ContentType contentType |> printHeader ]
                 |> String.concat Environment.NewLine
             let headerStream =
                 let bytes = e.GetBytes headerpart
@@ -1426,7 +1423,7 @@ module private HttpHelpers =
                     // this goes against rfc2616, but it breaks Encoding.GetEncoding, so let us strip this char out
                     | "", characterSet -> Encoding.GetEncoding (characterSet.Replace("\"",""))
                     | responseEncodingOverride, _ -> HttpEncodings.getEncoding responseEncodingOverride
-                let sr = new StreamReader(memoryStream, encoding)
+                use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
             else
                 memoryStream.ToArray() |> Binary
@@ -1688,7 +1685,7 @@ type Http private() =
                 if !nativeAutomaticDecompression then ""
                 else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
-            let stream = resp.GetResponseStream()
+            use stream = resp.GetResponseStream()
 
             return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
         }
@@ -1765,9 +1762,11 @@ type Http private() =
             let! stream = async {
                 // this only applies when automatic decompression is off
                 if contentEncoding = "gzip" then
+                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressGZip memoryStream :> Stream
                 elif contentEncoding = "deflate" then
+                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressDeflate memoryStream :> Stream
                 else
