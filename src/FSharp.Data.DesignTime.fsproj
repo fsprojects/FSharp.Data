@@ -68,6 +68,7 @@
     <Compile Include="Json\JsonInference.fs" />
     <Compile Include="Json\JsonConversionsGenerator.fs" />
     <Compile Include="Json\JsonGenerator.fs" />
+    <Compile Include="Json\JsonSchemaValidator.fs" />
     <Compile Include="Json\JsonProvider.fs" />
     <Compile Include="Xml\XmlRuntime.fs" />
     <Compile Include="Xml\XmlInference.fs" />
