@@ -343,6 +343,13 @@ type JsonValue with
   static member Parse(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).Parse()
 
+  /// Attempts to parse the specified JSON string
+  static member TryParse(text, [<Optional>] ?cultureInfo) =
+    try
+      Some <| JsonParser(text, cultureInfo, false).Parse()
+    with
+      | _ -> None
+
   /// Loads JSON from the specified stream
   static member Load(stream:Stream, [<Optional>] ?cultureInfo) =
     use reader = new StreamReader(stream)
