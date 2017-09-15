@@ -20,3 +20,4 @@ paket-files
 .vs
 .fake
 TestResults
+*.log
