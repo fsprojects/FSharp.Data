@@ -1,5 +1,6 @@
 #### 2.3.4 - Unreleased
 * Fix css selectors not working outside the body element.
+* Add support for Multipart Form Data content in the HTTP implementation.
 
 #### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.
