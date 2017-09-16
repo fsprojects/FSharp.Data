@@ -59,7 +59,8 @@ Html { Sample = "doctor_who3.html"
        Culture = "" 
        Encoding = ""
        ResolutionFolder = ""
-       EmbeddedResource = "" }
+       EmbeddedResource = ""
+       InlineSample = false }
 |> dumpAll
 
 Json { Sample = "optionals.json"
@@ -69,7 +70,8 @@ Json { Sample = "optionals.json"
        Encoding = ""
        ResolutionFolder = ""
        EmbeddedResource = ""
-       InferTypesFromValues = true }
+       InferTypesFromValues = true
+       InlineSample = false }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
@@ -79,7 +81,8 @@ Xml { Sample = "JsonInXml.xml"
       Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = ""
-      InferTypesFromValues = true }
+      InferTypesFromValues = true
+      InlineSample = false }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
@@ -97,7 +100,8 @@ Csv { Sample = "AirQuality.csv"
       Culture = ""
       Encoding = ""
       ResolutionFolder = ""
-      EmbeddedResource = "" }
+      EmbeddedResource = ""
+      InlineSample = false }
 |> dumpAll
 
 let testCases =
