@@ -948,11 +948,6 @@ module HttpEncodings =
 [<AutoOpen>]
 module private HttpHelpers =
 
-#if FX_NO_LOCAL_FILESYSTEM
-    let internal printfn fmt =
-        Printf.kprintf Diagnostics.Debug.WriteLine fmt
-#endif
-
     /// Decorator for System.Net.WebResponse class
     /// used to make response stream seekable
     /// in order to preserve it in the new response
