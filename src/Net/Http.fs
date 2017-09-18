@@ -943,8 +943,6 @@ module HttpEncodings =
         | _ -> Encoding.GetEncoding encodingStr
 #endif
 
-
-
 [<AutoOpen>]
 module private HttpHelpers =
 
@@ -1152,7 +1150,8 @@ module private HttpHelpers =
     let rec asyncCopy offset (source: Stream) (dest: Stream) =
         async {
             let max =
-                if source.CanSeek && dest.CanSeek then  min 4096 (int (max source.Length dest.Length))
+                if source.CanSeek && dest.CanSeek
+                then min 4096 (int (max source.Length dest.Length))
                 else 4096
             let buf = Array.zeroCreate max
             let! read = source.AsyncRead(buf, offset, max)
@@ -1405,7 +1404,7 @@ module private HttpHelpers =
             |> Array.exists isText
 
         use! memoryStream = asyncRead stream
-        use memoryStream =
+        let memoryStream =
             // this only applies when automatic decompression is off
             if contentEncoding = "gzip" then decompressGZip memoryStream
             elif contentEncoding = "deflate" then decompressDeflate memoryStream
