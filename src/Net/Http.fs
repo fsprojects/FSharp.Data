@@ -9,7 +9,7 @@ namespace System.Runtime.InteropServices
 open System
 
 [<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
-type internal OptionalAttribute() = 
+type internal OptionalAttribute() =
     inherit Attribute()
 
 #endif
@@ -38,7 +38,7 @@ module HttpMethod =
     let Get = "GET"
     /// Identical to GET except that the server MUST NOT return a message-body in the response
     let Head = "HEAD"
-    /// Requests that the server accepts the entity enclosed in the request as a 
+    /// Requests that the server accepts the entity enclosed in the request as a
     /// new subordinate of the resource identified by the Request-URI in the Request-Line
     let Post = "POST"
     /// Requests that the enclosed entity be stored under the supplied Request-URI
@@ -47,7 +47,7 @@ module HttpMethod =
     let Delete = "DELETE"
     /// Used to invoke a remote, application-layer loop- back of the request message
     let Trace = "TRACE"
-    /// Reserved for use with a proxy that can dynamically switch to being a tunnel 
+    /// Reserved for use with a proxy that can dynamically switch to being a tunnel
     let Connect = "CONNECT"
 
     // RFC 4918 (WebDAV) adds 7 methods
@@ -78,26 +78,31 @@ module HttpRequestHeaders =
     let Accept (contentType:string) = "Accept", contentType
     /// Character sets that are acceptable
     let AcceptCharset (characterSets:string) = "Accept-Charset", characterSets
-    /// Acceptable version in time 
+    /// Acceptable version in time
     let AcceptDatetime (dateTime:DateTime) = "Accept-Datetime", dateTime.ToString("R", CultureInfo.InvariantCulture)
     /// List of acceptable encodings. See HTTP compression.
     let AcceptEncoding (encoding:string) = "Accept-Encoding", encoding
-    /// List of acceptable human languages for response 
+    /// List of acceptable human languages for response
     let AcceptLanguage (language:string) = "Accept-Language", language
     /// The Allow header, which specifies the set of HTTP methods supported.
     let Allow (methods:string) = "Allow", methods
     /// Authentication credentials for HTTP authentication
     let Authorization (credentials:string) = "Authorization", credentials
     /// Authentication header using Basic Auth encoding
-    let BasicAuth (username:string) (password:string) = 
-        let base64Encode (s:string) = 
+    let BasicAuth (username:string) (password:string) =
+        let base64Encode (s:string) =
             let bytes = Encoding.UTF8.GetBytes(s)
             Convert.ToBase64String(bytes)
-        sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization 
-    /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain 
+        sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization
+    /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain
     let CacheControl (control:string) = "Cache-Control", control
-    /// What type of connection the user-agent would prefer 
+    /// What type of connection the user-agent would prefer
     let Connection (connection:string) = "Connection", connection
+    /// Describes the placement of the content. Valid dispositions are: inline, attachment, form-data
+    let ContentDisposition (placement: string, name: string option, fileName: string option) =
+        let namePart = match name with Some n -> sprintf "; name=\"%s\"" n | None -> ""
+        let fileNamePart = match fileName with Some n -> sprintf "; filename=\"%s\"" n | None -> ""
+        "Content-Disposition", sprintf "%s%s%s" placement namePart fileNamePart
     /// The type of encoding used on the data
     let ContentEncoding (encoding:string) = "Content-Encoding", encoding
     /// The language the content is in
@@ -116,15 +121,15 @@ module HttpRequestHeaders =
     let Expect (behaviors:string) = "Expect", behaviors
     /// Gives the date/time after which the response is considered stale
     let Expires (dateTime:DateTime) = "Expires", dateTime.ToString("R", CultureInfo.InvariantCulture)
-    /// The email address of the user making the request 
+    /// The email address of the user making the request
     let From (email:string) = "From", email
-    /// The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening. 
+    /// The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening.
     /// The port number may be omitted if the port is the standard port for the service requested.
     let Host (host:string) = "Host", host
-    /// Only perform the action if the client supplied entity matches the same entity on the server. 
-    /// This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent 
+    /// Only perform the action if the client supplied entity matches the same entity on the server.
+    /// This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent
     let IfMatch (entity:string) = "If-Match", entity
-    /// Allows a 304 Not Modified to be returned if content is unchanged 
+    /// Allows a 304 Not Modified to be returned if content is unchanged
     let IfModifiedSince (dateTime:DateTime) = "If-Modified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
     /// Allows a 304 Not Modified to be returned if content is unchanged
     let IfNoneMatch (etag:string) = "If-None-Match", etag
@@ -142,20 +147,22 @@ module HttpRequestHeaders =
     let Origin (origin:string) = "Origin", origin
     /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
     let Pragma (pragma:string) = "Pragma", pragma
-    /// Authorization credentials for connecting to a proxy. 
+    /// Authorization credentials for connecting to a proxy.
     let ProxyAuthorization (credentials:string) = "Proxy-Authorization", credentials
     /// Request only part of an entity. Bytes are numbered from 0
     let Range (start:int64, finish:int64) = "Range", sprintf "bytes=%d-%d" start finish
-    /// This is the address of the previous web page from which a link to the currently requested page was followed. (The word "referrer" is misspelled in the RFC as well as in most implementations.) 
+    /// This is the address of the previous web page from which a link to the currently requested page was followed. (The word "referrer" is misspelled in the RFC as well as in most implementations.)
     let Referer (referer:string) = "Referer", referer
-    /// The transfer encodings the user agent is willing to accept: the same values as for the response header 
-    /// Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to 
+    /// The transfer encodings the user agent is willing to accept: the same values as for the response header
+    /// Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to
     /// notify the server it expects to receive additional headers (the trailers) after the last, zero-sized, chunk.
     let TE (te:string) = "TE", te
     /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding
     let Trailer (trailer:string) = "Trailer", trailer
+    /// The TransferEncoding header indicates the form of encoding used to safely transfer the entity to the user.  The valid directives are one of: chunked, compress, deflate, gzip, or identity.
+    let TransferEncoding (directive: string) = "Transfer-Encoding", directive
     /// Microsoft extension to the HTTP specification used in conjunction with WebDAV functionality.
-    let Translate (translate:string) = "Translate", translate 
+    let Translate (translate:string) = "Translate", translate
     /// Specifies additional communications protocols that the client supports.
     let Upgrade (upgrade:string) = "Upgrade", upgrade
     /// The user agent string of the user agent
@@ -164,7 +171,7 @@ module HttpRequestHeaders =
     let Via (server:string) = "Via", server
     /// A general warning about possible problems with the entity body
     let Warning (message:string) = "Warning", message
-    /// Override HTTP method. 
+    /// Override HTTP method.
     let XHTTPMethodOverride (httpMethod:string) = "X-HTTP-Method-Override", httpMethod
 
 /// Headers that can be received in an HTTP response
@@ -203,7 +210,7 @@ module HttpResponseHeaders =
     let [<Literal>] ETag = "ETag"
     /// Gives the date/time after which the response is considered stale
     let [<Literal>] Expires = "Expires"
-    /// The last modified date for the requested object 
+    /// The last modified date for the requested object
     let [<Literal>] LastModified = "Last-Modified"
     /// Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988
     let [<Literal>] Link = "Link"
@@ -233,18 +240,22 @@ module HttpResponseHeaders =
     let [<Literal>] TransferEncoding = "Transfer-Encoding"
     /// Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.
     let [<Literal>] Vary = "Vary"
-    /// Informs the client of proxies through which the response was sent. 
+    /// Informs the client of proxies through which the response was sent.
     let [<Literal>] Via = "Via"
     /// A general warning about possible problems with the entity body.
     let [<Literal>] Warning = "Warning"
     /// Indicates the authentication scheme that should be used to access the requested entity.
     let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
 
+type MultipartItem = | MultipartItem of formField: string * filename: string * content: Stream
+
 /// The body to send in an HTTP request
 type HttpRequestBody =
     | TextRequest of string
     | BinaryUpload of byte[]
     | FormValues of seq<string * string>
+    /// A sequence of formParamName * fileName * fileContent groups
+    | Multipart of boundary: string * parts: seq<MultipartItem>
 
 /// The response body returned by an HTTP request
 type HttpResponseBody =
@@ -303,11 +314,619 @@ module HttpContentTypes =
     let [<Literal>] Soap = "application/soap+xml"
     /// text/csv
     let [<Literal>] Csv = "text/csv"
+    /// multipart/form-data
+    let Multipart boundary = sprintf "multipart/form-data; boundary=%s" boundary
 
 type private HeaderEnum = System.Net.HttpRequestHeader
 
+module MimeTypes =
+    open System.Collections.Generic
+    let private pairs =
+        [|
+            (".323", "text/h323")
+            (".3g2", "video/3gpp2")
+            (".3gp", "video/3gpp")
+            (".3gp2", "video/3gpp2")
+            (".3gpp", "video/3gpp")
+            (".7z", "application/x-7z-compressed")
+            (".aa", "audio/audible")
+            (".AAC", "audio/aac")
+            (".aaf", "application/octet-stream")
+            (".aax", "audio/vnd.audible.aax")
+            (".ac3", "audio/ac3")
+            (".aca", "application/octet-stream")
+            (".accda", "application/msaccess.addin")
+            (".accdb", "application/msaccess")
+            (".accdc", "application/msaccess.cab")
+            (".accde", "application/msaccess")
+            (".accdr", "application/msaccess.runtime")
+            (".accdt", "application/msaccess")
+            (".accdw", "application/msaccess.webapplication")
+            (".accft", "application/msaccess.ftemplate")
+            (".acx", "application/internet-property-stream")
+            (".AddIn", "text/xml")
+            (".ade", "application/msaccess")
+            (".adobebridge", "application/x-bridge-url")
+            (".adp", "application/msaccess")
+            (".ADT", "audio/vnd.dlna.adts")
+            (".ADTS", "audio/aac")
+            (".afm", "application/octet-stream")
+            (".ai", "application/postscript")
+            (".aif", "audio/aiff")
+            (".aifc", "audio/aiff")
+            (".aiff", "audio/aiff")
+            (".air", "application/vnd.adobe.air-application-installer-package+zip")
+            (".amc", "application/mpeg")
+            (".anx", "application/annodex")
+            (".apk", "application/vnd.android.package-archive" )
+            (".application", "application/x-ms-application")
+            (".art", "image/x-jg")
+            (".asa", "application/xml")
+            (".asax", "application/xml")
+            (".ascx", "application/xml")
+            (".asd", "application/octet-stream")
+            (".asf", "video/x-ms-asf")
+            (".ashx", "application/xml")
+            (".asi", "application/octet-stream")
+            (".asm", "text/plain")
+            (".asmx", "application/xml")
+            (".aspx", "application/xml")
+            (".asr", "video/x-ms-asf")
+            (".asx", "video/x-ms-asf")
+            (".atom", "application/atom+xml")
+            (".au", "audio/basic")
+            (".avi", "video/x-msvideo")
+            (".axa", "audio/annodex")
+            (".axs", "application/olescript")
+            (".axv", "video/annodex")
+            (".bas", "text/plain")
+            (".bcpio", "application/x-bcpio")
+            (".bin", "application/octet-stream")
+            (".bmp", "image/bmp")
+            (".c", "text/plain")
+            (".cab", "application/octet-stream")
+            (".caf", "audio/x-caf")
+            (".calx", "application/vnd.ms-office.calx")
+            (".cat", "application/vnd.ms-pki.seccat")
+            (".cc", "text/plain")
+            (".cd", "text/plain")
+            (".cdda", "audio/aiff")
+            (".cdf", "application/x-cdf")
+            (".cer", "application/x-x509-ca-cert")
+            (".cfg", "text/plain")
+            (".chm", "application/octet-stream")
+            (".class", "application/x-java-applet")
+            (".clp", "application/x-msclip")
+            (".cmd", "text/plain")
+            (".cmx", "image/x-cmx")
+            (".cnf", "text/plain")
+            (".cod", "image/cis-cod")
+            (".config", "application/xml")
+            (".contact", "text/x-ms-contact")
+            (".coverage", "application/xml")
+            (".cpio", "application/x-cpio")
+            (".cpp", "text/plain")
+            (".crd", "application/x-mscardfile")
+            (".crl", "application/pkix-crl")
+            (".crt", "application/x-x509-ca-cert")
+            (".cs", "text/plain")
+            (".csdproj", "text/plain")
+            (".csh", "application/x-csh")
+            (".csproj", "text/plain")
+            (".css", "text/css")
+            (".csv", "text/csv")
+            (".cur", "application/octet-stream")
+            (".cxx", "text/plain")
+            (".dat", "application/octet-stream")
+            (".datasource", "application/xml")
+            (".dbproj", "text/plain")
+            (".dcr", "application/x-director")
+            (".def", "text/plain")
+            (".deploy", "application/octet-stream")
+            (".der", "application/x-x509-ca-cert")
+            (".dgml", "application/xml")
+            (".dib", "image/bmp")
+            (".dif", "video/x-dv")
+            (".dir", "application/x-director")
+            (".disco", "text/xml")
+            (".divx", "video/divx")
+            (".dll", "application/x-msdownload")
+            (".dll.config", "text/xml")
+            (".dlm", "text/dlm")
+            (".doc", "application/msword")
+            (".docm", "application/vnd.ms-word.document.macroEnabled.12")
+            (".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            (".dot", "application/msword")
+            (".dotm", "application/vnd.ms-word.template.macroEnabled.12")
+            (".dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template")
+            (".dsp", "application/octet-stream")
+            (".dsw", "text/plain")
+            (".dtd", "text/xml")
+            (".dtsConfig", "text/xml")
+            (".dv", "video/x-dv")
+            (".dvi", "application/x-dvi")
+            (".dwf", "drawing/x-dwf")
+            (".dwp", "application/octet-stream")
+            (".dxr", "application/x-director")
+            (".eml", "message/rfc822")
+            (".emz", "application/octet-stream")
+            (".eot", "application/vnd.ms-fontobject")
+            (".eps", "application/postscript")
+            (".etl", "application/etl")
+            (".etx", "text/x-setext")
+            (".evy", "application/envoy")
+            (".exe", "application/octet-stream")
+            (".exe.config", "text/xml")
+            (".fdf", "application/vnd.fdf")
+            (".fif", "application/fractals")
+            (".filters", "application/xml")
+            (".fla", "application/octet-stream")
+            (".flac", "audio/flac")
+            (".flr", "x-world/x-vrml")
+            (".flv", "video/x-flv")
+            (".fsscript", "application/fsharp-script")
+            (".fsx", "application/fsharp-script")
+            (".generictest", "application/xml")
+            (".gif", "image/gif")
+            (".gpx", "application/gpx+xml")
+            (".group", "text/x-ms-group")
+            (".gsm", "audio/x-gsm")
+            (".gtar", "application/x-gtar")
+            (".gz", "application/x-gzip")
+            (".h", "text/plain")
+            (".hdf", "application/x-hdf")
+            (".hdml", "text/x-hdml")
+            (".hhc", "application/x-oleobject")
+            (".hhk", "application/octet-stream")
+            (".hhp", "application/octet-stream")
+            (".hlp", "application/winhlp")
+            (".hpp", "text/plain")
+            (".hqx", "application/mac-binhex40")
+            (".hta", "application/hta")
+            (".htc", "text/x-component")
+            (".htm", "text/html")
+            (".html", "text/html")
+            (".htt", "text/webviewhtml")
+            (".hxa", "application/xml")
+            (".hxc", "application/xml")
+            (".hxd", "application/octet-stream")
+            (".hxe", "application/xml")
+            (".hxf", "application/xml")
+            (".hxh", "application/octet-stream")
+            (".hxi", "application/octet-stream")
+            (".hxk", "application/xml")
+            (".hxq", "application/octet-stream")
+            (".hxr", "application/octet-stream")
+            (".hxs", "application/octet-stream")
+            (".hxt", "text/html")
+            (".hxv", "application/xml")
+            (".hxw", "application/octet-stream")
+            (".hxx", "text/plain")
+            (".i", "text/plain")
+            (".ico", "image/x-icon")
+            (".ics", "application/octet-stream")
+            (".idl", "text/plain")
+            (".ief", "image/ief")
+            (".iii", "application/x-iphone")
+            (".inc", "text/plain")
+            (".inf", "application/octet-stream")
+            (".ini", "text/plain")
+            (".inl", "text/plain")
+            (".ins", "application/x-internet-signup")
+            (".ipa", "application/x-itunes-ipa")
+            (".ipg", "application/x-itunes-ipg")
+            (".ipproj", "text/plain")
+            (".ipsw", "application/x-itunes-ipsw")
+            (".iqy", "text/x-ms-iqy")
+            (".isp", "application/x-internet-signup")
+            (".ite", "application/x-itunes-ite")
+            (".itlp", "application/x-itunes-itlp")
+            (".itms", "application/x-itunes-itms")
+            (".itpc", "application/x-itunes-itpc")
+            (".IVF", "video/x-ivf")
+            (".jar", "application/java-archive")
+            (".java", "application/octet-stream")
+            (".jck", "application/liquidmotion")
+            (".jcz", "application/liquidmotion")
+            (".jfif", "image/pjpeg")
+            (".jnlp", "application/x-java-jnlp-file")
+            (".jpb", "application/octet-stream")
+            (".jpe", "image/jpeg")
+            (".jpeg", "image/jpeg")
+            (".jpg", "image/jpeg")
+            (".js", "application/javascript")
+            (".json", "application/json")
+            (".jsx", "text/jscript")
+            (".jsxbin", "text/plain")
+            (".latex", "application/x-latex")
+            (".library-ms", "application/windows-library+xml")
+            (".lit", "application/x-ms-reader")
+            (".loadtest", "application/xml")
+            (".lpk", "application/octet-stream")
+            (".lsf", "video/x-la-asf")
+            (".lst", "text/plain")
+            (".lsx", "video/x-la-asf")
+            (".lzh", "application/octet-stream")
+            (".m13", "application/x-msmediaview")
+            (".m14", "application/x-msmediaview")
+            (".m1v", "video/mpeg")
+            (".m2t", "video/vnd.dlna.mpeg-tts")
+            (".m2ts", "video/vnd.dlna.mpeg-tts")
+            (".m2v", "video/mpeg")
+            (".m3u", "audio/x-mpegurl")
+            (".m3u8", "audio/x-mpegurl")
+            (".m4a", "audio/m4a")
+            (".m4b", "audio/m4b")
+            (".m4p", "audio/m4p")
+            (".m4r", "audio/x-m4r")
+            (".m4v", "video/x-m4v")
+            (".mac", "image/x-macpaint")
+            (".mak", "text/plain")
+            (".man", "application/x-troff-man")
+            (".manifest", "application/x-ms-manifest")
+            (".map", "text/plain")
+            (".master", "application/xml")
+            (".mda", "application/msaccess")
+            (".mdb", "application/x-msaccess")
+            (".mde", "application/msaccess")
+            (".mdp", "application/octet-stream")
+            (".me", "application/x-troff-me")
+            (".mfp", "application/x-shockwave-flash")
+            (".mht", "message/rfc822")
+            (".mhtml", "message/rfc822")
+            (".mid", "audio/mid")
+            (".midi", "audio/mid")
+            (".mix", "application/octet-stream")
+            (".mk", "text/plain")
+            (".mmf", "application/x-smaf")
+            (".mno", "text/xml")
+            (".mny", "application/x-msmoney")
+            (".mod", "video/mpeg")
+            (".mov", "video/quicktime")
+            (".movie", "video/x-sgi-movie")
+            (".mp2", "video/mpeg")
+            (".mp2v", "video/mpeg")
+            (".mp3", "audio/mpeg")
+            (".mp4", "video/mp4")
+            (".mp4v", "video/mp4")
+            (".mpa", "video/mpeg")
+            (".mpe", "video/mpeg")
+            (".mpeg", "video/mpeg")
+            (".mpf", "application/vnd.ms-mediapackage")
+            (".mpg", "video/mpeg")
+            (".mpp", "application/vnd.ms-project")
+            (".mpv2", "video/mpeg")
+            (".mqv", "video/quicktime")
+            (".ms", "application/x-troff-ms")
+            (".msi", "application/octet-stream")
+            (".mso", "application/octet-stream")
+            (".mts", "video/vnd.dlna.mpeg-tts")
+            (".mtx", "application/xml")
+            (".mvb", "application/x-msmediaview")
+            (".mvc", "application/x-miva-compiled")
+            (".mxp", "application/x-mmxp")
+            (".nc", "application/x-netcdf")
+            (".nsc", "video/x-ms-asf")
+            (".nws", "message/rfc822")
+            (".ocx", "application/octet-stream")
+            (".oda", "application/oda")
+            (".odb", "application/vnd.oasis.opendocument.database")
+            (".odc", "application/vnd.oasis.opendocument.chart")
+            (".odf", "application/vnd.oasis.opendocument.formula")
+            (".odg", "application/vnd.oasis.opendocument.graphics")
+            (".odh", "text/plain")
+            (".odi", "application/vnd.oasis.opendocument.image")
+            (".odl", "text/plain")
+            (".odm", "application/vnd.oasis.opendocument.text-master")
+            (".odp", "application/vnd.oasis.opendocument.presentation")
+            (".ods", "application/vnd.oasis.opendocument.spreadsheet")
+            (".odt", "application/vnd.oasis.opendocument.text")
+            (".oga", "audio/ogg")
+            (".ogg", "audio/ogg")
+            (".ogv", "video/ogg")
+            (".ogx", "application/ogg")
+            (".one", "application/onenote")
+            (".onea", "application/onenote")
+            (".onepkg", "application/onenote")
+            (".onetmp", "application/onenote")
+            (".onetoc", "application/onenote")
+            (".onetoc2", "application/onenote")
+            (".opus", "audio/ogg")
+            (".orderedtest", "application/xml")
+            (".osdx", "application/opensearchdescription+xml")
+            (".otf", "application/font-sfnt")
+            (".otg", "application/vnd.oasis.opendocument.graphics-template")
+            (".oth", "application/vnd.oasis.opendocument.text-web")
+            (".otp", "application/vnd.oasis.opendocument.presentation-template")
+            (".ots", "application/vnd.oasis.opendocument.spreadsheet-template")
+            (".ott", "application/vnd.oasis.opendocument.text-template")
+            (".oxt", "application/vnd.openofficeorg.extension")
+            (".p10", "application/pkcs10")
+            (".p12", "application/x-pkcs12")
+            (".p7b", "application/x-pkcs7-certificates")
+            (".p7c", "application/pkcs7-mime")
+            (".p7m", "application/pkcs7-mime")
+            (".p7r", "application/x-pkcs7-certreqresp")
+            (".p7s", "application/pkcs7-signature")
+            (".pbm", "image/x-portable-bitmap")
+            (".pcast", "application/x-podcast")
+            (".pct", "image/pict")
+            (".pcx", "application/octet-stream")
+            (".pcz", "application/octet-stream")
+            (".pdf", "application/pdf")
+            (".pfb", "application/octet-stream")
+            (".pfm", "application/octet-stream")
+            (".pfx", "application/x-pkcs12")
+            (".pgm", "image/x-portable-graymap")
+            (".pic", "image/pict")
+            (".pict", "image/pict")
+            (".pkgdef", "text/plain")
+            (".pkgundef", "text/plain")
+            (".pko", "application/vnd.ms-pki.pko")
+            (".pls", "audio/scpls")
+            (".pma", "application/x-perfmon")
+            (".pmc", "application/x-perfmon")
+            (".pml", "application/x-perfmon")
+            (".pmr", "application/x-perfmon")
+            (".pmw", "application/x-perfmon")
+            (".png", "image/png")
+            (".pnm", "image/x-portable-anymap")
+            (".pnt", "image/x-macpaint")
+            (".pntg", "image/x-macpaint")
+            (".pnz", "image/png")
+            (".pot", "application/vnd.ms-powerpoint")
+            (".potm", "application/vnd.ms-powerpoint.template.macroEnabled.12")
+            (".potx", "application/vnd.openxmlformats-officedocument.presentationml.template")
+            (".ppa", "application/vnd.ms-powerpoint")
+            (".ppam", "application/vnd.ms-powerpoint.addin.macroEnabled.12")
+            (".ppm", "image/x-portable-pixmap")
+            (".pps", "application/vnd.ms-powerpoint")
+            (".ppsm", "application/vnd.ms-powerpoint.slideshow.macroEnabled.12")
+            (".ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow")
+            (".ppt", "application/vnd.ms-powerpoint")
+            (".pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12")
+            (".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+            (".prf", "application/pics-rules")
+            (".prm", "application/octet-stream")
+            (".prx", "application/octet-stream")
+            (".ps", "application/postscript")
+            (".psc1", "application/PowerShell")
+            (".psd", "application/octet-stream")
+            (".psess", "application/xml")
+            (".psm", "application/octet-stream")
+            (".psp", "application/octet-stream")
+            (".pub", "application/x-mspublisher")
+            (".pwz", "application/vnd.ms-powerpoint")
+            (".qht", "text/x-html-insertion")
+            (".qhtm", "text/x-html-insertion")
+            (".qt", "video/quicktime")
+            (".qti", "image/x-quicktime")
+            (".qtif", "image/x-quicktime")
+            (".qtl", "application/x-quicktimeplayer")
+            (".qxd", "application/octet-stream")
+            (".ra", "audio/x-pn-realaudio")
+            (".ram", "audio/x-pn-realaudio")
+            (".rar", "application/x-rar-compressed")
+            (".ras", "image/x-cmu-raster")
+            (".rat", "application/rat-file")
+            (".rc", "text/plain")
+            (".rc2", "text/plain")
+            (".rct", "text/plain")
+            (".rdlc", "application/xml")
+            (".reg", "text/plain")
+            (".resx", "application/xml")
+            (".rf", "image/vnd.rn-realflash")
+            (".rgb", "image/x-rgb")
+            (".rgs", "text/plain")
+            (".rm", "application/vnd.rn-realmedia")
+            (".rmi", "audio/mid")
+            (".rmp", "application/vnd.rn-rn_music_package")
+            (".roff", "application/x-troff")
+            (".rpm", "audio/x-pn-realaudio-plugin")
+            (".rqy", "text/x-ms-rqy")
+            (".rtf", "application/rtf")
+            (".rtx", "text/richtext")
+            (".ruleset", "application/xml")
+            (".s", "text/plain")
+            (".safariextz", "application/x-safari-safariextz")
+            (".scd", "application/x-msschedule")
+            (".scr", "text/plain")
+            (".sct", "text/scriptlet")
+            (".sd2", "audio/x-sd2")
+            (".sdp", "application/sdp")
+            (".sea", "application/octet-stream")
+            (".searchConnector-ms", "application/windows-search-connector+xml")
+            (".setpay", "application/set-payment-initiation")
+            (".setreg", "application/set-registration-initiation")
+            (".settings", "application/xml")
+            (".sgimb", "application/x-sgimb")
+            (".sgml", "text/sgml")
+            (".sh", "application/x-sh")
+            (".shar", "application/x-shar")
+            (".shtml", "text/html")
+            (".sit", "application/x-stuffit")
+            (".sitemap", "application/xml")
+            (".skin", "application/xml")
+            (".sldm", "application/vnd.ms-powerpoint.slide.macroEnabled.12")
+            (".sldx", "application/vnd.openxmlformats-officedocument.presentationml.slide")
+            (".slk", "application/vnd.ms-excel")
+            (".sln", "text/plain")
+            (".slupkg-ms", "application/x-ms-license")
+            (".smd", "audio/x-smd")
+            (".smi", "application/octet-stream")
+            (".smx", "audio/x-smd")
+            (".smz", "audio/x-smd")
+            (".snd", "audio/basic")
+            (".snippet", "application/xml")
+            (".snp", "application/octet-stream")
+            (".sol", "text/plain")
+            (".sor", "text/plain")
+            (".spc", "application/x-pkcs7-certificates")
+            (".spl", "application/futuresplash")
+            (".spx", "audio/ogg")
+            (".src", "application/x-wais-source")
+            (".srf", "text/plain")
+            (".SSISDeploymentManifest", "text/xml")
+            (".ssm", "application/streamingmedia")
+            (".sst", "application/vnd.ms-pki.certstore")
+            (".stl", "application/vnd.ms-pki.stl")
+            (".sv4cpio", "application/x-sv4cpio")
+            (".sv4crc", "application/x-sv4crc")
+            (".svc", "application/xml")
+            (".svg", "image/svg+xml")
+            (".swf", "application/x-shockwave-flash")
+            (".step", "application/step")
+            (".stp", "application/step")
+            (".t", "application/x-troff")
+            (".tar", "application/x-tar")
+            (".tcl", "application/x-tcl")
+            (".testrunconfig", "application/xml")
+            (".testsettings", "application/xml")
+            (".tex", "application/x-tex")
+            (".texi", "application/x-texinfo")
+            (".texinfo", "application/x-texinfo")
+            (".tgz", "application/x-compressed")
+            (".thmx", "application/vnd.ms-officetheme")
+            (".thn", "application/octet-stream")
+            (".tif", "image/tiff")
+            (".tiff", "image/tiff")
+            (".tlh", "text/plain")
+            (".tli", "text/plain")
+            (".toc", "application/octet-stream")
+            (".tr", "application/x-troff")
+            (".trm", "application/x-msterminal")
+            (".trx", "application/xml")
+            (".ts", "video/vnd.dlna.mpeg-tts")
+            (".tsv", "text/tab-separated-values")
+            (".ttf", "application/font-sfnt")
+            (".tts", "video/vnd.dlna.mpeg-tts")
+            (".txt", "text/plain")
+            (".u32", "application/octet-stream")
+            (".uls", "text/iuls")
+            (".user", "text/plain")
+            (".ustar", "application/x-ustar")
+            (".vb", "text/plain")
+            (".vbdproj", "text/plain")
+            (".vbk", "video/mpeg")
+            (".vbproj", "text/plain")
+            (".vbs", "text/vbscript")
+            (".vcf", "text/x-vcard")
+            (".vcproj", "application/xml")
+            (".vcs", "text/plain")
+            (".vcxproj", "application/xml")
+            (".vddproj", "text/plain")
+            (".vdp", "text/plain")
+            (".vdproj", "text/plain")
+            (".vdx", "application/vnd.ms-visio.viewer")
+            (".vml", "text/xml")
+            (".vscontent", "application/xml")
+            (".vsct", "text/xml")
+            (".vsd", "application/vnd.visio")
+            (".vsi", "application/ms-vsi")
+            (".vsix", "application/vsix")
+            (".vsixlangpack", "text/xml")
+            (".vsixmanifest", "text/xml")
+            (".vsmdi", "application/xml")
+            (".vspscc", "text/plain")
+            (".vss", "application/vnd.visio")
+            (".vsscc", "text/plain")
+            (".vssettings", "text/xml")
+            (".vssscc", "text/plain")
+            (".vst", "application/vnd.visio")
+            (".vstemplate", "text/xml")
+            (".vsto", "application/x-ms-vsto")
+            (".vsw", "application/vnd.visio")
+            (".vsx", "application/vnd.visio")
+            (".vtx", "application/vnd.visio")
+            (".wav", "audio/wav")
+            (".wave", "audio/wav")
+            (".wax", "audio/x-ms-wax")
+            (".wbk", "application/msword")
+            (".wbmp", "image/vnd.wap.wbmp")
+            (".wcm", "application/vnd.ms-works")
+            (".wdb", "application/vnd.ms-works")
+            (".wdp", "image/vnd.ms-photo")
+            (".webarchive", "application/x-safari-webarchive")
+            (".webm", "video/webm")
+            (".webp", "image/webp")
+            (".webtest", "application/xml")
+            (".wiq", "application/xml")
+            (".wiz", "application/msword")
+            (".wks", "application/vnd.ms-works")
+            (".WLMP", "application/wlmoviemaker")
+            (".wlpginstall", "application/x-wlpg-detect")
+            (".wlpginstall3", "application/x-wlpg3-detect")
+            (".wm", "video/x-ms-wm")
+            (".wma", "audio/x-ms-wma")
+            (".wmd", "application/x-ms-wmd")
+            (".wmf", "application/x-msmetafile")
+            (".wml", "text/vnd.wap.wml")
+            (".wmlc", "application/vnd.wap.wmlc")
+            (".wmls", "text/vnd.wap.wmlscript")
+            (".wmlsc", "application/vnd.wap.wmlscriptc")
+            (".wmp", "video/x-ms-wmp")
+            (".wmv", "video/x-ms-wmv")
+            (".wmx", "video/x-ms-wmx")
+            (".wmz", "application/x-ms-wmz")
+            (".woff", "application/font-woff")
+            (".wpl", "application/vnd.ms-wpl")
+            (".wps", "application/vnd.ms-works")
+            (".wri", "application/x-mswrite")
+            (".wrl", "x-world/x-vrml")
+            (".wrz", "x-world/x-vrml")
+            (".wsc", "text/scriptlet")
+            (".wsdl", "text/xml")
+            (".wvx", "video/x-ms-wvx")
+            (".x", "application/directx")
+            (".xaf", "x-world/x-vrml")
+            (".xaml", "application/xaml+xml")
+            (".xap", "application/x-silverlight-app")
+            (".xbap", "application/x-ms-xbap")
+            (".xbm", "image/x-xbitmap")
+            (".xdr", "text/plain")
+            (".xht", "application/xhtml+xml")
+            (".xhtml", "application/xhtml+xml")
+            (".xla", "application/vnd.ms-excel")
+            (".xlam", "application/vnd.ms-excel.addin.macroEnabled.12")
+            (".xlc", "application/vnd.ms-excel")
+            (".xld", "application/vnd.ms-excel")
+            (".xlk", "application/vnd.ms-excel")
+            (".xll", "application/vnd.ms-excel")
+            (".xlm", "application/vnd.ms-excel")
+            (".xls", "application/vnd.ms-excel")
+            (".xlsb", "application/vnd.ms-excel.sheet.binary.macroEnabled.12")
+            (".xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12")
+            (".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            (".xlt", "application/vnd.ms-excel")
+            (".xltm", "application/vnd.ms-excel.template.macroEnabled.12")
+            (".xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template")
+            (".xlw", "application/vnd.ms-excel")
+            (".xml", "text/xml")
+            (".xmta", "application/xml")
+            (".xof", "x-world/x-vrml")
+            (".XOML", "text/plain")
+            (".xpm", "image/x-xpixmap")
+            (".xps", "application/vnd.ms-xpsdocument")
+            (".xrm-ms", "text/xml")
+            (".xsc", "application/xml")
+            (".xsd", "text/xml")
+            (".xsf", "text/xml")
+            (".xsl", "text/xml")
+            (".xslt", "text/xml")
+            (".xsn", "application/octet-stream")
+            (".xss", "application/xml")
+            (".xspf", "application/xspf+xml")
+            (".xtp", "application/octet-stream")
+            (".xwd", "image/x-xwindowdump")
+            (".z", "application/x-compress")
+            (".zip", "application/zip") |]
+
+    let private map = Map.ofArray pairs
+        
+    let tryFind (ext: string) = Map.tryFind (ext.ToLowerInvariant()) map
+
 /// Constants for common HTTP encodings
-module HttpEncodings = 
+module HttpEncodings =
 
     /// ISO-8859-1
     let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
@@ -315,22 +934,24 @@ module HttpEncodings =
     /// ISO-8859-1
     let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
 
-    let internal getEncoding (encodingStr:string) = 
+    let internal getEncoding (encodingStr:string) =
 #if FX_NO_GETENCODING_BY_CODEPAGE
         Encoding.GetEncoding encodingStr
 #else
         match Int32.TryParse(encodingStr, NumberStyles.Integer, CultureInfo.InvariantCulture) with
-        | true, codepage -> Encoding.GetEncoding codepage                
+        | true, codepage -> Encoding.GetEncoding codepage
         | _ -> Encoding.GetEncoding encodingStr
 #endif
+
+
 
 [<AutoOpen>]
 module private HttpHelpers =
 
     /// Decorator for System.Net.WebResponse class
-    /// used to make response stream seekable 
+    /// used to make response stream seekable
     /// in order to preserve it in the new response
-    type WebResponse(res : System.Net.WebResponse) = 
+    type WebResponse(res : System.Net.WebResponse) =
         inherit System.Net.WebResponse()
 
         let copyToMemoryStream (inputStream : Stream) =
@@ -371,9 +992,9 @@ module private HttpHelpers =
 #endif
         override x.GetResponseStream () = responseStream :> Stream
         member x.ResetResponseStream () = responseStream.Position <- 0L
-        
+
         interface IDisposable with
-            member x.Dispose () = 
+            member x.Dispose () =
                 match res :> obj with
                 | :? IDisposable as res -> res.Dispose ()
                 | _ -> ()
@@ -382,28 +1003,112 @@ module private HttpHelpers =
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content
     let asyncRead (stream:Stream) = async {
+        use stream = stream
         // Allocate 4kb buffer for downloading data
         let buffer = Array.zeroCreate (4 * 1024)
         let output = new MemoryStream()
         let reading = ref true
-      
+
         while reading.Value do
             // Download one (at most) 4kb chunk and copy it
             let! count = stream.AsyncRead(buffer, 0, buffer.Length)
             output.Write(buffer, 0, count)
             reading := count > 0
-      
-        output.Seek(0L, SeekOrigin.Begin) |> ignore 
-        return output 
+
+        output.Seek(0L, SeekOrigin.Begin) |> ignore
+        return output
     }
 
-    let getProperty (typ:Type) obj prop =        
+    /// A stream class that abstracts away writing the contents of a series of other streams, closing them as they are consumed.  Non-seekable, reading-only stream.
+    type CombinedStream(length, streams: Stream seq) =
+        inherit Stream() with
+            let mutable v = 0L
+            let mutable streams = streams |> Seq.cache
+
+            let rec readFromStream buffer offset count =
+                if Seq.isEmpty streams 
+                then 0
+                else
+                    let stream = Seq.head streams
+                    let read = stream.Read(buffer, offset, max count (int stream.Length))
+                    if read < count
+                    then
+                        stream.Dispose()
+                        streams <- streams |> Seq.skip 1
+                        let readFromRest = readFromStream buffer (offset + read) (count - read)
+                        read + readFromRest
+                    else read
+
+            override x.CanRead = true
+            override x.CanSeek = false
+            override x.CanWrite = false
+            override x.Length with get () = length
+            override x.Position with get () = v and set(_) = failwith "no position setting"
+            override x.Flush() = ()
+            override x.CanTimeout = false
+            override x.Seek(_,_) = failwith "no seeking"
+            override x.SetLength(_) = failwith "no setting length"
+            override x.Write(_,_,_) = failwith "no writing"
+            override x.WriteByte(_) = failwith "seriously, no writing"
+            override x.Read(buffer, offset, count) = readFromStream buffer offset count
+            interface IDisposable with
+                member x.Dispose() = streams |> Seq.iter (fun s -> s.Dispose()) |> ignore
+
+    ///     1) compute length (parts.Length * boundary_size) + Sum(parts.Streams.Length)
+    ///     2) foreach part (formFieldName, fileName, fileContent)
+    ///         a) write initial boundary marker
+    ///         b) write section headers (start with content-type/Content-Disposition based on the extension of the second parameter, plus name and fileName)
+    ///         c) write newline
+    ///         d) write section data
+    ///     3) write trailing boundary
+    let writeMultipart (boundary: string) (parts: seq<MultipartItem>) (e : Encoding) =
+        let newlineStream () = new MemoryStream(e.GetBytes "\r\n") :> Stream
+        let prefixedBoundary = sprintf "--%s" boundary
+        let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
+            let fileExt =
+#if FX_NO_LOCAL_FILESYSTEM
+                match fileName.LastIndexOf('.') with
+                | -1 -> ""
+                | n -> fileName.Substring(n)
+#else
+                Path.GetExtension fileName
+#endif
+            let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
+            let printHeader (header, value) = sprintf "%s: %s" header value
+            let headerpart =
+                [ prefixedBoundary
+                  HttpRequestHeaders.ContentDisposition("form-data", Some formField, Some fileName) |> printHeader
+                  HttpRequestHeaders.ContentType contentType |> printHeader ]
+                |> String.concat Environment.NewLine
+            let headerStream =
+                let bytes = e.GetBytes headerpart
+                new MemoryStream(bytes) :> Stream
+            let partSubstreams =
+                [ headerStream
+                  newlineStream()
+                  newlineStream()
+                  fileStream ]
+            let partLength = partSubstreams |> Seq.sumBy (fun s -> s.Length)
+            new CombinedStream(partLength, partSubstreams) :> Stream
+        )
+
+        /// per spec, the end boundary is the given boundary with a trailing --
+        let endBoundaryStream =
+            let text = sprintf "%s--" prefixedBoundary
+            let bytes = e.GetBytes text
+            new MemoryStream(bytes) :> Stream
+
+        let wholePayload = Seq.append segments [newlineStream(); endBoundaryStream; ]
+        let wholePayloadLength = wholePayload |> Seq.sumBy (fun s -> s.Length)
+        new CombinedStream(wholePayloadLength, wholePayload) :> Stream
+
+    let getProperty (typ:Type) obj prop =
 #if FX_NET_CORE_REFLECTION
         let prop = try typ.GetRuntimeProperty prop with _ -> null
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj) |> unbox |> Some
-            with _ -> 
+            with _ ->
                 None
         else
             None
@@ -412,7 +1117,7 @@ module private HttpHelpers =
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj, [| |]) |> unbox |> Some
-            with _ -> 
+            with _ ->
                 None
         else
             None
@@ -425,26 +1130,42 @@ module private HttpHelpers =
 #if FX_NET_CORE_REFLECTION
         let prop = obj.GetType().GetRuntimeProperty(prop)
         if prop <> null && prop.CanWrite then
-            try 
+            try
                 prop.SetValue(obj, box value) |> ignore
                 true
-            with _ -> 
+            with _ ->
                 false
         else
             false
 #else
         let prop = obj.GetType().GetProperty(prop)
         if prop <> null && prop.CanWrite then
-            try 
+            try
                 prop.SetValue(obj, value, [| |]) |> ignore
                 true
-            with _ -> 
+            with _ ->
                 false
         else
             false
 #endif
 
-    let writeBody (req:HttpWebRequest) (postBytes:byte[]) =
+    let rec asyncCopy offset (source: Stream) (dest: Stream) =
+        async {
+            let max =
+                if source.CanSeek && dest.CanSeek then  min 4096 (int (max source.Length dest.Length))
+                else 4096
+            let buf = Array.zeroCreate max
+            let! read = source.AsyncRead(buf, offset, max)
+            do! dest.AsyncWrite(buf, offset, read)
+            if read < max
+            then
+                source.Dispose ()
+                return ()
+            else
+                return! asyncCopy (offset + read) source dest
+        }
+
+    let writeBody (req:HttpWebRequest) (data: Stream) =
         // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
         // To work around, we use a different FromBeginEnd
         // See https://github.com/fsharp/FSharp.Data/issues/762
@@ -458,16 +1179,16 @@ module private HttpHelpers =
 
         async {
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
-            ignore (req?ContentLength <- int64 postBytes.Length)
+            ignore (req?ContentLength <- int64 data.Length)
 #else
-            req.ContentLength <- int64 postBytes.Length
+            req.ContentLength <- data.Length
 #endif
             use! output =
                 if Type.GetType("Mono.Runtime") <> null
                 then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
                 else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
 
-            do! output.AsyncWrite(postBytes, 0, postBytes.Length)
+            do! asyncCopy 0 data output
             output.Flush()
         }
 
@@ -486,9 +1207,9 @@ module private HttpHelpers =
     let augmentWebExceptionsWithDetails f = async {
         try
             return! f()
-        with 
+        with
             // If an exception happens, augment the message with the response
-            | :? WebException as exn -> 
+            | :? WebException as exn ->
               if exn.Response = null then reraisePreserveStackTrace exn
               let responseExn =
                   try
@@ -502,7 +1223,7 @@ module private HttpHelpers =
                   with _ -> None
               match responseExn with
               | Some e -> raise e
-              | None -> reraisePreserveStackTrace exn 
+              | None -> reraisePreserveStackTrace exn
               // just to keep the type-checker happy:
               return Unchecked.defaultof<_>
     }
@@ -512,7 +1233,7 @@ module private HttpHelpers =
         | [] -> ()
         | header::remainingHeaders ->
             for visitedHeader in visitedHeaders do
-                let name1, name2 = fst header, fst visitedHeader 
+                let name1, name2 = fst header, fst visitedHeader
                 if name1 = name2 then failwithf "Repeated headers: %A %A" visitedHeader header
             checkForRepeatedHeaders (header::visitedHeaders) remainingHeaders
 
@@ -558,7 +1279,7 @@ module private HttpHelpers =
             | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
 #else
             | "host" -> req.Host <- value
-#endif       
+#endif
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
             | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
@@ -576,7 +1297,7 @@ module private HttpHelpers =
 #if FX_NO_WEBREQUEST_RANGE
             | "range" -> req.Headers.[HeaderEnum.Range] <- value
 #else
-            | "range" -> 
+            | "range" ->
                 if not (value.StartsWith("bytes=")) then failwith "Invalid value for the Range header"
                 let bytes = value.Substring("bytes=".Length).Split('-')
                 if bytes.Length <> 2 then failwith "Invalid value for the Range header"
@@ -587,7 +1308,7 @@ module private HttpHelpers =
             | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
 #else
             | "referer" -> req.Referer <- value
-#endif            
+#endif
             | "te" -> req.Headers.[HeaderEnum.Te] <- value
             | "trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
             | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
@@ -605,49 +1326,50 @@ module private HttpHelpers =
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
 
-        let getResponseFromBeginEnd = 
+        let getResponseFromBeginEnd =
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
         let getResponseAsync (req:HttpWebRequest) =
 #if FX_NO_WEBREQUEST_TIMEOUT
-            ignore <| req // Keeping compiler happy.     
+            ignore <| req // Keeping compiler happy.
             getResponseFromBeginEnd
 #else
-            if req.Timeout = System.Threading.Timeout.Infinite 
+            if req.Timeout = System.Threading.Timeout.Infinite
                 then getResponseFromBeginEnd
-                else 
+                else
                     async {
                         let! child = Async.StartChild(getResponseFromBeginEnd, req.Timeout)
-                        try 
+                        try
                             return! child
                         with
                         | :? TimeoutException as exc ->
-                            req.Abort() 
+                            req.Abort()
                             raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
                             return Unchecked.defaultof<_>
                     }
 #endif
 
-        if defaultArg silentHttpErrors false 
+        if defaultArg silentHttpErrors false
             then
                 async {
                     try
                         return! getResponseAsync req
                     with
-                        | :? WebException as exc -> 
-                            if exc.Response <> null then 
+                        | :? WebException as exc ->
+                            if exc.Response <> null then
                                return exc.Response
-                            else 
+                            else
                                 reraisePreserveStackTrace exc
                                 return Unchecked.defaultof<_>
                 }
             else getResponseAsync req
-            
+
 
     // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let decompressGZip (memoryStream:MemoryStream) =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        use memoryStream = memoryStream
         new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
 #else
         failwith "Automatic gzip decompression failed"
@@ -658,6 +1380,7 @@ module private HttpHelpers =
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let decompressDeflate (memoryStream:MemoryStream) =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        use memoryStream = memoryStream
         new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
 #else
         failwith "Automatic deflate decompression failed"
@@ -670,8 +1393,8 @@ module private HttpHelpers =
         let isText (mimeType:string) =
             let isText (mimeType:string) =
                 let mimeType = mimeType.Trim()
-                mimeType.StartsWith "text/" || 
-                mimeType = HttpContentTypes.Json || 
+                mimeType.StartsWith "text/" ||
+                mimeType = HttpContentTypes.Json ||
                 mimeType = HttpContentTypes.Xml ||
                 mimeType = HttpContentTypes.JavaScript ||
                 mimeType = "application/ecmascript" ||
@@ -681,16 +1404,14 @@ module private HttpHelpers =
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
-        use stream = stream
-        let! memoryStream = asyncRead stream
-
-        let memoryStream = 
+        use! memoryStream = asyncRead stream
+        use memoryStream =
             // this only applies when automatic decompression is off
             if contentEncoding = "gzip" then decompressGZip memoryStream
             elif contentEncoding = "deflate" then decompressDeflate memoryStream
             else memoryStream
 
-        let respBody = 
+        let respBody =
             if forceText || isText contentType then
                 let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
@@ -727,18 +1448,18 @@ module private HttpHelpers =
             | _ -> false
 #endif
 
-module internal CookieHandling = 
+module internal CookieHandling =
 
     // .NET has trouble parsing some cookies. See http://stackoverflow.com/a/22098131/165633
     let getAllCookiesFromHeader (header:string) (responseUri:Uri) =
-        
+
         let cookiesWithWrongSplit = header.Replace("\r", "").Replace("\n", "").Split(',')
 
-        let isInvalidCookie (cookieStr:string) = 
+        let isInvalidCookie (cookieStr:string) =
             let equalsPos = cookieStr.IndexOf '='
             equalsPos = -1
             ||
-                let semicolonPos = cookieStr.IndexOf ';' 
+                let semicolonPos = cookieStr.IndexOf ';'
                 semicolonPos <> -1 && semicolonPos < equalsPos
 
         let cookies = ResizeArray()
@@ -754,7 +1475,7 @@ module internal CookieHandling =
 
         let inline startsWithIgnoreCase prefix (str:string) = str.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
         let inline equalsIgnoreCase other (str:string) = str.Equals(other, StringComparison.OrdinalIgnoreCase)
-        let stripPrefix prefix str = 
+        let stripPrefix prefix str =
             if startsWithIgnoreCase prefix str
             then str.Substring(prefix.Length)
             else str
@@ -776,9 +1497,9 @@ module internal CookieHandling =
                         cookie.Path <- kvp.[1]
                 elif cookiePart |> startsWithIgnoreCase "domain" then
                     let kvp = cookiePart.Split '='
-                    if kvp.Length > 1 then                                
-                        let domain = 
-                            kvp.[1] 
+                    if kvp.Length > 1 then
+                        let domain =
+                            kvp.[1]
                             // remove spurious domain prefixes
                             |> stripPrefix "http://"
                             |> stripPrefix "https://"
@@ -799,12 +1520,12 @@ module internal CookieHandling =
                     | _ -> ()
         |]
 
-/// Utilities for working with network via HTTP. Includes methods for downloading 
+/// Utilities for working with network via HTTP. Includes methods for downloading
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
 type Http private() =
 
-    static let regexOptions = 
+    static let regexOptions =
 #if FX_NO_REGEX_COMPILATION
         RegexOptions.None
 #else
@@ -824,21 +1545,21 @@ type Http private() =
 
     static member private InnerRequest
             (
-                url:string, 
-                toHttpResponse, 
-                [<Optional>] ?query, 
-                [<Optional>] ?headers:seq<_>, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies:seq<_>, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?responseEncodingOverride, 
-                [<Optional>] ?customizeHttpRequest, 
+                url:string,
+                toHttpResponse,
+                [<Optional>] ?query,
+                [<Optional>] ?headers:seq<_>,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies:seq<_>,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?responseEncodingOverride,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
 
-        let uri = 
+        let uri =
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
 
@@ -856,7 +1577,7 @@ type Http private() =
         let nativeAutomaticDecompression = ref true
 
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then 
+        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then
             nativeAutomaticDecompression := false
             req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
@@ -885,16 +1606,17 @@ type Http private() =
 
         let body = body |> Option.map (fun body ->
 
-            let defaultContentType, (bytes: Encoding -> byte[]) =
+            let defaultContentType, (bytes: Encoding -> Stream) =
                 match body with
-                | TextRequest text -> HttpContentTypes.Text, (fun e -> e.GetBytes(text))
-                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> bytes)
+                | TextRequest text -> HttpContentTypes.Text, (fun e -> new MemoryStream(e.GetBytes(text)) :> _)
+                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
                 | FormValues values ->
                     let bytes (e:Encoding) =
                         [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
                         |> String.concat "&"
                         |> e.GetBytes
-                    HttpContentTypes.FormValues, bytes
+                    HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
+                | Multipart (boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
 
             // Set default content type if it is not specified by the user
             let encoding =
@@ -910,42 +1632,42 @@ type Http private() =
 #else
         /// Set timeout, use Timeout.Infinite if not provided with one.
         let timeout = defaultArg timeout System.Threading.Timeout.Infinite
-        
+
         req.Timeout <- timeout
 #endif
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
 
-            let req = 
+            let req =
                 match customizeHttpRequest with
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
-   
+
             match body with
             | Some body -> do! writeBody req body
             | None -> ()
 
             let! resp = getResponse req silentHttpErrors
 
-            let headers = 
-                [ for header in resp.Headers.AllKeys do 
+            let headers =
+                [ for header in resp.Headers.AllKeys do
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
-                
+
             match headers.TryFind HttpResponseHeaders.SetCookie with
-            | Some cookieHeader -> 
-                CookieHandling.getAllCookiesFromHeader cookieHeader resp.ResponseUri 
+            | Some cookieHeader ->
+                CookieHandling.getAllCookiesFromHeader cookieHeader resp.ResponseUri
                 |> Array.iter cookieContainer.Add
             | None -> ()
 
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
+            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
 
             let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
 
-            let statusCode, characterSet = 
+            let statusCode, characterSet =
                 match resp with
-                | :? HttpWebResponse as resp -> 
+                | :? HttpWebResponse as resp ->
 #if FX_NO_WEBRESPONSE_CHARACTERSET
                     int resp.StatusCode, (defaultArg resp?CharacterSet "")
 #else
@@ -955,7 +1677,7 @@ type Http private() =
 
             let characterSet = if characterSet = null then "" else characterSet
 
-            let contentEncoding = 
+            let contentEncoding =
                 // .NET removes the gzip/deflate from the content encoding header when it handles the decompression itself, but Mono doesn't, so we clear it explicitely
                 if !nativeAutomaticDecompression then ""
                 else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
@@ -972,19 +1694,19 @@ type Http private() =
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequest
             (
-                url, 
+                url,
                 [<Optional>] ?query,
-                [<Optional>] ?headers, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?responseEncodingOverride, 
-                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?responseEncodingOverride,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
-            ) = 
-        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+            ) =
+        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -994,18 +1716,18 @@ type Http private() =
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequestString
             (
-                url, 
-                [<Optional>] ?query, 
-                [<Optional>] ?headers, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?responseEncodingOverride, 
-                [<Optional>] ?customizeHttpRequest, 
+                url,
+                [<Optional>] ?query,
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?responseEncodingOverride,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
-            ) = 
+            ) =
         async {
             let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                                               ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
@@ -1022,26 +1744,24 @@ type Http private() =
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequestStream
             (
-                url, 
-                [<Optional>] ?query, 
-                [<Optional>] ?headers, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?customizeHttpRequest, 
+                url,
+                [<Optional>] ?query,
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
         let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             let! stream = async {
                 // this only applies when automatic decompression is off
                 if contentEncoding = "gzip" then
-                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressGZip memoryStream :> Stream
                 elif contentEncoding = "deflate" then
-                    use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressDeflate memoryStream :> Stream
                 else
@@ -1061,20 +1781,20 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
     static member Request
-            (  
-                url, 
-                [<Optional>] ?query, 
+            (
+                url,
+                [<Optional>] ?query,
                 [<Optional>] ?headers,
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?responseEncodingOverride, 
-                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?responseEncodingOverride,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
-            ) = 
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+            ) =
+        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1085,19 +1805,19 @@ type Http private() =
     /// that will be encoded, and the method will automatically be set if not specified
     static member RequestString
             (
-                url, 
-                [<Optional>] ?query, 
-                [<Optional>] ?headers, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
-                [<Optional>] ?cookies, 
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?responseEncodingOverride, 
-                [<Optional>] ?customizeHttpRequest, 
+                url,
+                [<Optional>] ?query,
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
+                [<Optional>] ?cookies,
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?responseEncodingOverride,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
-            ) = 
-        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+            ) =
+        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                                 ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1108,17 +1828,17 @@ type Http private() =
     /// that will be encoded, and the method will automatically be set if not specified
     static member RequestStream
             (
-                url, 
-                [<Optional>] ?query, 
-                [<Optional>] ?headers, 
-                [<Optional>] ?httpMethod, 
-                [<Optional>] ?body, 
+                url,
+                [<Optional>] ?query,
+                [<Optional>] ?headers,
+                [<Optional>] ?httpMethod,
+                [<Optional>] ?body,
                 [<Optional>] ?cookies,
-                [<Optional>] ?cookieContainer, 
-                [<Optional>] ?silentHttpErrors, 
-                [<Optional>] ?customizeHttpRequest, 
+                [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
-            ) = 
-        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+            ) =
+        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                                 ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
