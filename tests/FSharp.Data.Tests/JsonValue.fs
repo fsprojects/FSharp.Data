@@ -201,6 +201,16 @@ let ``Can parse nested array``() =
     j.[1].[1] |> should equal (JsonValue.String "Clyde")
 
 [<Test>]
+let ``TryParse is None when a bad JSON value is given``() =
+    let j = JsonValue.TryParse "}{"
+    j |> should equal None
+
+[<Test>]
+let ``TryParse is Some of the correct JSON value when a good structure is given``() =
+    let j = JsonValue.TryParse """{ "foo": "bar" }"""
+    j |> should equal (Some (JsonValue.Record [| "foo", JsonValue.String "bar" |]))
+
+[<Test>]
 let ``Can serialize empty document``() =
     (JsonValue.Record [| |]).ToString(JsonSaveOptions.DisableFormatting)
     |> should equal "{}"

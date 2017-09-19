@@ -239,6 +239,27 @@ Http.Request
         req.ClientCertificates.Add(clientCert) |> ignore; req)
 
 (**
+## Handling multipart form data
+
+You can also send http multipart form data via the `Multipart` `HttpRequestBody` case.
+Data sent in this way is streamed instead of being read into memory in its entirety, allowing for 
+uploads of arbitrary size.
+
+*)
+
+let largeFilePath = "//path/to/large/file.mp4"
+let data = System.IO.File.OpenRead(largeFilePath) :> System.IO.Stream
+
+Http.Request
+  ( "http://endpoint/for/multipart/data", 
+  body = Multipart(
+    boundary = "define a custom boundary here", // this is used to separate the items you're streaming
+    parts = [
+      MultipartItem("formFieldName", System.IO.Path.GetFileName(largeFilePath), data)
+    ]
+  ))
+
+(**
 ## Related articles
 
  * [API Reference: HTTP class](../reference/fsharp-data-http.html)
