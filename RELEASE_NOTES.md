@@ -1,5 +1,8 @@
-#### 2.3.4 - Unreleased
+#### 2.3.4 - September 18 2017
 * Fix css selectors not working outside the body element.
+* Add support for Multipart Form Data content in the HTTP implementation.
+* Added TryParse to JsonValue.
+* Fix parsing of self closing HTML tags.
 
 #### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.
