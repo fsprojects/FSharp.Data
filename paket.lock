@@ -611,6 +611,13 @@ GITHUB
   remote: fsharp/FAKE
     modules/Octokit/Octokit.fsx (d29d342e7602ea8b1fa252eb78926f284bec6791)
       Octokit (>= 0.20)
+  remote: fsprojects/FSharp.TypeProviders.StarterPack
+    src/AssemblyReader.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
+    src/AssemblyReaderReflection.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
+    src/ProvidedTypes.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
+    src/ProvidedTypes.fsi (1341256f7cc11f09feb74edde028aa0513c53afd)
+    src/ProvidedTypesContext.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
+    src/ProvidedTypesTesting.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
 GROUP Runtime
 NUGET
   remote: http://www.nuget.org/api/v2

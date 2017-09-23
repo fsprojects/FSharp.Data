@@ -16,6 +16,12 @@ nuget SourceLink.Fake
 nuget Nuget.CommandLine
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReader.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReaderReflection.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesContext.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
 
 group Runtime
 
@@ -23,10 +29,3 @@ group Runtime
 
   nuget FSharp.Core 3.1.2.5
   nuget Zlib.Portable
-
-  github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-  github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-  github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReader.fs
-  github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReaderReflection.fs
-  github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesContext.fs
-  github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
