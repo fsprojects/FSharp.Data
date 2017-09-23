@@ -609,7 +609,7 @@ NUGET
     Zlib.Portable (1.11)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (d29d342e7602ea8b1fa252eb78926f284bec6791)
+    modules/Octokit/Octokit.fsx (02774735325914cd48d85d63887e3f07f616b96a)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
     src/AssemblyReader.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
@@ -623,11 +623,3 @@ NUGET
   remote: http://www.nuget.org/api/v2
     FSharp.Core (3.1.2.5)
     Zlib.Portable (1.11)
-GITHUB
-  remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/AssemblyReader.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
-    src/AssemblyReaderReflection.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
-    src/ProvidedTypes.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
-    src/ProvidedTypes.fsi (1341256f7cc11f09feb74edde028aa0513c53afd)
-    src/ProvidedTypesContext.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
-    src/ProvidedTypesTesting.fs (1341256f7cc11f09feb74edde028aa0513c53afd)

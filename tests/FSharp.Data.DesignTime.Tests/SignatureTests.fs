@@ -37,9 +37,7 @@ let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
 let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ ("portable" + string profile) ++ assemblyName
 
-let getRuntimeRefs =
-    let solutionRoot = __SOURCE_DIRECTORY__ ++ "../.."
-    TypeProviderInstantiation.GetRuntimeAssemblyRefs solutionRoot
+let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
 
 [<Test>]
 let ``test basic binding context net40``() =

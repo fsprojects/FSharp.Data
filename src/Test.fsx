@@ -19,13 +19,13 @@ let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Desig
 let assemblyName = "FSharp.Data.dll"
 
 let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
-    let root = __SOURCE_DIRECTORY__  ++ ".."
+    let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
     let runtimeAssembly =
         match platform with
-        | Net45 -> root ++ "bin" ++ assemblyName
-        | Portable7 -> root ++ "bin" ++ "portable7" ++ assemblyName
-        | Portable259 -> root ++ "bin" ++ "portable259" ++ assemblyName
-    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs root platform 
+        | Net45 -> root ++ assemblyName
+        | Portable7 -> root ++ "portable7" ++ assemblyName
+        | Portable259 -> root ++ "portable259" ++ assemblyName
+    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
