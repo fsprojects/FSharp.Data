@@ -59,7 +59,7 @@ type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type Platform = Net40 | Portable7 | Portable47 | Portable259
+type Platform = Net45 | Portable7 | Portable259
 
 module private RuntimeAssemblies =
 
@@ -86,7 +86,6 @@ module private RuntimeAssemblies =
 
     let fsharp31PortableAssembliesPath root profile =
          match profile with
-         | 47 -> fsharpPackagePath root ++ "portable-net45+sl5+netcore45" ++ "FSharp.Core.dll"
          | 7 -> fsharpPackagePath root ++ "portable-net45+netcore45" ++ "FSharp.Core.dll"
          | 259 -> fsharpPackagePath root ++ "portable-net45+netcore45+wpa81+wp8" ++ "FSharp.Core.dll"
          | _ -> failwith "unimplemented portable profile"
@@ -101,12 +100,10 @@ module private RuntimeAssemblies =
     let portableAssembliesPath profile =
         let portableRoot = if runningOnMono then monoRoot ++ "xbuild-frameworks" else referenceAssembliesPath ++ "Framework"
         match profile with
-        | 47 -> portableRoot ++ ".NETPortable" ++ "v4.0" ++ "Profile" ++ "Profile47"
         | 7 | 259 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ (sprintf "Profile%d" profile)
         | _ -> failwith "unimplemented portable profile"
 
-    let net40FSharp31Refs root = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath root ++ "FSharp.Core.dll"]
-    let portable47FSharp31Refs root = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath root 47]
+    let net45FSharp31Refs root = [net45AssembliesPath ++ "mscorlib.dll"; net45AssembliesPath ++ "System.Xml.dll"; net45AssembliesPath ++ "System.Core.dll"; net45AssembliesPath ++ "System.Xml.Linq.dll"; net45AssembliesPath ++ "System.dll"; fsharp31AssembliesPath root ++ "FSharp.Core.dll"]
 
     let portableCoreFSharp31Refs root profile =
         [ for asm in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions";
@@ -291,10 +288,9 @@ type TypeProviderInstantiation =
 
     static member GetRuntimeAssemblyRefs root platform =
         match platform with
-        | Net40 -> RuntimeAssemblies.net40FSharp31Refs root
+        | Net45 -> RuntimeAssemblies.net45FSharp31Refs root
         | Portable7 -> RuntimeAssemblies.portableCoreFSharp31Refs root 7
         | Portable259 -> RuntimeAssemblies.portableCoreFSharp31Refs root 259
-        | Portable47 -> RuntimeAssemblies.portable47FSharp31Refs root
 
 open System.Runtime.CompilerServices
 

@@ -92,7 +92,7 @@ for row in msft.Rows do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 

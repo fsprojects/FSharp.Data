@@ -43,7 +43,7 @@ let getRuntimeRefs =
 
 [<Test>]
 let ``test basic binding context net40``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Net40)
+   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Net45)
 
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
@@ -56,14 +56,6 @@ let ``test basic binding context portable7``() =
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-
-[<Test>]
-let ``test basic binding context portable47``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Portable47)
-
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
@@ -88,7 +80,7 @@ let generateAllExpected() =
         Directory.CreateDirectory expectedDirectory |> ignore
     for (sample, testCase) in testCasesTuple do
         try
-            testCase.Dump (resolutionFolder, expectedDirectory, runtimeAssembly, (getRuntimeRefs Net40), signatureOnly=false, ignoreOutput=false)
+            testCase.Dump (resolutionFolder, expectedDirectory, runtimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
             |> ignore
         with e ->
             raise(new Exception(sprintf "Failed generating: %s" sample, e))
@@ -101,17 +93,12 @@ let normalize (str:string) =
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
     let path = testCase.ExpectedPath expectedDirectory
     let expected = path |> File.ReadAllText |> normalize
-    let outputRaw = testCase.Dump (resolutionFolder, "", runtimeAssembly, (getRuntimeRefs Net40), signatureOnly=false, ignoreOutput=false)
+    let outputRaw = testCase.Dump (resolutionFolder, "", runtimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
     let output = outputRaw |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" outputRaw
     //System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
     output |> should equal expected
-
-[<Test>]
-[<TestCaseSource "testCases">]
-let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) =
-    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 47, (getRuntimeRefs Portable47), signatureOnly=false, ignoreOutput=true) |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
