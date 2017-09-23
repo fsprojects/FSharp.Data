@@ -3,7 +3,6 @@ source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 
 redirects: on
 
-nuget Zlib.Portable
 nuget FSharp.Charting
 nuget FSharp.Formatting
 nuget NUnit
