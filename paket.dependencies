@@ -3,6 +3,8 @@ source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 
 redirects: on
 
+nuget FSharp.Core 3.1.2.5
+nuget Zlib.Portable
 nuget FSharp.Charting
 nuget FSharp.Formatting
 nuget NUnit
@@ -21,12 +23,3 @@ github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReader.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/AssemblyReaderReflection.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesContext.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
-
-group Runtime
-
-  source http://nuget.org/api/v2
-
-  redirects: on
-
-  nuget FSharp.Core 3.1.2.5
-  nuget Zlib.Portable

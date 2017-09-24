@@ -3,3 +3,4 @@ FSharp.Formatting
 FsUnit
 NUnit
 NUnit.Runners
+FSharp.Core
