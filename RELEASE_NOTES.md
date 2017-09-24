@@ -1,4 +1,4 @@
-#### 2.4.0 - Unreleased
+#### 2.4.0-beta - Unreleased
 * Fix css selectors not working outside the body element.
 * Add support for Multipart Form Data content in the HTTP implementation.
 * Added TryParse to JsonValue.

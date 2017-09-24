@@ -105,11 +105,6 @@ Target "BuildTests" <| fun () ->
     |> MSBuildReleaseExt "" (if isLocalBuild then [] else ["DefineConstants","BUILD_SERVER"]) "Rebuild"
     |> ignore
 
-Target "BuildConsoleTests" <| fun () ->
-    !! "TestApps.Console.sln"
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
-
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 Target "RunTests" <| ignore
@@ -126,11 +121,6 @@ let runTestTask name =
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
-
-// Run the console tests
-Target "RunConsoleTests" (fun _ ->
-    [ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest, "" ]
-    |> ProcessTestRunner.RunConsoleTests (fun p -> { p with TimeOut = TimeSpan.FromMinutes 1. } ))
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
@@ -265,9 +255,7 @@ Target "Help" <| fun () ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
-    printfn "  * BuildConsoleTests"
     printfn "  * RunTests"
-    printfn "  * RunConsoleTests"
     printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
@@ -290,9 +278,7 @@ Target "All" DoNothing
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
-"BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
-"RunConsoleTests" ==> "All"
 
 Target "BuildAndRunTests" DoNothing
 
