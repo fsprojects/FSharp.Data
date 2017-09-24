@@ -39,5 +39,5 @@ let ``DateTime conversions`` () =
     |> should equal (Some result)
 
   case "2016-11-21T10:29:05Z"      <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc)
-  case "2016-11-21T10:29:05"       <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc)
-  case "2016-11-21T13:29:05+03:00" <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc)
+  case "2016-11-21T10:29:05"       <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Local)
+  case "2016-11-21T13:29:05+03:00" <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc).ToLocalTime()
