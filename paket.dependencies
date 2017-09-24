@@ -26,5 +26,7 @@ group Runtime
 
   source http://nuget.org/api/v2
 
+  redirects: on
+
   nuget FSharp.Core 3.1.2.5
   nuget Zlib.Portable

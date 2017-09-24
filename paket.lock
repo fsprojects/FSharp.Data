@@ -618,6 +618,7 @@ GITHUB
     src/ProvidedTypesContext.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
     src/ProvidedTypesTesting.fs (1341256f7cc11f09feb74edde028aa0513c53afd)
 GROUP Runtime
+REDIRECTS: ON
 NUGET
   remote: http://www.nuget.org/api/v2
     FSharp.Core (3.1.2.5)
