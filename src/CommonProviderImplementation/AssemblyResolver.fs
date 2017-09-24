@@ -24,12 +24,12 @@ let mutable private initialized = false
 
 [<RequireQualifiedAccess>]
 type FSharpDataRuntimeInfo =
-    | Net40
-    | Portable_47_7_259
+    | Net45
+    | Portable_7_259
     member x.SupportsLocalFileSystem = 
         match x with
-        | Net40 -> true
-        | Portable_47_7_259 -> false
+        | Net45 -> true
+        | Portable_7_259 -> false
 
 
 let init (cfg : TypeProviderConfig) = 
@@ -45,8 +45,8 @@ let init (cfg : TypeProviderConfig) =
     let runtimeFSharpCoreVersion = bindingContext.TryGetFSharpCoreAssemblyVersion()
 
     let versionInfo = 
-        if runtimeFSharpCoreVersion >= Version(4,0,0,0) then FSharpDataRuntimeInfo.Net40 // 4.3.0.0, 4.3.1.0, 4.4.0.0
-        else FSharpDataRuntimeInfo.Portable_47_7_259
+        if runtimeFSharpCoreVersion >= Version(4,0,0,0) then FSharpDataRuntimeInfo.Net45 // 4.3.1.0, 4.4.0.0
+        else FSharpDataRuntimeInfo.Portable_7_259
 
     let runtimeFSharpDataAssembly = 
         let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly

@@ -9,7 +9,6 @@ then
   	exit $exit_code
   fi
 
-  export VisualStudioVersion=14.0
   packages/FAKE/tools/FAKE.exe $@ --fsiargs build.fsx 
 else
   #!/bin/bash
@@ -20,6 +19,5 @@ else
   	exit $exit_code
   fi
 
-  export VisualStudioVersion=14.0
   mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx -d:MONO $@
 fi

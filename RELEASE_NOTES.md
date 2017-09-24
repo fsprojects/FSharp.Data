@@ -1,8 +1,9 @@
-#### 2.3.4 - September 18 2017
+#### 2.4.0-beta - Unreleased
 * Fix css selectors not working outside the body element.
 * Add support for Multipart Form Data content in the HTTP implementation.
 * Added TryParse to JsonValue.
 * Fix parsing of self closing HTML tags.
+* FSharp.Core 4.3.0.0 (F# 3.0), .NET 4.0, and PCL profile 47 are no longer supported.
 
 #### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.

@@ -10,7 +10,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Simply build FSharp.Data.sln in Visual Studio 2015, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+- Simply build FSharp.Data.sln in Visual Studio 2017, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
     * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
@@ -19,15 +19,14 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Supported F# Runtimes
 
-- FSharp.Core 4.3.0.0 (F# 3.0)
 - FSharp.Core 4.3.1.0 (F# 3.1)
 - FSharp.Core 4.4.0.0 (F# 4.0)
+- FSharp.Core 4.4.1.0 (F# 4.1)
 
 ## Supported platforms
 
-- .NET Framework 4.0
+- .NET Framework 4.5
 - PCL profile 7 (.NET Framework 4.5, Windows 8)
-- PCL profile 47 (.NET Framework 4.5, Silverlight 5, Windows 8)
 - PCL profile 259 (.NET Framework 4.5, Windows 8, Windows Phone 8.1, Windows Phone Silverlight 8)
 
 ## Documentation 

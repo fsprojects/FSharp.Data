@@ -21,7 +21,7 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Charting/lib/net40"
+#I "../../packages/FSharp.Charting/lib/net45"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"

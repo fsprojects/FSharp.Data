@@ -62,12 +62,10 @@ Target "AssemblyInfo" <| fun () ->
         let title = 
             Path.GetFileNameWithoutExtension file
             |> replace ".Portable259" ""
-            |> replace ".Portable47" ""
             |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
         let versionSuffix =
             if file.Contains ".Portable259" then ".259"
-            elif file.Contains ".Portable47" then ".47"
             elif file.Contains ".Portable7" then ".7"
             else ".0"
         let version = release.AssemblyVersion + versionSuffix
@@ -107,11 +105,6 @@ Target "BuildTests" <| fun () ->
     |> MSBuildReleaseExt "" (if isLocalBuild then [] else ["DefineConstants","BUILD_SERVER"]) "Rebuild"
     |> ignore
 
-Target "BuildConsoleTests" <| fun () ->
-    !! "TestApps.Console.sln"
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
-
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 Target "RunTests" <| ignore
@@ -128,11 +121,6 @@ let runTestTask name =
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
-
-// Run the console tests
-Target "RunConsoleTests" (fun _ ->
-    [ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest, "" ]
-    |> ProcessTestRunner.RunConsoleTests (fun p -> { p with TimeOut = TimeSpan.FromMinutes 1. } ))
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
@@ -154,8 +142,6 @@ Target "SourceLink" <| fun () ->
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
-    CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
     CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
@@ -269,9 +255,7 @@ Target "Help" <| fun () ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
-    printfn "  * BuildConsoleTests"
     printfn "  * RunTests"
-    printfn "  * RunConsoleTests"
     printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
@@ -294,9 +278,7 @@ Target "All" DoNothing
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
-"BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
-"RunConsoleTests" ==> "All"
 
 Target "BuildAndRunTests" DoNothing
 

@@ -44,7 +44,7 @@ platform. Type providers consist of two components:
    (that are mapped to runtime components by the compiler).
 
 To support multiple targets, we need a _runtime component_ for every single target
-(.NET Framework 4.0, PCL profile 7, PCL profile 47, PCL profile 259). However, we only need one _design time_
+(.NET Framework 4.0, PCL profile 7, PCL profile 259). However, we only need one _design time_
 component, because that is always going to be executed on desktop .NET in Visual Studio
 or Xamarin Studio.
 
@@ -58,7 +58,6 @@ If you open `FSharp.Data.sln`, you'll see the following projects for _runtime co
 
  * **FSharp.Data** - .NET Framework 4.0
  * **FSharp.Data.Portable7** - PCL profile 7 (.NET Framework 4.5, Windows 8)
- * **FSharp.Data.Portable47** - PCL profile 47 (.NET Framework 4.5, Silverlight 5, Windows 8)
  * **FSharp.Data.Portable259** - PCL profile 259 (.NET Framework 4.5, Windows 8, Windows Phone 8.1, Windows Phone Silverlight 8)
  
 The _design time_ components are in the following project:
