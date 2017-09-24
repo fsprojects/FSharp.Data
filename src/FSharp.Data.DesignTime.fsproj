@@ -93,6 +93,8 @@
     <Compile Include="Csv\CsvProvider.fs" />
     <Compile Include="WorldBank\WorldBankRuntime.fs" />
     <Compile Include="WorldBank\WorldBankProvider.fs" />
+    <Compile Include="Bis\BisRuntime.fs" />
+    <Compile Include="Bis\BisProvider.fs" />
     <Compile Include="Html\HtmlCharRefs.fs" />
     <Compile Include="Html\HtmlParser.fs" />
     <Compile Include="Html\HtmlOperations.fs" />
