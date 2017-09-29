@@ -1002,17 +1002,8 @@ module private HttpHelpers =
     /// and returns a memory stream with the full content
     let asyncRead (stream:Stream) = async {
         use stream = stream
-        // Allocate 4kb buffer for downloading data
-        let buffer = Array.zeroCreate (4 * 1024)
-        let output = new MemoryStream()
-        let reading = ref true
-
-        while reading.Value do
-            // Download one (at most) 4kb chunk and copy it
-            let! count = stream.AsyncRead(buffer, 0, buffer.Length)
-            output.Write(buffer, 0, count)
-            reading := count > 0
-
+        let output = new MemoryStream ()
+        do! stream.CopyToAsync(output) |> Async.AwaitIAsyncResult |> Async.Ignore
         output.Seek(0L, SeekOrigin.Begin) |> ignore
         return output
     }
@@ -1024,7 +1015,7 @@ module private HttpHelpers =
             let mutable streams = streams |> Seq.cache
 
             let rec readFromStream buffer offset count =
-                if Seq.isEmpty streams 
+                if Seq.isEmpty streams
                 then 0
                 else
                     let stream = Seq.head streams
@@ -1147,21 +1138,10 @@ module private HttpHelpers =
             false
 #endif
 
-    let rec asyncCopy offset (source: Stream) (dest: Stream) =
+    let asyncCopy offset (source: Stream) (dest: Stream) =
         async {
-            let max =
-                if source.CanSeek && dest.CanSeek
-                then min 4096 (int (max source.Length dest.Length))
-                else 4096
-            let buf = Array.zeroCreate max
-            let! read = source.AsyncRead(buf, offset, max)
-            do! dest.AsyncWrite(buf, offset, read)
-            if read < max
-            then
-                source.Dispose ()
-                return ()
-            else
-                return! asyncCopy (offset + read) source dest
+            do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
+            source.Dispose ()
         }
 
     let writeBody (req:HttpWebRequest) (data: Stream) =
