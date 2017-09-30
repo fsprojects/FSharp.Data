@@ -1,3 +1,6 @@
+#### 2.4.1 - September 30 2017
+* Fix regression introduced in 2.4.0 in HTTP stream reading.
+
 #### 2.4.0 - September 24 2017
 * Fix css selectors not working outside the body element.
 * Add support for Multipart Form Data content in the HTTP implementation.
