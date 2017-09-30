@@ -77,3 +77,10 @@ let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
             customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
 
     response.StatusCode |> should equal 401
+
+[<Test>]
+let ``4k+ bodies work`` () =
+    let bodyString2 = seq {for i in 0..4000 -> "x\n"} |> String.concat ""
+    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+
+    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
