@@ -9,6 +9,7 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 open System
 open System.IO
 open System.Reflection
+open FSharp.Core.CompilerServices
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
@@ -39,37 +40,88 @@ let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" +
 
 let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
 
+[<AutoOpen>]
+module Utils = 
+    let isNull x = match x with null -> true | _ -> false
+
+
+/// Simulate a real host of TypeProviderConfig
+type internal DllInfo(path: string) =
+    member x.FileName = path
+
+/// Simulate a real host of TypeProviderConfig
+type internal TcImports(bas: TcImports option, dllInfos: DllInfo list) =
+    member x.Base = bas
+    member x.DllInfos = dllInfos
+
+
+type internal Testing() =
+
+    /// Simulates a real instance of TypeProviderConfig
+    static member MakeSimulatedTypeProviderConfig (resolutionFolder: string, runtimeAssembly: string, runtimeAssemblyRefs: string list) =
+
+        let cfg = TypeProviderConfig(fun _ -> false)
+        let (?<-) cfg prop value =
+            let ty = cfg.GetType()
+            match ty.GetProperty(prop,BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic) with
+            | null -> ty.GetField(prop,BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic).SetValue(cfg, value)|> ignore
+            | p -> p.GetSetMethod(nonPublic = true).Invoke(cfg, [| box value |]) |> ignore
+        cfg?ResolutionFolder <- resolutionFolder
+        cfg?RuntimeAssembly <- runtimeAssembly
+        cfg?ReferencedAssemblies <- Array.zeroCreate<string> 0
+
+        // Fake an implementation of SystemRuntimeContainsType the shape expected by AssemblyResolver.fs.
+        let dllInfos = [yield DllInfo(runtimeAssembly); for r in runtimeAssemblyRefs do yield DllInfo(r)]
+        let tcImports = TcImports(Some(TcImports(None,[])),dllInfos)
+        let systemRuntimeContainsType = (fun (_s:string) -> if tcImports.DllInfos.Length = 1 then true else true)
+        cfg?systemRuntimeContainsType <- systemRuntimeContainsType
+
+        //Diagnostics.Debugger.Launch() |> ignore
+        Diagnostics.Debug.Assert(cfg.GetType().GetField("systemRuntimeContainsType",BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance) |> isNull |> not)
+        Diagnostics.Debug.Assert(systemRuntimeContainsType.GetType().GetField("tcImports",BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance) |> isNull |> not)
+        Diagnostics.Debug.Assert(typeof<TcImports>.GetField("dllInfos",BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance) |> isNull |> not)
+        Diagnostics.Debug.Assert(typeof<TcImports>.GetProperty("Base",BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance) |> isNull |> not)
+        Diagnostics.Debug.Assert(typeof<DllInfo>.GetProperty("FileName",BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance) |> isNull |> not)
+
+        cfg
+
 [<Test>]
 let ``test basic binding context net40``() =
-   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Net45, isForGenerated=false)
+   let refs = getRuntimeRefs Net45
+   let config =  ProviderImplementation.ProvidedTypesTesting.Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable7``() =
-   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Portable7, isForGenerated=false)
+   let refs = getRuntimeRefs Portable7
+   let config =  ProviderImplementation.ProvidedTypesTesting.Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable259``() =
-   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Portable259, isForGenerated=false)
+   let refs = getRuntimeRefs Portable259
+   let config =  ProviderImplementation.ProvidedTypesTesting.Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice1Of2 asm -> asm.GetType("System.Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 
 
