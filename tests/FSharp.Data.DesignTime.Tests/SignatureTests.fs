@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
@@ -12,7 +12,7 @@ open System.Reflection
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-open ProviderImplementation.AssemblyReader
+open ProviderImplementation.ProvidedTypes
 
 let (++) a b = Path.Combine(a, b)
 
@@ -41,7 +41,7 @@ let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
 
 [<Test>]
 let ``test basic binding context net40``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Net45)
+   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Net45, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
@@ -49,7 +49,7 @@ let ``test basic binding context net40``() =
 
 [<Test>]
 let ``test basic binding context portable7``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Portable7)
+   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Portable7, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
@@ -60,7 +60,7 @@ let ``test basic binding context portable7``() =
 
 [<Test>]
 let ``test basic binding context portable259``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Portable259)
+   let ctxt1 = ProvidedTypesContext.Create (getRuntimeRefs Portable259, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
    | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
