@@ -536,6 +536,6 @@ GITHUB
     modules/Octokit/Octokit.fsx (e672bab0bef3a196e1c72a832b26521cf9428116)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/ProvidedTypes.fs (852ffd44afcebf2b82c3982be5ecfd0c103f66ad)
-    src/ProvidedTypes.fsi (852ffd44afcebf2b82c3982be5ecfd0c103f66ad)
-    src/ProvidedTypesTesting.fs (852ffd44afcebf2b82c3982be5ecfd0c103f66ad)
+    src/ProvidedTypes.fs (8e7a0d28a13b86a536eac1297c97630a722dacbf)
+    src/ProvidedTypes.fsi (8e7a0d28a13b86a536eac1297c97630a722dacbf)
+    src/ProvidedTypesTesting.fs (8e7a0d28a13b86a536eac1297c97630a722dacbf)
