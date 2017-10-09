@@ -48,6 +48,20 @@ let ``Guid column correctly infered and accessed`` () =
   let actual:Guid option = first.Column3
   actual |> should equal (Some (Guid.Parse("f1b1cf71-bd35-4e99-8624-24a6e15f133a")))
 
+let [<Literal>] csvWithGermanDate = """Preisregelung_ID;Messgebiet_Nr;gueltig_seit;gueltig_bis;ID;Status_ID;Internet;Bemerkung;Erfasser;Ersterfassung;letzte_Pruefung;letzte_Aenderung
+1;184370001;01.01.2006;30.09.2007;3;2300;;;1;27.09.2006;11.07.2008;11.07.2008
+2;214230001;01.02.2006;20.03.2007;2;2000;;;1;27.09.2006;28.11.2007;10.04.2007"""
+
+[<Test>]
+let ``Inference of german dates`` () = 
+  let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE">.GetSample()
+  let rows = csv.Rows |> Seq.toArray
+  
+  let row = rows.[1]
+  
+  let d1:DateTime = row.Gueltig_seit
+  d1 |> should equal (DateTime(2006,02,01))
+
 let [<Literal>] csvWithEmptyValues = """
 Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 1,1,1,1,,,,

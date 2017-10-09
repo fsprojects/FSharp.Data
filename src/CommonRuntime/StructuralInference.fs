@@ -285,10 +285,10 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
+  | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>
   | Parse asGuid _ -> typeof<Guid>
-  | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | _ -> typeof<string>
 
 /// Infers the type of a simple string value
