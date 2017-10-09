@@ -190,8 +190,8 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         t.AddXmlDoc(helpText)
 
         let parameters =
-            [ ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
-              ProvidedStaticParameter("Asynchronous", typeof<bool>, false) ]
+            [ bindingContext.ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
+              bindingContext.ProvidedStaticParameter("Asynchronous", typeof<bool>, false) ]
 
         t.DefineStaticParameters(parameters, fun typeName providerArgs -> 
             let sources = (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList

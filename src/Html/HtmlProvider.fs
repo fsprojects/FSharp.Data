@@ -59,14 +59,14 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 
-        [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")           
-          ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("IncludeLayoutTables", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-          ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
-          ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
+        [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")           
+          bindingContext.ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
+          bindingContext.ProvidedStaticParameter("IncludeLayoutTables", typeof<bool>, parameterDefaultValue = false)
+          bindingContext.ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
+          bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+          bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+          bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
+          bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
   
     let helpText = 
         """<summary>Typed representation of an HTML file.</summary>

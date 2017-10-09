@@ -11,6 +11,7 @@ open System.Reflection
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
+open ProviderImplementation.ProvidedTypes
 
 let private designTimeAssemblies = 
   lazy
@@ -40,9 +41,9 @@ let init (cfg : TypeProviderConfig) =
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
-    let bindingContext = ProvidedTypesContext.Create(cfg, [ "FSharp.Data.DesignTime", "FSharp.Data" ])
+    let bindingContext = ProvidedTypesContext.Create(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ], isForGenerated=false)
 
-    let runtimeFSharpCoreVersion = bindingContext.TryGetFSharpCoreAssemblyVersion()
+    let runtimeFSharpCoreVersion = bindingContext.FSharpCoreAssemblyVersion
 
     let versionInfo = 
         if runtimeFSharpCoreVersion >= Version(4,0,0,0) then FSharpDataRuntimeInfo.Net45 // 4.3.1.0, 4.4.0.0

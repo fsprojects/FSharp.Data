@@ -68,14 +68,14 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ ProvidedStaticParameter("Sample", typeof<string>)
-      ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
+    [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>)
+      bindingContext.ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
+      bindingContext.ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
+      bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
+      bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
 
   let helpText = 
     """<summary>Typed representation of a XML file.</summary>

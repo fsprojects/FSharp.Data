@@ -122,22 +122,22 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
-      ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
-      ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 0)
-      ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
-      ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
-      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
+    [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
+      bindingContext.ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
+      bindingContext.ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
+      bindingContext.ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
+      bindingContext.ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
+      bindingContext.ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 0)
+      bindingContext.ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
+      bindingContext.ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
+      bindingContext.ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
+      bindingContext.ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
+      bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
+      bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
     """<summary>Typed representation of a CSV file.</summary>
