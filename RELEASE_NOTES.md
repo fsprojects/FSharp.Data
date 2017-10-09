@@ -1,3 +1,6 @@
+#### 2.4.2 - October 09 2017
+* Prioritize dates over decimals in type inference.
+
 #### 2.4.1 - September 30 2017
 * Fix regression introduced in 2.4.0 in HTTP stream reading.
 
