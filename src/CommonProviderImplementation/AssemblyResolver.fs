@@ -52,8 +52,8 @@ let init (cfg : TypeProviderConfig) =
     let runtimeFSharpDataAssembly = 
         let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly
         match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
+        | Choice1Of2 loader -> loader
         | Choice2Of2 err -> raise err
-        | Choice1Of2 loader -> (loader :> Assembly)
     
     runtimeFSharpDataAssembly, versionInfo, bindingContext
 

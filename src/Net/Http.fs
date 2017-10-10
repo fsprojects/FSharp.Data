@@ -1138,7 +1138,7 @@ module private HttpHelpers =
             false
 #endif
 
-    let asyncCopy offset (source: Stream) (dest: Stream) =
+    let asyncCopy (source: Stream) (dest: Stream) =
         async {
             do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
             source.Dispose ()
@@ -1167,7 +1167,7 @@ module private HttpHelpers =
                 then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
                 else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
 
-            do! asyncCopy 0 data output
+            do! asyncCopy data output
             output.Flush()
         }
 
