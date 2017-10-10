@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
@@ -9,10 +9,12 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 open System
 open System.IO
 open System.Reflection
+open FSharp.Core.CompilerServices
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-open ProviderImplementation.AssemblyReader
+open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.ProvidedTypesTesting
 
 let (++) a b = Path.Combine(a, b)
 
@@ -41,35 +43,41 @@ let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
 
 [<Test>]
 let ``test basic binding context net40``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Net45)
+   let refs = getRuntimeRefs Net45
+   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable7``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Portable7)
+   let refs = getRuntimeRefs Portable7
+   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
 let ``test basic binding context portable259``() =
-   let ctxt1 = ProvidedTypesContext (getRuntimeRefs Portable259)
+   let refs = getRuntimeRefs Portable259
+   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
+   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
 
    match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.BindType(USome "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice1Of2 asm -> asm.GetType("System.Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 
 

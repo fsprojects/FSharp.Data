@@ -143,7 +143,7 @@ module internal ProviderHelpers =
     let ReadResource(cfg: TypeProviderConfig, resourceName:string) =
         match resourceName.Split(',') with
         | [| asmName; name |] -> 
-            let bindingCtxt = ProvidedTypesContext.Create(cfg)
+            let bindingCtxt = ProvidedTypesContext.Create(cfg, isForGenerated=false)
             match bindingCtxt.TryBindAssembly(AssemblyName(asmName.Trim())) with
             | Choice1Of2 asm -> 
                 use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))

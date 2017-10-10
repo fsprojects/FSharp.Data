@@ -235,9 +235,9 @@ type TypeProviderInstantiation =
 
     static member GetRuntimeAssemblyRefs platform =
         match platform with
-        | Net45 -> Targets.DotNet45FSharp31Refs
-        | Portable7 -> Targets.Portable7FSharp31Refs
-        | Portable259 -> Targets.Portable259FSharp31Refs
+        | Net45 -> Targets.DotNet45FSharp31Refs()
+        | Portable7 -> Targets.Portable7FSharp31Refs()
+        | Portable259 -> Targets.Portable259FSharp31Refs()
 
 open System.Runtime.CompilerServices
 
