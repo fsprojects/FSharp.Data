@@ -1,4 +1,4 @@
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
@@ -9,7 +9,6 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 open System
 open System.IO
 open System.Reflection
-open FSharp.Core.CompilerServices
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
@@ -41,8 +40,18 @@ let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" +
 
 let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
 
+let generateAllExpected() =
+    if not <| Directory.Exists expectedDirectory then
+        Directory.CreateDirectory expectedDirectory |> ignore
+    for (sample, testCase) in testCasesTuple do
+        try
+            testCase.Dump (resolutionFolder, expectedDirectory, runtimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
+            |> ignore
+        with e ->
+            raise(new Exception(sprintf "Failed generating: %s" sample, e))
+
 [<Test>]
-let ``test basic binding context net40``() =
+let ``test basic binding context net45``() =
    let refs = getRuntimeRefs Net45
    let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
    let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
@@ -80,17 +89,6 @@ let ``test basic binding context portable259``() =
    | Choice1Of2 asm -> asm.GetType("System.Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 
-
-let generateAllExpected() =
-    if not <| Directory.Exists expectedDirectory then
-        Directory.CreateDirectory expectedDirectory |> ignore
-    for (sample, testCase) in testCasesTuple do
-        try
-            testCase.Dump (resolutionFolder, expectedDirectory, runtimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
-            |> ignore
-        with e ->
-            raise(new Exception(sprintf "Failed generating: %s" sample, e))
-
 let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
@@ -110,7 +108,6 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) =
     testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 7, (getRuntimeRefs Portable7), signatureOnly=false, ignoreOutput=true) |> ignore
-
 
 [<Test>]
 [<TestCaseSource "testCases">]

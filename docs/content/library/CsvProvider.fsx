@@ -103,7 +103,7 @@ let recent =
 (*** define-output:chart2 ***)
 
 // Visualize prices using Candlestick chart
-Chart.Candlestick(recent).WithYAxis(Min = 40.0, Max = 50.0)
+Chart.Candlestick(recent).WithYAxis(Min = 70.0, Max = 80.0)
 
 (*** include-it:chart2 ***)
 

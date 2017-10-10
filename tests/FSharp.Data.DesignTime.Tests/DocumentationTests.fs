@@ -1,19 +1,18 @@
 ﻿#if INTERACTIVE
 #I "../../packages/FSharp.Formatting/lib/net40"
-#I "../../packages/RazorEngine/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
+#I "../../packages/FSharpVSPowerTools.Core/lib/net45"
+#r "System.Web.Razor.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
 #r "FSharp.MetadataFormat.dll"
+#r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.DocumentationTests
 #endif
 
-open FsUnit
 open NUnit.Framework
 open System.IO
 open FSharp.Literate

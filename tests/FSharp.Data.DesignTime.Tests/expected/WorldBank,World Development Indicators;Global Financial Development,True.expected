@@ -4772,7 +4772,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``People using basic sanitation services, rural (% of rural population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.BASS.RU.ZS")
 
-    member ``People using basic sanitation services, urban  (% of urban population)``: FDR.WorldBank.Indicator async with get
+    member ``People using basic sanitation services, urban (% of urban population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.BASS.UR.ZS")
 
     member ``People using safely managed drinking water services (% of population)``: FDR.WorldBank.Indicator async with get
@@ -4790,7 +4790,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``People using safely managed sanitation services, rural (% of rural population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.SMSS.RU.ZS")
 
-    member ``People using safely managed sanitation services, urban  (% of urban population)``: FDR.WorldBank.Indicator async with get
+    member ``People using safely managed sanitation services, urban  (% of urban population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.SMSS.UR.ZS")
 
     member ``Percentage of enrolment in primary education in private institutions (%)``: FDR.WorldBank.Indicator async with get
@@ -9739,7 +9739,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``People using basic sanitation services, rural (% of rural population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BASS.RU.ZS")
 
-    member ``People using basic sanitation services, urban  (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
+    member ``People using basic sanitation services, urban (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BASS.UR.ZS")
 
     member ``People using safely managed drinking water services (% of population)``: FDR.WorldBank.IndicatorDescription with get
@@ -9757,7 +9757,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``People using safely managed sanitation services, rural (% of rural population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.SMSS.RU.ZS")
 
-    member ``People using safely managed sanitation services, urban  (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
+    member ``People using safely managed sanitation services, urban  (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.SMSS.UR.ZS")
 
     member ``Percentage of enrolment in primary education in private institutions (%)``: FDR.WorldBank.IndicatorDescription with get
