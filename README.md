@@ -49,7 +49,7 @@ The library is available under Apache 2.0. For more information see the [License
 
 ## Maintainers
 
-Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus) and [Tomas Petricek](http://github.com/tpetricek).
+Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus), [Tomas Petricek](http://github.com/tpetricek) and [Colin Bull](http://github.com/colinbull).
 
 
 
