@@ -42,7 +42,7 @@ The generated type provides a type space of tables that it has managed to parse 
 Each type's name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
 entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flatterned out into a list.
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
-The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
+The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
 let url = 
   "https://en.wikipedia.org/wiki/" +
