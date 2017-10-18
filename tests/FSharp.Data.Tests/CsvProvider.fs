@@ -563,3 +563,21 @@ let ``Having null in a cell should not fail saving to string (issue#978)`` () =
     data
     |> Stringify 
     |> ignore
+    
+
+let [<Literal>] csvWithDuplicateColumns = """
+ID,Name,Middle,Name
+0,john,,doe
+1,jane,jane,doe"""
+
+[<Test>]
+let ``CsvFile.TryFindColumn returns only the first matching column``() =
+  let csv = CsvFile.Parse csvWithDuplicateColumns
+  let nameColumnIndex = csv.TryFindColumn "Name"
+  nameColumnIndex |> should equal (Some 1)
+ 
+[<Test>]
+let ``CsvFile.TryFindColumn returns None if no match``() =
+  let csv = CsvFile.Parse csvWithDuplicateColumns
+  let nameColumnIndex = csv.TryFindColumn "FirstName"
+  nameColumnIndex |> should equal None
