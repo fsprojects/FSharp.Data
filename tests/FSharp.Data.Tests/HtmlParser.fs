@@ -101,6 +101,7 @@ let ``Can handle attributes with no value``() =
 [<TestCase("var r =/</g")>]
 [<TestCase("//</script>\n")>]
 [<TestCase("/*</script>*/")>]
+[<TestCase("/*</script>**/")>]
 let ``Can handle special characters in scripts`` content =
     let html = sprintf "<script>%s</script>" content
     let node = HtmlNode.Parse html |> List.head
