@@ -423,8 +423,40 @@ module internal HtmlParser =
         and script state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
+            | ''' -> state.Cons(); scriptSingleQuoteString state
+            | '"' -> state.Cons(); scriptDoubleQuoteString state
+            | '/' -> state.Cons(); scriptSlash state
             | '<' -> state.Pop(); scriptLessThanSign state
             | _ -> state.Cons(); script state
+        and scriptSingleQuoteString state =
+            match state.Peek() with
+            | ''' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSingleQuoteString state
+        and scriptDoubleQuoteString state =
+            match state.Peek() with
+            | '"' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptDoubleQuoteString state
+        and scriptSlash state =
+            match state.Peek() with
+            | '/' -> state.Cons(); scriptSinleLineComment state
+            | '*' -> state.Cons(); scriptMultiLineComment state
+            | _ -> state.Cons(); scriptRegex state
+        and scriptMultiLineComment state =
+            match state.Peek() with
+            | '*' -> state.Cons(); scriptMultiLineCommentStar state
+            | _ -> state.Cons(); scriptMultiLineComment state
+        and scriptMultiLineCommentStar state =
+            match state.Peek() with
+            | '/' -> state.Cons(); script state
+            | _ -> scriptMultiLineComment state
+        and scriptSinleLineComment state =
+            match state.Peek() with
+            | '\n' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSinleLineComment state
+        and scriptRegex state =
+            match state.Peek() with
+            | '/' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
