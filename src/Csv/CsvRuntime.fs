@@ -410,4 +410,3 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// Returns a csv with the same rows as the original plus the provided rows appended
   member x.Append rows = 
     Seq.append x.Rows rows |> x.withRows
-    
