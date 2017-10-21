@@ -53,8 +53,15 @@ and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Op
         |> Seq.mapi (fun index header -> header, index)
         |> dict
     | None -> [] |> dict
+    
+  /// Returns the index of the column with the given name
+  member __.GetColumnIndex columnName = headerDic.[columnName]
 
-  member internal __.GetColumnIndex columnName = headerDic.[columnName]
+  /// Returns the index of the column with the given name, or returns None if no column is found
+  member __.TryGetColumnIndex columnName = 
+    match headerDic.TryGetValue columnName with
+    | true, index -> Some index
+    | false, _ -> None
 
   /// Parses the specified CSV content
   static member Parse(text, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) = 
