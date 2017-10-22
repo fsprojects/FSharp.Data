@@ -1,3 +1,6 @@
+#### 2.4.3 - Unreleased
+* Added GetColumnIndex and TryGetColumnIndex to CsvFile.
+
 #### 2.4.2 - October 09 2017
 * Prioritize dates over decimals in type inference.
 
