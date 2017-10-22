@@ -563,3 +563,15 @@ let ``Having null in a cell should not fail saving to string (issue#978)`` () =
     data
     |> Stringify 
     |> ignore
+    
+[<Test>]
+let ``CsvFile.TryGetColumnIndex returns Some matching column if a match``() =
+  let csv = CsvFile.Parse simpleCsv
+  let nameColumnIndex = csv.TryGetColumnIndex "Column1"
+  nameColumnIndex |> should equal (Some 0)
+ 
+[<Test>]
+let ``CsvFile.TryGetColumnIndex returns None if no match``() =
+  let csv = CsvFile.Parse simpleCsv
+  let nameColumnIndex = csv.TryGetColumnIndex "FirstName"
+  nameColumnIndex |> should equal None
