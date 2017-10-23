@@ -438,7 +438,7 @@ module internal HtmlParser =
             | _ -> state.Cons(); scriptDoubleQuoteString state
         and scriptSlash state =
             match state.Peek() with
-            | '/' -> state.Cons(); scriptSinleLineComment state
+            | '/' -> state.Cons(); scriptSingleLineComment state
             | '*' -> state.Cons(); scriptMultiLineComment state
             | _ -> state.Cons(); scriptRegex state
         and scriptMultiLineComment state =
@@ -449,10 +449,10 @@ module internal HtmlParser =
             match state.Peek() with
             | '/' -> state.Cons(); script state
             | _ -> scriptMultiLineComment state
-        and scriptSinleLineComment state =
+        and scriptSingleLineComment state =
             match state.Peek() with
             | '\n' -> state.Cons(); script state
-            | _ -> state.Cons(); scriptSinleLineComment state
+            | _ -> state.Cons(); scriptSingleLineComment state
         and scriptRegex state =
             match state.Peek() with
             | '/' -> state.Cons(); script state
