@@ -17,17 +17,17 @@ open FSharp.Data.Runtime.StructuralTypes
 
 [<TypeProvider>]
 type public JsonProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm, version, bindingContext = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let jsonProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
+  let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
+    let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -53,7 +53,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = JsonGenerationContext.Create(cultureStr, tpType, bindingContext)
+      let ctx = JsonGenerationContext.Create(cultureStr, tpType)
       let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
 
       { GeneratedType = tpType
@@ -64,18 +64,18 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
           result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+                 version this cfg encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>)
-      bindingContext.ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false) 
-      bindingContext.ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root") 
-      bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
+    [ ProvidedStaticParameter("Sample", typeof<string>)
+      ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false) 
+      ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root") 
+      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
 
   let helpText = 
     """<summary>Typed representation of a JSON document.</summary>

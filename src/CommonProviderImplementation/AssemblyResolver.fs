@@ -33,17 +33,15 @@ type FSharpDataRuntimeInfo =
         | Portable_7_259 -> false
 
 
-let init (cfg : TypeProviderConfig) = 
+let init (cfg : TypeProviderConfig) (tp: TypeProviderForNamespaces) = 
 
     if not initialized then
         initialized <- true
         if WebRequest.DefaultWebProxy <> null then // avoid NRE
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
+        //ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
-    let bindingContext = ProvidedTypesContext.Create(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ], isForGenerated=false)
-
-    let runtimeFSharpCoreVersion = bindingContext.FSharpCoreAssemblyVersion
+    let runtimeFSharpCoreVersion = tp.TargetContext.FSharpCoreAssemblyVersion
 
     let versionInfo = 
         if runtimeFSharpCoreVersion >= Version(4,0,0,0) then FSharpDataRuntimeInfo.Net45 // 4.3.1.0, 4.4.0.0
@@ -51,9 +49,9 @@ let init (cfg : TypeProviderConfig) =
 
     let runtimeFSharpDataAssembly = 
         let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly
-        match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
+        match tp.TargetContext.TryBindSimpleAssemblyNameToTarget(asmSimpleName) with
         | Choice1Of2 loader -> loader
         | Choice2Of2 err -> raise err
     
-    runtimeFSharpDataAssembly, versionInfo, bindingContext
+    runtimeFSharpDataAssembly, versionInfo
 

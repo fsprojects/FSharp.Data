@@ -19,12 +19,12 @@ open ProviderImplementation.QuotationBuilder
 
 [<TypeProvider>]
 type public CsvProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version, bindingContext = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let csvProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
+  let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -77,7 +77,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) bindingContext 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) 
 
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
@@ -89,16 +89,16 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
 
       let ctor = 
-          bindingContext.ProvidedConstructor(
-              [ bindingContext.ProvidedParameter("rows", paramType) ], 
+          ProvidedConstructor(
+              [ ProvidedParameter("rows", paramType) ], 
               invokeCode = (fun (Singleton paramValue) ->
                 let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
                 Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
 
       let parseRows = 
-          bindingContext.ProvidedMethod("ParseRows", 
-              [bindingContext.ProvidedParameter("text", typeof<string>)], 
+          ProvidedMethod("ParseRows", 
+              [ProvidedParameter("text", typeof<string>)], 
               rowType.MakeArrayType(), 
               isStatic = true,
               invokeCode = fun (Singleton text) ->         
@@ -118,26 +118,26 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg bindingContext encodingStr resolutionFolder resource typeName maxNumberOfRows
+                 getSpecFromSamples version this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
-      bindingContext.ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
-      bindingContext.ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
-      bindingContext.ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 0)
-      bindingContext.ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
-      bindingContext.ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
-      bindingContext.ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
-      bindingContext.ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
-      bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
+    [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
+      ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
+      ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 0)
+      ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
+      ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
+      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
     """<summary>Typed representation of a CSV file.</summary>

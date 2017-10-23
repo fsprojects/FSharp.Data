@@ -54,9 +54,10 @@ let generateAllExpected() =
 let ``test basic binding context net45``() =
    let refs = getRuntimeRefs Net45
    let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
+   use tp1 = new ProviderImplementation.ProvidedTypes.TypeProviderForNamespaces(config)
+   let ctxt1 = tp1.TargetContext
 
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
@@ -64,12 +65,13 @@ let ``test basic binding context net45``() =
 let ``test basic binding context portable7``() =
    let refs = getRuntimeRefs Portable7
    let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
+   use tp1 = new ProviderImplementation.ProvidedTypes.TypeProviderForNamespaces(config)
+   let ctxt1 = tp1.TargetContext
 
-   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("System.Runtime")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
@@ -77,15 +79,16 @@ let ``test basic binding context portable7``() =
 let ``test basic binding context portable259``() =
    let refs = getRuntimeRefs Portable259
    let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
+   use tp1 = new ProviderImplementation.ProvidedTypes.TypeProviderForNamespaces(config)
+   let ctxt1 = tp1.TargetContext
 
-   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("System.Runtime")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
+   match ctxt1.TryBindAssemblyNameToTarget(AssemblyName("mscorlib")) with
    | Choice1Of2 asm -> asm.GetType("System.Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 

@@ -13,6 +13,7 @@
     <Name>FSharp.Data.DesignTime</Name>
     <TargetFrameworkProfile />
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <DefineConstants>NO_GENERATIVE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +21,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\FSharp.Data.DesignTime.xml</DocumentationFile>
     <StartAction>Project</StartAction>
@@ -35,7 +36,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\FSharp.Data.DesignTime.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>

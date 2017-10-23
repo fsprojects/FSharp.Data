@@ -154,7 +154,7 @@ module Implementation =
         /// At compile time, download the schema
         let topics = lazy (getTopics() |> Async.RunSynchronously)
         let topicsIndexed = lazy (topics.Force() |> Seq.map (fun t -> t.Id, t) |> dict)
-        let indicators = lazy (getIndicators() |> Async.RunSynchronously)
+        let indicators = lazy (getIndicators() |> Async.RunSynchronously |> List.toSeq |> Seq.distinctBy (fun i -> i.Name) |> Seq.toList)
         let indicatorsIndexed = lazy (indicators.Force() |> Seq.map (fun i -> i.Id, i) |> dict)
         let indicatorsByTopic = lazy (
             indicators.Force() 
