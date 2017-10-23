@@ -430,10 +430,12 @@ module internal HtmlParser =
             | _ -> state.Cons(); script state
         and scriptSingleQuoteString state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | ''' -> state.Cons(); script state
             | _ -> state.Cons(); scriptSingleQuoteString state
         and scriptDoubleQuoteString state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | '"' -> state.Cons(); script state
             | _ -> state.Cons(); scriptDoubleQuoteString state
         and scriptSlash state =
@@ -443,18 +445,22 @@ module internal HtmlParser =
             | _ -> state.Cons(); scriptRegex state
         and scriptMultiLineComment state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | '*' -> state.Cons(); scriptMultiLineCommentStar state
             | _ -> state.Cons(); scriptMultiLineComment state
         and scriptMultiLineCommentStar state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | '/' -> state.Cons(); script state
             | _ -> scriptMultiLineComment state
         and scriptSingleLineComment state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | '\n' -> state.Cons(); script state
             | _ -> state.Cons(); scriptSingleLineComment state
         and scriptRegex state =
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
             | '/' -> state.Cons(); script state
             | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
