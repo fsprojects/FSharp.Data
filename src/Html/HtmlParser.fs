@@ -442,7 +442,7 @@ module internal HtmlParser =
             match state.Peek() with
             | '/' -> state.Cons(); scriptSingleLineComment state
             | '*' -> state.Cons(); scriptMultiLineComment state
-            | _ -> state.Cons(); scriptRegex state
+            | _ -> scriptRegex state
         and scriptMultiLineComment state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
@@ -462,7 +462,10 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | '/' -> state.Cons(); script state
-            | '\\' -> state.Cons(); state.Cons(); scriptRegex state
+            | '\\' -> state.Cons(); scriptRegexBackslash state
+            | _ -> state.Cons(); scriptRegex state
+        and scriptRegexBackslash state =
+            match state.Peek() with
             | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
