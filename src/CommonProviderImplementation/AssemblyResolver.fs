@@ -39,7 +39,7 @@ let init (cfg : TypeProviderConfig) (tp: TypeProviderForNamespaces) =
         initialized <- true
         if WebRequest.DefaultWebProxy <> null then // avoid NRE
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-        //ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
+        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
     let runtimeFSharpCoreVersion = tp.TargetContext.FSharpCoreAssemblyVersion
 
