@@ -462,6 +462,7 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | '/' -> state.Cons(); script state
+            | '\\' -> state.Cons(); state.Cons(); scriptRegex state
             | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
