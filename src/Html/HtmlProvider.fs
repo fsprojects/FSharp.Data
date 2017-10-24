@@ -15,12 +15,12 @@ open FSharp.Data.Runtime.BaseTypes
 
 [<TypeProvider>]
 type public HtmlProvider(cfg:TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces()
+    inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm, version, bindingContext = AssemblyResolver.init cfg
+    let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
     let ns = "FSharp.Data"
-    let htmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
+    let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
     
     let buildTypes (typeName:string) (args:obj[]) =
 
@@ -45,7 +45,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       PreferOptionals  = preferOptionals }
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) bindingContext
+                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr)
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
@@ -55,18 +55,18 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+                     getSpecFromSamples version this cfg encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 
-        [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")           
-          bindingContext.ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
-          bindingContext.ProvidedStaticParameter("IncludeLayoutTables", typeof<bool>, parameterDefaultValue = false)
-          bindingContext.ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
-          bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-          bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-          bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
-          bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
+        [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")           
+          ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("IncludeLayoutTables", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+          ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
+          ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
   
     let helpText = 
         """<summary>Typed representation of an HTML file.</summary>

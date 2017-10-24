@@ -38,7 +38,7 @@ let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
 let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ ("portable" + string profile) ++ assemblyName
 
-let getRuntimeRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs
+let getRuntimeRefs platform = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then
@@ -49,45 +49,6 @@ let generateAllExpected() =
             |> ignore
         with e ->
             raise(new Exception(sprintf "Failed generating: %s" sample, e))
-
-[<Test>]
-let ``test basic binding context net45``() =
-   let refs = getRuntimeRefs Net45
-   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
-
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-
-[<Test>]
-let ``test basic binding context portable7``() =
-   let refs = getRuntimeRefs Portable7
-   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
-
-   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-
-[<Test>]
-let ``test basic binding context portable259``() =
-   let refs = getRuntimeRefs Portable259
-   let config = Testing.MakeSimulatedTypeProviderConfig (resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly="whatever.dll", runtimeAssemblyRefs=refs)
-   let ctxt1 = ProvidedTypesContext.Create (config, isForGenerated=false)
-
-   match ctxt1.TryBindAssembly(AssemblyName("System.Runtime")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").FullName |> should equal "System.Object"
-   | Choice2Of2 err -> raise err
-   match ctxt1.TryBindAssembly(AssemblyName("mscorlib")) with
-   | Choice1Of2 asm -> asm.GetType("System.Object").Assembly.GetName().Name |> should equal "System.Runtime"
-   | Choice2Of2 err -> raise err
 
 let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")

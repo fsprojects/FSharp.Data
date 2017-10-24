@@ -22,7 +22,6 @@ open ProviderImplementation.ProvidedTypes
 type internal JsonGenerationContext =
   { CultureStr : string
     TypeProviderType : ProvidedTypeDefinition
-    BindingContext : ProvidedTypesContext
     // to nameclash type names
     UniqueNiceName : string -> string 
     IJsonDocumentType : Type
@@ -30,14 +29,13 @@ type internal JsonGenerationContext =
     JsonRuntimeType : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
     GenerateConstructors : bool }
-  static member Create(cultureStr, tpType, bindingContext, ?uniqueNiceName, ?typeCache) =
+  static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
-    JsonGenerationContext.Create(cultureStr, tpType, bindingContext, uniqueNiceName, typeCache, true)
-  static member Create(cultureStr, tpType, bindingContext, uniqueNiceName, typeCache, generateConstructors) =
+    JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, true)
+  static member Create(cultureStr, tpType, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
-      BindingContext = bindingContext
       UniqueNiceName = uniqueNiceName 
       IJsonDocumentType = typeof<IJsonDocument>
       JsonValueType = typeof<JsonValue>
@@ -156,10 +154,8 @@ module JsonTypeBuilder =
             |> String.concat "Or"
         |> ctx.UniqueNiceName
 
-    let bindingContext = ctx.BindingContext
-
     // Generate new type for the heterogeneous type
-    let objectTy = bindingContext.ProvidedTypeDefinition(typeName, Some ctx.IJsonDocumentType, hideObjectMethods = true, nonNullable = true)
+    let objectTy = ProvidedTypeDefinition(typeName, Some ctx.IJsonDocumentType, hideObjectMethods = true, nonNullable = true)
     ctx.TypeProviderType.AddMember objectTy
 
     // to nameclash property names
@@ -193,8 +189,8 @@ module JsonTypeBuilder =
                   result.ConvertedType.MakeArrayType(), 
                   (replaceJDocWithJValue ctx result.ConvertedType).MakeArrayType()
 
-          bindingContext.ProvidedProperty(name, typ, getterCode = codeGenerator multiplicity result tag.Code),
-          bindingContext.ProvidedParameter(NameUtils.niceCamelName name, constructorType) ]
+          ProvidedProperty(name, typ, getterCode = codeGenerator multiplicity result tag.Code),
+          ProvidedParameter(NameUtils.niceCamelName name, constructorType) ]
 
     let properties, parameters = List.unzip members
     objectTy.AddMembers properties
@@ -204,7 +200,7 @@ module JsonTypeBuilder =
         let cultureStr = ctx.CultureStr
 
         if forCollection then
-            let ctor = bindingContext.ProvidedConstructor(parameters, invokeCode = fun args -> 
+            let ctor = ProvidedConstructor(parameters, invokeCode = fun args -> 
                 let elements = Expr.NewArray(typeof<obj>, args |> List.map (fun a -> Expr.Coerce(a, typeof<obj>)))
                 let cultureStr = ctx.CultureStr
                 <@@ JsonRuntime.CreateArray(%%elements, cultureStr) @@>)
@@ -212,19 +208,19 @@ module JsonTypeBuilder =
         else
             for param in parameters do
                 let ctor = 
-                    bindingContext.ProvidedConstructor([param], invokeCode = fun (Singleton arg) -> 
+                    ProvidedConstructor([param], invokeCode = fun (Singleton arg) -> 
                         let arg = Expr.Coerce(arg, typeof<obj>)
                         <@@ JsonRuntime.CreateValue((%%arg:obj), cultureStr) @@>)
                 objectTy.AddMember ctor
 
             let defaultCtor = 
-                bindingContext.ProvidedConstructor([], invokeCode = fun _ -> 
+                ProvidedConstructor([], invokeCode = fun _ -> 
                     <@@ JsonRuntime.CreateValue(null :> obj, cultureStr) @@>)
             objectTy.AddMember defaultCtor
 
         objectTy.AddMember <| 
-            bindingContext.ProvidedConstructor(
-                [bindingContext.ProvidedParameter("jsonValue", ctx.JsonValueType)], 
+            ProvidedConstructor(
+                [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                 invokeCode = fun (Singleton arg) -> 
                     <@@ JsonDocument.Create((%%arg:JsonValue), "") @@>)
 
@@ -233,8 +229,6 @@ module JsonTypeBuilder =
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   and internal generateJsonType ctx canPassAllConversionCallingTypes optionalityHandledByParent nameOverride inferedType =
-
-    let bindingContext = ctx.BindingContext
 
     let inferedType = 
       match inferedType with
@@ -286,7 +280,7 @@ module JsonTypeBuilder =
             |> ctx.UniqueNiceName
 
         // Generate new type for the record
-        let objectTy = bindingContext.ProvidedTypeDefinition(name, Some ctx.IJsonDocumentType, hideObjectMethods = true, nonNullable = true)
+        let objectTy = ProvidedTypeDefinition(name, Some ctx.IJsonDocumentType, hideObjectMethods = true, nonNullable = true)
 
         ctx.TypeProviderType.AddMember(objectTy)
 
@@ -339,8 +333,8 @@ module JsonTypeBuilder =
 
               let name = makeUnique prop.Name
               prop.Name,
-              bindingContext.ProvidedProperty(name, convertedType, getterCode = getter),
-              bindingContext.ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
+              ProvidedProperty(name, convertedType, getterCode = getter),
+              ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
 
         let names, properties, parameters = List.unzip3 members
         objectTy.AddMembers properties
@@ -348,7 +342,7 @@ module JsonTypeBuilder =
         if ctx.GenerateConstructors then
 
             objectTy.AddMember <| 
-                bindingContext.ProvidedConstructor(parameters, invokeCode = fun args -> 
+                ProvidedConstructor(parameters, invokeCode = fun args -> 
                     let properties = 
                         Expr.NewArray(typeof<string * obj>, 
                                       args 
@@ -357,8 +351,8 @@ module JsonTypeBuilder =
                     <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>)
 
             objectTy.AddMember <| 
-                    bindingContext.ProvidedConstructor(
-                        [bindingContext.ProvidedParameter("jsonValue", ctx.JsonValueType)], 
+                    ProvidedConstructor(
+                        [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                         invokeCode = fun (Singleton arg) -> 
                             <@@ JsonDocument.Create((%%arg:JsonValue), "") @@> )
 

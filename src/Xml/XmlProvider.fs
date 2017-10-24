@@ -16,17 +16,17 @@ open FSharp.Data.Runtime.StructuralTypes
 
 [<TypeProvider>]
 type public XmlProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.XmlProvider'
-  let asm, version, bindingContext = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let xmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
+  let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
+    let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -53,7 +53,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, bindingContext)  
+      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
@@ -64,18 +64,18 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
     generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+                 version this cfg encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ bindingContext.ProvidedStaticParameter("Sample", typeof<string>)
-      bindingContext.ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
-      bindingContext.ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
-      bindingContext.ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-      bindingContext.ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
-      bindingContext.ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
+    [ ProvidedStaticParameter("Sample", typeof<string>)
+      ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) ]
 
   let helpText = 
     """<summary>Typed representation of a XML file.</summary>
