@@ -1,5 +1,8 @@
-#### 2.4.3 - Unreleased
+#### 2.4.3 - December 03 2017
 * Added GetColumnIndex and TryGetColumnIndex to CsvFile.
+* Fixed outdated examples in the documentation that no longer worked.
+* Fixed parsing of script elements with JavaScript string literals, regular expression literals, or comments, that looked like HTML tags.
+* Fixed parsing of cookie values containing the '=' character.
 
 #### 2.4.2 - October 09 2017
 * Prioritize dates over decimals in type inference.
