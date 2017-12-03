@@ -71,7 +71,6 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
-[<Ignore "Temporarily disabled">]
 let ``Documentation generated correctly `` file = 
   let errors = processFile file
   if errors <> "" then
