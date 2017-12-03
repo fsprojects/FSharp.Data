@@ -82,7 +82,6 @@ let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
 [<Test>]
-[<Platform("Net")>]
 let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ "accept", "application/xml,text/html;q=0.3"
