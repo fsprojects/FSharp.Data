@@ -1465,11 +1465,12 @@ module internal CookieHandling =
             |> Array.iteri (fun i cookiePart ->
                 let cookiePart = cookiePart.Trim()
                 if i = 0 then
-                    let kvp = cookiePart.Split '='
-                    if kvp.Length > 0 then
-                        cookie.Name <- kvp.[0]
-                        if kvp.Length > 1 then
-                            cookie.Value <- kvp.[1]
+                    let firstEqual = cookiePart.IndexOf '='
+                    if firstEqual > -1 then
+                        cookie.Name <- cookiePart.Substring(0, firstEqual)
+                        cookie.Value <- cookiePart.Substring(firstEqual + 1)
+                    else
+                        cookie.Name <- cookiePart                    
                 elif cookiePart |> startsWithIgnoreCase "path" then
                     let kvp = cookiePart.Split '='
                     if kvp.Length > 1 && kvp.[1] <> "" && kvp.[1] <> "/" then
