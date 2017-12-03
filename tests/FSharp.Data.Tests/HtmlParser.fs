@@ -96,6 +96,32 @@ let ``Can handle attributes with no value``() =
         ]
     node.Attributes() |> should equal expected
 
+[<TestCase("var r = \"</script>\"")>]
+[<TestCase("var r = '</script>'")>]
+[<TestCase("var r = /</g")>]
+[<TestCase("""var r = /\/</g""")>]
+[<TestCase("""var r = /a\/</g""")>]
+[<TestCase("""var r = /\\/g""")>]
+[<TestCase("//</script>\n")>]
+[<TestCase("/*</script>*/")>]
+[<TestCase("/*</script>**/")>]
+[<TestCase("""/*
+</script>
+Test comment
+*/""")>]
+let ``Can handle special characters in scripts`` content =
+    let html = sprintf "<script>%s</script>" content
+    let node = HtmlNode.Parse html |> List.head
+    let expected = HtmlNode.NewElement("script", [ HtmlNode.NewText content ])
+    node |> should equal expected
+
+[<Test>]
+let ``Can handle special characters in single line script comments`` () =
+    let html = "<script>//</script><body></body>"
+    let node = HtmlNode.Parse html |> List.head
+    let expected = HtmlNode.NewElement("script")
+    node |> should equal expected
+
 [<Test>]
 let ``Can parse tables from a simple html``() = 
     let html = """<html>
