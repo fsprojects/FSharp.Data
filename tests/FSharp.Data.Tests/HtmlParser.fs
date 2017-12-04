@@ -79,6 +79,40 @@ let ``Can handle unclosed divs inside lis correctly``() =
                      HtmlNode.NewElement("li")]) ]
     result |> should equal expected
 
+[<TestCase(@"<a href=http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href = http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href =http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href= http://test.com/index>Test</a>")>]
+let ``Can handle slashes in unquoted attributes`` content =
+    let result = HtmlDocument.Parse content
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "href", @"http://test.com/index" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
+[<Test>]
+let ``Can handle char refs in unquoted attributes``() =
+    let result = HtmlDocument.Parse "<a alt=&lt;>Test</a>"
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "alt", "<" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
+[<Test>]
+let ``Can handle multiple unquoted attributes``() =
+    let result = HtmlDocument.Parse "<a src = target alt = logo>Test</a>"
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "src", "target"
+                  "alt", "logo" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
 [<Test>]
 let ``Can handle multiple char refs in a text run``() = 
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"

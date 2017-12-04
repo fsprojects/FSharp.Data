@@ -302,7 +302,7 @@ module internal HtmlParser =
             | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
 
-        member private x.ConsAttrValue(c) =
+        member x.ConsAttrValue(c) =
             match !x.Attributes with
             | [] -> x.NewAttribute(); x.ConsAttrValue(c)
             | (_,h) :: _ -> h.Cons(c)
@@ -691,17 +691,21 @@ module internal HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | '"' -> state.Pop(); attributeValueQuoted '"' state
             | '\'' -> state.Pop(); attributeValueQuoted '\'' state
-            | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+            | _ -> attributeValueUnquoted state
         and attributeValueUnquoted state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); beforeAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
+            | '/' -> state.Pop(); attributeValueUnquotedSlash state
             | '>' -> state.Pop(); state.EmitTag(false)
             | '&' -> 
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
                 attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+        and attributeValueUnquotedSlash state =
+            match state.Peek() with
+            | '>' -> selfClosingStartTag state
+            | _ -> state.ConsAttrValue('/'); state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueQuoted quote state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
