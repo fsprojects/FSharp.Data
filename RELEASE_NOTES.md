@@ -1,5 +1,5 @@
 #### 2.4.4 - Unreleased
-Fix parsing of unquoted HTML attributes containing URLs.
+* Fix parsing of unquoted HTML attributes containing URLs.
 
 #### 2.4.3 - December 03 2017
 * Added GetColumnIndex and TryGetColumnIndex to CsvFile.
