@@ -1,4 +1,4 @@
-(** 
+(**
 # F# Data: CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
@@ -11,7 +11,7 @@ present on the columns of that sample. The column names are obtained from the fi
 
 ## Introducing the provider
 
-The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly
 is located in the `../../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
@@ -32,8 +32,8 @@ following structure (you can find a larger example in the [`data/MSFT.csv`](../d
     2012-01-25,29.07,29.65,29.07,29.56,59231700,29.56
     2012-01-24,29.47,29.57,29.18,29.34,51703300,29.34
 
-As usual with CSV files, the first row contains the headers (names of individual columns) 
-and the next rows define the data. We can pass reference to the file to `CsvProvider` to 
+As usual with CSV files, the first row contains the headers (names of individual columns)
+and the next rows define the data. We can pass reference to the file to `CsvProvider` to
 get a strongly typed view of the file:
 *)
 
@@ -46,7 +46,7 @@ a file or from a web resource (and there's also an asynchronous `AsyncLoad` vers
 have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live CSV file on the Yahoo finance web site:
 *)
- 
+
 // Download the stock prices
 let msft = Stocks.Load("http://www.google.com/finance/historical?q=MSFT&output=csv")
 
@@ -94,8 +94,8 @@ As one more example, we use the `Candlestick` chart to get a more detailed look 
 data over the last month:
 *)
 
-// Get last months' prices in HLOC format 
-let recent = 
+// Get last months' prices in HLOC format
+let recent =
   [ for row in msft.Rows do
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
@@ -112,7 +112,7 @@ Chart.Candlestick(recent).WithYAxis(Min = 70.0, Max = 80.0)
 
 Another interesting feature of the CSV type provider is that it supports F# units of measure.
 If the header includes the name or symbol of one of the standard SI units, then the generated type
-returns values annotated with the appropriate unit. 
+returns values annotated with the appropriate unit.
 
 In this section, we use a simple file [`data/SmallTest.csv`](../data/SmallTest.csv) which
 looks as follows:
@@ -149,7 +149,7 @@ open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
   let speed = row.Distance / row.Time
-  if speed > 15.0M<metre/second> then 
+  if speed > 15.0M<metre/second> then
     printfn "%s (%A m/s)" row.Name speed
 
 (**
@@ -173,16 +173,16 @@ type AirQuality = CsvProvider<"../data/AirQuality.csv", ";">
 let airQuality = new AirQuality()
 
 for row in airQuality.Rows do
-  if row.Month > 6 then 
+  if row.Month > 6 then
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
 The air quality dataset ([`data/AirQuality.csv`](../data/AirQuality.csv)) is used in many
-samples for the Statistical Computing language R. A short description of the dataset can be found 
+samples for the Statistical Computing language R. A short description of the dataset can be found
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
 If you are parsing a tab-separated file that uses `\t` as the separator, you can also
-specify the separator explicitly. However, if you're using an url or file that has 
+specify the separator explicitly. However, if you're using an url or file that has
 the `.tsv` extension, the type provider will use `\t` by default. In the following example,
 we also set `IgnoreErrors` static parameter to `true` so that lines with incorrect number of elements
 are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
@@ -192,19 +192,19 @@ let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true>.GetS
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
-let cause = mortalityNy.Rows |> Seq.find (fun r -> 
+let cause = mortalityNy.Rows |> Seq.find (fun r ->
   r.``Cause of death Code`` = "V13.4")
 
-// Print the number of injured cyclists 
+// Print the number of injured cyclists
 printfn "CAUSE: %s" cause.``Cause of death``
 for r in mortalityNy.Rows do
-  if r.``Cause of death Code`` = "V13.4" then 
+  if r.``Cause of death Code`` = "V13.4" then
     printfn "%s (%d cases)" r.County r.Count
 
 (**
 
 Finally, note that it is also possible to specify multiple different separators
-for the `CsvProvider`. This might be useful if a file is irregular and contains 
+for the `CsvProvider`. This might be useful if a file is irregular and contains
 rows separated by either semicolon or a colon. You can use:
 `CsvProvider<"../data/AirQuality.csv", Separator=";,">`.
 
@@ -222,16 +222,16 @@ excluding the `Double.NaN` values. We first obtain the `Ozone` property for
 each row, then remove missing values and then use the standard `Seq.average` function:
 *)
 
-let mean = 
-  airQuality.Rows 
-  |> Seq.map (fun row -> row.Ozone) 
-  |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
-  |> Seq.average 
+let mean =
+  airQuality.Rows
+  |> Seq.map (fun row -> row.Ozone)
+  |> Seq.filter (fun elem -> not (Double.IsNaN elem))
+  |> Seq.average
 
 (**
 
 If the sample doesn't have missing values on all columns, but at runtime missing values could
-appear anywhere, you can set the static parameter `AssumeMissingValues` to `true` in order to force `CsvProvider` 
+appear anywhere, you can set the static parameter `AssumeMissingValues` to `true` in order to force `CsvProvider`
 to assume missing values can occur in any column.
 
 ## Controlling the column types
@@ -296,15 +296,15 @@ consider that row as a data row. In that case, the columns will be named `Column
 names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
 and still have the provider infer the type for you. Example:
 *)
-type OneTwoThree = 
-  CsvProvider<"1,2,3", HasHeaders = false, 
+type OneTwoThree =
+  CsvProvider<"1,2,3", HasHeaders = false,
     Schema = "Duration (float<second>),foo,float option">
 
 let csv = OneTwoThree.GetSample()
 for row in csv.Rows do
-  printfn "%f %d %f" 
-    (row.Duration/1.0<second>) 
-    row.Foo 
+  printfn "%f %d %f"
+    (row.Duration/1.0<second>)
+    row.Foo
     (defaultArg row.Column3 1.0)
 (**
 
@@ -315,13 +315,13 @@ if you want to rename the 3rd column (the `PClass` column) to `Passenger Class` 
 the other columns blank in the schema (you also don't need to add all the trailing commas).
 
 *)
-type Titanic1 = 
-  CsvProvider<"../data/Titanic.csv", 
+type Titanic1 =
+  CsvProvider<"../data/Titanic.csv",
     Schema=",,Passenger Class,,,float">
 
 let titanic1 = Titanic1.GetSample()
 for row in titanic1.Rows do
-  printfn "%s Class = %d Fare = %g" 
+  printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -329,13 +329,13 @@ for row in titanic1.Rows do
 Alternatively, you can rename and override the type of any column by name instead of by position:
 
 *)
-type Titanic2 = 
-  CsvProvider<"../data/Titanic.csv", 
+type Titanic2 =
+  CsvProvider<"../data/Titanic.csv",
     Schema="Fare=float,PClass->Passenger Class">
 
 let titanic2 = Titanic2.GetSample()
 for row in titanic2.Rows do
-  printfn "%s Class = %d Fare = %g" 
+  printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
 (**
 
@@ -352,22 +352,22 @@ the `Save` method. You can also use the `SaveToString()` to get the output direc
 
 // Saving the first 10 rows that don't have missing values to a new csv file
 airQuality
-  .Filter(fun row -> 
-    not (Double.IsNaN row.Ozone) && 
+  .Filter(fun row ->
+    not (Double.IsNaN row.Ozone) &&
     not (Double.IsNaN row.``Solar.R``))
   .Truncate(10)
   .SaveToString()
 
-(** 
+(**
 
 It's also possible to transform the columns themselves by using `Map` and the constructor for the `Row` type.
 
 *)
 
-let doubleOzone = 
-  airQuality.Map(fun row -> 
+let doubleOzone =
+  airQuality.Map(fun row ->
     AirQuality.Row
-      ( row.Ozone * 2.0, row.``Solar.R``, 
+      ( row.Ozone * 2.0, row.``Solar.R``,
         row.Wind, row.Temp, row.Month, row.Day))
 
 (**
@@ -376,12 +376,12 @@ You can also append new rows, either by creating them directly as in the previou
 
 *)
 
-let newRows = 
+let newRows =
   AirQuality.ParseRows
     ("""1.0, 2.0, 3M, 20, 1, 1
         1.3, 2.1, 3M, 21, 1, 2\n""")
 
-let airQualityWithExtraRows = 
+let airQualityWithExtraRows =
   airQuality.Append newRows
 
 (**
@@ -390,11 +390,11 @@ It's even possible to create csv files without parsing at all:
 
 *)
 
-type MyCsvType = 
-  CsvProvider<Schema = "A (int), B (string), C (date option)", 
+type MyCsvType =
+  CsvProvider<Schema = "A (int), B (string), C (date option)",
     HasHeaders=false>
 
-let myRows = 
+let myRows =
   [ MyCsvType.Row(1, "a", None)
     MyCsvType.Row(2, "B", Some DateTime.Now) ]
 
@@ -411,17 +411,17 @@ to `false`. If the number of rows is very big, you have to do this otherwise you
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
 *)
-let [<Literal>] ``Sacremento Real Estate`` = 
+let [<Literal>] ``Sacremento Real Estate`` =
   "http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv"
 
 let scores = CsvProvider<``Sacremento Real Estate``, CacheRows=false>.GetSample()
-stocks.Take(10).Cache()
+scores.Take(10).Cache()
 
 (**
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
- * [F# Data: CSV Parser](CsvFile.html) - provides more information about 
+ * [F# Data: CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
  * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 
