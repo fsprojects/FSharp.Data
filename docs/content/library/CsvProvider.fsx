@@ -411,10 +411,10 @@ to `false`. If the number of rows is very big, you have to do this otherwise you
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
 *)
-let [<Literal>] MSFT = 
-  "http://www.google.com/finance/historical?q=MSFT&output=csv"
+let [<Literal>] ``Sacremento Real Estate`` = 
+  "http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv"
 
-let stocks = CsvProvider<MSFT, CacheRows=false>.GetSample()
+let scores = CsvProvider<``Sacremento Real Estate``, CacheRows=false>.GetSample()
 stocks.Take(10).Cache()
 
 (**
