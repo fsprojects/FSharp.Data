@@ -1,5 +1,6 @@
 #### 2.4.4 - Unreleased
 * Fix parsing of unquoted HTML attributes containing URLs.
+* Fixed HTTP form body url encoding.
 
 #### 2.4.3 - December 03 2017
 * Added GetColumnIndex and TryGetColumnIndex to CsvFile.
