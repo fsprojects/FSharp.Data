@@ -254,7 +254,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
     try
       cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
     with :? ArgumentOutOfRangeException when Type.GetType("Mono.Runtime") <> null ->
-      // In Mono before 4.0, the above call was throwing ArgumentOurOfRange exception (see #426)
+      // In Mono before 4.0, the above call was throwing ArgumentOutOfRange exception (see #426)
       // Since Mono 4.0, the above method works, but the following workaround stopps working.
       // So, we try the workaround *only* on Mono and *only* when we get out of range exception.
       let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
