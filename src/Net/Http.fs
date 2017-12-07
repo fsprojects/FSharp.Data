@@ -1513,6 +1513,12 @@ type Http private() =
 #endif
 
     static let charsetRegex = Regex("charset=([^;\s]*)", regexOptions)
+    
+    /// Correctly encodes large form data values.
+    /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
+    /// and https://msdn.microsoft.com/en-us/library/system.uri.escapedatastring(v=vs.110).aspx
+    static member internal UrlEncode (query:string) =
+        (WebUtility.UrlEncode query).Replace("+","%20")
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -1592,7 +1598,7 @@ type Http private() =
                 | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
                 | FormValues values ->
                     let bytes (e:Encoding) =
-                        [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                        [ for k, v in values -> Http.UrlEncode k + "=" + Http.UrlEncode v ]
                         |> String.concat "&"
                         |> e.GetBytes
                     HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)

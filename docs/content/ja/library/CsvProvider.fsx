@@ -405,8 +405,11 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 データセットを小さなサイズに変形した後に限定すべきです：
 *)
 
-let stocks = CsvProvider<"http://www.google.com/finance/historical?q=MSFT&output=csv", CacheRows=false>.GetSample()
-stocks.Take(10).Cache()
+let [<Literal>] ``Sacremento Real Estate`` = 
+  "http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv"
+
+let realEstate = CsvProvider<``Sacremento Real Estate``, CacheRows=false>.GetSample()
+realEstate.Take(10).Cache()
 
 (**
 ## 関連する記事

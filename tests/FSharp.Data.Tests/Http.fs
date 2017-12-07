@@ -94,3 +94,10 @@ let ``4k+ bodies work`` () =
     let body2 = FSharp.Data.FormValues([("input", bodyString2)])
 
     Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
+
+[<Test>]
+let ``32k+ bodies work`` () =
+    let bodyString2 = seq {for i in 0..20000 -> "x\n"} |> String.concat ""
+    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+
+    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
