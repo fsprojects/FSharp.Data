@@ -71,6 +71,7 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
+[<Platform("Mono")>]
 let ``Documentation generated correctly `` file = 
   let errors = processFile file
   if errors <> "" then
