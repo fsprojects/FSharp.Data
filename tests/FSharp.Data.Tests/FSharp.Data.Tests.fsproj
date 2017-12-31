@@ -324,7 +324,7 @@
     <Compile Include="HtmlProvider.fs" />
     <Compile Include="HtmlProviderList.fs" />
     <None Include="app.config" />
-    <None Include="paket.references" />
+    <None Include="FSharp.Data.Tests.paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Data">

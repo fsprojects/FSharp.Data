@@ -25,6 +25,12 @@ group NetCore
     redirects: on
     source https://api.nuget.org/v3/index.json
 
-    nuget FSharp.Core
+    nuget FSharp.Core 4.2.3
     nuget Iconic.Zlib.Netstandard
+    nuget FsUnit
+    nuget FsCheck
+    nuget Nancy 2.0.0-clinteastwood
+    nuget Nancy.Hosting.Self 2.0.0-clinteastwood
+    nuget NUnit
+    nuget NUnit.Runners
     clitool dotnet-mergenupkg

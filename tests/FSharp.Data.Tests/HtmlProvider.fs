@@ -1,4 +1,9 @@
-﻿#if INTERACTIVE
+﻿#if NETSTANDARD2_0
+module FSharp.Data.Tests.HtmlProvider
+do()
+#else
+
+#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
@@ -344,3 +349,5 @@ let ``Count columns correctly in the presence of colspans (Bug 989)``() =
     match table.Headers with
     | None -> failwith "No headers found"
     | Some headers -> headers |> should equal [| "Double"; "Double"; "Single" |]
+
+#endif

@@ -1,4 +1,9 @@
-﻿#if INTERACTIVE
+﻿#if NETSTANDARD2_0
+module FSharp.Data.Tests.JsonProvider
+do ()
+#else
+
+#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
@@ -651,3 +656,4 @@ let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
 
+#endif
