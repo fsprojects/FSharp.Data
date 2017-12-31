@@ -3,7 +3,7 @@ source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 
 redirects: on
 
-nuget FSharp.Core 3.1.2.5
+nuget FSharp.Core 4.0.0.1
 nuget Zlib.Portable
 nuget FSharp.Charting
 nuget FSharp.Formatting
@@ -20,3 +20,11 @@ github fsharp/FAKE modules/Octokit/Octokit.fsx
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+
+group NetCore
+    redirects: on
+    source https://api.nuget.org/v3/index.json
+
+    nuget FSharp.Core
+    nuget Iconic.Zlib.Netstandard
+    clitool dotnet-mergenupkg

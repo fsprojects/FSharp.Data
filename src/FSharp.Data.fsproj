@@ -100,10 +100,10 @@
   <Target Name="BeforeBuild">
   </Target>  -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)\bin\$(Configuration)\net45" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)\bin\$(Configuration)\net45" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(SolutionDir)\bin\$(Configuration)\net45" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)\bin\$(Configuration)\net45" />
   </Target>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v2.0' Or $(TargetFrameworkVersion) == 'v3.0' Or $(TargetFrameworkVersion) == 'v3.5')">
