@@ -3,6 +3,8 @@
 // --------------------------------------------------------------------------------------
 
 #I "packages/FAKE/tools/"
+open Fake
+open Fake
 #r "FakeLib.dll"
 
 #if MONO
@@ -39,10 +41,16 @@ let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
+let dotnetSdkVersion = "2.0.3"
+let mutable sdkPath = None
+
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
+
+
+let bindir = "./bin"
 
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 let nugetVersion = 
@@ -80,7 +88,13 @@ Target "AssemblyInfo" <| fun () ->
 // Clean build results
 
 Target "Clean" <| fun () ->
-    CleanDirs ["bin"]
+    // have to clean netcore output directories because they corrupt the full-framework outputs
+    seq {
+        yield bindir
+        yield! !!"**/bin"
+        yield! !!"**/obj"
+    } |> CleanDirs
+    
 
 Target "CleanDocs" <| fun () ->
     CleanDirs ["docs/output"]
@@ -95,10 +109,25 @@ Target "CleanInternetCaches" <| fun () ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
+Target "EnsureNetCoreSdk" <| fun () -> 
+    sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
+
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
+
+Target "BuildNetCore" <| fun () -> 
+    DotNetCli.Restore (fun p -> { p with 
+                                    Project = "FSharp.Data.netcore.sln"
+                                    ToolPath = (Option.defaultValue "" sdkPath) @@ "dotnet" })
+    DotNetCli.Build (fun p -> { p with 
+                                    Configuration = "Release"
+                                    Project = "FSharp.Data.netcore.sln"
+                                    ToolPath = (Option.defaultValue "" sdkPath) @@ "dotnet" })
+    let netstandardRelDir = bindir @@ "Release" @@ "netstandard2.0"                                
+    FileSystemHelper.ensureDirectory netstandardRelDir
+    CopyFiles netstandardRelDir (!! "./src/bin/Release/netstandard2.0/*")
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
@@ -277,6 +306,10 @@ Target "All" DoNothing
 
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
+
+"BuildNetCore" 
+    =?> ("EnsureNetCoreSdk", not <| DotNetCli.isInstalled() && DotNetCli.getVersion() <> dotnetSdkVersion)
+    ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
 

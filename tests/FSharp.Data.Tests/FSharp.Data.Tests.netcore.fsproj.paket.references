@@ -1,8 +1,0 @@
-group NetCore
-    FSharp.Core
-    FsUnit
-    FsCheck
-    Nancy
-    Nancy.Hosting.Self
-    NUnit
-    NUnit.Runners
