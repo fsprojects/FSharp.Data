@@ -41,7 +41,7 @@
     <file src="..\bin\Release\net45\*" target="lib/net45" />
     <file src="..\bin\Release\portable7\*" target="lib/portable-net45+netcore45" />
     <file src="..\bin\Release\portable259\*" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\Release\netstandard2.0\*" target="lib/netstandard2.0">
+    <file src="..\bin\Release\netstandard2.0\*" target="lib/netstandard2.0" />
     <file src="linqpad-samples\*.*" target="linqpad-samples" />
   </files>
 </package>
