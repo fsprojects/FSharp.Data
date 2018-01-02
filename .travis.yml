@@ -3,11 +3,17 @@ language: csharp
 sudo: required
 dist: trusty
 
-mono:
-  - 4.8.1
-  - 5.0.1
-  - latest
-  - nightly
+# have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
+matrix:
+  include:
+    - mono: 4.8.1
+      dotnet: 2.0.3
+    - mono: 5.0.1
+      dotnet: 2.0.3
+    - mono: latest
+      dotnet: 2.0.3
+    - mono: nightly
+      dotnet: 2.0.3
 
 os:
   - linux
