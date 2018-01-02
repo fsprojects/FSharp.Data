@@ -7,6 +7,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <OtherFlags>--warnon:1182</OtherFlags>
     <WarningLevel>3</WarningLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

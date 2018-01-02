@@ -120,14 +120,14 @@ Target "Build" <| fun () ->
 Target "BuildNetCore" <| fun () -> 
     DotNetCli.Restore (fun p -> { p with 
                                     Project = "FSharp.Data.netcore.sln"
-                                    ToolPath = (Option.defaultValue "" sdkPath) @@ "dotnet" })
+                                    ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
     DotNetCli.Build (fun p -> { p with 
                                     Configuration = "Release"
                                     Project = "FSharp.Data.netcore.sln"
-                                    ToolPath = (Option.defaultValue "" sdkPath) @@ "dotnet" })
+                                    ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
     let netstandardRelDir = bindir @@ "Release" @@ "netstandard2.0"                                
     FileSystemHelper.ensureDirectory netstandardRelDir
-    CopyFiles netstandardRelDir (!! "./src/bin/Release/netstandard2.0/*")
+    CopyFiles netstandardRelDir (!! "./src/bin/Release/netstandard2.0/*" -- "./src/bin/Release/netstandard2.0/*.json")
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
