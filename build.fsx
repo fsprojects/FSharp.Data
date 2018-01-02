@@ -118,13 +118,18 @@ Target "Build" <| fun () ->
     |> ignore
 
 Target "BuildNetCore" <| fun () -> 
-    DotNetCli.Restore (fun p -> { p with 
-                                    Project = "FSharp.Data.netcore.sln"
-                                    ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
-    DotNetCli.Build (fun p -> { p with 
-                                    Configuration = "Release"
-                                    Project = "FSharp.Data.netcore.sln"
-                                    ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
+    // have to clean out build artifacts from the fulle-framework and PCL builds because we're sharing folders in this repo
+    CleanDirs ["./src/bin/"; "./src/obj/"]
+    
+    // Something is wonky with the `dotnet build` pointed at the solution file,
+    // so I'm building each project individually. They are both leaf nodes, so we
+    // don't get any simplicity from just building a leaf, etc, etc
+    !! "src/*.netcore.fsproj"
+    |> Seq.iter (fun project -> 
+                        DotNetCli.Build (fun p -> { p with 
+                                                        Configuration = "Release"
+                                                        Project = project
+                                                        ToolPath = (defaultArg sdkPath "") @@ "dotnet" }))
     let netstandardRelDir = bindir @@ "Release" @@ "netstandard2.0"                                
     FileSystemHelper.ensureDirectory netstandardRelDir
     CopyFiles netstandardRelDir (!! "./src/bin/Release/netstandard2.0/*" -- "./src/bin/Release/netstandard2.0/*.json")
