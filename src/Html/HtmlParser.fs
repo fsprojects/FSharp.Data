@@ -302,7 +302,7 @@ module internal HtmlParser =
             | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
 
-        member private x.ConsAttrValue(c) =
+        member x.ConsAttrValue(c) =
             match !x.Attributes with
             | [] -> x.NewAttribute(); x.ConsAttrValue(c)
             | (_,h) :: _ -> h.Cons(c)
@@ -423,8 +423,50 @@ module internal HtmlParser =
         and script state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
+            | ''' -> state.Cons(); scriptSingleQuoteString state
+            | '"' -> state.Cons(); scriptDoubleQuoteString state
+            | '/' -> state.Cons(); scriptSlash state
             | '<' -> state.Pop(); scriptLessThanSign state
             | _ -> state.Cons(); script state
+        and scriptSingleQuoteString state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | ''' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSingleQuoteString state
+        and scriptDoubleQuoteString state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '"' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptDoubleQuoteString state
+        and scriptSlash state =
+            match state.Peek() with
+            | '/' -> state.Cons(); scriptSingleLineComment state
+            | '*' -> state.Cons(); scriptMultiLineComment state
+            | _ -> scriptRegex state
+        and scriptMultiLineComment state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '*' -> state.Cons(); scriptMultiLineCommentStar state
+            | _ -> state.Cons(); scriptMultiLineComment state
+        and scriptMultiLineCommentStar state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '/' -> state.Cons(); script state
+            | _ -> scriptMultiLineComment state
+        and scriptSingleLineComment state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '\n' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSingleLineComment state
+        and scriptRegex state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '/' -> state.Cons(); script state
+            | '\\' -> state.Cons(); scriptRegexBackslash state
+            | _ -> state.Cons(); scriptRegex state
+        and scriptRegexBackslash state =
+            match state.Peek() with
+            | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
@@ -649,17 +691,21 @@ module internal HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | '"' -> state.Pop(); attributeValueQuoted '"' state
             | '\'' -> state.Pop(); attributeValueQuoted '\'' state
-            | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+            | _ -> attributeValueUnquoted state
         and attributeValueUnquoted state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); beforeAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
+            | '/' -> state.Pop(); attributeValueUnquotedSlash state
             | '>' -> state.Pop(); state.EmitTag(false)
             | '&' -> 
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
                 attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+        and attributeValueUnquotedSlash state =
+            match state.Peek() with
+            | '>' -> selfClosingStartTag state
+            | _ -> state.ConsAttrValue('/'); state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueQuoted quote state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state

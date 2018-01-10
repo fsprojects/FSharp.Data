@@ -8,12 +8,9 @@ module FSharp.Data.DesignTime.Tests.SignatureTests
 
 open System
 open System.IO
-open System.Reflection
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-open ProviderImplementation.ProvidedTypes
-open ProviderImplementation.ProvidedTypesTesting
 
 let (++) a b = Path.Combine(a, b)
 
