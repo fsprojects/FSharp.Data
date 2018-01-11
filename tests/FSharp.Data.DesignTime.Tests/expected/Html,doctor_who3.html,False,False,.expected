@@ -7,6 +7,7 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who3.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -14,260 +15,306 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who3.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
+    let this = this
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
+    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
+    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
+    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
+    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
+    let this = this
     this
 
 
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Contents: HtmlProvider+Contents with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Contents")
 
     member ``External links``: HtmlProvider+ExternalLinks with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "External links")
 
     member Footnotes: HtmlProvider+Footnotes with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Footnotes")
 
     member Interaction: HtmlProvider+Interaction with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Interaction")
 
     member Languages: HtmlProvider+Languages with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages")
 
     member Languages2: HtmlProvider+Languages2 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages2")
 
     member Languages3: HtmlProvider+Languages3 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages3")
 
     member Languages4: HtmlProvider+Languages4 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages4")
 
     member List10: HtmlProvider+List10 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List10")
 
     member List11: HtmlProvider+List11 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List11")
 
     member List12: HtmlProvider+List12 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List12")
 
     member List13: HtmlProvider+List13 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List13")
 
     member List15: HtmlProvider+List15 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List15")
 
     member List16: HtmlProvider+List16 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List16")
 
     member List17: HtmlProvider+List17 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List17")
 
     member List18: HtmlProvider+List18 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List18")
 
     member List19: HtmlProvider+List19 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List19")
 
     member List20: HtmlProvider+List20 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List20")
 
     member List21: HtmlProvider+List21 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List21")
 
     member List22: HtmlProvider+List22 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List22")
 
     member List23: HtmlProvider+List23 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List23")
 
     member List24: HtmlProvider+List24 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List24")
 
     member List25: HtmlProvider+List25 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List25")
 
     member List26: HtmlProvider+List26 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List26")
 
     member List27: HtmlProvider+List27 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List27")
 
     member List28: HtmlProvider+List28 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List28")
 
     member List29: HtmlProvider+List29 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List29")
 
     member List30: HtmlProvider+List30 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List30")
 
     member List31: HtmlProvider+List31 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List31")
 
     member List8: HtmlProvider+List8 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List8")
 
     member List9: HtmlProvider+List9 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List9")
 
     member Namespaces: HtmlProvider+Namespaces with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Namespaces")
 
     member Navigation: HtmlProvider+Navigation with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Navigation")
 
     member ``Personal tools``: HtmlProvider+PersonalTools with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Personal tools")
 
     member Print/export: HtmlProvider+PrintExport with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Print/export")
 
     member References: HtmlProvider+References with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "References")
 
     member ``See also``: HtmlProvider+SeeAlso2 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "See also")
 
     member Sources: HtmlProvider+Sources with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Sources")
 
     member Tools: HtmlProvider+Tools with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools")
 
     member Views: HtmlProvider+Views with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
@@ -276,6 +323,7 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``2015 Christmas Special``: HtmlProvider+2015ChristmasSpecial with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -296,6 +344,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "2015 Christmas Special", true)
 
     member Overview: HtmlProvider+Overview with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -320,6 +369,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Overview", true)
 
     member ``Season 1 (1963-64)``: HtmlProvider+Season1196364 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -342,6 +392,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 1 (1963-64)", true)
 
     member ``Season 10 (1972-73)``: HtmlProvider+Season10197273 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -364,6 +415,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 10 (1972-73)", true)
 
     member ``Season 11 (1973-74)``: HtmlProvider+Season11197374 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -386,6 +438,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 11 (1973-74)", true)
 
     member ``Season 12 (1974-75)``: HtmlProvider+Season12197475 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -408,6 +461,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 12 (1974-75)", true)
 
     member ``Season 13 (1975-76)``: HtmlProvider+Season13197576 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -430,6 +484,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 13 (1975-76)", true)
 
     member ``Season 14 (1976-77)``: HtmlProvider+Season14197677 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -452,6 +507,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 14 (1976-77)", true)
 
     member ``Season 15 (1977-78)``: HtmlProvider+Season15197778 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -474,6 +530,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 15 (1977-78)", true)
 
     member ``Season 16 (1978-79)``: HtmlProvider+Season16197879 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -496,6 +553,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 16 (1978-79)", true)
 
     member ``Season 17 (1979-80)``: HtmlProvider+Season17197980 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertString(value), value),
@@ -518,6 +576,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 17 (1979-80)", true)
 
     member ``Season 18 (1980-81)``: HtmlProvider+Season18198081 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -540,6 +599,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 18 (1980-81)", true)
 
     member ``Season 19 (1982)``: HtmlProvider+Season191982 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -562,6 +622,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 19 (1982)", true)
 
     member ``Season 2 (1964-65)``: HtmlProvider+Season2196465 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -584,6 +645,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 2 (1964-65)", true)
 
     member ``Season 20 (1983)``: HtmlProvider+Season201983 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -606,6 +668,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 20 (1983)", true)
 
     member ``Season 21 (1984)``: HtmlProvider+Season211984 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -628,6 +691,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984)", true)
 
     member ``Season 21 (1984) continued``: HtmlProvider+Season211984Continued with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -650,6 +714,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984) continued", true)
 
     member ``Season 22 (1985)``: HtmlProvider+Season221985 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -672,6 +737,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 22 (1985)", true)
 
     member ``Season 23 (1986)``: HtmlProvider+Season231986 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertString(value), value),
@@ -694,6 +760,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 23 (1986)", true)
 
     member ``Season 24 (1987)``: HtmlProvider+Season241987 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -716,6 +783,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 24 (1987)", true)
 
     member ``Season 25 (1988-89)``: HtmlProvider+Season25198889 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -738,6 +806,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 25 (1988-89)", true)
 
     member ``Season 26 (1989)``: HtmlProvider+Season261989 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -760,6 +829,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 26 (1989)", true)
 
     member ``Season 3 (1965-66)``: HtmlProvider+Season3196566 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -782,6 +852,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 3 (1965-66)", true)
 
     member ``Season 4 (1966-67)``: HtmlProvider+Season4196667 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -804,6 +875,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67)", true)
 
     member ``Season 4 (1966-67) continued``: HtmlProvider+Season4196667Continued with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -826,6 +898,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67) continued", true)
 
     member ``Season 5 (1967-68)``: HtmlProvider+Season5196768 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -848,6 +921,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 5 (1967-68)", true)
 
     member ``Season 6 (1968-69)``: HtmlProvider+Season6196869 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -870,6 +944,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 6 (1968-69)", true)
 
     member ``Season 7 (1970)``: HtmlProvider+Season71970 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -892,6 +967,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 7 (1970)", true)
 
     member ``Season 8 (1971)``: HtmlProvider+Season81971 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -914,6 +990,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 8 (1971)", true)
 
     member ``Season 9 (1972)``: HtmlProvider+Season91972 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -936,6 +1013,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Season 9 (1972)", true)
 
     member ``See also``: HtmlProvider+SeeAlso with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -944,6 +1022,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "See also", false)
 
     member ``Series 1 (2005)``: HtmlProvider+Series12005 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -966,6 +1045,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 1 (2005)", true)
 
     member ``Series 2 (2006)``: HtmlProvider+Series22006 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -988,6 +1068,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 2 (2006)", true)
 
     member ``Series 3 (2007)``: HtmlProvider+Series32007 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1010,6 +1091,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 3 (2007)", true)
 
     member ``Series 4 (2008)``: HtmlProvider+Series42008 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1032,6 +1114,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 4 (2008)", true)
 
     member ``Series 5 (2010)``: HtmlProvider+Series52010 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1054,6 +1137,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 5 (2010)", true)
 
     member ``Series 6 (2011)``: HtmlProvider+Series62011 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1076,6 +1160,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 6 (2011)", true)
 
     member ``Series 7 (2012-13)``: HtmlProvider+Series7201213 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1096,6 +1181,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 7 (2012-13)", true)
 
     member ``Series 8 (2014)``: HtmlProvider+Series82014 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1116,6 +1202,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 8 (2014)", true)
 
     member ``Series 9 (2015)``: HtmlProvider+Series92015 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1136,6 +1223,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Series 9 (2015)", true)
 
     member ``Specials (2008-10)``: HtmlProvider+Specials200810 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1158,6 +1246,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Specials (2008-10)", true)
 
     member ``Specials (2013)``: HtmlProvider+Specials2013 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1178,6 +1267,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Specials (2013)", true)
 
     member Table46: HtmlProvider+Table46 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Doctor Who", TextRuntime.ConvertString(value), value),
@@ -1186,6 +1276,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table46", true)
 
     member Table47: HtmlProvider+Table47 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1194,6 +1285,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table47", false)
 
     member Table48: HtmlProvider+Table48 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1202,6 +1294,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table48", false)
 
     member Table49: HtmlProvider+Table49 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1210,6 +1303,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table49", false)
 
     member Table50: HtmlProvider+Table50 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1218,6 +1312,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table50", false)
 
     member Table51: HtmlProvider+Table51 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1226,6 +1321,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table51", false)
 
     member Table52: HtmlProvider+Table52 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -1234,6 +1330,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table52", false)
 
     member ``Television movie (1996)``: HtmlProvider+TelevisionMovie1996 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Story", TextRuntime.ConvertInteger("", value), value),
@@ -1438,1271 +1535,1661 @@ class HtmlProvider+Views : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+2015ChristmasSpecial+Row : int * float * float * string * string * string * float * float
     member AI: float with get
+    let this = this
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member Episode: float with get
+    let this = this
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
     member Title: float with get
+    let this = this
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: float with get
+    let this = this
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
 
 class HtmlProvider+Overview+Row : string * string * string * string * string * System.DateTime * string * decimal * float * float
     member Column1: string with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
     member Doctor(s): string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
 
     member Episodes: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
     member ``Originally aired - First aired``: System.DateTime with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
     member ``Originally aired - Last aired``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
 
     member Season/Series: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
     member Serials: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
 
     member ``Viewers (millions) - Average``: float with get
+    let this = this
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
     member ``Viewers (millions) - Finale``: float with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
     member ``Viewers (millions) - Premiere``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
 class HtmlProvider+Season10197273+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season11197374+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season1196364+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season12197475+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season13197576+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season14197677+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season15197778+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season16197879+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season17197980+Row : string * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: string with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season18198081+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season191982+Row : int * int * string * string * string * string * string * string * float
     member AI: float with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season201983+Row : int * string * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season211984+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (million)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season211984Continued+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (million)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season2196465+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season221985+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season231986+Row : string * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: string with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season241987+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season25198889+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season261989+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season3196566+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season4196667+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (million)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season4196667Continued+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (million)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season5196768+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season6196869+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season71970+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season81971+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Season91972+Row : int * int * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Serial: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+SeeAlso+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Series12005+Row : int * int * string * string * string * string * decimal * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series22006+Row : int * string * string * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series32007+Row : int * string * string * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series42008+Row : int * string * string * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series52010+Row : int * int * string * string * string * string * decimal * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series62011+Row : int * float * string * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: float with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series7201213+Row : int * float * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member Episode: float with get
+    let this = this
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series82014+Row : int * int * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member Episode: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
 
 class HtmlProvider+Series92015+Row : int * float * string * string * string * string * float * float
     member AI: float with get
+    let this = this
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member Episode: float with get
+    let this = this
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: float with get
+    let this = this
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
 
 class HtmlProvider+Specials200810+Row : int * string * string * string * string * string * string * string * string
     member AI: string with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: string with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 
 class HtmlProvider+Specials2013+Row : int * int * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member Episode: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
 
 class HtmlProvider+Table46+Row : string * string
     member ``Doctor Who``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Doctor Who 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table47+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table48+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table49+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table50+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table51+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table52+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+TelevisionMovie1996+Row : int * string * string * string * string * string * string * decimal * int
     member AI: int with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9 = this in t9)
 
     member ``Directed by``: string with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_ = this in t4)
 
     member Episode: string with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_ = this in t2)
 
     member ``Original air date``: string with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_ = this in t6)
 
     member ``Production code``: string with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_ = this in t7)
 
     member Story: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_ = this in t1)
 
     member Title: string with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_ = this in t3)
 
     member ``UK viewers (millions)``: decimal with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_ = this in t8)
 
     member ``Written by``: string with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_ = this in t5)
 
 

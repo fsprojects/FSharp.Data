@@ -4,6 +4,7 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterSample.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -11,604 +12,816 @@ class JsonProvider : obj
     JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterSample.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
+    let stream = stream
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root
+    let reader = reader
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
+    let uri = uri
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
+    let text = text
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : createdAt:string option -> id:int64 option -> idStr:int64 option -> text:string option -> source:string option -> truncated:bool option -> inReplyToStatusId:int64 option -> inReplyToStatusIdStr:int64 option -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User option -> geo:JsonValue -> coordinates:JsonValue -> place:JsonProvider+Place option -> contributors:JsonValue -> retweetedStatus:JsonProvider+RetweetedStatus option -> retweetCount:int option -> favoriteCount:int option -> entities:JsonProvider+Entities2 option -> favorited:bool option -> retweeted:bool option -> filterLevel:string option -> possiblySensitive:bool option -> lang:string option -> delete:JsonProvider+Delete option -> JsonProvider+Root
+    let this = createdAt
+    let createdAt = id
+    let id = idStr
+    let idStr = text
+    let text = source
+    let source = truncated
+    let truncated = inReplyToStatusId
+    let inReplyToStatusId = inReplyToStatusIdStr
+    let inReplyToStatusIdStr = inReplyToUserId
+    let inReplyToUserId = inReplyToUserIdStr
+    let inReplyToUserIdStr = inReplyToScreenName
+    let inReplyToScreenName = user
+    let user = geo
+    let geo = coordinates
+    let coordinates = place
+    let place = contributors
+    let contributors = retweetedStatus
+    let retweetedStatus = retweetCount
+    let retweetCount = favoriteCount
+    let favoriteCount = entities
+    let entities = favorited
+    let favorited = retweeted
+    let retweeted = filterLevel
+    let filterLevel = possiblySensitive
+    let possiblySensitive = lang
+    let lang = delete
     JsonRuntime.CreateRecord([| ("created_at",
-                                 (createdAt :> obj))
+                                 (this :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (createdAt :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("text",
-                                 (text :> obj))
+                                 (idStr :> obj))
                                 ("source",
-                                 (source :> obj))
+                                 (text :> obj))
                                 ("truncated",
-                                 (truncated :> obj))
+                                 (source :> obj))
                                 ("in_reply_to_status_id",
-                                 (inReplyToStatusId :> obj))
+                                 (truncated :> obj))
                                 ("in_reply_to_status_id_str",
-                                 (inReplyToStatusIdStr :> obj))
+                                 (inReplyToStatusId :> obj))
                                 ("in_reply_to_user_id",
-                                 (inReplyToUserId :> obj))
+                                 (inReplyToStatusIdStr :> obj))
                                 ("in_reply_to_user_id_str",
-                                 (inReplyToUserIdStr :> obj))
+                                 (inReplyToUserId :> obj))
                                 ("in_reply_to_screen_name",
-                                 (inReplyToScreenName :> obj))
+                                 (inReplyToUserIdStr :> obj))
                                 ("user",
-                                 (user :> obj))
+                                 (inReplyToScreenName :> obj))
                                 ("geo",
-                                 (geo :> obj))
+                                 (user :> obj))
                                 ("coordinates",
-                                 (coordinates :> obj))
+                                 (geo :> obj))
                                 ("place",
-                                 (place :> obj))
+                                 (coordinates :> obj))
                                 ("contributors",
-                                 (contributors :> obj))
+                                 (place :> obj))
                                 ("retweeted_status",
-                                 (retweetedStatus :> obj))
+                                 (contributors :> obj))
                                 ("retweet_count",
-                                 (retweetCount :> obj))
+                                 (retweetedStatus :> obj))
                                 ("favorite_count",
-                                 (favoriteCount :> obj))
+                                 (retweetCount :> obj))
                                 ("entities",
-                                 (entities :> obj))
+                                 (favoriteCount :> obj))
                                 ("favorited",
-                                 (favorited :> obj))
+                                 (entities :> obj))
                                 ("retweeted",
-                                 (retweeted :> obj))
+                                 (favorited :> obj))
                                 ("filter_level",
-                                 (filterLevel :> obj))
+                                 (retweeted :> obj))
                                 ("possibly_sensitive",
-                                 (possiblySensitive :> obj))
+                                 (filterLevel :> obj))
                                 ("lang",
-                                 (lang :> obj))
+                                 (possiblySensitive :> obj))
                                 ("delete",
-                                 (delete :> obj)) |], "")
+                                 (lang :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Contributors: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "contributors")
 
     member Coordinates: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "coordinates")
 
     member CreatedAt: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "created_at"))
 
     member Delete: JsonProvider+Delete option with get
+    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "delete")
 
     member Entities: JsonProvider+Entities2 option with get
+    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "entities")
 
     member FavoriteCount: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "favorite_count"))
 
     member Favorited: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "favorited"))
 
     member FilterLevel: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "filter_level"))
 
     member Geo: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "geo")
 
     member Id: int64 option with get
+    let this = this
     JsonRuntime.ConvertInteger64("", JsonRuntime.TryGetPropertyUnpacked(this, "id"))
 
     member IdStr: int64 option with get
+    let this = this
     JsonRuntime.ConvertInteger64("", JsonRuntime.TryGetPropertyUnpacked(this, "id_str"))
 
     member InReplyToScreenName: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_screen_name"))
 
     member InReplyToStatusId: int64 option with get
+    let this = this
     JsonRuntime.ConvertInteger64("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_status_id"))
 
     member InReplyToStatusIdStr: int64 option with get
+    let this = this
     JsonRuntime.ConvertInteger64("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_status_id_str"))
 
     member InReplyToUserId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_user_id"))
 
     member InReplyToUserIdStr: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_user_id_str"))
 
     member Lang: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "lang"))
 
     member Place: JsonProvider+Place option with get
+    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "place")
 
     member PossiblySensitive: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "possibly_sensitive"))
 
     member RetweetCount: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "retweet_count"))
 
     member Retweeted: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "retweeted"))
 
     member RetweetedStatus: JsonProvider+RetweetedStatus option with get
+    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "retweeted_status")
 
     member Source: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "source"))
 
     member Text: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "text"))
 
     member Truncated: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "truncated"))
 
     member User: JsonProvider+User option with get
+    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "user")
 
 
 class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
     new : status:JsonProvider+Status -> JsonProvider+Delete
+    let this = status
     JsonRuntime.CreateRecord([| ("status",
-                                 (status :> obj)) |], "")
+                                 (this :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Delete
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Status: JsonProvider+Status with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "status")
 
 
 class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
     new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> JsonProvider+Entities2
+    let this = hashtags
+    let hashtags = symbols
+    let symbols = urls
+    let urls = userMentions
     JsonRuntime.CreateRecord([| ("hashtags",
-                                 (hashtags :> obj))
+                                 (this :> obj))
                                 ("symbols",
-                                 (symbols :> obj))
+                                 (hashtags :> obj))
                                 ("urls",
-                                 (urls :> obj))
+                                 (symbols :> obj))
                                 ("user_mentions",
-                                 (userMentions :> obj)) |], "")
+                                 (urls :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Entities2
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Hashtags: JsonProvider+Hashtag[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
     member Symbols: FDR.BaseTypes.IJsonDocument[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "symbols"), new Func<_,_>(id)))
 
     member Urls: JsonProvider+Url[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
     member UserMentions: JsonProvider+UserMention[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
 class JsonProvider+Place : FDR.BaseTypes.IJsonDocument
     new : id:string -> url:string -> placeType:string -> name:string -> fullName:string -> countryCode:string -> country:string -> boundingBox:JsonProvider+BoundingBox -> attributes:JsonProvider+Attributes -> JsonProvider+Place
+    let this = id
+    let id = url
+    let url = placeType
+    let placeType = name
+    let name = fullName
+    let fullName = countryCode
+    let countryCode = country
+    let country = boundingBox
+    let boundingBox = attributes
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("url",
-                                 (url :> obj))
+                                 (id :> obj))
                                 ("place_type",
-                                 (placeType :> obj))
+                                 (url :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (placeType :> obj))
                                 ("full_name",
-                                 (fullName :> obj))
+                                 (name :> obj))
                                 ("country_code",
-                                 (countryCode :> obj))
+                                 (fullName :> obj))
                                 ("country",
-                                 (country :> obj))
+                                 (countryCode :> obj))
                                 ("bounding_box",
-                                 (boundingBox :> obj))
+                                 (country :> obj))
                                 ("attributes",
-                                 (attributes :> obj)) |], "")
+                                 (boundingBox :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Place
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Attributes: JsonProvider+Attributes with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "attributes")
 
     member BoundingBox: JsonProvider+BoundingBox with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "bounding_box")
 
     member Country: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "country")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member CountryCode: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "country_code")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member FullName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "full_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Id: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member PlaceType: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "place_type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Url: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
     new : createdAt:string -> id:int64 -> idStr:int64 -> text:string -> source:string -> truncated:bool -> inReplyToStatusId:JsonValue -> inReplyToStatusIdStr:JsonValue -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User2 -> geo:JsonValue -> coordinates:JsonValue -> place:JsonValue -> contributors:JsonValue -> retweetCount:int -> favoriteCount:int -> entities:JsonProvider+Entities -> favorited:bool -> retweeted:bool -> lang:string -> possiblySensitive:bool option -> JsonProvider+RetweetedStatus
+    let this = createdAt
+    let createdAt = id
+    let id = idStr
+    let idStr = text
+    let text = source
+    let source = truncated
+    let truncated = inReplyToStatusId
+    let inReplyToStatusId = inReplyToStatusIdStr
+    let inReplyToStatusIdStr = inReplyToUserId
+    let inReplyToUserId = inReplyToUserIdStr
+    let inReplyToUserIdStr = inReplyToScreenName
+    let inReplyToScreenName = user
+    let user = geo
+    let geo = coordinates
+    let coordinates = place
+    let place = contributors
+    let contributors = retweetCount
+    let retweetCount = favoriteCount
+    let favoriteCount = entities
+    let entities = favorited
+    let favorited = retweeted
+    let retweeted = lang
+    let lang = possiblySensitive
     JsonRuntime.CreateRecord([| ("created_at",
-                                 (createdAt :> obj))
+                                 (this :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (createdAt :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("text",
-                                 (text :> obj))
+                                 (idStr :> obj))
                                 ("source",
-                                 (source :> obj))
+                                 (text :> obj))
                                 ("truncated",
-                                 (truncated :> obj))
+                                 (source :> obj))
                                 ("in_reply_to_status_id",
-                                 (inReplyToStatusId :> obj))
+                                 (truncated :> obj))
                                 ("in_reply_to_status_id_str",
-                                 (inReplyToStatusIdStr :> obj))
+                                 (inReplyToStatusId :> obj))
                                 ("in_reply_to_user_id",
-                                 (inReplyToUserId :> obj))
+                                 (inReplyToStatusIdStr :> obj))
                                 ("in_reply_to_user_id_str",
-                                 (inReplyToUserIdStr :> obj))
+                                 (inReplyToUserId :> obj))
                                 ("in_reply_to_screen_name",
-                                 (inReplyToScreenName :> obj))
+                                 (inReplyToUserIdStr :> obj))
                                 ("user",
-                                 (user :> obj))
+                                 (inReplyToScreenName :> obj))
                                 ("geo",
-                                 (geo :> obj))
+                                 (user :> obj))
                                 ("coordinates",
-                                 (coordinates :> obj))
+                                 (geo :> obj))
                                 ("place",
-                                 (place :> obj))
+                                 (coordinates :> obj))
                                 ("contributors",
-                                 (contributors :> obj))
+                                 (place :> obj))
                                 ("retweet_count",
-                                 (retweetCount :> obj))
+                                 (contributors :> obj))
                                 ("favorite_count",
-                                 (favoriteCount :> obj))
+                                 (retweetCount :> obj))
                                 ("entities",
-                                 (entities :> obj))
+                                 (favoriteCount :> obj))
                                 ("favorited",
-                                 (favorited :> obj))
+                                 (entities :> obj))
                                 ("retweeted",
-                                 (retweeted :> obj))
+                                 (favorited :> obj))
                                 ("lang",
-                                 (lang :> obj))
+                                 (retweeted :> obj))
                                 ("possibly_sensitive",
-                                 (possiblySensitive :> obj)) |], "")
+                                 (lang :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+RetweetedStatus
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Contributors: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "contributors")
 
     member Coordinates: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "coordinates")
 
     member CreatedAt: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Entities: JsonProvider+Entities with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "entities")
 
     member FavoriteCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "favorite_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Favorited: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "favorited")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Geo: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "geo")
 
     member Id: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member InReplyToScreenName: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_screen_name"))
 
     member InReplyToStatusId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "in_reply_to_status_id")
 
     member InReplyToStatusIdStr: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "in_reply_to_status_id_str")
 
     member InReplyToUserId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_user_id"))
 
     member InReplyToUserIdStr: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_user_id_str"))
 
     member Lang: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lang")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Place: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "place")
 
     member PossiblySensitive: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "possibly_sensitive"))
 
     member RetweetCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "retweet_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Retweeted: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "retweeted")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Source: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "source")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Text: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Truncated: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "truncated")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member User: JsonProvider+User2 with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:JsonProvider+IntOrString -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User
+    let this = id
+    let id = idStr
+    let idStr = name
+    let name = screenName
+    let screenName = location
+    let location = url
+    let url = description
+    let description = protected
+    let protected = followersCount
+    let followersCount = friendsCount
+    let friendsCount = listedCount
+    let listedCount = createdAt
+    let createdAt = favouritesCount
+    let favouritesCount = utcOffset
+    let utcOffset = timeZone
+    let timeZone = geoEnabled
+    let geoEnabled = verified
+    let verified = statusesCount
+    let statusesCount = lang
+    let lang = contributorsEnabled
+    let contributorsEnabled = isTranslator
+    let isTranslator = profileBackgroundColor
+    let profileBackgroundColor = profileBackgroundImageUrl
+    let profileBackgroundImageUrl = profileBackgroundImageUrlHttps
+    let profileBackgroundImageUrlHttps = profileBackgroundTile
+    let profileBackgroundTile = profileImageUrl
+    let profileImageUrl = profileImageUrlHttps
+    let profileImageUrlHttps = profileBannerUrl
+    let profileBannerUrl = profileLinkColor
+    let profileLinkColor = profileSidebarBorderColor
+    let profileSidebarBorderColor = profileSidebarFillColor
+    let profileSidebarFillColor = profileTextColor
+    let profileTextColor = profileUseBackgroundImage
+    let profileUseBackgroundImage = defaultProfile
+    let defaultProfile = defaultProfileImage
+    let defaultProfileImage = following
+    let following = followRequestSent
+    let followRequestSent = notifications
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (idStr :> obj))
                                 ("screen_name",
-                                 (screenName :> obj))
+                                 (name :> obj))
                                 ("location",
-                                 (location :> obj))
+                                 (screenName :> obj))
                                 ("url",
-                                 (url :> obj))
+                                 (location :> obj))
                                 ("description",
-                                 (description :> obj))
+                                 (url :> obj))
                                 ("protected",
-                                 (protected :> obj))
+                                 (description :> obj))
                                 ("followers_count",
-                                 (followersCount :> obj))
+                                 (protected :> obj))
                                 ("friends_count",
-                                 (friendsCount :> obj))
+                                 (followersCount :> obj))
                                 ("listed_count",
-                                 (listedCount :> obj))
+                                 (friendsCount :> obj))
                                 ("created_at",
-                                 (createdAt :> obj))
+                                 (listedCount :> obj))
                                 ("favourites_count",
-                                 (favouritesCount :> obj))
+                                 (createdAt :> obj))
                                 ("utc_offset",
-                                 (utcOffset :> obj))
+                                 (favouritesCount :> obj))
                                 ("time_zone",
-                                 (timeZone :> obj))
+                                 (utcOffset :> obj))
                                 ("geo_enabled",
-                                 (geoEnabled :> obj))
+                                 (timeZone :> obj))
                                 ("verified",
-                                 (verified :> obj))
+                                 (geoEnabled :> obj))
                                 ("statuses_count",
-                                 (statusesCount :> obj))
+                                 (verified :> obj))
                                 ("lang",
-                                 (lang :> obj))
+                                 (statusesCount :> obj))
                                 ("contributors_enabled",
-                                 (contributorsEnabled :> obj))
+                                 (lang :> obj))
                                 ("is_translator",
-                                 (isTranslator :> obj))
+                                 (contributorsEnabled :> obj))
                                 ("profile_background_color",
-                                 (profileBackgroundColor :> obj))
+                                 (isTranslator :> obj))
                                 ("profile_background_image_url",
-                                 (profileBackgroundImageUrl :> obj))
+                                 (profileBackgroundColor :> obj))
                                 ("profile_background_image_url_https",
-                                 (profileBackgroundImageUrlHttps :> obj))
+                                 (profileBackgroundImageUrl :> obj))
                                 ("profile_background_tile",
-                                 (profileBackgroundTile :> obj))
+                                 (profileBackgroundImageUrlHttps :> obj))
                                 ("profile_image_url",
-                                 (profileImageUrl :> obj))
+                                 (profileBackgroundTile :> obj))
                                 ("profile_image_url_https",
-                                 (profileImageUrlHttps :> obj))
+                                 (profileImageUrl :> obj))
                                 ("profile_banner_url",
-                                 (profileBannerUrl :> obj))
+                                 (profileImageUrlHttps :> obj))
                                 ("profile_link_color",
-                                 (profileLinkColor :> obj))
+                                 (profileBannerUrl :> obj))
                                 ("profile_sidebar_border_color",
-                                 (profileSidebarBorderColor :> obj))
+                                 (profileLinkColor :> obj))
                                 ("profile_sidebar_fill_color",
-                                 (profileSidebarFillColor :> obj))
+                                 (profileSidebarBorderColor :> obj))
                                 ("profile_text_color",
-                                 (profileTextColor :> obj))
+                                 (profileSidebarFillColor :> obj))
                                 ("profile_use_background_image",
-                                 (profileUseBackgroundImage :> obj))
+                                 (profileTextColor :> obj))
                                 ("default_profile",
-                                 (defaultProfile :> obj))
+                                 (profileUseBackgroundImage :> obj))
                                 ("default_profile_image",
-                                 (defaultProfileImage :> obj))
+                                 (defaultProfile :> obj))
                                 ("following",
-                                 (following :> obj))
+                                 (defaultProfileImage :> obj))
                                 ("follow_request_sent",
-                                 (followRequestSent :> obj))
+                                 (following :> obj))
                                 ("notifications",
-                                 (notifications :> obj)) |], "")
+                                 (followRequestSent :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+User
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member ContributorsEnabled: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member CreatedAt: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member DefaultProfile: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "default_profile")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member DefaultProfileImage: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "default_profile_image")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Description: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member FavouritesCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "favourites_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member FollowRequestSent: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "follow_request_sent")
 
     member FollowersCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "followers_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Following: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "following")
 
     member FriendsCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "friends_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member GeoEnabled: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "geo_enabled")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member IsTranslator: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "is_translator")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Lang: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lang")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ListedCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "listed_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Location: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location"))
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Notifications: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "notifications")
 
     member ProfileBackgroundColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_background_color")
 
     member ProfileBackgroundImageUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_image_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileBackgroundImageUrlHttps: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_image_url_https")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileBackgroundTile: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_tile")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ProfileBannerUrl: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "profile_banner_url"))
 
     member ProfileImageUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_image_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileImageUrlHttps: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_image_url_https")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileLinkColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_link_color")
 
     member ProfileSidebarBorderColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_sidebar_border_color")
 
     member ProfileSidebarFillColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_sidebar_fill_color")
 
     member ProfileTextColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_text_color")
 
     member ProfileUseBackgroundImage: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_use_background_image")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Protected: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "protected")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ScreenName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "screen_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member StatusesCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "statuses_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member TimeZone: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "time_zone"))
 
     member Url: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "url"))
 
     member UtcOffset: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "utc_offset"))
 
     member Verified: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "verified")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
@@ -618,542 +831,716 @@ class JsonProvider+Attributes : FDR.BaseTypes.IJsonDocument
     JsonRuntime.CreateRecord([| |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Attributes
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
 
 class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
     new : type:string -> coordinates:decimal[][][] -> JsonProvider+BoundingBox
+    let this = type
+    let type = coordinates
     JsonRuntime.CreateRecord([| ("type",
-                                 (type :> obj))
+                                 (this :> obj))
                                 ("coordinates",
-                                 (coordinates :> obj)) |], "")
+                                 (type :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+BoundingBox
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Coordinates: decimal[][][] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "coordinates"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))))))
 
     member Type: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
+    let this = hashtags
+    let hashtags = symbols
+    let symbols = urls
+    let urls = userMentions
+    let userMentions = media
     JsonRuntime.CreateRecord([| ("hashtags",
-                                 (hashtags :> obj))
+                                 (this :> obj))
                                 ("symbols",
-                                 (symbols :> obj))
+                                 (hashtags :> obj))
                                 ("urls",
-                                 (urls :> obj))
+                                 (symbols :> obj))
                                 ("user_mentions",
-                                 (userMentions :> obj))
+                                 (urls :> obj))
                                 ("media",
-                                 (media :> obj)) |], "")
+                                 (userMentions :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Entities
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Hashtags: JsonProvider+Hashtag[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
     member Media: JsonProvider+Media[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "media"), new Func<_,_>(id)))
 
     member Symbols: FDR.BaseTypes.IJsonDocument[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "symbols"), new Func<_,_>(id)))
 
     member Urls: JsonProvider+Url[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
     member UserMentions: JsonProvider+UserMention[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
 class JsonProvider+Hashtag : FDR.BaseTypes.IJsonDocument
     new : text:string -> indices:int[] -> JsonProvider+Hashtag
+    let this = text
+    let text = indices
     JsonRuntime.CreateRecord([| ("text",
-                                 (text :> obj))
+                                 (this :> obj))
                                 ("indices",
-                                 (indices :> obj)) |], "")
+                                 (text :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Hashtag
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Indices: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Text: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrString
-    JsonRuntime.CreateValue((number :> obj), "")
+    let this = number
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : string:string -> JsonProvider+IntOrString
-    JsonRuntime.CreateValue((string :> obj), "")
+    let this = string
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : () -> JsonProvider+IntOrString
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrString
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Number: int option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+Status : FDR.BaseTypes.IJsonDocument
     new : id:int64 -> userId:int -> idStr:int64 -> userIdStr:int -> JsonProvider+Status
+    let this = id
+    let id = userId
+    let userId = idStr
+    let idStr = userIdStr
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("user_id",
-                                 (userId :> obj))
+                                 (id :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (userId :> obj))
                                 ("user_id_str",
-                                 (userIdStr :> obj)) |], "")
+                                 (idStr :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Status
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Id: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member UserId: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "user_id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member UserIdStr: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "user_id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Url : FDR.BaseTypes.IJsonDocument
     new : url:string -> expandedUrl:string -> displayUrl:string -> indices:int[] -> JsonProvider+Url
+    let this = url
+    let url = expandedUrl
+    let expandedUrl = displayUrl
+    let displayUrl = indices
     JsonRuntime.CreateRecord([| ("url",
-                                 (url :> obj))
+                                 (this :> obj))
                                 ("expanded_url",
-                                 (expandedUrl :> obj))
+                                 (url :> obj))
                                 ("display_url",
-                                 (displayUrl :> obj))
+                                 (expandedUrl :> obj))
                                 ("indices",
-                                 (indices :> obj)) |], "")
+                                 (displayUrl :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Url
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member DisplayUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ExpandedUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "expanded_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Url: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+User2 : FDR.BaseTypes.IJsonDocument
     new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User2
+    let this = id
+    let id = idStr
+    let idStr = name
+    let name = screenName
+    let screenName = location
+    let location = url
+    let url = description
+    let description = protected
+    let protected = followersCount
+    let followersCount = friendsCount
+    let friendsCount = listedCount
+    let listedCount = createdAt
+    let createdAt = favouritesCount
+    let favouritesCount = utcOffset
+    let utcOffset = timeZone
+    let timeZone = geoEnabled
+    let geoEnabled = verified
+    let verified = statusesCount
+    let statusesCount = lang
+    let lang = contributorsEnabled
+    let contributorsEnabled = isTranslator
+    let isTranslator = profileBackgroundColor
+    let profileBackgroundColor = profileBackgroundImageUrl
+    let profileBackgroundImageUrl = profileBackgroundImageUrlHttps
+    let profileBackgroundImageUrlHttps = profileBackgroundTile
+    let profileBackgroundTile = profileImageUrl
+    let profileImageUrl = profileImageUrlHttps
+    let profileImageUrlHttps = profileBannerUrl
+    let profileBannerUrl = profileLinkColor
+    let profileLinkColor = profileSidebarBorderColor
+    let profileSidebarBorderColor = profileSidebarFillColor
+    let profileSidebarFillColor = profileTextColor
+    let profileTextColor = profileUseBackgroundImage
+    let profileUseBackgroundImage = defaultProfile
+    let defaultProfile = defaultProfileImage
+    let defaultProfileImage = following
+    let following = followRequestSent
+    let followRequestSent = notifications
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (idStr :> obj))
                                 ("screen_name",
-                                 (screenName :> obj))
+                                 (name :> obj))
                                 ("location",
-                                 (location :> obj))
+                                 (screenName :> obj))
                                 ("url",
-                                 (url :> obj))
+                                 (location :> obj))
                                 ("description",
-                                 (description :> obj))
+                                 (url :> obj))
                                 ("protected",
-                                 (protected :> obj))
+                                 (description :> obj))
                                 ("followers_count",
-                                 (followersCount :> obj))
+                                 (protected :> obj))
                                 ("friends_count",
-                                 (friendsCount :> obj))
+                                 (followersCount :> obj))
                                 ("listed_count",
-                                 (listedCount :> obj))
+                                 (friendsCount :> obj))
                                 ("created_at",
-                                 (createdAt :> obj))
+                                 (listedCount :> obj))
                                 ("favourites_count",
-                                 (favouritesCount :> obj))
+                                 (createdAt :> obj))
                                 ("utc_offset",
-                                 (utcOffset :> obj))
+                                 (favouritesCount :> obj))
                                 ("time_zone",
-                                 (timeZone :> obj))
+                                 (utcOffset :> obj))
                                 ("geo_enabled",
-                                 (geoEnabled :> obj))
+                                 (timeZone :> obj))
                                 ("verified",
-                                 (verified :> obj))
+                                 (geoEnabled :> obj))
                                 ("statuses_count",
-                                 (statusesCount :> obj))
+                                 (verified :> obj))
                                 ("lang",
-                                 (lang :> obj))
+                                 (statusesCount :> obj))
                                 ("contributors_enabled",
-                                 (contributorsEnabled :> obj))
+                                 (lang :> obj))
                                 ("is_translator",
-                                 (isTranslator :> obj))
+                                 (contributorsEnabled :> obj))
                                 ("profile_background_color",
-                                 (profileBackgroundColor :> obj))
+                                 (isTranslator :> obj))
                                 ("profile_background_image_url",
-                                 (profileBackgroundImageUrl :> obj))
+                                 (profileBackgroundColor :> obj))
                                 ("profile_background_image_url_https",
-                                 (profileBackgroundImageUrlHttps :> obj))
+                                 (profileBackgroundImageUrl :> obj))
                                 ("profile_background_tile",
-                                 (profileBackgroundTile :> obj))
+                                 (profileBackgroundImageUrlHttps :> obj))
                                 ("profile_image_url",
-                                 (profileImageUrl :> obj))
+                                 (profileBackgroundTile :> obj))
                                 ("profile_image_url_https",
-                                 (profileImageUrlHttps :> obj))
+                                 (profileImageUrl :> obj))
                                 ("profile_banner_url",
-                                 (profileBannerUrl :> obj))
+                                 (profileImageUrlHttps :> obj))
                                 ("profile_link_color",
-                                 (profileLinkColor :> obj))
+                                 (profileBannerUrl :> obj))
                                 ("profile_sidebar_border_color",
-                                 (profileSidebarBorderColor :> obj))
+                                 (profileLinkColor :> obj))
                                 ("profile_sidebar_fill_color",
-                                 (profileSidebarFillColor :> obj))
+                                 (profileSidebarBorderColor :> obj))
                                 ("profile_text_color",
-                                 (profileTextColor :> obj))
+                                 (profileSidebarFillColor :> obj))
                                 ("profile_use_background_image",
-                                 (profileUseBackgroundImage :> obj))
+                                 (profileTextColor :> obj))
                                 ("default_profile",
-                                 (defaultProfile :> obj))
+                                 (profileUseBackgroundImage :> obj))
                                 ("default_profile_image",
-                                 (defaultProfileImage :> obj))
+                                 (defaultProfile :> obj))
                                 ("following",
-                                 (following :> obj))
+                                 (defaultProfileImage :> obj))
                                 ("follow_request_sent",
-                                 (followRequestSent :> obj))
+                                 (following :> obj))
                                 ("notifications",
-                                 (notifications :> obj)) |], "")
+                                 (followRequestSent :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+User2
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member ContributorsEnabled: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member CreatedAt: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member DefaultProfile: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "default_profile")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member DefaultProfileImage: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "default_profile_image")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Description: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member FavouritesCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "favourites_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member FollowRequestSent: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "follow_request_sent")
 
     member FollowersCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "followers_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Following: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "following")
 
     member FriendsCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "friends_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member GeoEnabled: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "geo_enabled")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member IsTranslator: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "is_translator")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Lang: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lang")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ListedCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "listed_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Location: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location"))
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Notifications: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "notifications")
 
     member ProfileBackgroundColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_background_color")
 
     member ProfileBackgroundImageUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_image_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileBackgroundImageUrlHttps: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_image_url_https")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileBackgroundTile: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_background_tile")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ProfileBannerUrl: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "profile_banner_url"))
 
     member ProfileImageUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_image_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileImageUrlHttps: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_image_url_https")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileLinkColor: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_link_color")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ProfileSidebarBorderColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_sidebar_border_color")
 
     member ProfileSidebarFillColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_sidebar_fill_color")
 
     member ProfileTextColor: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_text_color")
 
     member ProfileUseBackgroundImage: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_use_background_image")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Protected: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "protected")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ScreenName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "screen_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member StatusesCount: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "statuses_count")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member TimeZone: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "time_zone"))
 
     member Url: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "url"))
 
     member UtcOffset: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "utc_offset"))
 
     member Verified: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "verified")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+UserMention : FDR.BaseTypes.IJsonDocument
     new : screenName:string -> name:string -> id:int -> idStr:int -> indices:int[] -> JsonProvider+UserMention
+    let this = screenName
+    let screenName = name
+    let name = id
+    let id = idStr
+    let idStr = indices
     JsonRuntime.CreateRecord([| ("screen_name",
-                                 (screenName :> obj))
+                                 (this :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (screenName :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (name :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("indices",
-                                 (indices :> obj)) |], "")
+                                 (idStr :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+UserMention
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ScreenName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "screen_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Media : FDR.BaseTypes.IJsonDocument
     new : id:int64 -> idStr:int64 -> indices:int[] -> mediaUrl:string -> mediaUrlHttps:string -> url:string -> displayUrl:string -> expandedUrl:string -> type:string -> sizes:JsonProvider+Sizes -> sourceStatusId:int64 -> sourceStatusIdStr:int64 -> JsonProvider+Media
+    let this = id
+    let id = idStr
+    let idStr = indices
+    let indices = mediaUrl
+    let mediaUrl = mediaUrlHttps
+    let mediaUrlHttps = url
+    let url = displayUrl
+    let displayUrl = expandedUrl
+    let expandedUrl = type
+    let type = sizes
+    let sizes = sourceStatusId
+    let sourceStatusId = sourceStatusIdStr
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("id_str",
-                                 (idStr :> obj))
+                                 (id :> obj))
                                 ("indices",
-                                 (indices :> obj))
+                                 (idStr :> obj))
                                 ("media_url",
-                                 (mediaUrl :> obj))
+                                 (indices :> obj))
                                 ("media_url_https",
-                                 (mediaUrlHttps :> obj))
+                                 (mediaUrl :> obj))
                                 ("url",
-                                 (url :> obj))
+                                 (mediaUrlHttps :> obj))
                                 ("display_url",
-                                 (displayUrl :> obj))
+                                 (url :> obj))
                                 ("expanded_url",
-                                 (expandedUrl :> obj))
+                                 (displayUrl :> obj))
                                 ("type",
-                                 (type :> obj))
+                                 (expandedUrl :> obj))
                                 ("sizes",
-                                 (sizes :> obj))
+                                 (type :> obj))
                                 ("source_status_id",
-                                 (sourceStatusId :> obj))
+                                 (sizes :> obj))
                                 ("source_status_id_str",
-                                 (sourceStatusIdStr :> obj)) |], "")
+                                 (sourceStatusId :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Media
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member DisplayUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ExpandedUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "expanded_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Id: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member IdStr: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member MediaUrl: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "media_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member MediaUrlHttps: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "media_url_https")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Sizes: JsonProvider+Sizes with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "sizes")
 
     member SourceStatusId: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "source_status_id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member SourceStatusIdStr: int64 with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "source_status_id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member Type: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Url: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Sizes : FDR.BaseTypes.IJsonDocument
     new : small:JsonProvider+Small -> thumb:JsonProvider+Small -> large:JsonProvider+Small -> medium:JsonProvider+Small -> JsonProvider+Sizes
+    let this = small
+    let small = thumb
+    let thumb = large
+    let large = medium
     JsonRuntime.CreateRecord([| ("small",
-                                 (small :> obj))
+                                 (this :> obj))
                                 ("thumb",
-                                 (thumb :> obj))
+                                 (small :> obj))
                                 ("large",
-                                 (large :> obj))
+                                 (thumb :> obj))
                                 ("medium",
-                                 (medium :> obj)) |], "")
+                                 (large :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Sizes
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Large: JsonProvider+Small with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "large")
 
     member Medium: JsonProvider+Small with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "medium")
 
     member Small: JsonProvider+Small with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "small")
 
     member Thumb: JsonProvider+Small with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "thumb")
 
 
 class JsonProvider+Small : FDR.BaseTypes.IJsonDocument
     new : w:int -> h:int -> resize:string -> JsonProvider+Small
+    let this = w
+    let w = h
+    let h = resize
     JsonRuntime.CreateRecord([| ("w",
-                                 (w :> obj))
+                                 (this :> obj))
                                 ("h",
-                                 (h :> obj))
+                                 (w :> obj))
                                 ("resize",
-                                 (resize :> obj)) |], "")
+                                 (h :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Small
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member H: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "h")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Resize: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "resize")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member W: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "w")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 

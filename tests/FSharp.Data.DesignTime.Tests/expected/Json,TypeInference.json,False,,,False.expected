@@ -4,6 +4,7 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TypeInference.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root[] async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -11,39 +12,50 @@ class JsonProvider : obj
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TypeInference.json")), ""), new Func<_,_>(id)))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root[]
+    let stream = stream
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(id)))
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root[]
+    let reader = reader
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(id)))
 
     static member Load: uri:string -> JsonProvider+Root[]
+    let uri = uri
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), ""), new Func<_,_>(id)))
 
     static member Parse: text:string -> JsonProvider+Root[]
+    let text = text
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : intLike:string -> boolLike1:decimal -> boolLike2:string -> JsonProvider+Root
+    let this = intLike
+    let intLike = boolLike1
+    let boolLike1 = boolLike2
     JsonRuntime.CreateRecord([| ("intLike",
-                                 (intLike :> obj))
+                                 (this :> obj))
                                 ("boolLike1",
-                                 (boolLike1 :> obj))
+                                 (intLike :> obj))
                                 ("boolLike2",
-                                 (boolLike2 :> obj)) |], "")
+                                 (boolLike1 :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member BoolLike1: decimal with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolLike1")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
 
     member BoolLike2: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolLike2")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member IntLike: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "intLike")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 

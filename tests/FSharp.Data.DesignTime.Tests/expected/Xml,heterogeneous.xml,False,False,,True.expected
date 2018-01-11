@@ -4,6 +4,7 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "heterogeneous.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Test async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -11,80 +12,99 @@ class XmlProvider : obj
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "heterogeneous.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Test
+    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Test
+    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Test
+    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Test
+    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Test : FDR.BaseTypes.XmlElement
     new : options:XmlProvider+Options[] -> XmlProvider+Test
+    let this = options
     XmlRuntime.CreateRecord("test", 
                             [| |], 
                             [| ("options",
-                                (options :> obj)) |], "")
+                                (this :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Test
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Options: XmlProvider+Options[] with get
+    let this = this
     XmlRuntime.ConvertArray(this, "options", new Func<_,_>(id)))
 
 
 class XmlProvider+Options : FDR.BaseTypes.XmlElement
     new : node:XmlProvider+Node -> XmlProvider+Options
+    let this = node
     XmlRuntime.CreateRecord("options", 
                             [| |], 
                             [| ("node",
-                                (node :> obj)) |], "")
+                                (this :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Options
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Node: XmlProvider+Node with get
+    let this = this
     XmlRuntime.GetChild(this, "node")
 
 
 class XmlProvider+Node : FDR.BaseTypes.XmlElement
     new : set:XmlProvider+SetChoice -> XmlProvider+Node
+    let this = set
     XmlRuntime.CreateRecord("node", 
                             [| ("set",
-                                (set :> obj)) |], 
+                                (this :> obj)) |], 
                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Node
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Set: XmlProvider+SetChoice with get
+    let this = this
     XmlRuntime.TryGetAttribute(this, "set")
 
 
 class XmlProvider+SetChoice : string option
     new : value:int -> XmlProvider+SetChoice
-    Some TextRuntime.ConvertIntegerBack("", Some value)
+    let this = value
+    Some TextRuntime.ConvertIntegerBack("", Some this)
 
     new : value:bool -> XmlProvider+SetChoice
-    Some TextRuntime.ConvertBooleanBack(Some value, false)
+    let this = value
+    Some TextRuntime.ConvertBooleanBack(Some this, false)
 
     new : value:string -> XmlProvider+SetChoice
-    Some TextRuntime.ConvertStringBack(Some value)
+    let this = value
+    Some TextRuntime.ConvertStringBack(Some this)
 
     new : () -> XmlProvider+SetChoice
     None
 
     member Boolean: bool option with get
+    let this = this
     TextRuntime.ConvertBoolean(this)
 
     member Number: int option with get
+    let this = this
     TextRuntime.ConvertInteger("", this)
 
     member String: string option with get
+    let this = this
     TextRuntime.ConvertString(this)
 
 

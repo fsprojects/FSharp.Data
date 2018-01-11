@@ -4,6 +4,7 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "emptyValue.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Foo async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -11,29 +12,36 @@ class XmlProvider : obj
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "emptyValue.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Foo
+    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Foo
+    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Foo
+    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Foo
+    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Foo : FDR.BaseTypes.XmlElement
     new : a:string -> XmlProvider+Foo
+    let this = a
     XmlRuntime.CreateRecord("foo", 
                             [| ("a",
-                                (a :> obj)) |], 
+                                (this :> obj)) |], 
                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Foo
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member A: string with get
+    let this = this
     let value = XmlRuntime.TryGetAttribute(this, "a")
     TextRuntime.GetNonOptionalValue("Attribute a", TextRuntime.ConvertString(value), value)
 

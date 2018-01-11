@@ -7,6 +7,7 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithThead.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -14,23 +15,29 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithThead.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
+    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
+    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
+    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
+    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
+    let this = this
     this
 
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table1: HtmlProvider+Table1 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertString(value), value),
@@ -43,9 +50,11 @@ class HtmlProvider+Table1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table1+Row>
 
 class HtmlProvider+Table1+Row : string * int
     member Month: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Savings: int with get
+    let this = this
     (let _,t2 = this in t2)
 
 

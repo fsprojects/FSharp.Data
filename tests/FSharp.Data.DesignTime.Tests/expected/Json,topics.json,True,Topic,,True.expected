@@ -1,707 +1,959 @@
 class JsonProvider : obj
     static member AsyncLoad: uri:string -> JsonProvider+Topic[] async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Topic[]
+    let stream = stream
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(id)))
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Topic[]
+    let reader = reader
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(id)))
 
     static member Load: uri:string -> JsonProvider+Topic[]
+    let uri = uri
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), ""), new Func<_,_>(id)))
 
     static member Parse: text:string -> JsonProvider+Topic[]
+    let text = text
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
 class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic
+    let this = photo
+    let photo = previewLink
+    let previewLink = smallIconHover
+    let smallIconHover = largeIcon
+    let largeIcon = video
+    let video = universityIds
+    let universityIds = id
+    let id = universities
+    let universities = selfServiceCourseId
+    let selfServiceCourseId = shortDescription
+    let shortDescription = shortName
+    let shortName = categoryIds
+    let categoryIds = visibility
+    let visibility = smallIcon
+    let smallIcon = instructor
+    let instructor = categories
+    let categories = name
+    let name = language
+    let language = courses
+    let courses = universityLogo
+    let universityLogo = courseIds
+    let courseIds = display
+    let display = subtitleLanguagesCsv
     JsonRuntime.CreateRecord([| ("photo",
-                                 (photo :> obj))
+                                 (this :> obj))
                                 ("preview_link",
-                                 (previewLink :> obj))
+                                 (photo :> obj))
                                 ("small_icon_hover",
-                                 (smallIconHover :> obj))
+                                 (previewLink :> obj))
                                 ("large_icon",
-                                 (largeIcon :> obj))
+                                 (smallIconHover :> obj))
                                 ("video",
-                                 (video :> obj))
+                                 (largeIcon :> obj))
                                 ("university-ids",
-                                 (universityIds :> obj))
+                                 (video :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (universityIds :> obj))
                                 ("universities",
-                                 (universities :> obj))
+                                 (id :> obj))
                                 ("self_service_course_id",
-                                 (selfServiceCourseId :> obj))
+                                 (universities :> obj))
                                 ("short_description",
-                                 (shortDescription :> obj))
+                                 (selfServiceCourseId :> obj))
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (shortDescription :> obj))
                                 ("category-ids",
-                                 (categoryIds :> obj))
+                                 (shortName :> obj))
                                 ("visibility",
-                                 (visibility :> obj))
+                                 (categoryIds :> obj))
                                 ("small_icon",
-                                 (smallIcon :> obj))
+                                 (visibility :> obj))
                                 ("instructor",
-                                 (instructor :> obj))
+                                 (smallIcon :> obj))
                                 ("categories",
-                                 (categories :> obj))
+                                 (instructor :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (categories :> obj))
                                 ("language",
-                                 (language :> obj))
+                                 (name :> obj))
                                 ("courses",
-                                 (courses :> obj))
+                                 (language :> obj))
                                 ("university_logo",
-                                 (universityLogo :> obj))
+                                 (courses :> obj))
                                 ("course-ids",
-                                 (courseIds :> obj))
+                                 (universityLogo :> obj))
                                 ("display",
-                                 (display :> obj))
+                                 (courseIds :> obj))
                                 ("subtitle_languages_csv",
-                                 (subtitleLanguagesCsv :> obj)) |], "")
+                                 (display :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Topic
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Categories: JsonProvider+Category[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "categories"), new Func<_,_>(id)))
 
     member CategoryIds: string[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "category-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member CourseIds: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Courses: JsonProvider+Course[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "courses"), new Func<_,_>(id)))
 
     member Display: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Instructor: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "instructor"))
 
     member Language: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "language")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member LargeIcon: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "large_icon")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Photo: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "photo")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member PreviewLink: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "preview_link"))
 
     member SelfServiceCourseId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "self_service_course_id"))
 
     member ShortDescription: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_description")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ShortName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member SmallIcon: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "small_icon")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member SmallIconHover: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "small_icon_hover")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member SubtitleLanguagesCsv: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "subtitle_languages_csv"))
 
     member Universities: JsonProvider+University[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "universities"), new Func<_,_>(id)))
 
     member UniversityIds: string[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "university-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member UniversityLogo: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "university_logo"))
 
     member Video: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "video"))
 
     member Visibility: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "visibility"))
 
 
 class JsonProvider+Category : FDR.BaseTypes.IJsonDocument
     new : id:int -> name:string -> mailingListId:int option -> shortName:string -> description:string option -> JsonProvider+Category
+    let this = id
+    let id = name
+    let name = mailingListId
+    let mailingListId = shortName
+    let shortName = description
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (this :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (id :> obj))
                                 ("mailing_list_id",
-                                 (mailingListId :> obj))
+                                 (name :> obj))
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (mailingListId :> obj))
                                 ("description",
-                                 (description :> obj)) |], "")
+                                 (shortName :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Category
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Description: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member MailingListId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "mailing_list_id"))
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ShortName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Course : FDR.BaseTypes.IJsonDocument
     new : gradingPolicyDistinction:string option -> aceTrackPriceDisplay:JsonValue -> signatureTrackCertificateDesignId:JsonValue -> aceSemesterHours:JsonValue -> startDay:int option -> durationString:string option -> signatureTrackLastChanceTime:System.DateTime option -> id:int -> startMonth:int option -> certificateDescription:string option -> startDateString:JsonProvider+StringOrDateTime -> cheggSessionId:JsonValue -> signatureTrackRegularPrice:int option -> gradesReleaseDate:System.DateTime option -> certificatesReady:bool -> signatureTrackPrice:int option -> statementDesignId:int option -> signatureTrackRegistrationOpen:bool -> topicId:int -> eligibleForSignatureTrack:bool -> startDate:System.DateTime option -> record:JsonProvider+Record -> status:bool -> startYear:int option -> signatureTrackCertificateCombinedSignature:JsonValue -> endDate:JsonValue -> notifiedSubscribers:bool -> instructors:int[] -> active:bool -> eligibleForCertificates:bool -> signatureTrackCertificateSignatureBlurb:JsonValue -> deployed:bool -> aceCloseDate:JsonValue -> name:JsonProvider+IntOrString -> textbooks:JsonValue[] -> signatureTrackOpenTime:System.DateTime option -> eligibleForAce:bool option -> gradingPolicyNormal:string option -> aceOpenDate:JsonValue -> homeLink:string option -> creatorId:int option -> proctoredExamCompletionDate:JsonValue -> universityLogo:JsonValue -> signatureTrackCloseTime:System.DateTime option -> authReviewCompletionDate:JsonValue -> JsonProvider+Course
+    let this = gradingPolicyDistinction
+    let gradingPolicyDistinction = aceTrackPriceDisplay
+    let aceTrackPriceDisplay = signatureTrackCertificateDesignId
+    let signatureTrackCertificateDesignId = aceSemesterHours
+    let aceSemesterHours = startDay
+    let startDay = durationString
+    let durationString = signatureTrackLastChanceTime
+    let signatureTrackLastChanceTime = id
+    let id = startMonth
+    let startMonth = certificateDescription
+    let certificateDescription = startDateString
+    let startDateString = cheggSessionId
+    let cheggSessionId = signatureTrackRegularPrice
+    let signatureTrackRegularPrice = gradesReleaseDate
+    let gradesReleaseDate = certificatesReady
+    let certificatesReady = signatureTrackPrice
+    let signatureTrackPrice = statementDesignId
+    let statementDesignId = signatureTrackRegistrationOpen
+    let signatureTrackRegistrationOpen = topicId
+    let topicId = eligibleForSignatureTrack
+    let eligibleForSignatureTrack = startDate
+    let startDate = record
+    let record = status
+    let status = startYear
+    let startYear = signatureTrackCertificateCombinedSignature
+    let signatureTrackCertificateCombinedSignature = endDate
+    let endDate = notifiedSubscribers
+    let notifiedSubscribers = instructors
+    let instructors = active
+    let active = eligibleForCertificates
+    let eligibleForCertificates = signatureTrackCertificateSignatureBlurb
+    let signatureTrackCertificateSignatureBlurb = deployed
+    let deployed = aceCloseDate
+    let aceCloseDate = name
+    let name = textbooks
+    let textbooks = signatureTrackOpenTime
+    let signatureTrackOpenTime = eligibleForAce
+    let eligibleForAce = gradingPolicyNormal
+    let gradingPolicyNormal = aceOpenDate
+    let aceOpenDate = homeLink
+    let homeLink = creatorId
+    let creatorId = proctoredExamCompletionDate
+    let proctoredExamCompletionDate = universityLogo
+    let universityLogo = signatureTrackCloseTime
+    let signatureTrackCloseTime = authReviewCompletionDate
     JsonRuntime.CreateRecord([| ("grading_policy_distinction",
-                                 (gradingPolicyDistinction :> obj))
+                                 (this :> obj))
                                 ("ace_track_price_display",
-                                 (aceTrackPriceDisplay :> obj))
+                                 (gradingPolicyDistinction :> obj))
                                 ("signature_track_certificate_design_id",
-                                 (signatureTrackCertificateDesignId :> obj))
+                                 (aceTrackPriceDisplay :> obj))
                                 ("ace_semester_hours",
-                                 (aceSemesterHours :> obj))
+                                 (signatureTrackCertificateDesignId :> obj))
                                 ("start_day",
-                                 (startDay :> obj))
+                                 (aceSemesterHours :> obj))
                                 ("duration_string",
-                                 (durationString :> obj))
+                                 (startDay :> obj))
                                 ("signature_track_last_chance_time",
-                                 (signatureTrackLastChanceTime :> obj))
+                                 (durationString :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (signatureTrackLastChanceTime :> obj))
                                 ("start_month",
-                                 (startMonth :> obj))
+                                 (id :> obj))
                                 ("certificate_description",
-                                 (certificateDescription :> obj))
+                                 (startMonth :> obj))
                                 ("start_date_string",
-                                 (startDateString :> obj))
+                                 (certificateDescription :> obj))
                                 ("chegg_session_id",
-                                 (cheggSessionId :> obj))
+                                 (startDateString :> obj))
                                 ("signature_track_regular_price",
-                                 (signatureTrackRegularPrice :> obj))
+                                 (cheggSessionId :> obj))
                                 ("grades_release_date",
-                                 (gradesReleaseDate :> obj))
+                                 (signatureTrackRegularPrice :> obj))
                                 ("certificates_ready",
-                                 (certificatesReady :> obj))
+                                 (gradesReleaseDate :> obj))
                                 ("signature_track_price",
-                                 (signatureTrackPrice :> obj))
+                                 (certificatesReady :> obj))
                                 ("statement_design_id",
-                                 (statementDesignId :> obj))
+                                 (signatureTrackPrice :> obj))
                                 ("signature_track_registration_open",
-                                 (signatureTrackRegistrationOpen :> obj))
+                                 (statementDesignId :> obj))
                                 ("topic_id",
-                                 (topicId :> obj))
+                                 (signatureTrackRegistrationOpen :> obj))
                                 ("eligible_for_signature_track",
-                                 (eligibleForSignatureTrack :> obj))
+                                 (topicId :> obj))
                                 ("start_date",
-                                 (startDate :> obj))
+                                 (eligibleForSignatureTrack :> obj))
                                 ("record",
-                                 (record :> obj))
+                                 (startDate :> obj))
                                 ("status",
-                                 (status :> obj))
+                                 (record :> obj))
                                 ("start_year",
-                                 (startYear :> obj))
+                                 (status :> obj))
                                 ("signature_track_certificate_combined_signature",
-                                 (signatureTrackCertificateCombinedSignature :> obj))
+                                 (startYear :> obj))
                                 ("end_date",
-                                 (endDate :> obj))
+                                 (signatureTrackCertificateCombinedSignature :> obj))
                                 ("notified_subscribers",
-                                 (notifiedSubscribers :> obj))
+                                 (endDate :> obj))
                                 ("instructors",
-                                 (instructors :> obj))
+                                 (notifiedSubscribers :> obj))
                                 ("active",
-                                 (active :> obj))
+                                 (instructors :> obj))
                                 ("eligible_for_certificates",
-                                 (eligibleForCertificates :> obj))
+                                 (active :> obj))
                                 ("signature_track_certificate_signature_blurb",
-                                 (signatureTrackCertificateSignatureBlurb :> obj))
+                                 (eligibleForCertificates :> obj))
                                 ("deployed",
-                                 (deployed :> obj))
+                                 (signatureTrackCertificateSignatureBlurb :> obj))
                                 ("ace_close_date",
-                                 (aceCloseDate :> obj))
+                                 (deployed :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (aceCloseDate :> obj))
                                 ("textbooks",
-                                 (textbooks :> obj))
+                                 (name :> obj))
                                 ("signature_track_open_time",
-                                 (signatureTrackOpenTime :> obj))
+                                 (textbooks :> obj))
                                 ("eligible_for_ACE",
-                                 (eligibleForAce :> obj))
+                                 (signatureTrackOpenTime :> obj))
                                 ("grading_policy_normal",
-                                 (gradingPolicyNormal :> obj))
+                                 (eligibleForAce :> obj))
                                 ("ace_open_date",
-                                 (aceOpenDate :> obj))
+                                 (gradingPolicyNormal :> obj))
                                 ("home_link",
-                                 (homeLink :> obj))
+                                 (aceOpenDate :> obj))
                                 ("creator_id",
-                                 (creatorId :> obj))
+                                 (homeLink :> obj))
                                 ("proctored_exam_completion_date",
-                                 (proctoredExamCompletionDate :> obj))
+                                 (creatorId :> obj))
                                 ("university_logo",
-                                 (universityLogo :> obj))
+                                 (proctoredExamCompletionDate :> obj))
                                 ("signature_track_close_time",
-                                 (signatureTrackCloseTime :> obj))
+                                 (universityLogo :> obj))
                                 ("auth_review_completion_date",
-                                 (authReviewCompletionDate :> obj)) |], "")
+                                 (signatureTrackCloseTime :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Course
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member AceCloseDate: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_close_date")
 
     member AceOpenDate: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_open_date")
 
     member AceSemesterHours: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_semester_hours")
 
     member AceTrackPriceDisplay: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_track_price_display")
 
     member Active: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "active")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member AuthReviewCompletionDate: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "auth_review_completion_date")
 
     member CertificateDescription: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "certificate_description"))
 
     member CertificatesReady: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "certificates_ready")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member CheggSessionId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "chegg_session_id")
 
     member CreatorId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "creator_id"))
 
     member Deployed: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "deployed")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member DurationString: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "duration_string"))
 
     member EligibleForAce: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "eligible_for_ACE"))
 
     member EligibleForCertificates: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "eligible_for_certificates")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member EligibleForSignatureTrack: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "eligible_for_signature_track")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member EndDate: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "end_date")
 
     member GradesReleaseDate: System.DateTime option with get
+    let this = this
     JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "grades_release_date"))
 
     member GradingPolicyDistinction: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "grading_policy_distinction"))
 
     member GradingPolicyNormal: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "grading_policy_normal"))
 
     member HomeLink: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "home_link"))
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Instructors: int[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Name: JsonProvider+IntOrString with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "name")
 
     member NotifiedSubscribers: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "notified_subscribers")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ProctoredExamCompletionDate: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "proctored_exam_completion_date")
 
     member Record: JsonProvider+Record with get
+    let this = this
     JsonRuntime.GetPropertyPacked(this, "record")
 
     member SignatureTrackCertificateCombinedSignature: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_combined_signature")
 
     member SignatureTrackCertificateDesignId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_design_id")
 
     member SignatureTrackCertificateSignatureBlurb: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_signature_blurb")
 
     member SignatureTrackCloseTime: System.DateTime option with get
+    let this = this
     JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_close_time"))
 
     member SignatureTrackLastChanceTime: System.DateTime option with get
+    let this = this
     JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_last_chance_time"))
 
     member SignatureTrackOpenTime: System.DateTime option with get
+    let this = this
     JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_open_time"))
 
     member SignatureTrackPrice: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_price"))
 
     member SignatureTrackRegistrationOpen: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track_registration_open")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member SignatureTrackRegularPrice: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_regular_price"))
 
     member StartDate: System.DateTime option with get
+    let this = this
     JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "start_date"))
 
     member StartDateString: JsonProvider+StringOrDateTime with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "start_date_string")
 
     member StartDay: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_day"))
 
     member StartMonth: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_month"))
 
     member StartYear: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_year"))
 
     member StatementDesignId: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "statement_design_id"))
 
     member Status: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "status")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Textbooks: FDR.BaseTypes.IJsonDocument[] with get
+    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "textbooks"), new Func<_,_>(id)))
 
     member TopicId: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "topic_id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member UniversityLogo: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "university_logo")
 
 
 class JsonProvider+University : FDR.BaseTypes.IJsonDocument
     new : rectangularLogoSvg:string option -> wordmark:JsonValue -> websiteTwitter:string option -> chinaMirror:int option -> favicon:string option -> websiteFacebook:string option -> logo:string option -> backgroundColor:JsonValue -> id:int -> locationCity:string option -> locationCountry:string option -> locationLat:decimal option -> location:string option -> primaryColor:string option -> abbrName:string -> website:string option -> description:string option -> shortName:string -> landingPageBanner:string option -> mailingListId:JsonValue -> websiteYoutube:string option -> partnerType:int -> banner:string option -> locationState:string option -> name:string -> squareLogo:string option -> squareLogoSource:string option -> squareLogoSvg:string option -> locationLng:decimal option -> homeLink:string option -> classLogo:string option -> display:bool -> JsonProvider+University
+    let this = rectangularLogoSvg
+    let rectangularLogoSvg = wordmark
+    let wordmark = websiteTwitter
+    let websiteTwitter = chinaMirror
+    let chinaMirror = favicon
+    let favicon = websiteFacebook
+    let websiteFacebook = logo
+    let logo = backgroundColor
+    let backgroundColor = id
+    let id = locationCity
+    let locationCity = locationCountry
+    let locationCountry = locationLat
+    let locationLat = location
+    let location = primaryColor
+    let primaryColor = abbrName
+    let abbrName = website
+    let website = description
+    let description = shortName
+    let shortName = landingPageBanner
+    let landingPageBanner = mailingListId
+    let mailingListId = websiteYoutube
+    let websiteYoutube = partnerType
+    let partnerType = banner
+    let banner = locationState
+    let locationState = name
+    let name = squareLogo
+    let squareLogo = squareLogoSource
+    let squareLogoSource = squareLogoSvg
+    let squareLogoSvg = locationLng
+    let locationLng = homeLink
+    let homeLink = classLogo
+    let classLogo = display
     JsonRuntime.CreateRecord([| ("rectangular_logo_svg",
-                                 (rectangularLogoSvg :> obj))
+                                 (this :> obj))
                                 ("wordmark",
-                                 (wordmark :> obj))
+                                 (rectangularLogoSvg :> obj))
                                 ("website_twitter",
-                                 (websiteTwitter :> obj))
+                                 (wordmark :> obj))
                                 ("china_mirror",
-                                 (chinaMirror :> obj))
+                                 (websiteTwitter :> obj))
                                 ("favicon",
-                                 (favicon :> obj))
+                                 (chinaMirror :> obj))
                                 ("website_facebook",
-                                 (websiteFacebook :> obj))
+                                 (favicon :> obj))
                                 ("logo",
-                                 (logo :> obj))
+                                 (websiteFacebook :> obj))
                                 ("background_color",
-                                 (backgroundColor :> obj))
+                                 (logo :> obj))
                                 ("id",
-                                 (id :> obj))
+                                 (backgroundColor :> obj))
                                 ("location_city",
-                                 (locationCity :> obj))
+                                 (id :> obj))
                                 ("location_country",
-                                 (locationCountry :> obj))
+                                 (locationCity :> obj))
                                 ("location_lat",
-                                 (locationLat :> obj))
+                                 (locationCountry :> obj))
                                 ("location",
-                                 (location :> obj))
+                                 (locationLat :> obj))
                                 ("primary_color",
-                                 (primaryColor :> obj))
+                                 (location :> obj))
                                 ("abbr_name",
-                                 (abbrName :> obj))
+                                 (primaryColor :> obj))
                                 ("website",
-                                 (website :> obj))
+                                 (abbrName :> obj))
                                 ("description",
-                                 (description :> obj))
+                                 (website :> obj))
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (description :> obj))
                                 ("landing_page_banner",
-                                 (landingPageBanner :> obj))
+                                 (shortName :> obj))
                                 ("mailing_list_id",
-                                 (mailingListId :> obj))
+                                 (landingPageBanner :> obj))
                                 ("website_youtube",
-                                 (websiteYoutube :> obj))
+                                 (mailingListId :> obj))
                                 ("partner_type",
-                                 (partnerType :> obj))
+                                 (websiteYoutube :> obj))
                                 ("banner",
-                                 (banner :> obj))
+                                 (partnerType :> obj))
                                 ("location_state",
-                                 (locationState :> obj))
+                                 (banner :> obj))
                                 ("name",
-                                 (name :> obj))
+                                 (locationState :> obj))
                                 ("square_logo",
-                                 (squareLogo :> obj))
+                                 (name :> obj))
                                 ("square_logo_source",
-                                 (squareLogoSource :> obj))
+                                 (squareLogo :> obj))
                                 ("square_logo_svg",
-                                 (squareLogoSvg :> obj))
+                                 (squareLogoSource :> obj))
                                 ("location_lng",
-                                 (locationLng :> obj))
+                                 (squareLogoSvg :> obj))
                                 ("home_link",
-                                 (homeLink :> obj))
+                                 (locationLng :> obj))
                                 ("class_logo",
-                                 (classLogo :> obj))
+                                 (homeLink :> obj))
                                 ("display",
-                                 (display :> obj)) |], "")
+                                 (classLogo :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+University
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member AbbrName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "abbr_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member BackgroundColor: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "background_color")
 
     member Banner: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "banner"))
 
     member ChinaMirror: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "china_mirror"))
 
     member ClassLogo: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "class_logo"))
 
     member Description: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
     member Display: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Favicon: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "favicon"))
 
     member HomeLink: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "home_link"))
 
     member Id: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member LandingPageBanner: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "landing_page_banner"))
 
     member Location: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location"))
 
     member LocationCity: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_city"))
 
     member LocationCountry: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_country"))
 
     member LocationLat: decimal option with get
+    let this = this
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "location_lat"))
 
     member LocationLng: decimal option with get
+    let this = this
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "location_lng"))
 
     member LocationState: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_state"))
 
     member Logo: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "logo"))
 
     member MailingListId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "mailing_list_id")
 
     member Name: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member PartnerType: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "partner_type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member PrimaryColor: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "primary_color"))
 
     member RectangularLogoSvg: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "rectangular_logo_svg"))
 
     member ShortName: string with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member SquareLogo: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo"))
 
     member SquareLogoSource: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo_source"))
 
     member SquareLogoSvg: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo_svg"))
 
     member Website: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website"))
 
     member WebsiteFacebook: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_facebook"))
 
     member WebsiteTwitter: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_twitter"))
 
     member WebsiteYoutube: string option with get
+    let this = this
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_youtube"))
 
     member Wordmark: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "wordmark")
 
 
 class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrString
-    JsonRuntime.CreateValue((number :> obj), "")
+    let this = number
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : string:string -> JsonProvider+IntOrString
-    JsonRuntime.CreateValue((string :> obj), "")
+    let this = string
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : () -> JsonProvider+IntOrString
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrString
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member Number: int option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
     new : gradeDistinction:decimal option -> shareForWork:bool option -> isEnrolledForProctoredExam:bool -> achievementLevel:int option -> signatureTrack:bool -> passedAce:bool -> aceGrade:int -> gradeNormal:decimal option -> verifyCertId:JsonValue -> authenticatedOverall:bool -> withGradeCertId:JsonValue -> JsonProvider+Record
+    let this = gradeDistinction
+    let gradeDistinction = shareForWork
+    let shareForWork = isEnrolledForProctoredExam
+    let isEnrolledForProctoredExam = achievementLevel
+    let achievementLevel = signatureTrack
+    let signatureTrack = passedAce
+    let passedAce = aceGrade
+    let aceGrade = gradeNormal
+    let gradeNormal = verifyCertId
+    let verifyCertId = authenticatedOverall
+    let authenticatedOverall = withGradeCertId
     JsonRuntime.CreateRecord([| ("grade_distinction",
-                                 (gradeDistinction :> obj))
+                                 (this :> obj))
                                 ("share_for_work",
-                                 (shareForWork :> obj))
+                                 (gradeDistinction :> obj))
                                 ("is_enrolled_for_proctored_exam",
-                                 (isEnrolledForProctoredExam :> obj))
+                                 (shareForWork :> obj))
                                 ("achievement_level",
-                                 (achievementLevel :> obj))
+                                 (isEnrolledForProctoredExam :> obj))
                                 ("signature_track",
-                                 (signatureTrack :> obj))
+                                 (achievementLevel :> obj))
                                 ("passed_ace",
-                                 (passedAce :> obj))
+                                 (signatureTrack :> obj))
                                 ("ace_grade",
-                                 (aceGrade :> obj))
+                                 (passedAce :> obj))
                                 ("grade_normal",
-                                 (gradeNormal :> obj))
+                                 (aceGrade :> obj))
                                 ("verify_cert_id",
-                                 (verifyCertId :> obj))
+                                 (gradeNormal :> obj))
                                 ("authenticated_overall",
-                                 (authenticatedOverall :> obj))
+                                 (verifyCertId :> obj))
                                 ("with_grade_cert_id",
-                                 (withGradeCertId :> obj)) |], "")
+                                 (authenticatedOverall :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Record
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member AceGrade: int with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ace_grade")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member AchievementLevel: int option with get
+    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "achievement_level"))
 
     member AuthenticatedOverall: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "authenticated_overall")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member GradeDistinction: decimal option with get
+    let this = this
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "grade_distinction"))
 
     member GradeNormal: decimal option with get
+    let this = this
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "grade_normal"))
 
     member IsEnrolledForProctoredExam: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "is_enrolled_for_proctored_exam")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member PassedAce: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "passed_ace")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ShareForWork: bool option with get
+    let this = this
     JsonRuntime.ConvertBoolean(JsonRuntime.TryGetPropertyUnpacked(this, "share_for_work"))
 
     member SignatureTrack: bool with get
+    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member VerifyCertId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "verify_cert_id")
 
     member WithGradeCertId: FDR.BaseTypes.IJsonDocument with get
+    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "with_grade_cert_id")
 
 
 class JsonProvider+StringOrDateTime : FDR.BaseTypes.IJsonDocument
     new : string:string -> JsonProvider+StringOrDateTime
-    JsonRuntime.CreateValue((string :> obj), "")
+    let this = string
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : dateTime:System.DateTime -> JsonProvider+StringOrDateTime
-    JsonRuntime.CreateValue((dateTime :> obj), "")
+    let this = dateTime
+    JsonRuntime.CreateValue((this :> obj), "")
 
     new : () -> JsonProvider+StringOrDateTime
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+StringOrDateTime
-    JsonDocument.Create(jsonValue, "")
+    let this = jsonValue
+    JsonDocument.Create(this, "")
 
     member DateTime: System.DateTime option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
+    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 

@@ -4,6 +4,7 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "projects.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Ordercontainer async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -11,63 +12,78 @@ class XmlProvider : obj
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "projects.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Ordercontainer
+    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Ordercontainer
+    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Ordercontainer
+    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Ordercontainer
+    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Ordercontainer : FDR.BaseTypes.XmlElement
     new : background:XmlProvider+Background -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
+    let this = background
+    let background = project
     XmlRuntime.CreateRecord("ordercontainer", 
                             [| |], 
                             [| ("backgrounds|background",
-                                (background :> obj))
+                                (this :> obj))
                                ("project",
-                                (project :> obj)) |], "")
+                                (background :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Ordercontainer
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Background: XmlProvider+Background with get
+    let this = this
     XmlRuntime.GetChild(this, "backgrounds|background")
 
     member Project: XmlProvider+Project with get
+    let this = this
     XmlRuntime.GetChild(this, "project")
 
 
 class XmlProvider+Background : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Background
+    let this = title
     XmlRuntime.CreateRecord("background", 
                             [| |], 
                             [| ("title",
-                                (title :> obj)) |], "")
+                                (this :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Background
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Title: string with get
+    let this = this
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
 class XmlProvider+Project : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Project
+    let this = title
     XmlRuntime.CreateRecord("project", 
                             [| |], 
                             [| ("title",
-                                (title :> obj)) |], "")
+                                (this :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
-    XmlElement.Create(xElement)
+    let this = xElement
+    XmlElement.Create(this)
 
     member Title: string with get
+    let this = this
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 

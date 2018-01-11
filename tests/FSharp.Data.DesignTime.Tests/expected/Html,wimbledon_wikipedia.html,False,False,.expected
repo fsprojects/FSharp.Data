@@ -7,6 +7,7 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
+    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -14,350 +15,411 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
+    let this = this
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
+    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
+    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
+    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
+    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
+    let this = this
     this
 
 
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Champions: HtmlProvider+Champions with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Champions")
 
     member ``Colours and uniforms``: HtmlProvider+ColoursAndUniforms with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Colours and uniforms")
 
     member Contents: HtmlProvider+Contents with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Contents")
 
     member ``Current champions``: HtmlProvider+CurrentChampions2 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Current champions")
 
     member ``External links``: HtmlProvider+ExternalLinks with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "External links")
 
     member ``Further reading``: HtmlProvider+FurtherReading with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Further reading")
 
     member Interaction: HtmlProvider+Interaction with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Interaction")
 
     member ``Invitation events``: HtmlProvider+InvitationEvents with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Invitation events")
 
     member ``Junior events``: HtmlProvider+JuniorEvents with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Junior events")
 
     member Languages: HtmlProvider+Languages with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages")
 
     member Languages2: HtmlProvider+Languages2 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages2")
 
     member Languages3: HtmlProvider+Languages3 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages3")
 
     member Languages4: HtmlProvider+Languages4 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages4")
 
     member List1: HtmlProvider+List1 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List1")
 
     member List15: HtmlProvider+List15 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List15")
 
     member List16: HtmlProvider+List16 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List16")
 
     member List17: HtmlProvider+List17 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List17")
 
     member List18: HtmlProvider+List18 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List18")
 
     member List19: HtmlProvider+List19 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List19")
 
     member List20: HtmlProvider+List20 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List20")
 
     member List21: HtmlProvider+List21 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List21")
 
     member List22: HtmlProvider+List22 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List22")
 
     member List23: HtmlProvider+List23 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List23")
 
     member List24: HtmlProvider+List24 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List24")
 
     member List25: HtmlProvider+List25 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List25")
 
     member List26: HtmlProvider+List26 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List26")
 
     member List27: HtmlProvider+List27 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List27")
 
     member List28: HtmlProvider+List28 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List28")
 
     member List29: HtmlProvider+List29 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List29")
 
     member List30: HtmlProvider+List30 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List30")
 
     member List31: HtmlProvider+List31 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List31")
 
     member List32: HtmlProvider+List32 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List32")
 
     member List33: HtmlProvider+List33 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List33")
 
     member List34: HtmlProvider+List34 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List34")
 
     member List35: HtmlProvider+List35 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List35")
 
     member List36: HtmlProvider+List36 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List36")
 
     member List37: HtmlProvider+List37 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List37")
 
     member List38: HtmlProvider+List38 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List38")
 
     member List39: HtmlProvider+List39 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List39")
 
     member List40: HtmlProvider+List40 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List40")
 
     member List41: HtmlProvider+List41 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List41")
 
     member List42: HtmlProvider+List42 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List42")
 
     member List43: HtmlProvider+List43 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List43")
 
     member List44: HtmlProvider+List44 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List44")
 
     member ``Main events``: HtmlProvider+MainEvents with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Main events")
 
     member Namespaces: HtmlProvider+Namespaces with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Namespaces")
 
     member Navigation: HtmlProvider+Navigation with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Navigation")
 
     member Notes: HtmlProvider+Notes with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Notes")
 
     member ``Personal tools``: HtmlProvider+PersonalTools with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Personal tools")
 
     member Print/export: HtmlProvider+PrintExport with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Print/export")
 
     member References: HtmlProvider+References with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "References")
 
     member ``See also``: HtmlProvider+SeeAlso2 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "See also")
 
     member ``Singles champions never World No. 1``: HtmlProvider+SinglesChampionsNeverWorldNo1 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Singles champions never World No. 1")
 
     member Tools: HtmlProvider+Tools with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools")
 
     member Views: HtmlProvider+Views with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
@@ -366,6 +428,7 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Current champions``: HtmlProvider+CurrentChampions with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Event", TextRuntime.ConvertString(value), value),
@@ -378,6 +441,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Current champions", true)
 
     member ``Ranking points``: HtmlProvider+RankingPoints with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -388,6 +452,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Ranking points", true)
 
     member Records: HtmlProvider+Records with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Record", TextRuntime.ConvertString(value), value),
@@ -402,6 +467,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Records", true)
 
     member ``See also``: HtmlProvider+SeeAlso with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -410,6 +476,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "See also", false)
 
     member Table1: HtmlProvider+Table1 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
@@ -418,6 +485,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table1", true)
 
     member Table10: HtmlProvider+Table10 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Wimbledon (Amateur Era)", TextRuntime.ConvertString(value), value),
@@ -426,6 +494,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table10", true)
 
     member Table22: HtmlProvider+Table22 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Wimbledon (Open Era)", TextRuntime.ConvertString(value), value),
@@ -434,6 +503,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table22", true)
 
     member Table30: HtmlProvider+Table30 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Wimbledon drawsheets", TextRuntime.ConvertString(value), value),
@@ -442,6 +512,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table30", true)
 
     member Table31: HtmlProvider+Table31 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
@@ -460,6 +531,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table31", true)
 
     member Table32: HtmlProvider+Table32 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
@@ -478,6 +550,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table32", true)
 
     member Table34: HtmlProvider+Table34 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Grand Slam tournaments (Majors)", TextRuntime.ConvertString(value), value),
@@ -486,6 +559,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table34", true)
 
     member Table36: HtmlProvider+Table36 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Tennis", TextRuntime.ConvertString(value), value),
@@ -496,6 +570,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table36", true)
 
     member Table38: HtmlProvider+Table38 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Grand Slam tournament champions", TextRuntime.ConvertString(value), value),
@@ -504,6 +579,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table38", true)
 
     member Table39: HtmlProvider+Table39 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Australasian and Australian Championships / Australian Open", TextRuntime.ConvertString(value), value),
@@ -512,6 +588,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table39", true)
 
     member Table40: HtmlProvider+Table40 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("French Championships / French Open", TextRuntime.ConvertString(value), value),
@@ -520,6 +597,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table40", true)
 
     member Table41: HtmlProvider+Table41 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
@@ -528,6 +606,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table41", true)
 
     member Table42: HtmlProvider+Table42 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("U.S. National Championships / US Open", TextRuntime.ConvertString(value), value),
@@ -536,6 +615,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table42", true)
 
     member Table44: HtmlProvider+Table44 with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("All England Lawn Tennis and Croquet Club", TextRuntime.ConvertString(value), value),
@@ -544,6 +624,7 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table44", true)
 
     member ``Trophies and prize money``: HtmlProvider+TrophiesAndPrizeMoney with get
+    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Result", TextRuntime.ConvertString(value), value),
@@ -704,225 +785,287 @@ class HtmlProvider+Views : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+CurrentChampions+Row : string * string * string * string
     member Champion: string with get
+    let this = this
     (let _,t2,_,_ = this in t2)
 
     member Event: string with get
+    let this = this
     (let t1,_,_,_ = this in t1)
 
     member Runner-up: string with get
+    let this = this
     (let _,_,t3,_ = this in t3)
 
     member Score: string with get
+    let this = this
     (let _,_,_,t4 = this in t4)
 
 
 class HtmlProvider+RankingPoints+Row : string * int * int
     member ATP: int with get
+    let this = this
     (let _,t2,_ = this in t2)
 
     member Column1: string with get
+    let this = this
     (let t1,_,_ = this in t1)
 
     member WTA: int with get
+    let this = this
     (let _,_,t3 = this in t3)
 
 
 class HtmlProvider+Records+Row : string * string * string * string * string
     member Count: string with get
+    let this = this
     (let _,_,_,t4,_ = this in t4)
 
     member Era: string with get
+    let this = this
     (let _,t2,_,_,_ = this in t2)
 
     member Player(s): string with get
+    let this = this
     (let _,_,t3,_,_ = this in t3)
 
     member Record: string with get
+    let this = this
     (let t1,_,_,_,_ = this in t1)
 
     member ``Winning years``: string with get
+    let this = this
     (let _,_,_,_,t5 = this in t5)
 
 
 class HtmlProvider+SeeAlso+Row : string * string
     member Column1: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member Column2: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table1+Row : string * string
     member ``The Championships, Wimbledon``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``The Championships, Wimbledon 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table10+Row : string * string
     member ``Wimbledon (Amateur Era)``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Wimbledon (Amateur Era) 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table22+Row : string * string
     member ``Wimbledon (Open Era)``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Wimbledon (Open Era) 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table30+Row : string * string
     member ``Wimbledon drawsheets``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Wimbledon drawsheets 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table31+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
     member 1969: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
     member Column1: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
     member Column2: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
     member Column3: int with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
 
     member Column4: int with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
 
     member Column5: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
     member Column6: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
     member Column7: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
 
     member Column8: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
 class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
     member 1969: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
     member Column1: int with get
+    let this = this
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
     member Column2: int with get
+    let this = this
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
     member Column3: int with get
+    let this = this
     (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
 
     member Column4: int with get
+    let this = this
     (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
 
     member Column5: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
     member Column6: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
     member Column7: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
 
     member Column8: System.Nullable<int> with get
+    let this = this
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
 class HtmlProvider+Table34+Row : string * string
     member ``Grand Slam tournaments (Majors)``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Grand Slam tournaments (Majors) 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table36+Row : string * string * string
     member Tennis: string with get
+    let this = this
     (let t1,_,_ = this in t1)
 
     member Tennis2: string with get
+    let this = this
     (let _,t2,_ = this in t2)
 
     member Tennis3: string with get
+    let this = this
     (let _,_,t3 = this in t3)
 
 
 class HtmlProvider+Table38+Row : string * string
     member ``Grand Slam tournament champions``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Grand Slam tournament champions 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table39+Row : string * string
     member ``Australasian and Australian Championships / Australian Open``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``Australasian and Australian Championships / Australian Open 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table40+Row : string * string
     member ``French Championships / French Open``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``French Championships / French Open 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table41+Row : string * string
     member ``The Championships, Wimbledon``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``The Championships, Wimbledon 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table42+Row : string * string
     member ``U.S. National Championships / US Open``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``U.S. National Championships / US Open 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+Table44+Row : string * string
     member ``All England Lawn Tennis and Croquet Club``: string with get
+    let this = this
     (let t1,_ = this in t1)
 
     member ``All England Lawn Tennis and Croquet Club 2``: string with get
+    let this = this
     (let _,t2 = this in t2)
 
 
 class HtmlProvider+TrophiesAndPrizeMoney+Row : string * string * int
     member ``Increase from 2012``: int with get
+    let this = this
     (let _,_,t3 = this in t3)
 
     member ``Prize money``: string with get
+    let this = this
     (let _,t2,_ = this in t2)
 
     member Result: string with get
+    let this = this
     (let t1,_,_ = this in t1)
 
 
