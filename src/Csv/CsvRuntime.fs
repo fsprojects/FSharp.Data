@@ -146,6 +146,7 @@ module private CsvHelpers =
 
   let parseIntoTypedRows newReader 
                          ignoreErrors 
+                         ignoreLinePattern
                          stringArrayToRow
                          { FirstLine = firstLine
                            SecondLine = secondLine
@@ -169,6 +170,16 @@ module private CsvHelpers =
       let reader : TextReader = newReader()
       let csv = CsvReader.readCsvFile reader separators quote
       if hasHeaders then Seq.skip 1 csv else csv
+    
+    let checkRegex pattern = 
+      if String.IsNullOrEmpty(pattern) then
+        fun _ -> false
+      else 
+        fun s -> System.Text.RegularExpressions.Regex(pattern).IsMatch(s)
+
+    let ignorePatternMatches pattern row = 
+      row 
+      |> Array.exists (fun r -> checkRegex pattern r)
 
     let untypedRows = ReentrantEnumerable<_>(firstSeq, nextSeq)
     // Return data with parsed columns
@@ -182,25 +193,26 @@ module private CsvHelpers =
             -> true, untypedRow.[..numberOfColumns-1]
           | _ -> false, untypedRow
        
-        if not hasCorrectNumberOfColumns then
-          // Ignore rows with different number of columns when ignoreErrors is set to true
-          if not ignoreErrors then
-            let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
-            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns untypedRow.Length
-        else
-          if not (ignoreRow untypedRow) then
-            // Try to convert the untyped rows to 'RowType      
-            let convertedRow = 
-              try 
-                Choice1Of2 (stringArrayToRow untypedRow)
-              with exn -> 
-                Choice2Of2 exn
-            match convertedRow, ignoreErrors with
-            | Choice1Of2 convertedRow, _ -> yield convertedRow
-            | Choice2Of2 _, true -> ()
-            | Choice2Of2 exn, false -> 
-                let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
-                failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+        if not (ignorePatternMatches ignoreLinePattern untypedRow) then  
+          if not hasCorrectNumberOfColumns then
+            // Ignore rows with different number of columns when ignoreErrors is set to true
+            if not ignoreErrors then
+              let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+              failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns untypedRow.Length
+          else
+            if not (ignoreRow untypedRow) then
+              // Try to convert the untyped rows to 'RowType      
+              let convertedRow = 
+                try 
+                  Choice1Of2 (stringArrayToRow untypedRow)
+                with exn -> 
+                  Choice2Of2 exn
+              match convertedRow, ignoreErrors with
+              | Choice1Of2 convertedRow, _ -> yield convertedRow
+              | Choice2Of2 _, true -> ()
+              | Choice2Of2 exn, false -> 
+                  let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+                  failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
     }
 
 // --------------------------------------------------------------------------------------
@@ -218,7 +230,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   member __.Separators = separators
   /// The quotation mark use for surrounding values containing separator chars
   member __.Quote = quote
-  
+
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
 
@@ -231,20 +243,20 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
-    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows)
+  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows, ignoreLinePattern) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors) =    
+  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors, ignoreLinePattern) =
     let reader = new StringReader(text) :> TextReader
-    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false)
+    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false, ignoreLinePattern=ignoreLinePattern)
     csv.Rows |> Seq.toArray
 
   /// [omit]
-  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
+  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern) as this =
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
@@ -303,14 +315,14 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     let rows = 
       parsedCsvLines
-      |> parseIntoTypedRows newReader ignoreErrors (fun untypedRow -> stringArrayToRow.Invoke(this, untypedRow)) 
+      |> parseIntoTypedRows newReader ignoreErrors ignoreLinePattern (fun untypedRow -> stringArrayToRow.Invoke(this, untypedRow)) 
 
     new CsvFile<'RowType>(rowToStringArray,
                           disposer, 
                           rows, 
                           parsedCsvLines.Headers, 
                           parsedCsvLines.ColumnCount, 
-                          parsedCsvLines.Separators, 
+                          parsedCsvLines.Separators,
                           parsedCsvLines.Quote)
 
   /// Saves CSV to the specified writer
