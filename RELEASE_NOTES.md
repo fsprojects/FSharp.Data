@@ -1,4 +1,4 @@
-#### 2.4.4 - Unreleased
+#### 2.4.4 - January 20 2018
 * Fix parsing of unquoted HTML attributes containing URLs.
 * Fixed HTTP form body url encoding.
 
