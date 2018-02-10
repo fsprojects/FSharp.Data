@@ -126,7 +126,7 @@ let [<Literal>] DrWho =
 
 let doctorWho = new HtmlProvider<DrWho>()
 
-// Get the average number of vi ewers for each doctor's series run
+// Get the average number of viewers for each doctor's series run
 let viewersByDoctor = 
   doctorWho.Tables.``Series overview``.Rows 
   |> Seq.groupBy (fun season -> season.Doctor)

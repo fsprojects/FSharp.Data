@@ -93,10 +93,9 @@ and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Op
 
   /// Loads CSV from the specified uri
   static member Load(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding) = 
-    CsvFile.AsyncLoad(uri, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows) |> Async.RunSynchronously
+    CsvFile.AsyncLoad(uri, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows, ?encoding=encoding) |> Async.RunSynchronously
 
   /// Loads CSV from the specified uri asynchronously
-  /// This doesn't actually load the file async, so why is it here? The `Async.RunSynchronously` ruins everything.
   static member AsyncLoad(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding) = async {
     let separators = defaultArg separators ""
     let separators = 
