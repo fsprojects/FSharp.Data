@@ -362,15 +362,16 @@ type JsonValue with
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified uri asynchronously
-  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
+  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo, [<Optional>] ?encoding) = async {
+    let encoding = defaultArg encoding Encoding.UTF8
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" encoding.WebName uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
 
   /// Loads JSON from the specified uri
-  static member Load(uri:string, [<Optional>] ?cultureInfo) =
-    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
+  static member Load(uri:string, [<Optional>] ?cultureInfo, [<Optional>] ?encoding)=
+    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo, ?encoding=encoding)
     |> Async.RunSynchronously
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}

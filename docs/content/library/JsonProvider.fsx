@@ -135,7 +135,7 @@ type People2 = JsonProvider<"""
     { "name":"Tomas" } ] """, SampleIsList=true>
 
 let person = People2.Parse("""{ "name":"Gustavo" }""")
-	
+
 (**
 	
 ## Loading WorldBank data
