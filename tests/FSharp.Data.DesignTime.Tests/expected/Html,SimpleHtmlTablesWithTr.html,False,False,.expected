@@ -7,7 +7,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -15,29 +14,23 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
-    let this = this
     this
 
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member MyTable: HtmlProvider+MyTable with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertBoolean(value), value),
@@ -48,7 +41,6 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "myTable", true)
 
     member Table2: HtmlProvider+Table2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
@@ -65,29 +57,23 @@ class HtmlProvider+Table2 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table2+Row>
 
 class HtmlProvider+MyTable+Row : bool * int * decimal
     member Column1: bool with get
-    let this = this
     (let t1,_,_ = this in t1)
 
     member Column3: decimal with get
-    let this = this
     (let _,_,t3 = this in t3)
 
     member Column6: int with get
-    let this = this
     (let _,t2,_ = this in t2)
 
 
 class HtmlProvider+Table2+Row : System.DateTime * int * decimal
     member CptyId: int with get
-    let this = this
     (let _,t2,_ = this in t2)
 
     member Date: System.DateTime with get
-    let this = this
     (let t1,_,_ = this in t1)
 
     member Value: decimal with get
-    let this = this
     (let _,_,t3 = this in t3)
 
 

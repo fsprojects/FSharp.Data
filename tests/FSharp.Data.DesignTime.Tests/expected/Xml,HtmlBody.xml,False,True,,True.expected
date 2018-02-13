@@ -4,7 +4,6 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "HtmlBody.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Div async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -12,58 +11,45 @@ class XmlProvider : obj
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "HtmlBody.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Div
-    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Div
-    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Div
-    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Div
-    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Div : FDR.BaseTypes.XmlElement
     new : id:string option -> value:string option -> spans:string[] -> divs:XmlProvider+Div[] -> XmlProvider+Div
-    let this = id
-    let id = value
-    let value = spans
-    let spans = divs
     XmlRuntime.CreateRecord("div", 
                             [| ("id",
-                                (this :> obj)) |], 
+                                (id :> obj)) |], 
                             [| ("",
-                                (id :> obj))
-                               ("span",
                                 (value :> obj))
+                               ("span",
+                                (spans :> obj))
                                ("div",
-                                (spans :> obj)) |], "")
+                                (divs :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member Divs: XmlProvider+Div[] with get
-    let this = this
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 
     member Id: string option with get
-    let this = this
     TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "id"))
 
     member Spans: string[] with get
-    let this = this
     XmlRuntime.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> 
                                                            let value = XmlRuntime.TryGetValue(t)
                                                            TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
     member Value: string option with get
-    let this = this
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
 
 

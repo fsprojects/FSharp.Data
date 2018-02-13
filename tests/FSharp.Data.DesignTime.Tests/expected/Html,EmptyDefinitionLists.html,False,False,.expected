@@ -7,50 +7,41 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "EmptyDefinitionLists.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     member DefinitionLists: HtmlProvider+DefinitionListsContainer with get
-    let this = this
     this
 
     static member GetSample: () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "EmptyDefinitionLists.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
 
 class HtmlProvider+DefinitionListsContainer : FDR.BaseTypes.HtmlDocument
     member DefinitionList1: HtmlProvider+DefinitionList1 with get
-    let this = this
     this
 
 
 class HtmlProvider+DefinitionList1 : FDR.BaseTypes.HtmlDocument
     member Foo: HtmlProvider+DefinitionList1+Foo with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.CreateNested(rowConverter, this, "DefinitionList1", 0)
 
     member Foo2: HtmlProvider+DefinitionList1+Foo2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))

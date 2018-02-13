@@ -7,7 +7,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "NuGet.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -15,68 +14,56 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "NuGet.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
-    let this = this
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
-    let this = this
     this
 
 
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Dependencies: HtmlProvider+Dependencies with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Dependencies")
 
     member List2: HtmlProvider+List2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List2")
 
     member List6: HtmlProvider+List6 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List6")
 
     member Menu: HtmlProvider+Menu with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "menu")
 
     member Owners: HtmlProvider+Owners with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Owners")
 
     member Tags: HtmlProvider+Tags with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
@@ -85,7 +72,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Version History``: HtmlProvider+VersionHistory with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Version", TextRuntime.ConvertString(value), value),
@@ -112,15 +98,12 @@ class HtmlProvider+VersionHistory : FDR.BaseTypes.HtmlTable<HtmlProvider+Version
 
 class HtmlProvider+VersionHistory+Row : string * int * System.DateTime
     member Downloads: int with get
-    let this = this
     (let _,t2,_ = this in t2)
 
     member ``Last updated``: System.DateTime with get
-    let this = this
     (let _,_,t3 = this in t3)
 
     member Version: string with get
-    let this = this
     (let t1,_,_ = this in t1)
 
 

@@ -4,7 +4,6 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "optionals.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -12,528 +11,400 @@ class JsonProvider : obj
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "optionals.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
-    let stream = stream
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root
-    let reader = reader
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    let uri = uri
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
-    let text = text
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : recordProperty:JsonProvider+RecordProperty -> nullProperty:JsonValue -> emptyStringProperty:JsonValue -> emptyArrayProperty:JsonValue[] -> oneElementArrayProperty:int[] -> multipleElementsArrayProperty:int[] -> arrayOfObjects:JsonProvider+ArrayOfObject[] -> optionalPrimitives:JsonProvider+OptionalPrimitive[] -> optionalRecords:JsonProvider+OptionalRecord[] -> heterogeneousArray:JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray -> heterogeneousRecords:JsonProvider+HeterogeneousRecord[] -> JsonProvider+Root
-    let this = recordProperty
-    let recordProperty = nullProperty
-    let nullProperty = emptyStringProperty
-    let emptyStringProperty = emptyArrayProperty
-    let emptyArrayProperty = oneElementArrayProperty
-    let oneElementArrayProperty = multipleElementsArrayProperty
-    let multipleElementsArrayProperty = arrayOfObjects
-    let arrayOfObjects = optionalPrimitives
-    let optionalPrimitives = optionalRecords
-    let optionalRecords = heterogeneousArray
-    let heterogeneousArray = heterogeneousRecords
     JsonRuntime.CreateRecord([| ("recordProperty",
-                                 (this :> obj))
-                                ("nullProperty",
                                  (recordProperty :> obj))
-                                ("emptyStringProperty",
+                                ("nullProperty",
                                  (nullProperty :> obj))
-                                ("emptyArrayProperty",
+                                ("emptyStringProperty",
                                  (emptyStringProperty :> obj))
-                                ("oneElementArrayProperty",
+                                ("emptyArrayProperty",
                                  (emptyArrayProperty :> obj))
-                                ("multipleElementsArrayProperty",
+                                ("oneElementArrayProperty",
                                  (oneElementArrayProperty :> obj))
-                                ("arrayOfObjects",
+                                ("multipleElementsArrayProperty",
                                  (multipleElementsArrayProperty :> obj))
-                                ("optionalPrimitives",
+                                ("arrayOfObjects",
                                  (arrayOfObjects :> obj))
-                                ("optionalRecords",
+                                ("optionalPrimitives",
                                  (optionalPrimitives :> obj))
-                                ("heterogeneousArray",
+                                ("optionalRecords",
                                  (optionalRecords :> obj))
+                                ("heterogeneousArray",
+                                 (heterogeneousArray :> obj))
                                 ("heterogeneousRecords",
-                                 (heterogeneousArray :> obj)) |], "")
+                                 (heterogeneousRecords :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member ArrayOfObjects: JsonProvider+ArrayOfObject[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "arrayOfObjects"), new Func<_,_>(id)))
 
     member EmptyArrayProperty: FDR.BaseTypes.IJsonDocument[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emptyArrayProperty"), new Func<_,_>(id)))
 
     member EmptyStringProperty: FDR.BaseTypes.IJsonDocument with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "emptyStringProperty")
 
     member HeterogeneousArray: JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousArray")
 
     member HeterogeneousRecords: JsonProvider+HeterogeneousRecord[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousRecords"), new Func<_,_>(id)))
 
     member MultipleElementsArrayProperty: int[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "multipleElementsArrayProperty"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member NullProperty: FDR.BaseTypes.IJsonDocument with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "nullProperty")
 
     member OneElementArrayProperty: int[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "oneElementArrayProperty"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member OptionalPrimitives: JsonProvider+OptionalPrimitive[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "optionalPrimitives"), new Func<_,_>(id)))
 
     member OptionalRecords: JsonProvider+OptionalRecord[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "optionalRecords"), new Func<_,_>(id)))
 
     member RecordProperty: JsonProvider+RecordProperty with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "recordProperty")
 
 
 class JsonProvider+ArrayOfObject : FDR.BaseTypes.IJsonDocument
     new : heterogeneousArrayProperty:JsonProvider+NumbersOrBooleanOrString -> heterogeneousProperty:JsonProvider+IntOrBooleanOrDateTime -> heterogeneousOptionalProperty:JsonProvider+IntOrBoolean -> JsonProvider+ArrayOfObject
-    let this = heterogeneousArrayProperty
-    let heterogeneousArrayProperty = heterogeneousProperty
-    let heterogeneousProperty = heterogeneousOptionalProperty
     JsonRuntime.CreateRecord([| ("heterogeneousArrayProperty",
-                                 (this :> obj))
-                                ("heterogeneousProperty",
                                  (heterogeneousArrayProperty :> obj))
+                                ("heterogeneousProperty",
+                                 (heterogeneousProperty :> obj))
                                 ("heterogeneousOptionalProperty",
-                                 (heterogeneousProperty :> obj)) |], "")
+                                 (heterogeneousOptionalProperty :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+ArrayOfObject
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member HeterogeneousArrayProperty: JsonProvider+NumbersOrBooleanOrString with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousArrayProperty")
 
     member HeterogeneousOptionalProperty: JsonProvider+IntOrBoolean with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousOptionalProperty")
 
     member HeterogeneousProperty: JsonProvider+IntOrBooleanOrDateTime with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousProperty")
 
 
 class JsonProvider+HeterogeneousRecord : FDR.BaseTypes.IJsonDocument
     new : b:JsonProvider+IntOrBooleanOrArrayOrB -> JsonProvider+HeterogeneousRecord
-    let this = b
     JsonRuntime.CreateRecord([| ("b",
-                                 (this :> obj)) |], "")
+                                 (b :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+HeterogeneousRecord
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member B: JsonProvider+IntOrBooleanOrArrayOrB with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "b")
 
 
 class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.BaseTypes.IJsonDocument
     new : number:int -> boolean:bool -> arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    let this = number
-    let number = boolean
-    let boolean = arrays
-    let arrays = record
-    JsonRuntime.CreateArray([| (this :> obj)
-                               (number :> obj)
+    JsonRuntime.CreateArray([| (number :> obj)
                                (boolean :> obj)
-                               (arrays :> obj) |], "")
+                               (arrays :> obj)
+                               (record :> obj) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Arrays: JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] with get
-    let this = this
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Array", new Func<_,_>(id)))
 
     member Boolean: bool with get
-    let this = this
     let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Boolean")
     JsonRuntime.GetNonOptionalValue(value.Path(), JsonRuntime.ConvertBoolean(Some value.JsonValue), Some value.JsonValue)
 
     member Number: int with get
-    let this = this
     let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Number")
     JsonRuntime.GetNonOptionalValue(value.Path(), JsonRuntime.ConvertInteger("", Some value.JsonValue), Some value.JsonValue)
 
     member Record: JsonProvider+OptionalBecauseMissing with get
-    let this = this
     JsonRuntime.GetArrayChildByTypeTag(this, "", "Record@heterogeneousArray")
 
 
 class JsonProvider+OptionalPrimitive : FDR.BaseTypes.IJsonDocument
     new : optionalBecauseMissing:int option -> optionalBecauseNull:int option -> optionalBecauseEmptyString:int option -> notOptional:int -> nullNotOptional:JsonValue -> JsonProvider+OptionalPrimitive
-    let this = optionalBecauseMissing
-    let optionalBecauseMissing = optionalBecauseNull
-    let optionalBecauseNull = optionalBecauseEmptyString
-    let optionalBecauseEmptyString = notOptional
-    let notOptional = nullNotOptional
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
-                                 (this :> obj))
-                                ("optionalBecauseNull",
                                  (optionalBecauseMissing :> obj))
-                                ("optionalBecauseEmptyString",
+                                ("optionalBecauseNull",
                                  (optionalBecauseNull :> obj))
-                                ("notOptional",
+                                ("optionalBecauseEmptyString",
                                  (optionalBecauseEmptyString :> obj))
+                                ("notOptional",
+                                 (notOptional :> obj))
                                 ("nullNotOptional",
-                                 (notOptional :> obj)) |], "")
+                                 (nullNotOptional :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalPrimitive
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member NotOptional: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "notOptional")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member NullNotOptional: FDR.BaseTypes.IJsonDocument with get
-    let this = this
     JsonRuntime.GetPropertyPackedOrNull(this, "nullNotOptional")
 
     member OptionalBecauseEmptyString: int option with get
-    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "optionalBecauseEmptyString"))
 
     member OptionalBecauseMissing: int option with get
-    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "optionalBecauseMissing"))
 
     member OptionalBecauseNull: int option with get
-    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "optionalBecauseNull"))
 
 
 class JsonProvider+OptionalRecord : FDR.BaseTypes.IJsonDocument
     new : optionalBecauseMissing:JsonProvider+OptionalBecauseMissing option -> optionalBecauseNull:JsonProvider+OptionalBecauseMissing option -> optionalBecauseEmptyString:JsonProvider+OptionalBecauseMissing option -> notOptional:JsonProvider+OptionalBecauseMissing -> JsonProvider+OptionalRecord
-    let this = optionalBecauseMissing
-    let optionalBecauseMissing = optionalBecauseNull
-    let optionalBecauseNull = optionalBecauseEmptyString
-    let optionalBecauseEmptyString = notOptional
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
-                                 (this :> obj))
-                                ("optionalBecauseNull",
                                  (optionalBecauseMissing :> obj))
-                                ("optionalBecauseEmptyString",
+                                ("optionalBecauseNull",
                                  (optionalBecauseNull :> obj))
+                                ("optionalBecauseEmptyString",
+                                 (optionalBecauseEmptyString :> obj))
                                 ("notOptional",
-                                 (optionalBecauseEmptyString :> obj)) |], "")
+                                 (notOptional :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalRecord
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member NotOptional: JsonProvider+OptionalBecauseMissing with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "notOptional")
 
     member OptionalBecauseEmptyString: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseEmptyString")
 
     member OptionalBecauseMissing: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseMissing")
 
     member OptionalBecauseNull: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseNull")
 
 
 class JsonProvider+RecordProperty : FDR.BaseTypes.IJsonDocument
     new : stringProperty:string -> intProperty:int -> int64Property:int64 -> decimalProperty:decimal -> floatProperty:float -> boolProperty:bool -> dateProperty:System.DateTime -> guidProperty:System.Guid -> JsonProvider+RecordProperty
-    let this = stringProperty
-    let stringProperty = intProperty
-    let intProperty = int64Property
-    let int64Property = decimalProperty
-    let decimalProperty = floatProperty
-    let floatProperty = boolProperty
-    let boolProperty = dateProperty
-    let dateProperty = guidProperty
     JsonRuntime.CreateRecord([| ("stringProperty",
-                                 (this :> obj))
-                                ("intProperty",
                                  (stringProperty :> obj))
-                                ("int64Property",
+                                ("intProperty",
                                  (intProperty :> obj))
-                                ("decimalProperty",
+                                ("int64Property",
                                  (int64Property :> obj))
-                                ("floatProperty",
+                                ("decimalProperty",
                                  (decimalProperty :> obj))
-                                ("boolProperty",
+                                ("floatProperty",
                                  (floatProperty :> obj))
-                                ("dateProperty",
+                                ("boolProperty",
                                  (boolProperty :> obj))
+                                ("dateProperty",
+                                 (dateProperty :> obj))
                                 ("guidProperty",
-                                 (dateProperty :> obj)) |], "")
+                                 (guidProperty :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+RecordProperty
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member BoolProperty: bool with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member DateProperty: System.DateTime with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "dateProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTime("", value.JsonOpt), value.JsonOpt)
 
     member DecimalProperty: decimal with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "decimalProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
 
     member FloatProperty: float with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "floatProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertFloat("", "", value.JsonOpt), value.JsonOpt)
 
     member GuidProperty: System.Guid with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "guidProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertGuid(value.JsonOpt), value.JsonOpt)
 
     member Int64Property: int64 with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "int64Property")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member IntProperty: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "intProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member StringProperty: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "stringProperty")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+IntOrBoolean : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrBoolean
-    let this = number
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((number :> obj), "")
 
     new : boolean:bool -> JsonProvider+IntOrBoolean
-    let this = boolean
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((boolean :> obj), "")
 
     new : () -> JsonProvider+IntOrBoolean
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrBoolean
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Boolean: bool option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member Number: int option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+IntOrBooleanOrArrayOrB : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrBooleanOrArrayOrB
-    let this = number
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((number :> obj), "")
 
     new : boolean:bool -> JsonProvider+IntOrBooleanOrArrayOrB
-    let this = boolean
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((boolean :> obj), "")
 
     new : array:JsonProvider+NumbersOrBooleanOrB -> JsonProvider+IntOrBooleanOrArrayOrB
-    let this = array
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((array :> obj), "")
 
     new : record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArrayOrB
-    let this = record
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((record :> obj), "")
 
     new : () -> JsonProvider+IntOrBooleanOrArrayOrB
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrBooleanOrArrayOrB
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Array: JsonProvider+NumbersOrBooleanOrB option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Array", new Func<_,_>(id)))
 
     member Boolean: bool option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member Number: int option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Record: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Record@b", new Func<_,_>(id)))
 
 
 class JsonProvider+IntOrBooleanOrDateTime : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrBooleanOrDateTime
-    let this = number
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((number :> obj), "")
 
     new : boolean:bool -> JsonProvider+IntOrBooleanOrDateTime
-    let this = boolean
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((boolean :> obj), "")
 
     new : dateTime:System.DateTime -> JsonProvider+IntOrBooleanOrDateTime
-    let this = dateTime
-    JsonRuntime.CreateValue((this :> obj), "")
+    JsonRuntime.CreateValue((dateTime :> obj), "")
 
     new : () -> JsonProvider+IntOrBooleanOrDateTime
     JsonRuntime.CreateValue(null, "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrBooleanOrDateTime
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Boolean: bool option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member DateTime: System.DateTime option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
 
     member Number: int option with get
-    let this = this
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    let this = numbers
-    let numbers = boolean
-    let boolean = record
-    JsonRuntime.CreateArray([| (this :> obj)
-                               (numbers :> obj)
-                               (boolean :> obj) |], "")
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (record :> obj) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Boolean: bool option with get
-    let this = this
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member Numbers: int[] with get
-    let this = this
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Record: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Record@heterogeneousArray", new Func<_,_>(id)))
 
 
 class JsonProvider+NumbersOrBooleanOrString : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool -> string:string option -> JsonProvider+NumbersOrBooleanOrString
-    let this = numbers
-    let numbers = boolean
-    let boolean = string
-    JsonRuntime.CreateArray([| (this :> obj)
-                               (numbers :> obj)
-                               (boolean :> obj) |], "")
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (string :> obj) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrString
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Boolean: bool with get
-    let this = this
     let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Boolean")
     JsonRuntime.GetNonOptionalValue(value.Path(), JsonRuntime.ConvertBoolean(Some value.JsonValue), Some value.JsonValue)
 
     member Numbers: int[] with get
-    let this = this
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
-    let this = this
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+OptionalBecauseMissing : FDR.BaseTypes.IJsonDocument
     new : a:int -> JsonProvider+OptionalBecauseMissing
-    let this = a
     JsonRuntime.CreateRecord([| ("a",
-                                 (this :> obj)) |], "")
+                                 (a :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalBecauseMissing
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member A: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "a")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+NumbersOrBooleanOrB : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrB
-    let this = numbers
-    let numbers = boolean
-    let boolean = record
-    JsonRuntime.CreateArray([| (this :> obj)
-                               (numbers :> obj)
-                               (boolean :> obj) |], "")
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (record :> obj) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrB
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Boolean: bool option with get
-    let this = this
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member Numbers: int[] with get
-    let this = this
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Record: JsonProvider+OptionalBecauseMissing option with get
-    let this = this
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Record@b", new Func<_,_>(id)))
 
 

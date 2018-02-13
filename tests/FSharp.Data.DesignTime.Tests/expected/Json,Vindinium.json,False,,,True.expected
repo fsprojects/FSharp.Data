@@ -4,7 +4,6 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "Vindinium.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -12,252 +11,193 @@ class JsonProvider : obj
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "Vindinium.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
-    let stream = stream
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root
-    let reader = reader
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    let uri = uri
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
-    let text = text
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
-    let this = game
-    let game = hero
-    let hero = token
-    let token = viewUrl
-    let viewUrl = playUrl
     JsonRuntime.CreateRecord([| ("game",
-                                 (this :> obj))
-                                ("hero",
                                  (game :> obj))
-                                ("token",
+                                ("hero",
                                  (hero :> obj))
-                                ("viewUrl",
+                                ("token",
                                  (token :> obj))
+                                ("viewUrl",
+                                 (viewUrl :> obj))
                                 ("playUrl",
-                                 (viewUrl :> obj)) |], "")
+                                 (playUrl :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Game: JsonProvider+Game with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "game")
 
     member Hero: JsonProvider+Hero with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "hero")
 
     member PlayUrl: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "playUrl")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Token: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "token")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member ViewUrl: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "viewUrl")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
-    let this = id
-    let id = turn
-    let turn = maxTurns
-    let maxTurns = heroes
-    let heroes = board
-    let board = finished
     JsonRuntime.CreateRecord([| ("id",
-                                 (this :> obj))
-                                ("turn",
                                  (id :> obj))
-                                ("maxTurns",
+                                ("turn",
                                  (turn :> obj))
-                                ("heroes",
+                                ("maxTurns",
                                  (maxTurns :> obj))
-                                ("board",
+                                ("heroes",
                                  (heroes :> obj))
+                                ("board",
+                                 (board :> obj))
                                 ("finished",
-                                 (board :> obj)) |], "")
+                                 (finished :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Game
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Board: JsonProvider+Board with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "board")
 
     member Finished: bool with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "finished")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Heroes: JsonProvider+Hero[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "heroes"), new Func<_,_>(id)))
 
     member Id: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member MaxTurns: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "maxTurns")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Turn: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "turn")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
     new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
-    let this = id
-    let id = name
-    let name = userId
-    let userId = elo
-    let elo = pos
-    let pos = life
-    let life = gold
-    let gold = mineCount
-    let mineCount = spawnPos
-    let spawnPos = crashed
     JsonRuntime.CreateRecord([| ("id",
-                                 (this :> obj))
-                                ("name",
                                  (id :> obj))
-                                ("userId",
+                                ("name",
                                  (name :> obj))
-                                ("elo",
+                                ("userId",
                                  (userId :> obj))
-                                ("pos",
+                                ("elo",
                                  (elo :> obj))
-                                ("life",
+                                ("pos",
                                  (pos :> obj))
-                                ("gold",
+                                ("life",
                                  (life :> obj))
-                                ("mineCount",
+                                ("gold",
                                  (gold :> obj))
-                                ("spawnPos",
+                                ("mineCount",
                                  (mineCount :> obj))
+                                ("spawnPos",
+                                 (spawnPos :> obj))
                                 ("crashed",
-                                 (spawnPos :> obj)) |], "")
+                                 (crashed :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Hero
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Crashed: bool with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "crashed")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Elo: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "elo")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Gold: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "gold")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Id: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Life: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "life")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member MineCount: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "mineCount")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Name: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Pos: JsonProvider+Pos with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "pos")
 
     member SpawnPos: JsonProvider+Pos with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "spawnPos")
 
     member UserId: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "userId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
-    let this = size
-    let size = tiles
     JsonRuntime.CreateRecord([| ("size",
-                                 (this :> obj))
+                                 (size :> obj))
                                 ("tiles",
-                                 (size :> obj)) |], "")
+                                 (tiles :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Board
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Size: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "size")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Tiles: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "tiles")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class JsonProvider+Pos : FDR.BaseTypes.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
-    let this = x
-    let x = y
     JsonRuntime.CreateRecord([| ("x",
-                                 (this :> obj))
+                                 (x :> obj))
                                 ("y",
-                                 (x :> obj)) |], "")
+                                 (y :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Pos
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member X: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "x")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Y: int with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "y")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 

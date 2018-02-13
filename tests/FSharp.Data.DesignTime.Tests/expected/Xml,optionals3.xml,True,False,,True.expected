@@ -4,7 +4,6 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "optionals3.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Rss async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -12,91 +11,72 @@ class XmlProvider : obj
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "optionals3.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Rss
-    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Rss
-    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Rss
-    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Rss
-    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Rss : FDR.BaseTypes.XmlElement
     new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
-    let this = version
-    let version = channel
     XmlRuntime.CreateRecord("rss", 
                             [| ("version",
-                                (this :> obj)) |], 
+                                (version :> obj)) |], 
                             [| ("channel",
-                                (version :> obj)) |], "")
+                                (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member Channel: XmlProvider+Channel with get
-    let this = this
     XmlRuntime.GetChild(this, "channel")
 
     member Version: decimal with get
-    let this = this
     let value = XmlRuntime.TryGetAttribute(this, "version")
     TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertDecimal("", value), value)
 
 
 class XmlProvider+Channel : FDR.BaseTypes.XmlElement
     new : items:XmlProvider+Item[] -> XmlProvider+Channel
-    let this = items
     XmlRuntime.CreateRecord("channel", 
                             [| |], 
                             [| ("item",
-                                (this :> obj)) |], "")
+                                (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member Items: XmlProvider+Item[] with get
-    let this = this
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
 
 class XmlProvider+Item : FDR.BaseTypes.XmlElement
     new : title:string option -> description:XmlProvider+Description option -> temp:XmlProvider+Temp option -> XmlProvider+Item
-    let this = title
-    let title = description
-    let description = temp
     XmlRuntime.CreateRecord("item", 
                             [| |], 
                             [| ("title",
-                                (this :> obj))
-                               ("description",
                                 (title :> obj))
+                               ("description",
+                                (description :> obj))
                                ("temp",
-                                (description :> obj)) |], "")
+                                (temp :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member Description: XmlProvider+Description option with get
-    let this = this
     XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(id)))
 
     member Temp: XmlProvider+Temp option with get
-    let this = this
     XmlRuntime.ConvertOptional(this, "temp", new Func<_,_>(id)))
 
     member Title: string option with get
-    let this = this
     XmlRuntime.ConvertOptional(this, "title", new Func<_,_>(fun (t:XmlElement) -> 
                                                                let value = XmlRuntime.TryGetValue(t)
                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
@@ -109,8 +89,7 @@ class XmlProvider+Description : FDR.BaseTypes.XmlElement
                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Description
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
 
 class XmlProvider+Temp : FDR.BaseTypes.XmlElement
@@ -120,7 +99,6 @@ class XmlProvider+Temp : FDR.BaseTypes.XmlElement
                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Temp
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
 

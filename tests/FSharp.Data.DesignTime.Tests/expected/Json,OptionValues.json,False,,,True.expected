@@ -4,7 +4,6 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "OptionValues.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -12,56 +11,44 @@ class JsonProvider : obj
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "OptionValues.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
-    let stream = stream
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root
-    let reader = reader
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    let uri = uri
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
-    let text = text
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : authors:JsonProvider+Author[] -> JsonProvider+Root
-    let this = authors
     JsonRuntime.CreateRecord([| ("authors",
-                                 (this :> obj)) |], "")
+                                 (authors :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Authors: JsonProvider+Author[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
 
 class JsonProvider+Author : FDR.BaseTypes.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
-    let this = name
-    let name = age
     JsonRuntime.CreateRecord([| ("name",
-                                 (this :> obj))
+                                 (name :> obj))
                                 ("age",
-                                 (name :> obj)) |], "")
+                                 (age :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Author
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Age: int option with get
-    let this = this
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "age"))
 
     member Name: string with get
-    let this = this
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 

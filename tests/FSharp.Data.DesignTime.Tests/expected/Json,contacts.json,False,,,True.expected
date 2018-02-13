@@ -4,7 +4,6 @@ class JsonProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "contacts.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
@@ -12,114 +11,88 @@ class JsonProvider : obj
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "contacts.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
-    let stream = stream
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
     static member Load: reader:System.IO.TextReader -> JsonProvider+Root
-    let reader = reader
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    let uri = uri
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
-    let text = text
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ab:JsonProvider+Ab -> JsonProvider+Root
-    let this = ab
     JsonRuntime.CreateRecord([| ("ab",
-                                 (this :> obj)) |], "")
+                                 (ab :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Ab: JsonProvider+Ab with get
-    let this = this
     JsonRuntime.GetPropertyPacked(this, "ab")
 
 
 class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
     new : persons:JsonProvider+Person[] -> JsonProvider+Ab
-    let this = persons
     JsonRuntime.CreateRecord([| ("persons",
-                                 (this :> obj)) |], "")
+                                 (persons :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Ab
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Persons: JsonProvider+Person[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
 
 
 class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
     new : contacts:JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
-    let this = contacts
-    let contacts = emails
-    let emails = phones
     JsonRuntime.CreateRecord([| ("contacts",
-                                 (this :> obj))
-                                ("emails",
                                  (contacts :> obj))
+                                ("emails",
+                                 (emails :> obj))
                                 ("phones",
-                                 (emails :> obj)) |], "")
+                                 (phones :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Person
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member Contacts: JsonProvider+Contact[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "contacts"), new Func<_,_>(id)))
 
     member Emails: FDR.BaseTypes.IJsonDocument[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(id)))
 
     member Phones: FDR.BaseTypes.IJsonDocument[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
 
 
 class JsonProvider+Contact : FDR.BaseTypes.IJsonDocument
     new : emailCapability:int[] -> emailImEnabled:bool[] -> emails:string[] -> phones:JsonValue[] -> JsonProvider+Contact
-    let this = emailCapability
-    let emailCapability = emailImEnabled
-    let emailImEnabled = emails
-    let emails = phones
     JsonRuntime.CreateRecord([| ("emailCapability",
-                                 (this :> obj))
-                                ("emailIMEnabled",
                                  (emailCapability :> obj))
-                                ("emails",
+                                ("emailIMEnabled",
                                  (emailImEnabled :> obj))
+                                ("emails",
+                                 (emails :> obj))
                                 ("phones",
-                                 (emails :> obj)) |], "")
+                                 (phones :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Contact
-    let this = jsonValue
-    JsonDocument.Create(this, "")
+    JsonDocument.Create(jsonValue, "")
 
     member EmailCapability: int[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailCapability"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member EmailImEnabled: bool[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailIMEnabled"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean(Some t.JsonValue), Some t.JsonValue)))
 
     member Emails: string[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member Phones: FDR.BaseTypes.IJsonDocument[] with get
-    let this = this
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
 
 

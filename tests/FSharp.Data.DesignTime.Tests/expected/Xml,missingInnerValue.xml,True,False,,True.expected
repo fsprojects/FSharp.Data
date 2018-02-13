@@ -4,7 +4,6 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "missingInnerValue.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Child async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -12,66 +11,52 @@ class XmlProvider : obj
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "missingInnerValue.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Child
-    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Child
-    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Child
-    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Child
-    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Child : FDR.BaseTypes.XmlElement
     new : a:int option -> b:string option -> inner:XmlProvider+Inner option -> XmlProvider+Child
-    let this = a
-    let a = b
-    let b = inner
     XmlRuntime.CreateRecord("child", 
                             [| ("a",
-                                (this :> obj))
+                                (a :> obj))
                                ("b",
-                                (a :> obj)) |], 
+                                (b :> obj)) |], 
                             [| ("inner",
-                                (b :> obj)) |], "")
+                                (inner :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Child
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member A: int option with get
-    let this = this
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "a"))
 
     member B: string option with get
-    let this = this
     TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "b"))
 
     member Inner: XmlProvider+Inner option with get
-    let this = this
     XmlRuntime.ConvertOptional(this, "inner", new Func<_,_>(id)))
 
 
 class XmlProvider+Inner : FDR.BaseTypes.XmlElement
     new : c:string -> XmlProvider+Inner
-    let this = c
     XmlRuntime.CreateRecord("inner", 
                             [| ("c",
-                                (this :> obj)) |], 
+                                (c :> obj)) |], 
                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Inner
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member C: string with get
-    let this = this
     let value = XmlRuntime.TryGetAttribute(this, "c")
     TextRuntime.GetNonOptionalValue("Attribute c", TextRuntime.ConvertString(value), value)
 

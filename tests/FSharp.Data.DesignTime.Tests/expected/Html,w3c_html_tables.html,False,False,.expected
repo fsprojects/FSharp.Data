@@ -7,7 +7,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
@@ -15,131 +14,110 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
-    let this = this
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    let stream = stream
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    let reader = reader
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    let uri = uri
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    let text = text
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
-    let this = this
     this
 
 
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Adding some more features")
 
     member ``CSS to the rescue: a better looking table``: HtmlProvider+CssToTheRescueABetterLookingTable with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "CSS to the rescue: a better looking table")
 
     member Contents: HtmlProvider+Contents with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Contents")
 
     member ``Exercise questions``: HtmlProvider+ExerciseQuestions with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Exercise questions")
 
     member ``Further reading``: HtmlProvider+FurtherReading with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Further reading")
 
     member List9: HtmlProvider+List9 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List9")
 
     member Namespaces: HtmlProvider+Namespaces with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Namespaces")
 
     member Navigation: HtmlProvider+Navigation with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Navigation")
 
     member ``Structuring the table further``: HtmlProvider+StructuringTheTableFurther2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Structuring the table further")
 
     member Summary: HtmlProvider+Summary with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Summary")
 
     member ``The most basic table``: HtmlProvider+TheMostBasicTable2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "The most basic table")
 
     member Tools: HtmlProvider+Tools with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools")
 
     member Tools2: HtmlProvider+Tools2 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools2")
 
     member Tools3: HtmlProvider+Tools3 with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools3")
 
     member Views: HtmlProvider+Views with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
@@ -148,7 +126,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -161,7 +138,6 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Adding some more features", true)
 
     member ``Structuring the table further``: HtmlProvider+StructuringTheTableFurther with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -174,7 +150,6 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Structuring the table further", true)
 
     member ``The most basic table``: HtmlProvider+TheMostBasicTable with get
-    let this = this
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
@@ -225,55 +200,43 @@ class HtmlProvider+Views : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
-    let this = this
     (let _,_,t3,_ = this in t3)
 
     member Location: string with get
-    let this = this
     (let _,t2,_,_ = this in t2)
 
     member ``Type of Eruption``: string with get
-    let this = this
     (let _,_,_,t4 = this in t4)
 
     member ``Volcano Name``: string with get
-    let this = this
     (let t1,_,_,_ = this in t1)
 
 
 class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
-    let this = this
     (let _,_,t3,_ = this in t3)
 
     member Location: string with get
-    let this = this
     (let _,t2,_,_ = this in t2)
 
     member ``Type of Eruption``: string with get
-    let this = this
     (let _,_,_,t4 = this in t4)
 
     member ``Volcano Name``: string with get
-    let this = this
     (let t1,_,_,_ = this in t1)
 
 
 class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
     member Column1: string with get
-    let this = this
     (let t1,_,_,_ = this in t1)
 
     member Column2: string with get
-    let this = this
     (let _,t2,_,_ = this in t2)
 
     member Column3: string with get
-    let this = this
     (let _,_,t3,_ = this in t3)
 
     member Column4: string with get
-    let this = this
     (let _,_,_,t4 = this in t4)
 
 

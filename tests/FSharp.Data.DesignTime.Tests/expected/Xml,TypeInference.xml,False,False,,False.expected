@@ -4,7 +4,6 @@ class XmlProvider : obj
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "TypeInference.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Xs async
-    let uri = uri
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
@@ -12,68 +11,54 @@ class XmlProvider : obj
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "TypeInference.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Xs
-    let stream = stream
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Xs
-    let reader = reader
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+Xs
-    let uri = uri
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
 
     static member Parse: text:string -> XmlProvider+Xs
-    let text = text
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
 class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     new : xs:XmlProvider+X[] -> XmlProvider+Xs
-    let this = xs
     XmlRuntime.CreateRecord("XS", 
                             [| |], 
                             [| ("X",
-                                (this :> obj)) |], "")
+                                (xs :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Xs
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member Xs: XmlProvider+X[] with get
-    let this = this
     XmlRuntime.ConvertArray(this, "X", new Func<_,_>(id)))
 
 
 class XmlProvider+X : FDR.BaseTypes.XmlElement
     new : intLike:string -> boolLike:string -> jsonLike:string -> XmlProvider+X
-    let this = intLike
-    let intLike = boolLike
-    let boolLike = jsonLike
     XmlRuntime.CreateRecord("X", 
                             [| ("intLike",
-                                (this :> obj)) |], 
+                                (intLike :> obj)) |], 
                             [| ("boolLike",
-                                (intLike :> obj))
+                                (boolLike :> obj))
                                ("jsonLike",
-                                (boolLike :> obj)) |], "")
+                                (jsonLike :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+X
-    let this = xElement
-    XmlElement.Create(this)
+    XmlElement.Create(xElement)
 
     member BoolLike: string with get
-    let this = this
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "boolLike"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
     member IntLike: string with get
-    let this = this
     let value = XmlRuntime.TryGetAttribute(this, "intLike")
     TextRuntime.GetNonOptionalValue("Attribute intLike", TextRuntime.ConvertString(value), value)
 
     member JsonLike: string with get
-    let this = this
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "jsonLike"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
