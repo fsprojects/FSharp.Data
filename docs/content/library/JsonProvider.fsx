@@ -122,6 +122,22 @@ between the two options. This is similar to the handling of heterogeneous arrays
 Note that we have a `GetSamples` method because the sample is a JSON list. If it was a JSON
 object, we would have a `GetSample` method instead.
 
+#### More complex object type on root level
+
+If you want the root type to be an object type, not an array, but
+you need more samples at root level, you can use the SampleIsList parameter.
+Applied to the previous example this would be:
+
+*)
+
+type People2 = JsonProvider<""" 
+  [ { "name":"John", "age":94 }, 
+    { "name":"Tomas" } ] """, SampleIsList=true>
+
+let person = People2.Parse("""{ "name":"Gustavo" }""")
+
+(**
+	
 ## Loading WorldBank data
 
 Now let's use the type provider to process some real data. We use a data set returned by 

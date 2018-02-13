@@ -71,19 +71,19 @@ let ``Cookies with '=' are parsed correctly`` () =
 [<Test>]
 let ``Web request's timeout is used`` () =
     let exc = Assert.Throws<System.Net.WebException> (fun () ->
-        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+        Http.Request("http://httpstat.us/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Timeout argument is used`` () =
     let exc = Assert.Throws<System.Net.WebException> (fun () ->
-        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", timeout = 1) |> ignore)
+        Http.Request("http://httpstat.us/200?sleep=1000", timeout = 1) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
     let response =
-        Http.Request("http://deelay.me/100?http://httpstat.us/401?sleep=1000", silentHttpErrors = true,
+        Http.Request("http://httpstat.us/401?sleep=1000", silentHttpErrors = true,
             customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
 
     response.StatusCode |> should equal 401
