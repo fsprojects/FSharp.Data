@@ -11,6 +11,7 @@ open NUnit.Framework
 open System
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
+open System.Text
 
 [<Test>]
 let ``Don't throw exceptions on http error`` () =
@@ -88,16 +89,25 @@ let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
 
     response.StatusCode |> should equal 401
 
-[<Test>]
-let ``4k+ bodies work`` () =
-    let bodyString2 = seq {for i in 0..4000 -> "x\n"} |> String.concat ""
-    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+let testFormDataSizesInBytes = [
+    4000    // previous test size
+    20000   // previous test size
+    40000   // > 80k, reported by user @danyx23 on full-framework
+    100000  // > 200k, reported by user danyx23 on .net core
+    200000  // > 400k, just future-proofing
+]
 
-    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
+[<Test; TestCaseSource("testFormDataSizesInBytes")>]
+let testFormDataBodySize (size: int) = 
+    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let body = FormValues([("input", bodyString)])
 
-[<Test>]
-let ``32k+ bodies work`` () =
-    let bodyString2 = seq {for i in 0..20000 -> "x\n"} |> String.concat ""
-    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
 
-    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
+[<Test; TestCaseSource("testFormDataSizesInBytes")>]
+let testMultipartFormDataBodySize (size: int) = 
+    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let multipartItem = [ MultipartItem("input", "input.txt", new IO.MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> IO.Stream) ]
+    let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
+
+    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
