@@ -101,8 +101,7 @@ let testFormDataSizesInBytes = [
 let testFormDataBodySize (size: int) = 
     let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
     let body = FormValues([("input", bodyString)])
-
-    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testMultipartFormDataBodySize (size: int) = 
@@ -110,4 +109,4 @@ let testMultipartFormDataBodySize (size: int) =
     let multipartItem = [ MultipartItem("input", "input.txt", new IO.MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> IO.Stream) ]
     let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
-    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
