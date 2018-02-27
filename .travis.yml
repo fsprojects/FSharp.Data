@@ -4,29 +4,27 @@ sudo: required
 dist: trusty
 
 mono:
-  - 4.8.1
-  - 5.0.1
+  - 5.8.0
   - latest
   - nightly
 
-dotnet: 2.0.3
+dotnet: 2.1.4
 
 # have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
 matrix:
   include:
-    - mono: 4.8.1
-      dotnet: 2.0.3
-    - mono: 5.0.1
-      dotnet: 2.0.3
+    - mono: 5.8.0
+      dotnet: 2.1.4
     - mono: latest
-      dotnet: 2.0.3
+      dotnet: 2.1.4
     - mono: nightly
-      dotnet: 2.0.3
+      dotnet: 2.1.4
 
 os:
   - linux
   - osx
 
+# We suspect this is no longer needed bvut is included just in case per Mono install instructions
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list; fi
