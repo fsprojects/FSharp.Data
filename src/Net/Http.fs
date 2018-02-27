@@ -1019,7 +1019,7 @@ module private HttpHelpers =
                 then 0
                 else
                     let stream = Seq.head streams
-                    let read = stream.Read(buffer, offset, max count (int stream.Length))
+                    let read = stream.Read(buffer, offset, min count (int stream.Length))
                     if read < count
                     then
                         stream.Dispose()
@@ -1162,11 +1162,15 @@ module private HttpHelpers =
 #else
             req.ContentLength <- data.Length
 #endif
-            use! output =
-                if Type.GetType("Mono.Runtime") <> null
-                then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
-                else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
 
+#if FX_NO_LOCAL_FILESYSTEM
+            use! output =
+              if Type.GetType("Mono.Runtime") <> null
+              then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
+              else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+#else
+            use! output = req.GetRequestStreamAsync () |> Async.AwaitTask
+#endif
             do! asyncCopy data output
             output.Flush()
         }

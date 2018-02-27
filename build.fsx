@@ -233,32 +233,21 @@ let createRelease() =
 
     // Commit assembly info and RELEASE_NOTES.md
     StageAll ""
-    Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
+    Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
     Branches.pushBranch "" "upstream" "master"
 
     // Create tag
     Branches.tag "" release.NugetVersion
     Branches.pushTag "" "upstream" release.NugetVersion
 
-    // Create github release
-    let user = getBuildParamOrDefault "github-user" ""
-    let pw = getBuildParamOrDefault "github-pw" ""
-
-    let user = 
-        if user = "" then 
-            printf "username: "
-            Console.ReadLine()
-        else 
-            user
-    let pw = 
-        if pw = "" then 
-            printf "password: "
-            Console.ReadLine()
-        else 
-            pw
+    // Create github release    
+    let token =
+        match environVarOrDefault "github_token" "" with
+        | s when not (System.String.IsNullOrWhiteSpace s) -> s
+        | _ -> failwith "please set the github_token environment variable to a github personal access token with repro access."
 
     let draft =
-        createClient user pw
+        createClientWithToken token
         |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
    
     draft

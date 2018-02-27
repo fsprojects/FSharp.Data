@@ -31,7 +31,7 @@ module internal PrimitiveInferedPropertyExtensions =
           | None -> x.RuntimeType
           | Some unit -> 
               if supportsUnitsOfMeasure x.RuntimeType
-              then ProvidedMeasureBuilder.Default.AnnotateType(x.RuntimeType, [unit])
+              then ProvidedMeasureBuilder.AnnotateType(x.RuntimeType, [unit])
               else failwithf "Units of measure not supported by type %s" x.RuntimeType.Name
 
 
@@ -114,9 +114,9 @@ module internal ProviderHelpers =
 
     let unitsOfMeasureProvider = 
         { new StructuralInference.IUnitsOfMeasureProvider with
-            member x.SI(str) = ProvidedMeasureBuilder.Default.SI str
-            member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Default.Product(measure1, measure2)
-            member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Default.Inverse(denominator) }
+            member x.SI(str) = ProvidedMeasureBuilder.SI str
+            member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Product(measure1, measure2)
+            member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Inverse(denominator) }
 
     let asyncMap (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
         let (?) = ProviderImplementation.QuotationBuilder.(?)

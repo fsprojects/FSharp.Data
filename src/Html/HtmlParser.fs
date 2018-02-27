@@ -8,6 +8,7 @@ open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
+open System.Runtime.InteropServices
 
 // --------------------------------------------------------------------------------------
 
@@ -872,14 +873,15 @@ type HtmlDocument with
         HtmlParser.parseDocument reader
         
     /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri:string) = async {
-        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+    static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {
+        let encoding = defaultArg encoding Encoding.UTF8
+        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
         return HtmlParser.parseDocument reader
     }
     
     /// Loads HTML from the specified uri
-    static member Load(uri:string) =
-        HtmlDocument.AsyncLoad(uri)
+    static member Load(uri:string, [<Optional>] ?encoding) =
+        HtmlDocument.AsyncLoad(uri, ?encoding=encoding)
         |> Async.RunSynchronously
 
 type HtmlNode with

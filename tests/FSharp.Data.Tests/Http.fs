@@ -11,6 +11,7 @@ open NUnit.Framework
 open System
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
+open System.Text
 
 [<Test>]
 let ``Don't throw exceptions on http error`` () =
@@ -71,33 +72,41 @@ let ``Cookies with '=' are parsed correctly`` () =
 [<Test>]
 let ``Web request's timeout is used`` () =
     let exc = Assert.Throws<System.Net.WebException> (fun () ->
-        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+        Http.Request("http://httpstat.us/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Timeout argument is used`` () =
     let exc = Assert.Throws<System.Net.WebException> (fun () ->
-        Http.Request("http://deelay.me/100?http://api.themoviedb.org/3/search/movie", timeout = 1) |> ignore)
+        Http.Request("http://httpstat.us/200?sleep=1000", timeout = 1) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
     let response =
-        Http.Request("http://deelay.me/100?http://httpstat.us/401?sleep=1000", silentHttpErrors = true,
+        Http.Request("http://httpstat.us/401?sleep=1000", silentHttpErrors = true,
             customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
 
     response.StatusCode |> should equal 401
 
-[<Test>]
-let ``4k+ bodies work`` () =
-    let bodyString2 = seq {for i in 0..4000 -> "x\n"} |> String.concat ""
-    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+let testFormDataSizesInBytes = [
+    4000    // previous test size
+    20000   // previous test size
+    40000   // > 80k, reported by user @danyx23 on full-framework
+    100000  // > 200k, reported by user danyx23 on .net core
+    200000  // > 400k, just future-proofing
+]
 
-    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
+[<Test; TestCaseSource("testFormDataSizesInBytes")>]
+let testFormDataBodySize (size: int) = 
+    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let body = FormValues([("input", bodyString)])
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
-[<Test>]
-let ``32k+ bodies work`` () =
-    let bodyString2 = seq {for i in 0..20000 -> "x\n"} |> String.concat ""
-    let body2 = FSharp.Data.FormValues([("input", bodyString2)])
+[<Test; TestCaseSource("testFormDataSizesInBytes")>]
+let testMultipartFormDataBodySize (size: int) = 
+    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let multipartItem = [ MultipartItem("input", "input.txt", new IO.MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> IO.Stream) ]
+    let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
-    Assert.DoesNotThrow(fun () -> FSharp.Data.Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body2) |> ignore)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
