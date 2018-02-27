@@ -594,6 +594,6 @@ let ``Markdown Test``() =
       |> Seq.exactlyOne
     
     let actual = (row.Tables, row.Are, row.Cool)
-    let expected = (" col 3 is", "right-aligned", "$1600")
+    let expected = ("col 3 is", "right-aligned", 1600)
 
     actual |> should equal expected
