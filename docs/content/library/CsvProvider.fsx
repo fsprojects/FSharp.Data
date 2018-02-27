@@ -145,7 +145,7 @@ The generated properties `Distance` and `Time` are now annotated with units. Loo
 following simple calculation:
 *)
 
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
   let speed = row.Distance / row.Time

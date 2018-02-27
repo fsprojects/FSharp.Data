@@ -33,7 +33,7 @@ let expectedDirectory = sourceDirectory ++ "expected"
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
-let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ ("portable" + string profile) ++ assemblyName
+let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "netstandard2.0" ++ assemblyName
 
 let getRuntimeRefs platform = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform
 
@@ -64,10 +64,6 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) =
-    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 7, (getRuntimeRefs Portable7), signatureOnly=false, ignoreOutput=true) |> ignore
+let ``Generating expressions works in netstandard2.0 `` (testCase:TypeProviderInstantiation) =
+    testCase.Dump(resolutionFolder, "", netstandard2RuntimeAssembly, (getRuntimeRefs NetStandard20), signatureOnly=false, ignoreOutput=true) |> ignore
 
-[<Test>]
-[<TestCaseSource "testCases">]
-let ``Generating expressions works in portable profile 259 `` (testCase:TypeProviderInstantiation) =
-    testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 259, (getRuntimeRefs Portable259), signatureOnly=false, ignoreOutput=true) |> ignore

@@ -4,7 +4,6 @@ build_script:
   - cmd: build.cmd CleanInternetCaches
   - cmd: build.cmd AppVeyorBuildVersion
   - cmd: build.cmd All
-  - cmd: build.cmd SourceLink
   - cmd: build.cmd NuGet
 test: off
 artifacts:

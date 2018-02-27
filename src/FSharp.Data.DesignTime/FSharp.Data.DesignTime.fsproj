@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.Net.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
+    <DefineConstants>NO_GENERATIVE</DefineConstants>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Net\UriUtils.fs" />
+    <Compile Include="..\Net\Http.fs" />
+    <Compile Include="..\CommonRuntime\IO.fs" />
+    <Compile Include="..\CommonRuntime\Caching.fs" />
+    <Compile Include="..\CommonRuntime\TextConversions.fs" />
+    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
+    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
+    <Compile Include="..\CommonRuntime\NameUtils.fs" />
+    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
+    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+      <Link>ProvidedTypes.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+      <Link>ProvidedTypes.fs</Link>
+    </Compile>
+    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesTesting.fs">
+      <Link>ProvidedTypesTesting.fs</Link>
+    </Compile>
+    <Compile Include="..\CommonProviderImplementation\QuotationBuilder.fs" />
+    <Compile Include="..\CommonProviderImplementation\AssemblyResolver.fs" />
+    <Compile Include="..\CommonProviderImplementation\Helpers.fs" />
+    <Compile Include="..\CommonProviderImplementation\ConversionsGenerator.fs" />
+    <Compile Include="..\Json\JsonValue.fs" />
+    <Compile Include="..\Json\JsonConversions.fs" />
+    <Compile Include="..\Json\JsonExtensions.fs" />
+    <Compile Include="..\Json\JsonRuntime.fs" />
+    <Compile Include="..\Json\JsonInference.fs" />
+    <Compile Include="..\Json\JsonConversionsGenerator.fs" />
+    <Compile Include="..\Json\JsonGenerator.fs" />
+    <Compile Include="..\Json\JsonProvider.fs" />
+    <Compile Include="..\Xml\XmlRuntime.fs" />
+    <Compile Include="..\Xml\XmlInference.fs" />
+    <Compile Include="..\Xml\XmlGenerator.fs" />
+    <Compile Include="..\Xml\XmlProvider.fs" />
+    <Compile Include="..\Csv\CsvRuntime.fs" />
+    <Compile Include="..\Csv\CsvFile.fs" />
+    <Compile Include="..\Csv\CsvExtensions.fs" />
+    <Compile Include="..\Csv\CsvInference.fs" />
+    <Compile Include="..\Csv\CsvGenerator.fs" />
+    <Compile Include="..\Csv\CsvProvider.fs" />
+    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="..\WorldBank\WorldBankProvider.fs" />
+    <Compile Include="..\Html\HtmlCharRefs.fs" />
+    <Compile Include="..\Html\HtmlParser.fs" />
+    <Compile Include="..\Html\HtmlOperations.fs" />
+    <Compile Include="..\Html\HtmlCssSelectors.fs" />
+    <Compile Include="..\Html\HtmlInference.fs" />
+    <Compile Include="..\Html\HtmlRuntime.fs" />
+    <Compile Include="..\Html\HtmlGenerator.fs" />
+    <Compile Include="..\Html\HtmlProvider.fs" />
+    <Compile Include="..\TypeProviderInstantiation.fs" />
+    <Compile Include="..\AssemblyInfo.DesignTime.fs" />
+    <None Include="..\Test.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.0.0.1" Condition="'$(TargetFramework)' == 'net45'" />
+    <PackageReference Include="FSharp.Core" Version="4.2.3" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

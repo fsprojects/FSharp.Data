@@ -14,7 +14,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open System.IO
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 
 let [<Literal>] simpleCsv = """
@@ -349,7 +349,7 @@ type PercentageCsv = CsvProvider<percentageCsv>
 
 [<Test>]
 let ``Can handle percentages in the values``() = 
-    let data = PercentageCsv.GetSample().Rows |> Seq.nth 1
+    let data = PercentageCsv.GetSample().Rows |> Seq.item 1
     data.Column3 |> should equal 1.92M
 
 let [<Literal>] currency = """
@@ -389,7 +389,7 @@ let ``Can duplicate own rows``() =
   let out = csv'.SaveToString()
   let reParsed = SimpleWithStrCsv.Parse(out)
   reParsed.Rows |> Seq.length |> should equal 4
-  let row = reParsed.Rows |> Seq.nth 3
+  let row = reParsed.Rows |> Seq.item 3
   row.Column1 |> should equal true
   row.ColumnB |> should equal "Freddy"
   row.Column3 |> should equal 1.92
@@ -407,8 +407,8 @@ let ``Can set created rows``() =
   let row1 = new SimpleWithStrCsv.Row(true, "foo", 1.3M)
   let row2 = new SimpleWithStrCsv.Row(column1 = false, columnB = "foo", column3 = 42M)
   let csv = new SimpleWithStrCsv([row1; row2])
-  csv.Rows |> Seq.nth 0 |> should equal row1
-  csv.Rows |> Seq.nth 1 |> should equal row2
+  csv.Rows |> Seq.item 0 |> should equal row1
+  csv.Rows |> Seq.item 1 |> should equal row2
 
   csv.Headers.Value.[1]  |> should equal "ColumnB"
   let s = csv.SaveToString()

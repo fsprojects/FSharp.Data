@@ -1,3 +1,7 @@
+#### 3.0.0-beta - February 27 2018
+* Drop SourceLink support
+* Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0
+
 #### 2.4.5 - February 19 2018
 * Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.
 * Fix handling of multipart form data payloads whose size exceeded ~80k bytes.

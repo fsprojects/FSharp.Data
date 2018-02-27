@@ -203,7 +203,7 @@ Assembly replacerの動作の詳細については
     [hide]
     open System
     open System.Reflection
-    open Microsoft.FSharp.Quotations
+    open FSharp.Quotations
 
 標準的な型プロバイダはいずれも生成時に `AssemblyReplacer` のインスタンスを
 取得して、それをコードジェネレータに渡し、適切なコードが

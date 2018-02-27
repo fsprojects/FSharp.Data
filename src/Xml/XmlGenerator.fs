@@ -8,7 +8,7 @@ open System.Collections.Generic
 open System.IO
 open System.Reflection
 open System.Xml.Linq
-open Microsoft.FSharp.Quotations
+open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes

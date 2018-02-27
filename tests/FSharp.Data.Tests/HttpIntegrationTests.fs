@@ -1,5 +1,6 @@
 ﻿module FSharp.Data.Tests.HttpIntegrationTests
 
+#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
 open System
 open System.IO
 open System.Net
@@ -82,7 +83,7 @@ let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
 [<Test>]
-[<Platform("Net")>]
+//[<Platform("Net")>]
 let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ "accept", "application/xml,text/html;q=0.3"
@@ -254,3 +255,4 @@ I am some file bytes
     response.StatusCode |> should equal 200
     let contents = (new StreamReader(response.ResponseStream)).ReadToEnd() |> normalizeNewlines
     contents |> should equal (normalizeNewlines expected)
+#endif

@@ -1145,6 +1145,7 @@ module private HttpHelpers =
         }
 
     let writeBody (req:HttpWebRequest) (data: Stream) =
+#if FX_NO_LOCAL_FILESYSTEM
         // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
         // To work around, we use a different FromBeginEnd
         // See https://github.com/fsharp/FSharp.Data/issues/762
@@ -1155,6 +1156,7 @@ module private HttpHelpers =
                 Func<_, _>(endAction),
                 obj)
             |> Async.AwaitTask
+#endif
 
         async {
 #if FX_NO_WEBREQUEST_CONTENTLENGTH

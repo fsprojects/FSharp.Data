@@ -2,15 +2,8 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#I "packages/FAKE/tools/"
-open Fake
-open Fake
+#I "packages/buildtools/FAKE/tools/"
 #r "FakeLib.dll"
-
-#if MONO
-#else
-#load "packages/SourceLink.Fake/tools/SourceLink.fsx"
-#endif
 
 open System
 open System.IO
@@ -69,13 +62,8 @@ Target "AssemblyInfo" <| fun () ->
         let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
         let title = 
             Path.GetFileNameWithoutExtension file
-            |> replace ".Portable259" ""
-            |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
-        let versionSuffix =
-            if file.Contains ".Portable259" then ".259"
-            elif file.Contains ".Portable7" then ".7"
-            else ".0"
+        let versionSuffix =".0"
         let version = release.AssemblyVersion + versionSuffix
         CreateFSharpAssemblyInfo file
            [ Attribute.Title title
@@ -113,6 +101,7 @@ Target "EnsureNetCoreSdk" <| fun () ->
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
+    
     !! "FSharp.Data.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
@@ -155,31 +144,6 @@ let runTestTask name =
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
-
-// --------------------------------------------------------------------------------------
-// Source link the pdb files
-
-#if MONO
-
-Target "SourceLink" <| id
-
-#else
-
-open SourceLink
-
-Target "SourceLink" <| fun () ->
-    for file in !! "src/*.fsproj" do
-        let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
-        let files = SetBaseDir __SOURCE_DIRECTORY__ proj.Compiles -- "**/paket-files/**"
-        let url = sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName
-        SourceLink.Index files proj.OutputFilePdb __SOURCE_DIRECTORY__ url
-    CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
-    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
-
-#endif
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -290,10 +254,6 @@ Target "Help" <| fun () ->
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
-#if MONO
-#else
-    printfn "  * SourceLink (requires autocrlf=input)"
-#endif
     printfn ""
 
 Target "All" DoNothing

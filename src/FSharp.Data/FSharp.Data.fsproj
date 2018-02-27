@@ -1,0 +1,63 @@
+﻿<Project>
+  <!-- See https://stackoverflow.com/questions/43921992/how-can-i-use-beforebuild-and-afterbuild-targets-with-visual-studio-2017 -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0; net45</TargetFrameworks>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Net\UriUtils.fs" />
+    <Compile Include="..\Net\Http.fs" />
+    <Compile Include="..\CommonRuntime\IO.fs" />
+    <Compile Include="..\CommonRuntime\Caching.fs" />
+    <Compile Include="..\CommonRuntime\TextConversions.fs" />
+    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
+    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
+    <Compile Include="..\CommonRuntime\NameUtils.fs" />
+    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
+    <Compile Include="..\Json\JsonValue.fs" />
+    <Compile Include="..\Json\JsonConversions.fs" />
+    <Compile Include="..\Json\JsonExtensions.fs" />
+    <Compile Include="..\Json\JsonRuntime.fs" />
+    <Compile Include="..\Xml\XmlRuntime.fs" />
+    <Compile Include="..\Csv\CsvRuntime.fs" />
+    <Compile Include="..\Csv\CsvFile.fs" />
+    <Compile Include="..\Csv\CsvExtensions.fs" />
+    <Compile Include="..\Csv\CsvInference.fs" />
+    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="..\Html\HtmlCharRefs.fs" />
+    <Compile Include="..\Html\HtmlParser.fs" />
+    <Compile Include="..\Html\HtmlOperations.fs" />
+    <Compile Include="..\Html\HtmlCssSelectors.fs" />
+    <Compile Include="..\Html\HtmlInference.fs" />
+    <Compile Include="..\Html\HtmlRuntime.fs" />
+    <Compile Include="..\Runtime.fs" />
+    <Compile Include="..\AssemblyInfo.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.0.0.1" Condition="'$(TargetFramework)' == 'net45'" />
+    <PackageReference Include="FSharp.Core" Version="4.2.3" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <!-- We build BOTH the design-time DLLs needed to support the use of the runtime DLL in different host tooling -->
+  <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
+  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309 -->
+  <Target Name="BeforeBuild">  
+    <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
+    <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=net45"  />
+  </Target>  
+
+  <!-- We place BOTH the design-time DLsL in well-known locations with resepct to the runtime DLL -->
+  <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
+  <Target Name="AfterBuild">  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\net45" />  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\netstandard2.0\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\netstandard2.0" />  
+  </Target>  
+  
+</Project>

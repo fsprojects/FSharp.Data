@@ -53,7 +53,7 @@ let ``Can parse document with iso date``() =
     j?anniversary.AsDateTime().Kind |> should equal DateTimeKind.Local
 
 [<Test>]
-[<SetCulture("zh-CN")>]
+[<Culture("zh-CN")>]
 let ``Can parse document with iso date in local culture``() =
     let j = JsonValue.Parse "{\"anniversary\": \"2009-05-19 14:39:22.500\"}"
     j?anniversary.AsDateTime() |> should equal (new DateTime(2009, 05, 19, 14, 39, 22, 500, DateTimeKind.Local))
@@ -104,7 +104,7 @@ let ``Can parse UTF-32 unicode characters`` () =
   j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"
 
 [<Test>]
-[<SetCulture("pt-PT")>]
+[<Culture("pt-PT")>]
 let ``Can parse floats in different cultures``() =
     let j = JsonValue.Parse "{ \"age\": 25.5}"
     j?age.AsFloat() |> should equal 25.5
@@ -116,7 +116,7 @@ let ``Can parse floats in different cultures``() =
     j?age.AsFloat(CultureInfo.CurrentCulture) |> should equal 25.5
 
 [<Test>]
-[<SetCulture("pt-PT")>]
+[<Culture("pt-PT")>]
 let ``Can parse decimals in different cultures``() =
     let j = JsonValue.Parse "{ \"age\": 25.5}"
     j?age.AsDecimal() |> should equal 25.5m
@@ -128,7 +128,7 @@ let ``Can parse decimals in different cultures``() =
     j?age.AsDecimal(CultureInfo.CurrentCulture) |> should equal 25.5m
 
 [<Test>]
-[<SetCulture("pt-PT")>]
+[<Culture("pt-PT")>]
 let ``Can parse dates in different cultures``() =
     let j = JsonValue.Parse "{ \"birthdate\": \"01/02/2000\"}"
     j?birthdate.AsDateTime().Month |> should equal 1

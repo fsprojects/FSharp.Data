@@ -5,8 +5,8 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
-open Microsoft.FSharp.Quotations
-open Microsoft.FSharp.Reflection
+open FSharp.Quotations
+open FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data

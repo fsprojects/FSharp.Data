@@ -6,7 +6,7 @@ namespace ProviderImplementation
 open System
 open System.Collections.Generic
 open System.Reflection
-open Microsoft.FSharp.Quotations
+open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes

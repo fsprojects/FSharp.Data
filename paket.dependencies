@@ -1,29 +1,27 @@
-source http://nuget.org/api/v2
-source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
-
-redirects: on
-
-nuget FSharp.Core 4.0.0.1
-nuget Zlib.Portable
-nuget FSharp.Charting
-nuget FSharp.Formatting
-nuget NUnit
-nuget NUnit.Runners
-nuget FsUnit 2.3.2
-nuget FsCheck
-nuget Nancy.Hosting.Self
-nuget FAKE
-nuget SourceLink.Fake
-nuget Nuget.CommandLine
-
-github fsharp/FAKE modules/Octokit/Octokit.fsx
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
-
-group NetCore
+group BuildTools
+    frameworks: net45
+    source http://nuget.org/api/v2
     redirects: on
-    source https://api.nuget.org/v3/index.json
 
-    nuget FSharp.Core 4.2.3
-    nuget Iconic.Zlib.Netstandard
+    nuget FAKE
+    nuget Nuget.CommandLine
+
+    github fsharp/FAKE modules/Octokit/Octokit.fsx
+
+    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
+    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+
+group Test
+    frameworks: netcoreapp2.0, net46
+    source https://api.nuget.org/v3/index.json
+    redirects: on
+
+    nuget FSharp.Core
+    nuget NUnit
+    nuget NUnit.Runners
+    nuget FsUnit
+    nuget FsCheck
+    #nuget FSharp.Charting
+    #nuget FSharp.Formatting
+    #nuget Nancy.Hosting.Self

@@ -13,6 +13,7 @@
 module FSharp.Data.DesignTime.Tests.DocumentationTests
 #endif
 
+#if !NETCOREAPP2_0 // no FSharp.Formatting available
 open NUnit.Framework
 open System.IO
 open FSharp.Literate
@@ -71,10 +72,11 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
-[<Platform("Mono")>]
+//[<Platform("Mono")>]
 let ``Documentation generated correctly `` file = 
   let errors = processFile file
   if errors <> "" then
     Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
 
+#endif
 #endif
