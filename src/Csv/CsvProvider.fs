@@ -104,7 +104,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
               rowType.MakeArrayType(), 
               isStatic = true,
               invokeCode = fun (Singleton text) ->         
-                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors, trimColumnValue)
+                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors, ignoreLinePattern, trimColumnValue)
                 Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
       csvType.AddMember parseRows
 
