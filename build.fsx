@@ -2,7 +2,7 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#I "packages/buildtools/FAKE/tools/"
+#I "packages/FAKE/tools/"
 #r "FakeLib.dll"
 
 open System
@@ -34,7 +34,7 @@ let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
-let dotnetSdkVersion = "2.1.4"
+let dotnetSdkVersion = "2.1.100-preview-007363"
 let mutable sdkPath = None
 
 // Read release notes & version info from RELEASE_NOTES.md
@@ -97,53 +97,19 @@ Target "CleanInternetCaches" <| fun () ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
+
 Target "EnsureNetCoreSdk" <| fun () -> 
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
-    
-    !! "FSharp.Data.sln"
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
-
-Target "BuildNetCore" <| fun () -> 
-    // have to clean out build artifacts from the fulle-framework and PCL builds because we're sharing folders in this repo
-    CleanDirs ["./src/bin/"; "./src/obj/"]
-    
-    // Something is wonky with the `dotnet build` pointed at the solution file,
-    // so I'm building each project individually. They are both leaf nodes, so we
-    // don't get any simplicity from just building a leaf, etc, etc
-    !! "src/*.netcore.fsproj"
-    |> Seq.iter (fun project -> 
-                        DotNetCli.Build (fun p -> { p with 
-                                                        Configuration = "Release"
-                                                        Project = project
-                                                        ToolPath = (defaultArg sdkPath "") @@ "dotnet" }))
-    let netstandardRelDir = bindir @@ "Release" @@ "netstandard2.0"                                
-    FileSystemHelper.ensureDirectory netstandardRelDir
-    CopyFiles netstandardRelDir (!! "./src/bin/Release/netstandard2.0/*" -- "./src/bin/Release/netstandard2.0/*.json")
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
 
 Target "BuildTests" <| fun () ->
-    !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" (if isLocalBuild then [] else ["DefineConstants","BUILD_SERVER"]) "Rebuild"
-    |> ignore
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=(if isLocalBuild then [] else ["/p:DefineConstants=BUILD_SERVER"]) })
 
-// --------------------------------------------------------------------------------------
-// Run the unit tests using test runner
-Target "RunTests" <| ignore
+Target "RunTests" <| fun () ->
+    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=(if isLocalBuild then [] else ["/p:DefineConstants=BUILD_SERVER"]) })
 
-let runTestTask name =
-    let taskName = sprintf "RunTest_%s" name
-    Target taskName <| fun () ->
-        !! (sprintf "tests/*/bin/Release/%s.dll" name)
-        |> NUnit3 (fun p ->
-            { p with
-                TimeOut = TimeSpan.FromMinutes 20. 
-                TraceLevel = NUnit3TraceLevel.Info})
-    taskName ==> "RunTests" |> ignore
-
-["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
-|> List.iter runTestTask
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package

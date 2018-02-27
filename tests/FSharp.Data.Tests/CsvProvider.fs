@@ -5,9 +5,9 @@ do ()
 #else
 
 #if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #endif
 
 open NUnit.Framework
@@ -303,7 +303,6 @@ let ``Csv without sample``() =
     row.Timestamp |> should equal "3"
 
 type UTF8 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
-type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
 [<Test>]
 let ``Uses UTF8 for sample file when encoding not specified``() =
@@ -311,11 +310,15 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
     let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, "NaN (�񐔒l)")
 
+#if !NETCOREAPP2_0 // "No data is available for encoding 932. For information on defining a custom encoding, see the documentation for the Encoding.RegisterProvider method."
+type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+
 [<Test>]
 let ``Respects encoding when specified``() =
     let cp932 = CP932.GetSample()
     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, Double.NaN)
+#endif
 
 [<Test>]
 let ``Disposing CsvProvider shouldn't throw``() =

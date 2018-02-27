@@ -18,7 +18,7 @@ a [feature request][issues].
 
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/net45/FSharp.Data.dll"
 open System
 open System.Globalization
 open FSharp.Data

@@ -16,9 +16,6 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

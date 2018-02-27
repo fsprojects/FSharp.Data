@@ -1,17 +1,24 @@
-group BuildTools
-    frameworks: net45
-    source http://nuget.org/api/v2
-    redirects: on
+framework: >=net45
+source https://api.nuget.org/v3/index.json
 
-    nuget FAKE
-    nuget Nuget.CommandLine
+# For testing against .NET Standard 2.0
+nuget NetStandard.Library.NetFramework
+# For testing against .NET Standard 2.0
+nuget Microsoft.NETCore.App
 
-    github fsharp/FAKE modules/Octokit/Octokit.fsx
+nuget FAKE
+nuget Nuget.CommandLine
 
-    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-    github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+github fsharp/FAKE modules/Octokit/Octokit.fsx
 
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+
+# NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
+# NOTE: The PackageReference items are themselves added by hand to the project files.
+# NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
+# NOTE: We can return to using paket.references files at a later point.
 group Test
     frameworks: netcoreapp2.0, net46
     source https://api.nuget.org/v3/index.json
@@ -22,6 +29,22 @@ group Test
     nuget NUnit.Runners
     nuget FsUnit
     nuget FsCheck
-    #nuget FSharp.Charting
-    #nuget FSharp.Formatting
-    #nuget Nancy.Hosting.Self
+    nuget FSharp.Charting
+    nuget FSharp.Formatting
+    nuget Nancy.Hosting.Self
+
+# For testing against FSharp.Core for F# 3.1
+group fs31
+    source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core ~> 3.1.0
+
+# For testing against FSharp.Core for F# 4.0
+group fs40
+    source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core ~> 4.0.0
+
+# For testing against FSharp.Core for F# 4.1
+group fs41
+    source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core ~> 4.2
+

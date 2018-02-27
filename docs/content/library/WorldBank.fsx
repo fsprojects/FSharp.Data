@@ -19,7 +19,7 @@ initializes a connection to the WorldBank using the `GetDataContext` method and 
 retrieves the percentage of population who attend universities in the UK:
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/net45/FSharp.Data.dll"
 open FSharp.Data
 
 let data = WorldBankData.GetDataContext()
@@ -46,7 +46,7 @@ We can easily see how the university enrollment changes over time by using the
 
 *)
 
-#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)

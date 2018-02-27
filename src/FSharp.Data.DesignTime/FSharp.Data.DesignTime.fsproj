@@ -16,13 +16,13 @@
     <Compile Include="..\CommonRuntime\NameUtils.fs" />
     <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
     <Compile Include="..\CommonRuntime\StructuralInference.fs" />
-    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
       <Link>ProvidedTypes.fsi</Link>
     </Compile>
-    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
       <Link>ProvidedTypes.fs</Link>
     </Compile>
-    <Compile Include="..\..\paket-files\buildtools\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesTesting.fs">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesTesting.fs">
       <Link>ProvidedTypesTesting.fs</Link>
     </Compile>
     <Compile Include="..\CommonProviderImplementation\QuotationBuilder.fs" />
@@ -65,5 +65,4 @@
     <PackageReference Include="FSharp.Core" Version="4.0.0.1" Condition="'$(TargetFramework)' == 'net45'" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

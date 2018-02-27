@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.InferenceTests
 #endif

@@ -21,11 +21,11 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Charting/lib/net45"
+#I "../../packages/test/FSharp.Charting/lib/net45"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
-#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
 
 open System.IO
 open Fake

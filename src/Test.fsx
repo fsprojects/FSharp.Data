@@ -22,7 +22,7 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
     let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
     let runtimeAssembly =
         match platform with
-        | Net45 -> root ++ assemblyName
+        | Net45 -> root ++ "net45" ++ assemblyName
         | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
     let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
