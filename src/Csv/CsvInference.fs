@@ -162,7 +162,7 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
       Array.zeroCreate headers.Length
     else
       use reader = new StringReader(schema)
-      let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+      let schemaStr = CsvReader.readCsvFile reader "," '"' false |> Seq.exactlyOne |> fst
       if schemaStr.Length > headers.Length then
         failwithf "The provided schema contains %d columns, the inference found %d columns - please check the number of columns and the separator " schemaStr.Length headers.Length 
       let schema = Array.zeroCreate headers.Length

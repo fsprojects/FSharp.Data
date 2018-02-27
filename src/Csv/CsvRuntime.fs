@@ -23,7 +23,7 @@ module internal CsvReader =
   /// Lazily reads the specified CSV file using the specified separators
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
-  let readCsvFile (reader:TextReader) (separators:string) quote =
+  let readCsvFile (reader:TextReader) (separators:string) quote trimColumnValue =
 
     let inline (|Char|) (n:int) = char n
     let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
@@ -46,15 +46,21 @@ module internal CsvReader =
       | Quote -> chars
       | Char c -> readString (chars.Append c)
 
+    let trim (s: string) =
+      if trimColumnValue then
+        s.Trim()
+      else
+        s
+
     /// Reads a line with data that are separated using specified separators
     /// and may be quoted. Ends with newline or end of input.
     let rec readLine data (chars:StringBuilder) = 
       match reader.Read() with
       | -1 | Char '\r' | Char '\n' -> 
-          let item = chars.ToString()
+          let item = chars.ToString() |> trim
           item::data
       | Separator -> 
-          let item = chars.ToString()
+          let item = chars.ToString() |> trim
           readLine (item::data) (StringBuilder())
       | Quote ->
           readLine data (readString chars)
@@ -87,7 +93,8 @@ module private CsvHelpers =
       ColumnCount : int
       HasHeaders : bool
       Separators : string
-      Quote : char }
+      Quote : char
+      TrimColumnValue : bool }
 
   /// An enumerable that will return elements from the 'firstSeq' first time it
   /// is accessed and then will call 'nextSeq' each time for all future GetEnumerator calls
@@ -102,12 +109,12 @@ module private CsvHelpers =
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
     
-  let parseIntoLines newReader separators quote hasHeaders skipRows =
+  let parseIntoLines newReader separators quote hasHeaders skipRows trimColumnValue =
 
     // Get the first iterator and read the first line
     let firstReader : TextReader = newReader()
 
-    let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+    let linesIterator = (CsvReader.readCsvFile firstReader separators quote trimColumnValue).GetEnumerator()  
 
     for i = 1 to skipRows do
       linesIterator.MoveNext() |> ignore
@@ -138,7 +145,8 @@ module private CsvHelpers =
       ColumnCount = numberOfColumns
       HasHeaders = hasHeaders
       Separators = separators
-      Quote = quote }
+      Quote = quote 
+      TrimColumnValue = trimColumnValue }
 
   // Always ignore empty rows
   let inline ignoreRow untypedRow =
@@ -154,7 +162,8 @@ module private CsvHelpers =
                            ColumnCount = numberOfColumns 
                            HasHeaders = hasHeaders
                            Separators = separators
-                           Quote = quote } = 
+                           Quote = quote 
+                           TrimColumnValue = trimColumnValue } = 
 
     // On the first read, finish reading the opened reader
     // On future reads, get a new reader (and skip headers)
@@ -168,7 +177,7 @@ module private CsvHelpers =
 
     let nextSeq() = 
       let reader : TextReader = newReader()
-      let csv = CsvReader.readCsvFile reader separators quote
+      let csv = CsvReader.readCsvFile reader separators quote trimColumnValue
       if hasHeaders then Seq.skip 1 csv else csv
     
     let checkRegex pattern = 
@@ -218,7 +227,7 @@ module private CsvHelpers =
 // --------------------------------------------------------------------------------------
 
 /// [omit]
-type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote, trimColumnValue) =
 
   /// The rows with data
   member __.Rows = rows
@@ -230,6 +239,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   member __.Separators = separators
   /// The quotation mark use for surrounding values containing separator chars
   member __.Quote = quote
+  /// If the values in a the columns should be trimmed when reading.
+  member __.TrimColumnValue = trimColumnValue
 
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
@@ -238,25 +249,25 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =    
-    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, headers, numberOfColumns, separators, quote)
+    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, headers, numberOfColumns, separators, quote, trimColumnValue=false)
     
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows, ignoreLinePattern) =    
-    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern)
+  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows, ignoreLinePattern, trimColumnValue) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern, trimColumnValue)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors, ignoreLinePattern) =
+  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors, ignoreLinePattern, trimColumnValue) =
     let reader = new StringReader(text) :> TextReader
-    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false, ignoreLinePattern=ignoreLinePattern)
+    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false, ignoreLinePattern=ignoreLinePattern, trimColumnValue=trimColumnValue)
     csv.Rows |> Seq.toArray
 
   /// [omit]
-  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern) as this =
+  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern, trimColumnValue) as this =
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
@@ -278,7 +289,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let noSeparatorsSpecified = String.IsNullOrEmpty separators
     let separators = if noSeparatorsSpecified then "," else separators
 
-    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders skipRows
+    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders skipRows trimColumnValue
 
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
     let probablyTabSeparated =
@@ -287,7 +298,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     let parsedCsvLines =
       if probablyTabSeparated
-      then parseIntoLines newReader "\t" quote hasHeaders skipRows
+      then parseIntoLines newReader "\t" quote hasHeaders skipRows trimColumnValue
       else parsedCsvLines
 
     // Detect header that has empty trailing column name that doesn't correspond to a column in
@@ -323,7 +334,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
                           parsedCsvLines.Headers, 
                           parsedCsvLines.ColumnCount, 
                           parsedCsvLines.Separators,
-                          parsedCsvLines.Quote)
+                          parsedCsvLines.Quote,
+                          parsedCsvLines.TrimColumnValue)
 
   /// Saves CSV to the specified writer
   member x.Save(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =
@@ -380,7 +392,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      writer.ToString()
 
   member inline private x.withRows rows =
-    new CsvFile<'RowType>(rowToStringArray, disposer, rows, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+    new CsvFile<'RowType>(rowToStringArray, disposer, rows, x.Headers, x.NumberOfColumns, x.Separators, x.Quote, x.TrimColumnValue)
 
   member inline private x.mapRows f = x.withRows (f x.Rows)
   

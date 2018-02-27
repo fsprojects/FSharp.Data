@@ -582,11 +582,11 @@ let markdownTable =
 | ------------- |:-------------:| -----:|
 | col 3 is      | right-aligned | $1600 |"""
 
-type MarkdownType = CsvProvider<markdownTable, Separators="|", IgnoreLinePattern = "---">
+type MarkdownType = CsvProvider<markdownTable, Separators="|", IgnoreLinePattern = "---", TrimColumnValue = true>
 
-//TODO: Write 2 tests. One for each option.
+//TODO: Write 2 additional tests. One for each option. Not Markdown Related
 [<Test>]
-let ``IgnoreLinePattern ignores lines that match``() = 
+let ``Markdown Test``() = 
     let csv = MarkdownType.Parse markdownTable
 
     let row = 
@@ -594,6 +594,6 @@ let ``IgnoreLinePattern ignores lines that match``() =
       |> Seq.exactlyOne
     
     let actual = (row.Tables, row.Are, row.Cool)
-    let expected = ("col 3 is", "right-aligned", "$1600")
+    let expected = (" col 3 is", "right-aligned", "$1600")
 
     actual |> should equal expected
