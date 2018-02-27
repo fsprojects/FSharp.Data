@@ -41,7 +41,7 @@ let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
-let dotnetSdkVersion = "2.0.3"
+let dotnetSdkVersion = "2.1.4"
 let mutable sdkPath = None
 
 // Read release notes & version info from RELEASE_NOTES.md
