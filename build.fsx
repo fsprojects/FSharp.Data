@@ -98,7 +98,7 @@ Target "CleanInternetCaches" <| fun () ->
 // Build library & test projects
 
 
-Target "EnsureNetCoreSdk" <| fun () -> 
+Target "EnsureDotNetSdk" <| fun () -> 
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
@@ -224,12 +224,11 @@ Target "Help" <| fun () ->
 
 Target "All" DoNothing
 
-"Clean" ==> "AssemblyInfo" ==> "Build"
+"Clean" 
+    ==> "AssemblyInfo" 
+    =?> ("EnsureNetSdk", not <| DotNetCli.isInstalled() && DotNetCli.getVersion() <> dotnetSdkVersion)
+    ==> "Build"
 "Build" ==> "All"
-
-"BuildNetCore" 
-    =?> ("EnsureNetCoreSdk", not <| DotNetCli.isInstalled() && DotNetCli.getVersion() <> dotnetSdkVersion)
-    ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
 

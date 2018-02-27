@@ -19,6 +19,9 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCasesTuple =
     sourceDirectory ++ "SignatureTestCases.config"
     |> File.ReadAllLines
+#if NETCOREAPP2_0 // "No data is available for encoding 932. For information on defining a custom encoding, see the documentation for the Encoding.RegisterProvider method."
+    |> Array.filter (fun line -> not (line.Contains ("cp932.csv")))
+#endif
     |> Array.map TypeProviderInstantiation.Parse
 
 let testCases =
