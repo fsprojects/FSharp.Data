@@ -16,7 +16,7 @@
     <copyright>Copyright 2018</copyright>
     <tags>@tags@</tags>
     <dependencies>
-      <group targetFramework="net45" />
+      <group targetFramework="net45">
         <dependency id="FSharp.Core" version="4.0.0.1"/>
       </group>
       <group targetFramework="net40" />
