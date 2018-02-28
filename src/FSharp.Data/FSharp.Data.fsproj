@@ -45,7 +45,8 @@
 
   <!-- We build BOTH the design-time DLLs needed to support the use of the runtime DLL in different host tooling -->
   <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
-  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309 -->
+  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309. Also for legacy loading -->
+  <!-- we still need a .NET 4.5 design-time DLL to place alongside the runtime DLL -->
   <Target Name="BeforeBuild">  
     <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
     <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=net45"  />
@@ -62,8 +63,7 @@
     <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)" />  
     <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="$(OutputPath)" />  
 
-    <!-- We also place all DLLs into the bin folder for the documentation to access without mentioning the configuration --> 
-
+    <!-- We also place the layout in the bin folder for the documentation to access without mentioning Release/Debug --> 
     <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\net45" />  
     <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\net45" />  
     <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\netstandard2.0" />  

@@ -34,6 +34,7 @@ let gitName = "FSharp.Data"
 
 let dotnetSdkVersion = "2.1.100-preview-007363"
 let mutable sdkPath = None
+let getSdkPath() = (defaultArg sdkPath "") @@ "dotnet" 
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
@@ -100,13 +101,14 @@ Target "EnsureDotNetSdk" <| fun () ->
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.sln"; ToolPath =  (defaultArg sdkPath "") @@ "dotnet" })
+    DotNetCli.Restore (fun p -> { p with Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
 
 Target "BuildTests" <| fun () ->
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=["/v:n"] })
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 Target "RunTests" <| fun () ->
-    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=["/v:n"] })
+    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 
 // --------------------------------------------------------------------------------------
