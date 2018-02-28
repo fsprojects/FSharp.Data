@@ -33,8 +33,8 @@ let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
 let dotnetSdkVersion = "2.1.100-preview-007363"
-let mutable sdkPath = None
-let getSdkPath() = (defaultArg sdkPath "dotnet")
+let sdkPath = lazy DotNetCli.InstallDotNetSDK dotnetSdkVersion
+let getSdkPath() = sdkPath.Value
 
 printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
 printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
@@ -48,6 +48,7 @@ let release =
 
 let bindir = "./bin"
 
+let useMsBuildToolchain = environVar "USE_MSBUILD" <> null
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 let nugetVersion = 
     if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
@@ -105,21 +106,31 @@ let testProjs =
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj" 
       "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
 
-Target "EnsureDotNetSdk" <| fun () -> 
-    sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
-    printfn "Updated .NET SDK path to %s" dotnetSdkVersion
-
 
 Target "Build" <| fun () ->
+ if useMsBuildToolchain then
+    DotNetCli.Restore  (fun p -> { p with Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
+    DotNetCli.Restore (fun p -> { p with Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
+    MSBuildRelease null "Build" ["src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"] |> Log "FSharp.Data.DesignTime-Output: "
+    MSBuildRelease null "Build" ["src/FSharp.Data/FSharp.Data.fsproj"] |> Log "FSharp.Data-Output: "
+ else
     // BoTH flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
     DotNetCli.Build  (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
     DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
 
 Target "BuildTests" <| fun () ->
-    for testProj in testProjs do 
+  for testProj in testProjs do 
+    if useMsBuildToolchain then
+        DotNetCli.Restore (fun p -> { p with Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+        MSBuildRelease null "Build" [testProj] |> Log "BuildTests.DesignTime-Output: "
+    else
         DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 Target "RunTests" <| fun () ->
+ if useMsBuildToolchain then
+    // No need to run tests again - results from building should be the same
+    ()
+ else
     for testProj in testProjs do 
         DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
@@ -234,13 +245,12 @@ Target "Help" <| fun () ->
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
     printfn ""
+    printfn "  Set USE_MSBUILD=1 in environment to use MSBuild toolchain and .NET Framework/Mono compiler."
+    printfn "  (Tests are not run in that configuration.)"
 
 Target "All" DoNothing
 
-"Clean" 
-    ==> "AssemblyInfo" 
-    =?> ("EnsureDotNetSdk", not (DotNetCli.isInstalled()) || DotNetCli.getVersion() <> dotnetSdkVersion)
-    ==> "Build"
+"Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
