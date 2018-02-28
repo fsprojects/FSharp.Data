@@ -36,6 +36,10 @@ let dotnetSdkVersion = "2.1.100-preview-007363"
 let mutable sdkPath = None
 let getSdkPath() = (defaultArg sdkPath "") @@ "dotnet" 
 
+printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
+printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
+printfn "Desired .NET SDK version = %s" dotnetSdkVersion
+
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
     File.ReadLines "RELEASE_NOTES.md" 
@@ -233,7 +237,7 @@ Target "All" DoNothing
 
 "Clean" 
     ==> "AssemblyInfo" 
-    =?> ("EnsureNetSdk", not <| DotNetCli.isInstalled() && DotNetCli.getVersion() <> dotnetSdkVersion)
+    =?> ("EnsureDotNetSdk", not (DotNetCli.isInstalled()) || DotNetCli.getVersion() <> dotnetSdkVersion)
     ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
