@@ -7,8 +7,10 @@ dist: trusty
 matrix:
   include:
     - mono: 5.8.0
+      env: USE_DOTNET_CLI=1
       os: linux
     - mono: latest
+      env: USE_DOTNET_CLI=1
       os: osx
     - mono: 5.8.0
       env: USE_MSBUILD=1

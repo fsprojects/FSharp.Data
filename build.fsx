@@ -36,9 +36,9 @@ let dotnetSdkVersion = "2.1.100-preview-007363"
 let sdkPath = lazy DotNetCli.InstallDotNetSDK dotnetSdkVersion
 let getSdkPath() = sdkPath.Value
 
-printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
-printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
 printfn "Desired .NET SDK version = %s" dotnetSdkVersion
+printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
+if DotNetCli.isInstalled() then printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
