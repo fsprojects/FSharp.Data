@@ -47,12 +47,8 @@
   <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
   <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309. Also for legacy loading -->
   <!-- we still need a .NET 4.5 design-time DLL to place alongside the runtime DLL -->
-  <Target Name="BeforeBuild">  
-    <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
-    <MSBuild Projects="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=net45"  />
-  </Target>  
 
-  <!-- We place BOTH the design-time DLsL in well-known locations with resepct to the runtime DLL -->
+  <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
   <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
   <Target Name="AfterBuild">  
     <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\net45" />  

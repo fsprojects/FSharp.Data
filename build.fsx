@@ -96,19 +96,26 @@ Target "CleanInternetCaches" <| fun () ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
+let testProjs = 
+    [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj" 
+      "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj" 
+      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
 
 Target "EnsureDotNetSdk" <| fun () -> 
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
-    DotNetCli.Restore (fun p -> { p with Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
+    // BoTH flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
+    DotNetCli.Build  (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
     DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
 
 Target "BuildTests" <| fun () ->
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+    for testProj in testProjs do 
+        DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 Target "RunTests" <| fun () ->
-    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
+    for testProj in testProjs do 
+        DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
 
 
 // --------------------------------------------------------------------------------------

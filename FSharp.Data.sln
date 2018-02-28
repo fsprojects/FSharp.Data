@@ -14,6 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data", "src\FSharp.Data\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC} = {B85F245B-3FB9-4253-8251-16F98F05B6EC}
+	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
 EndProject
@@ -28,7 +31,9 @@ Global
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
