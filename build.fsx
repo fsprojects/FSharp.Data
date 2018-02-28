@@ -10,7 +10,6 @@ open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
-open Fake.Testing.NUnit3
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
@@ -32,7 +31,6 @@ let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP lin
 let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
-let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
 let dotnetSdkVersion = "2.1.100-preview-007363"
 let mutable sdkPath = None
@@ -102,13 +100,13 @@ Target "EnsureDotNetSdk" <| fun () ->
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
 
 Target "Build" <| fun () ->
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet" })
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.sln"; ToolPath =  (defaultArg sdkPath "") @@ "dotnet" })
 
 Target "BuildTests" <| fun () ->
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=(if isLocalBuild then [] else ["/p:DefineConstants=BUILD_SERVER"]) })
+    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=["/v:n"] })
 
 Target "RunTests" <| fun () ->
-    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=(if isLocalBuild then [] else ["/p:DefineConstants=BUILD_SERVER"]) })
+    DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = "FSharp.Data.Tests.sln"; ToolPath = (defaultArg sdkPath "") @@ "dotnet"; AdditionalArgs=["/v:n"] })
 
 
 // --------------------------------------------------------------------------------------

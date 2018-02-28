@@ -26,9 +26,9 @@ let testCasesTuple =
 
 let testCases =
     testCasesTuple
-//#if BUILD_SERVER
+    // These WorldBank tests nearly always need updating.  COmment out this line if you want to go through the process of
+    // updating them.
     |> Array.filter (snd >> function | WorldBank _ -> false | _ -> true)
-//#endif
     |> Array.map snd
 
 let expectedDirectory = sourceDirectory ++ "expected"
