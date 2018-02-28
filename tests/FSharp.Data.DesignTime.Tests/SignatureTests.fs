@@ -45,7 +45,8 @@ let generateAllExpected() =
         Directory.CreateDirectory expectedDirectory |> ignore
     for (sample, testCase) in testCasesTuple do
         try
-            testCase.Dump (resolutionFolder, expectedDirectory, net45RuntimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
+            let assemblyRefs = getRuntimeRefs Net45
+            testCase.Dump (resolutionFolder, expectedDirectory, net45RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
             |> ignore
         with e ->
             raise(new Exception(sprintf "Failed generating: %s" sample, e))
@@ -58,7 +59,9 @@ let normalize (str:string) =
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
     let path = testCase.ExpectedPath expectedDirectory
     let expected = path |> File.ReadAllText |> normalize
-    let outputRaw = testCase.Dump (resolutionFolder, "", net45RuntimeAssembly, (getRuntimeRefs Net45), signatureOnly=false, ignoreOutput=false)
+    let assemblyRefs = getRuntimeRefs Net45
+    printfn "assemblyRefs = %A" assemblyRefs
+    let outputRaw = testCase.Dump (resolutionFolder, "", net45RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
     let output = outputRaw |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" outputRaw

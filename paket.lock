@@ -16,9 +16,9 @@ GITHUB
     modules/Octokit/Octokit.fsx (8f21aabb0974b0f4c7b7dab674b2ea2691a9db8c)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/ProvidedTypes.fs (259244bd893f6f266f2f1c043cb6a52eba3cd3ce)
-    src/ProvidedTypes.fsi (259244bd893f6f266f2f1c043cb6a52eba3cd3ce)
-    src/ProvidedTypesTesting.fs (259244bd893f6f266f2f1c043cb6a52eba3cd3ce)
+    src/ProvidedTypes.fs (76afcf2c5f3223578371f1578a23ce0db645d05e)
+    src/ProvidedTypes.fsi (76afcf2c5f3223578371f1578a23ce0db645d05e)
+    src/ProvidedTypesTesting.fs (76afcf2c5f3223578371f1578a23ce0db645d05e)
 GROUP fs31
 NUGET
   remote: https://api.nuget.org/v3/index.json
