@@ -34,7 +34,7 @@ let gitName = "FSharp.Data"
 
 let dotnetSdkVersion = "2.1.100-preview-007363"
 let mutable sdkPath = None
-let getSdkPath() = (defaultArg sdkPath "") @@ "dotnet" 
+let getSdkPath() = (defaultArg sdkPath "dotnet")
 
 printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
 printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
@@ -107,6 +107,8 @@ let testProjs =
 
 Target "EnsureDotNetSdk" <| fun () -> 
     sdkPath <- Some (DotNetCli.InstallDotNetSDK dotnetSdkVersion)
+    printfn "Updated .NET SDK path to %s" dotnetSdkVersion
+
 
 Target "Build" <| fun () ->
     // BoTH flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
