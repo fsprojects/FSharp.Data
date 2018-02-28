@@ -7,27 +7,21 @@ dist: trusty
 matrix:
   include:
     - mono: 5.8.0
-      dotnet: 2.1.100-preview-007363
       os: linux
+    - mono: latest
+      os: osx
     - mono: 5.8.0
-      dotnet: 2.1.100-preview-007363
       env: USE_MSBUILD=1
       os: linux
     - mono: latest
-      dotnet: 2.1.100-preview-007363
+      env: USE_MSBUILD=1
+      os: osx
+    - mono: latest
       env: USE_MSBUILD=1
       os: linux
     - mono: weekly
       env: USE_MSBUILD=1
-      dotnet: 2.1.100-preview-007363
       os: linux
-    - mono: 5.8.0
-      dotnet: 2.1.100-preview-007363
-      os: osx
-    - mono: 5.8.0
-      env: USE_MSBUILD=1
-      dotnet: 2.1.100-preview-007363
-      os: osx
 
 
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
