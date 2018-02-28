@@ -3,36 +3,35 @@ language: csharp
 sudo: required
 dist: trusty
 
-mono:
-  - 5.8.0
-  - latest
-  - nightly
-
-dotnet: 2.1.100-preview-007363
-
-os:
-  - linux
-  - osx
-
 # have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
 matrix:
   include:
     - mono: 5.8.0
       dotnet: 2.1.100-preview-007363
+      os: linux
     - mono: 5.8.0
       dotnet: 2.1.100-preview-007363
       env: USE_MSBUILD=1
+      os: linux
     - mono: latest
       dotnet: 2.1.100-preview-007363
       env: USE_MSBUILD=1
-    - mono: nightly
+      os: linux
+    - mono: weekly
       env: USE_MSBUILD=1
       dotnet: 2.1.100-preview-007363
+      os: linux
+    - mono: 5.8.0
+      dotnet: 2.1.100-preview-007363
+      os: osx
+    - mono: 5.8.0
+      env: USE_MSBUILD=1
+      dotnet: 2.1.100-preview-007363
+      os: osx
+
 
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
   fast_finish: true
-  allow_failures:
-  - mono: nightly
 
 # We suspect this is no longer needed bvut is included just in case per Mono install instructions
 before_install:
