@@ -1,6 +1,7 @@
 ﻿<Project>
   <!-- See https://stackoverflow.com/questions/43921992/how-can-i-use-beforebuild-and-afterbuild-targets-with-visual-studio-2017 -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0; net45</TargetFrameworks>
     <OtherFlags>--warnon:1182</OtherFlags>
