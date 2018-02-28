@@ -115,10 +115,8 @@ module HttpRequestHeaders =
     let ContentRange (range:string) = "Content-Range", range
     /// The MIME type of the body of the request (used with POST and PUT requests)
     let ContentType (contentType:string) = "Content-Type", contentType
-    /// The MIME type of the body of the request (used with POST and PUT requests) with an explicit charset
-    let ContentTypeWithCharset (contentType, charset) = "Content-Type", sprintf "%s; charset=%s" contentType charset
     /// The MIME type of the body of the request (used with POST and PUT requests) with an explicit encoding
-    let ContentTypeWithEncoding (contentType, charset:Encoding) = ContentTypeWithCharset (contentType, charset.WebName)
+    let ContentTypeWithEncoding (contentType, charset:Encoding) = "Content-Type", sprintf "%s; charset=%s" contentType (charset.WebName)
     /// The date and time that the message was sent
     let Date (date:DateTime) = "Date", date.ToString("R", CultureInfo.InvariantCulture)
     /// Indicates that particular server behaviors are required by the client
