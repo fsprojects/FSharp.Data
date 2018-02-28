@@ -179,6 +179,16 @@ let ``Can parse array of numbers``() =
     j.[2] |> should equal (JsonValue.Number 3m)
 
 [<Test>]
+let ``Can parse array of numbers when culture is using comma as decimal separator``() =
+    let cultureInfo = CultureInfo.GetCultureInfo("sv-SE")
+    cultureInfo.NumberFormat.CurrencyDecimalSeparator |> should equal ","
+    let j = JsonValue.Parse("[25,5,5,25]", cultureInfo)
+    j.[0] |> should equal (JsonValue.Number 25m)
+    j.[1] |> should equal (JsonValue.Number 5m)
+    j.[2] |> should equal (JsonValue.Number 5m)
+    j.[3] |> should equal (JsonValue.Number 25m)
+
+[<Test>]
 let ``Quotes in strings are properly escaped``() =
     let jsonStr = "{\"short_description\":\"This a string with \\\"quotes\\\"\"}"
     let j = JsonValue.Parse jsonStr

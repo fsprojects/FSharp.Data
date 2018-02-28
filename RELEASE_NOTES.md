@@ -1,6 +1,7 @@
 #### 2.4.6 - Unreleased
 * Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
 * `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
+* Fix parsing of JSON arrays when specified culture is using comma as a decimal separator
 
 #### 2.4.5 - February 19 2018
 * Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.

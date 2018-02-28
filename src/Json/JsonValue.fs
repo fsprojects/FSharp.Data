@@ -157,8 +157,9 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
     let decimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
-    let isNumChar c =
-      Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
+    let isNumChar c isArray =
+      let decimalSeparator = if isArray && decimalSeparator = ',' then '.' else decimalSeparator
+      Char.IsDigit c || c = decimalSeparator || c='e' || c='E' || c='+' || c='-'
     let throw() =
       let msg =
         sprintf
@@ -169,13 +170,13 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
       if not cond then throw()
 
     // Recursive descent parser for JSON that uses global mutable index
-    let rec parseValue() =
+    let rec parseValue isArray =
         skipWhitespace()
         ensure(i < s.Length)
         match s.[i] with
         | '"' -> JsonValue.String(parseString())
-        | '-' -> parseNum()
-        | c when Char.IsDigit(c) -> parseNum()
+        | '-' -> parseNum isArray
+        | c when Char.IsDigit(c) -> parseNum isArray
         | '{' -> parseObject()
         | '[' -> parseArray()
         | 't' -> parseLiteral("true", JsonValue.Boolean true)
@@ -240,9 +241,9 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         buf.Clear() |> ignore
         str
 
-    and parseNum() =
+    and parseNum isArray =
         let start = i
-        while i < s.Length && isNumChar(s.[i]) do
+        while i < s.Length && (isNumChar (s.[i]) isArray) do
             i <- i + 1
         let len = i - start
         let sub = s.Substring(start,len)
@@ -259,7 +260,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         ensure(i < s.Length && s.[i] = ':')
         i <- i + 1
         skipWhitespace()
-        key, parseValue()
+        key, parseValue false
 
     and parseEllipsis() =
         let mutable openingBrace = false
@@ -302,12 +303,12 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         skipWhitespace()
         let vals = ResizeArray<_>()
         if i < s.Length && s.[i] <> ']' then
-            vals.Add(parseValue())
+            vals.Add(parseValue true)
             skipWhitespace()
             while i < s.Length && s.[i] = ',' do
                 i <- i + 1
                 skipWhitespace()
-                vals.Add(parseValue())
+                vals.Add(parseValue true)
                 skipWhitespace()
         if tolerateErrors && i < s.Length && s.[i] <> ']' then
             parseEllipsis() // tolerate ... or {...}
