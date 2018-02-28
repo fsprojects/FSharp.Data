@@ -3,16 +3,36 @@ language: csharp
 sudo: required
 dist: trusty
 
+mono:
+  - 5.8.0
+  - latest
+  - nightly
+
+dotnet: 2.1.100-preview-007363
+
+os:
+  - linux
+  - osx
+
 # have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
 matrix:
   include:
     - mono: 5.8.0
       dotnet: 2.1.100-preview-007363
-      env: USE_MSBUILD=1
     - mono: 5.8.0
       dotnet: 2.1.100-preview-007363
+      env: USE_MSBUILD=1
     - mono: latest
       dotnet: 2.1.100-preview-007363
+      env: USE_MSBUILD=1
+    - mono: nightly
+      env: USE_MSBUILD=1
+      dotnet: 2.1.100-preview-007363
+
+  # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
+  fast_finish: true
+  allow_failures:
+  - mono: nightly
 
 # We suspect this is no longer needed bvut is included just in case per Mono install instructions
 before_install:
@@ -20,10 +40,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y referenceassemblies-pcl; fi
-
-matrix:
-  # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
-  fast_finish: true
 
 env:
   global:
