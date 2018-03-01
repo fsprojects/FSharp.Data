@@ -111,12 +111,22 @@ Target "Build" <| fun () ->
  if useMsBuildToolchain then
     DotNetCli.Restore  (fun p -> { p with Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
     DotNetCli.Restore (fun p -> { p with Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
-    MSBuildRelease null "Build" ["src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"] |> Log "FSharp.Data.DesignTime-Output: "
-    MSBuildRelease null "Build" ["src/FSharp.Data/FSharp.Data.fsproj"] |> Log "FSharp.Data-Output: "
+    MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" ["src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"] |> Log "FSharp.Data.DesignTime-Output: "
+    MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" ["src/FSharp.Data/FSharp.Data.fsproj"] |> Log "FSharp.Data-Output: "
  else
     // BoTH flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
-    DotNetCli.Build  (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
-    DotNetCli.Build (fun p -> { p with Configuration = "Release"; Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
+    let build proj = 
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj)
+    build "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+    build "src/FSharp.Data/FSharp.Data.fsproj"
+
+    let testSourcelink proj = 
+        let basePath = Path.GetFileNameWithoutExtension proj
+        let pdb = sprintf "bin/Release/netstandard2.0/%s.pdb" basePath
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath(); WorkingDir = Path.GetDirectoryName proj }) (sprintf "sourcelink test %s" pdb)
+    
+    testSourcelink "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+    testSourcelink "src/FSharp.Data/FSharp.Data.fsproj"
 
 Target "BuildTests" <| fun () ->
   for testProj in testProjs do 
