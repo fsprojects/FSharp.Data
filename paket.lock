@@ -20,33 +20,33 @@ GITHUB
     src/ProvidedTypes.fsi (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
     src/ProvidedTypesTesting.fs (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
 GROUP fs31
-RESTRICTION: || (== net46) (== netcoreapp2.0)
+RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FSharp.Core (3.1.2.5)
 
 GROUP fs40
-RESTRICTION: || (== net46) (== netcoreapp2.0)
+RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FSharp.Core (4.0.0.1)
 
 GROUP fs41
-RESTRICTION: || (== net46) (== netcoreapp2.0)
+RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FSharp.Core (4.3.4)
 
 GROUP Test
 REDIRECTS: ON
-RESTRICTION: || (== net46) (== netcoreapp2.0)
+RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FsCheck (2.10.8)
-      FSharp.Core (>= 4.0.0.1) - restriction: || (== net46) (&& (== netcoreapp2.0) (>= net452)) (&& (== netcoreapp2.0) (< netstandard1.6)) (&& (== netcoreapp2.0) (< portable-net45+win8+wp8))
-      FSharp.Core (>= 4.2.3) - restriction: || (&& (== net46) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
-      NETStandard.Library (>= 1.6.1) - restriction: || (&& (== net46) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
-      System.ValueTuple (>= 4.4) - restriction: || (&& (== net46) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
+      FSharp.Core (>= 4.0.0.1) - restriction: || (== net461) (&& (== netcoreapp2.0) (>= net452)) (&& (== netcoreapp2.0) (< netstandard1.6)) (&& (== netcoreapp2.0) (< portable-net45+win8+wp8))
+      FSharp.Core (>= 4.2.3) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
+      NETStandard.Library (>= 1.6.1) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
+      System.ValueTuple (>= 4.4) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
     FSharp.Charting (0.91.1)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Core (4.3.4)
@@ -57,16 +57,16 @@ NUGET
       FSharp.Compiler.Service (>= 2.0.0.3)
     FsUnit (3.1)
       FSharp.Core (>= 4.2.3)
-      NETStandard.Library (>= 2.0.1) - restriction: == netcoreapp2.0
+      NETStandard.Library (>= 2.0.1) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
       NUnit (>= 3.9 < 4.0)
-    Microsoft.NETCore.Platforms (2.0.1) - restriction: == netcoreapp2.0
+    Microsoft.NETCore.Platforms (2.0.1) - restriction: || (&& (== net461) (>= monoandroid) (>= netstandard2.0)) (&& (== net461) (>= monotouch) (>= netstandard2.0)) (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (< portable-net451+win81+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= uap10.1)) (&& (== net461) (>= netstandard2.0) (>= xamarinios)) (&& (== net461) (>= netstandard2.0) (>= xamarinmac)) (&& (== net461) (>= netstandard2.0) (>= xamarintvos)) (&& (== net461) (>= netstandard2.0) (>= xamarinwatchos)) (== netcoreapp2.0)
     Nancy (1.4.4)
     Nancy.Hosting.Self (1.4.1)
       Nancy (>= 1.4.1)
-    NETStandard.Library (2.0.1) - restriction: == netcoreapp2.0
+    NETStandard.Library (2.0.1) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
       Microsoft.NETCore.Platforms (>= 1.1)
     NUnit (3.10.1)
-      NETStandard.Library (>= 2.0) - restriction: || (&& (== net46) (< net20) (>= netstandard2.0)) (== netcoreapp2.0)
+      NETStandard.Library (>= 2.0) - restriction: || (&& (== net461) (< net20) (>= netstandard2.0)) (== netcoreapp2.0)
     NUnit.ConsoleRunner (3.8)
     NUnit.Extension.NUnitProjectLoader (3.6)
     NUnit.Extension.NUnitV2Driver (3.7)
@@ -80,4 +80,4 @@ NUGET
       NUnit.Extension.NUnitV2ResultWriter (>= 3.5)
       NUnit.Extension.TeamCityEventListener (>= 1.0.3)
       NUnit.Extension.VSProjectLoader (>= 3.7)
-    System.ValueTuple (4.4) - restriction: || (&& (== net46) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
+    System.ValueTuple (4.4) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
