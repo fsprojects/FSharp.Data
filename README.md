@@ -19,20 +19,30 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Supported F# Runtimes
 
-- FSharp.Core 4.3.1.0 (F# 3.1)
-- FSharp.Core 4.4.0.0 (F# 4.0)
-- FSharp.Core 4.4.1.0 (F# 4.1)
-- FSharp.Core 4.4.3.0 (F# 4.1 update)
+When targeting .NET Framework 4.5+:
 
-## Supported platforms
+- FSharp.Core 4.3.1.0. nuget 3.1.x (default for F# 3.1/Visual Studio 2013)
+- FSharp.Core 4.4.0.0, nuget 4.0.x (default for F# 4.0/Visual Studio 2015)
+- FSharp.Core 4.4.1.0, nuget 4.2.x (default for F# Tools 4.1 SDK / Visual Studio 2017)
+- FSharp.Core 4.4.3.0, nuget 4.3.x (default for F# Tools 10.1 SDK / Visual Studio 2017 15.6+)
+- or higher versions of the same
 
-- .NET Framework 4.x
-- .NET Core App 2.x
-- .NET Standard 2.0
+When targeting .NET Standard 2.0 or .NET Core App 2.x:
+
+- FSharp.Core 4.4.1.0, nuget 4.2.x (default for F# Tools 4.1 SDK / Visual Studio 2017) or higher
+- FSharp.Core 4.4.3.0, nuget 4.3.x (default for F# Tools 10.1 SDK / Visual Studio 2017 15.6+)
+- or higher versions of the same
+
+## Supported Design-time Environments
+
+- .NET SDK 2.1.100 or higher (runs tools using .NET Core)
+- Visual F# Tools 3.1 or higher (runs tools using .NET Framework)
+- Mono 5.0.0 of higher (runs tools using Mono)
+- Other F# tooling based on FSharp.Compiler.Service must have FSharp.Compiler.Service 21.0+ and FSharp.Core nuget 4.2.x+.
 
 ## Documentation 
 
-This library is that it comes with comprehensive documentation. The documentation is 
+This library comes with comprehensive documentation. The documentation is 
 automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request! 
  - [F# Data Library home page][3] with more information about the library, contributions, etc.
  - The samples from the documentation are included as part of `FSharp.Data.Tests.sln`, make sure you build the

@@ -1,9 +1,4 @@
-﻿#if NETSTANDARD2_0
-module FSharp.Data.Tests.XmlProvider
-do ()
-#else 
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
@@ -561,4 +556,3 @@ let ``Roundtripping works correctly``() =
     let afterRoundtrip = new RoundtripXmlDocument.Doc(original.Assembly, original.Members)
     original.XElement.ToString() |> should equal <| afterRoundtrip.XElement.ToString()
 
-#endif

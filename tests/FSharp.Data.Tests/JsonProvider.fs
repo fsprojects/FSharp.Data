@@ -1,9 +1,4 @@
-﻿#if NETSTANDARD2_0
-module FSharp.Data.Tests.JsonProvider
-do ()
-#else
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -655,5 +650,3 @@ let ``Weird UnitSystem case``() =
 let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
-
-#endif
