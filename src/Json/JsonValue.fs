@@ -382,33 +382,33 @@ type JsonValue with
   static member ParseMultiple(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+  member private x.PrepareRequest (httpMethod, headers) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
         if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
         else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    let headers = HttpRequestHeaders.ContentTypeWithEncoding (HttpContentTypes.Json, Encoding.UTF8) :: headers
+    TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers,
+      httpMethod
+ 
+  /// Sends the JSON to the specified URL synchronously. Defaults to a POST request.
+  member x.Request(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
-    let httpMethod = defaultArg httpMethod HttpMethod.Post
-    let headers = defaultArg (Option.map List.ofSeq headers) []
-    let headers =
-        if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+  /// Sends the JSON to the specified URL asynchronously. Defaults to a POST request.
+  member x.RequestAsync(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.AsyncRequest(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 
