@@ -120,13 +120,15 @@ Target "Build" <| fun () ->
     build "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
     build "src/FSharp.Data/FSharp.Data.fsproj"
 
-    let testSourcelink proj = 
+    let testSourcelink framework proj = 
         let basePath = Path.GetFileNameWithoutExtension proj
         let pdb = sprintf "bin/Release/netstandard2.0/%s.pdb" basePath
         DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath(); WorkingDir = Path.GetDirectoryName proj }) (sprintf "sourcelink test %s" pdb)
     
-    testSourcelink "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-    testSourcelink "src/FSharp.Data/FSharp.Data.fsproj"
+    testSourcelink "net45" "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+    testSourcelink "netstandard2.0" "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+    testSourcelink "net45" "src/FSharp.Data/FSharp.Data.fsproj"
+    testSourcelink "netstandard2.0" "src/FSharp.Data/FSharp.Data.fsproj"
 
 Target "BuildTests" <| fun () ->
   for testProj in testProjs do 
