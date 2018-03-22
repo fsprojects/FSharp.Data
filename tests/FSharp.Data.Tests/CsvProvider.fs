@@ -1,13 +1,9 @@
-﻿
-module FSharp.Data.Tests.CsvProvider
-#if NETSTANDARD2_0
-do ()
-#else
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
+#else 
+module FSharp.Data.Tests.CsvProvider
 #endif
 
 open NUnit.Framework
@@ -583,5 +579,3 @@ let ``CsvFile.TryGetColumnIndex returns None if no match``() =
   let csv = CsvFile.Parse simpleCsv
   let nameColumnIndex = csv.TryGetColumnIndex "FirstName"
   nameColumnIndex |> should equal None
-
-#endif

@@ -1,9 +1,4 @@
-﻿#if NETSTANDARD2_0
-module FSharp.Data.Tests.HtmlProviderLists
-do ()
-#else 
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
@@ -186,5 +181,3 @@ let ``Handles SimpleListHtml file``() =
     let list = HtmlProvider<"Data/SimpleHtmlLists.html">.GetSample()
     list.Lists.SimpleCount.Values |> should equal [1;2;3]
     list.DefinitionLists.MyDLLists.Count.Values |> should equal [1;2]
-
-#endif
