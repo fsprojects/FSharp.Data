@@ -1,4 +1,4 @@
-#### 2.4.6 - Unreleased
+#### 2.4.6 - March 25 2018
 * Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
 * `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
 * Prevent superfluous encoding of URL parameters.
