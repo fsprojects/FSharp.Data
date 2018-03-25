@@ -303,7 +303,6 @@
     <Content Include="Data/TypeInference.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="UriUtils.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="MockServer.fs" />
     <Compile Include="HttpIntegrationTests.fs" />
