@@ -112,7 +112,7 @@ let testMultipartFormDataBodySize (size: int) =
     Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test>]
-let ` escaping of url parameters` () =
+let ``escaping of url parameters`` () =
     let url = "https://graph.microsoft.com/beta/me/insights/shared"
     let queryParams = [
         "$select", "Property1,Property2/SubProperty,*"
