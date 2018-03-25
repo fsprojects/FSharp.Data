@@ -153,7 +153,7 @@ let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
 以下の単純な計算をみてください：
 *)
 
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
   let speed = row.Distance / row.Time
