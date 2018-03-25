@@ -19,9 +19,8 @@
       <group targetFramework="net45">
         <dependency id="FSharp.Core" version="4.0.0.1"/>
       </group>
-      <group targetFramework="net40" />
       <group targetFramework="netstandard2.0">
-        <dependency id="FSharp.Core" version="4.2.3" />
+        <dependency id="FSharp.Core" version="4.3.4" />
       </group>
     </dependencies>
     <references>

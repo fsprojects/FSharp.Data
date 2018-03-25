@@ -650,3 +650,4 @@ let ``Weird UnitSystem case``() =
 let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
+

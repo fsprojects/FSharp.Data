@@ -1147,11 +1147,11 @@ module private HttpHelpers =
         }
 
     let writeBody (req:HttpWebRequest) (data: Stream) =
-#if FX_NO_LOCAL_FILESYSTEM
         // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
         // To work around, we use a different FromBeginEnd
         // See https://github.com/fsharp/FSharp.Data/issues/762
         // and https://bugzilla.xamarin.com/show_bug.cgi?id=25519
+#if FX_NO_LOCAL_FILESYSTEM
         let alternateFromBeginEnd beginAction endAction obj =
             Threading.Tasks.TaskFactory().FromAsync(
                 Func<_, _, _>(fun c s -> beginAction(c, s)),

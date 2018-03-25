@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0; net46</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -45,8 +45,8 @@
     <PackageReference Include="FSharp.Core" Version="4.3.*" />
 
     <!-- Conditional references, see https://github.com/fsprojects/Paket/issues/3091 for why Paket doesn't seem to be able to handle these yet --> 
-    <PackageReference Include="Nancy" Version="1.4.4"  Condition="'$(TargetFramework)' == 'net46'" />
-    <PackageReference Include="Nancy.Hosting.Self" Version="1.4.1"   Condition="'$(TargetFramework)' == 'net46'" />
+    <PackageReference Include="Nancy" Version="1.4.4"  Condition="'$(TargetFramework)' == 'net461'" />
+    <PackageReference Include="Nancy.Hosting.Self" Version="1.4.1"   Condition="'$(TargetFramework)' == 'net461'" />
 
     <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
   </ItemGroup>

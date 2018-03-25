@@ -14,10 +14,6 @@ open FSharp.Data
 open FSharp.Data.JsonExtensions
 open FsUnit
 
-#if NETSTANDARD2_0
-type SetCultureAttribute = CultureAttribute
-#endif
-
 [<Test>]
 let ``Can parse empty document``() =
     let j = JsonValue.Parse "{}"

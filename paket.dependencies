@@ -1,11 +1,6 @@
 framework: >=net45
 source https://api.nuget.org/v3/index.json
 
-# For testing against .NET Standard 2.0
-nuget NetStandard.Library.NetFramework
-# For testing against .NET Standard 2.0
-nuget Microsoft.NETCore.App
-
 nuget FAKE
 nuget Nuget.CommandLine
 
@@ -15,12 +10,18 @@ github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
 
+# These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
+# The TPSDK testing helpers like these to be placed in pacakges/...
+# see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs
+nuget NetStandard.Library.NetFramework
+nuget Microsoft.NETCore.App
+
 # NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
 # NOTE: The PackageReference items are themselves added by hand to the project files.
 # NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
 # NOTE: We can return to using paket.references files at a later point.
 group Test
-    frameworks: netcoreapp2.0, net46
+    frameworks: netcoreapp2.0, net461
     source https://api.nuget.org/v3/index.json
     redirects: on
 
@@ -33,18 +34,24 @@ group Test
     nuget FSharp.Formatting
     nuget Nancy.Hosting.Self
 
-# For testing against FSharp.Core for F# 3.1
+# This is for TPSDK testing against FSharp.Core for F# 3.1. The TPSDK testing helpers like these to be placed in package groups
+# with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs31
+    frameworks: netcoreapp2.0, net461
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 3.1.0
 
-# For testing against FSharp.Core for F# 4.0
+# This is for TPSDK testing against FSharp.Core for F# 4.0. The TPSDK testing helpers like these to be placed in package groups
+# with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs40
+    frameworks: netcoreapp2.0, net461
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 4.0.0
 
-# For testing against FSharp.Core for F# 4.1
+# This is for TPSDK testing against FSharp.Core for F# 4.1. The TPSDK testing helpers like these to be placed in package groups
+# with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs41
+    frameworks: netcoreapp2.0, net461
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 4.2
 

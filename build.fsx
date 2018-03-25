@@ -32,9 +32,9 @@ let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
-let dotnetSdkVersion = "2.1.100-preview-007363"
-let sdkPath = lazy DotNetCli.InstallDotNetSDK dotnetSdkVersion
-let getSdkPath() = sdkPath.Value
+let dotnetSdkVersion = "2.1.100"
+let mutable sdkPath = None
+let getSdkPath() = (defaultArg sdkPath "dotnet")
 
 printfn "Desired .NET SDK version = %s" dotnetSdkVersion
 printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
@@ -131,7 +131,7 @@ Target "Build" <| fun () ->
     testSourcelink "netstandard2.0" "src/FSharp.Data/FSharp.Data.fsproj"
 
 Target "BuildTests" <| fun () ->
-  for testProj in testProjs do 
+    for testProj in testProjs do 
     if useMsBuildToolchain then
         DotNetCli.Restore (fun p -> { p with Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
         MSBuildRelease null "Build" [testProj] |> Log "BuildTests.DesignTime-Output: "

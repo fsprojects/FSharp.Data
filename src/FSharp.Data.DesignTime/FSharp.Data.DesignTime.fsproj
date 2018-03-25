@@ -68,5 +68,6 @@
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" />
     <PackageReference Include="SourceLink.Embed.PaketFiles" Version="2.8.0" PrivateAssets="all" />
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
+    <PackageReference Include="FSharp.Core" Version="4.3.4" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
 </Project>
