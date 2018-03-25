@@ -310,7 +310,6 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
 type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
 [<Test>]
-//[<Ignore("Disabled for now - appears to fail on .NET Core 2.0 - No data is available for encoding 932 - and also has issues on .NET Framework 4.6. ")>]
 let ``Respects encoding when specified``() =
     let cp932 = CP932.GetSample()
     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
