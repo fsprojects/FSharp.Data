@@ -4,7 +4,6 @@
     <DefineConstants>$(DefineConstants);FX_NO_LOCAL_FILESYSTEM</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CUSTOMTYPEDESCRIPTOR</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>

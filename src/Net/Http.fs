@@ -25,7 +25,6 @@ open System.Text.RegularExpressions
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
-open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
 module HttpMethod =
@@ -1551,9 +1550,7 @@ type Http private() =
                 [<Optional>] ?timeout
             ) =
 
-        let uri =
-            Uri(Http.AppendQueryToUrl(url, defaultArg query []))
-            |> UriUtils.enableUriSlashes
+        let uri = Http.AppendQueryToUrl(url, defaultArg query []) |> Uri
 
         // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
         let req = WebRequest.Create(uri) :?> HttpWebRequest
