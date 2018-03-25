@@ -106,29 +106,27 @@ let testProjs =
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj" 
       "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
 
+let buildProjs =
+    [ "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+      "src/FSharp.Data/FSharp.Data.fsproj" ]
+
 
 Target "Build" <| fun () ->
  if useMsBuildToolchain then
-    DotNetCli.Restore  (fun p -> { p with Project = "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"; ToolPath =  getSdkPath() })
-    DotNetCli.Restore (fun p -> { p with Project = "src/FSharp.Data/FSharp.Data.fsproj"; ToolPath =  getSdkPath() })
-    MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" ["src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"] |> Log "FSharp.Data.DesignTime-Output: "
-    MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" ["src/FSharp.Data/FSharp.Data.fsproj"] |> Log "FSharp.Data-Output: "
+    buildProjs 
+    |> Seq.iter (fun proj -> DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
+    buildProjs
+    |> Seq.iter (fun proj ->
+        let projName = System.IO.Path.GetFileNameWithoutExtension proj
+        MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
+        |> Log (sprintf "%s-Output:\t" projName))
  else
-    // BoTH flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
+    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
     let build proj = 
         DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj)
-    build "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-    build "src/FSharp.Data/FSharp.Data.fsproj"
+    buildProjs
+    |> Seq.iter build
 
-    let testSourcelink framework proj = 
-        let basePath = Path.GetFileNameWithoutExtension proj
-        let pdb = sprintf "bin/Release/netstandard2.0/%s.pdb" basePath
-        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath(); WorkingDir = Path.GetDirectoryName proj }) (sprintf "sourcelink test %s" pdb)
-    
-    testSourcelink "net45" "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-    testSourcelink "netstandard2.0" "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-    testSourcelink "net45" "src/FSharp.Data/FSharp.Data.fsproj"
-    testSourcelink "netstandard2.0" "src/FSharp.Data/FSharp.Data.fsproj"
 
 Target "BuildTests" <| fun () ->
     for testProj in testProjs do 
@@ -227,12 +225,23 @@ Target "ReleaseBinaries" <| fun () ->
     createRelease() 
     publishFiles "binaries" "release" "bin" "bin" 
 
+Target "TestSourcelink" <| fun () ->
+    let testSourcelink framework proj =
+        let basePath = Path.GetFileNameWithoutExtension proj
+        let pdb = sprintf "bin/Release/netstandard2.0/%s.pdb" basePath
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath(); WorkingDir = Path.GetDirectoryName proj }) (sprintf "sourcelink test %s" pdb)
+
+    ["net45"; "netstandard2.0"]
+    |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
+    |> Seq.iter id
+
 Target "Release" DoNothing
 
 "CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
 "NuGet" ==> "Release"
+"TestSourcelink" ==> "Release"
 
 // --------------------------------------------------------------------------------------
 // Help
@@ -245,14 +254,15 @@ Target "Help" <| fun () ->
     printfn "  * Build"
     printfn "  * BuildTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 5)"
+    printfn "  * All (calls previous 3)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
     printfn "  * ReleaseDocs (calls previous)"
     printfn "  * ReleaseBinaries"
     printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * Release (calls previous 4)"
+    printfn "  * TestSourceLink (validates the SourceLink embedded data)"
+    printfn "  * Release (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
