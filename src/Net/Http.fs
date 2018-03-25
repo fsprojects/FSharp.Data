@@ -1146,6 +1146,8 @@ module private HttpHelpers =
             source.Dispose ()
         }
 
+    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+
     let writeBody (req:HttpWebRequest) (data: Stream) =
         // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
         // To work around, we use a different FromBeginEnd
@@ -1169,7 +1171,7 @@ module private HttpHelpers =
 
 #if FX_NO_LOCAL_FILESYSTEM
             use! output =
-              if Type.GetType("Mono.Runtime") <> null
+              if runningOnMono <> null
               then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
               else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
 #else
@@ -1421,7 +1423,6 @@ module private HttpHelpers =
 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
     let isWindowsPhone =
-        let runningOnMono = Type.GetType("Mono.Runtime") <> null
         if runningOnMono then
             false
         else
