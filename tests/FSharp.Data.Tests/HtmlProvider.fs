@@ -11,7 +11,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let simpleHtml = """<html>

@@ -10,8 +10,8 @@ open System.Collections.Generic
 open System.Collections.Concurrent
 open System.Reflection
 open System.Text
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.IO
 open FSharp.Data.Runtime.StructuralTypes
@@ -60,7 +60,7 @@ module internal ActivePatterns =
 
 module internal ReflectionHelpers = 
 
-    open Microsoft.FSharp.Quotations
+    open FSharp.Quotations
     open UncheckedQuotations
 
     let makeDelegate (exprfunc:Expr -> Expr) argType = 
@@ -108,7 +108,7 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
 module internal ProviderHelpers =
 
     open System.IO
-    open Microsoft.FSharp.Reflection
+    open FSharp.Reflection
     open FSharp.Data.Runtime.Caching
     open FSharp.Data.Runtime.IO
 

@@ -10,7 +10,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open System.IO
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 
 let [<Literal>] simpleCsv = """
