@@ -43,11 +43,9 @@ type internal UriResolver =
     ///      * otherwise, use 'CurrentDomain.BaseDirectory'
     /// returns an absolute uri * isWeb flag
     member x.Resolve(uri:Uri) = 
-      if uri.IsAbsoluteUri then uri, isWeb uri
+      if uri.IsAbsoluteUri then 
+        uri, isWeb uri
       else
-#if FX_NO_LOCAL_FILESYSTEM
-        failwith "Only web locations are supported on the PCL versions of F# Data. Please use the full .NET version instead."
-#else
         let root = 
           match x.ResolutionType with
           | DesignTime -> if String.IsNullOrEmpty x.ResolutionFolder
@@ -56,10 +54,6 @@ type internal UriResolver =
           | RuntimeInFSI -> x.DefaultResolutionFolder
           | Runtime -> AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
         Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
-#endif
-
-#if FX_NO_LOCAL_FILESYSTEM
-#else
 
 #if LOGGING_ENABLED
 
@@ -114,22 +108,17 @@ let inline internal logWithStackTrace (_:string) = ()
 let inline internal logTime (_:string) (_:string) = dummyDisposable
 
 #endif
-#endif
 
 type internal IDisposableTypeProvider =
     abstract InvalidateOneType : string -> unit
     abstract AddDisposeAction : (string option -> unit) -> unit
     abstract Id : int
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
-
 // Use weak references to type provider instances that may get reactively invalidated.  A file watcher alone 
 // shouldn't keep a type provider instance alive.
 type private TypeProviderReference = WeakReference
 let private (|TypeProviderReference|_|) (x:TypeProviderReference) = match x.Target with null -> None | x -> Some (x :?> IDisposableTypeProvider)
 let private TypeProviderReference (x:IDisposableTypeProvider) = System.WeakReference x
-
 
 type private Watcher(uri:Uri) =
 
@@ -205,8 +194,6 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
             if watcher.Remove tp typeName then
                 watchers.Remove uri.OriginalString |> ignore
             
-#endif
-    
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
@@ -229,9 +216,6 @@ let internal asyncRead (_tp:(IDisposableTypeProvider*string) option) (uriResolve
         return new StringReader(text) :> TextReader
     }
   else
-#if FX_NO_LOCAL_FILESYSTEM
-    failwith "Only web locations are supported"
-#else
     let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
     async {
         let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
@@ -239,7 +223,6 @@ let internal asyncRead (_tp:(IDisposableTypeProvider*string) option) (uriResolve
         let encoding = if encodingStr = "" then Encoding.UTF8 else HttpEncodings.getEncoding encodingStr
         return new StreamReader(file, encoding) :> TextReader
     }
-#endif
 
 let private withUri uri f =
   match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
