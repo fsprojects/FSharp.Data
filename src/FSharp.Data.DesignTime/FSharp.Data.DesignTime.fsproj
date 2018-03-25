@@ -7,7 +7,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Net\UriUtils.fs" />
     <Compile Include="..\Net\Http.fs" />
     <Compile Include="..\CommonRuntime\IO.fs" />
     <Compile Include="..\CommonRuntime\Caching.fs" />

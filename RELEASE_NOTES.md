@@ -2,9 +2,10 @@
 * Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0
 * Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md)
 
-#### 2.4.6 - Unreleased
+#### 2.4.6 - March 25 2018
 * Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
 * `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
+* Prevent superfluous encoding of URL parameters.
 
 #### 2.4.5 - February 19 2018
 * Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.

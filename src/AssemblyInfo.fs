@@ -13,5 +13,5 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "FSharp.Data"
     let [<Literal>] AssemblyProduct = "FSharp.Data"
     let [<Literal>] AssemblyDescription = "Library of F# type providers and data access tools"
-    let [<Literal>] AssemblyVersion = "3.0.0.0"
-    let [<Literal>] AssemblyFileVersion = "3.0.0.0"
+    let [<Literal>] AssemblyVersion = "2.4.5.0"
+    let [<Literal>] AssemblyFileVersion = "2.4.5.0"

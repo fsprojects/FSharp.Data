@@ -25,7 +25,6 @@ open System.Text.RegularExpressions
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
-open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
 module HttpMethod =
@@ -1526,8 +1525,13 @@ type Http private() =
     /// Correctly encodes large form data values.
     /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
     /// and https://msdn.microsoft.com/en-us/library/system.uri.escapedatastring(v=vs.110).aspx
-    static member internal UrlEncode (query:string) =
+    static member internal EncodeFormData (query:string) =
         (WebUtility.UrlEncode query).Replace("+","%20")
+
+    // EscapeUriString doesn't encode the & and # characters which cause issues, but EscapeDataString encodes too much making the url hard to read
+    // So we use EscapeUriString and manually replace the two problematic characters
+    static member private EncodeUrlParam (param: string) = 
+        (Uri.EscapeUriString param).Replace("&", "%26").Replace("#", "%23")
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -1536,7 +1540,7 @@ type Http private() =
         | query ->
             url
             + if url.Contains "?" then "&" else "?"
-            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+            + String.concat "&" [ for k, v in query -> Http.EncodeUrlParam k + "=" + Http.EncodeUrlParam v ]
 
     static member private InnerRequest
             (
@@ -1554,9 +1558,7 @@ type Http private() =
                 [<Optional>] ?timeout
             ) =
 
-        let uri =
-            Uri(Http.AppendQueryToUrl(url, defaultArg query []))
-            |> UriUtils.enableUriSlashes
+        let uri = Http.AppendQueryToUrl(url, defaultArg query []) |> Uri
 
         // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
         let req = WebRequest.Create(uri) :?> HttpWebRequest
@@ -1607,7 +1609,7 @@ type Http private() =
                 | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
                 | FormValues values ->
                     let bytes (e:Encoding) =
-                        [ for k, v in values -> Http.UrlEncode k + "=" + Http.UrlEncode v ]
+                        [ for k, v in values -> Http.EncodeFormData k + "=" + Http.EncodeFormData v ]
                         |> String.concat "&"
                         |> e.GetBytes
                     HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
