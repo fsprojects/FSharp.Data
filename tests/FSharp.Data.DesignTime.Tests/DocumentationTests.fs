@@ -71,7 +71,6 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
-//[<Platform("Mono")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``Documentation generated correctly `` file = 
   if runningOnMono then 
     let errors = processFile file

@@ -19,43 +19,36 @@ let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> fa
 let uri = new Uri("http://www.myapi.com/%2F?Foo=Bar%2F#frag") |> UriUtils.enableUriSlashes
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``ToString contains escaped slashes`` () =
   if not runningOnMono then 
     uri.ToString() |> should equal "http://www.myapi.com/%2F?Foo=Bar%2F#frag"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``AbsoluteUri contains escaped slashes`` () =
   if not runningOnMono then 
     uri.AbsoluteUri |> should equal "http://www.myapi.com/%2F?Foo=Bar%2F#frag"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``Query contains escaped slashes`` () =
   if not runningOnMono then 
     uri.Query |> should equal "?Foo=Bar%2F"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``PathAndQuery contains escaped slashes`` () =
   if not runningOnMono then 
     uri.PathAndQuery |> should equal "/%2F?Foo=Bar%2F"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``AbsolutePath contains escaped slashes`` () =
   if not runningOnMono then 
     uri.AbsolutePath |> should equal "/%2F"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``Uri Fragment is properly set`` () = 
   if not runningOnMono then 
     uri.Fragment |> should equal "#frag"
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``Uri's with fragment but no query work correctly`` () =
   if not runningOnMono then 
     let uri = new Uri("http://www.google.com/#1") |> UriUtils.enableUriSlashes

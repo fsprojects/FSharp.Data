@@ -83,7 +83,6 @@ let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
 [<Test>]
-//[<Platform("Net")>] // platform attribute not supported by .NET Standard nunit.framework.dll
 let ``all of the manually-set request headers get sent to the server`` ()=
   if not runningOnMono then 
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
