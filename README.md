@@ -10,7 +10,8 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Simply build FSharp.Data.sln in Visual Studio 2017, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+- Install .NET SDK 2.1.100 or higher
+- Build FSharp.Data.sln and FSharp.Data.Tests.sln in Visual Studio 2017, Visual Studio 2017 for Mac (previously Xamarin Studio), or MonoDevelop. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
     * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
@@ -37,7 +38,7 @@ When targeting .NET Standard 2.0 or .NET Core App 2.x:
 
 - .NET SDK 2.1.100 or higher (runs tools using .NET Core)
 - Visual F# Tools 3.1 or higher (runs tools using .NET Framework)
-- Mono 5.0.0 of higher (runs tools using Mono)
+- Mono 5.0.0 or higher (runs tools using Mono)
 - Other F# tooling based on FSharp.Compiler.Service must have FSharp.Compiler.Service 21.0+ and FSharp.Core nuget 4.2.x+.
 
 ## Documentation 
