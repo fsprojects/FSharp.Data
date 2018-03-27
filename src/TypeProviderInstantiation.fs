@@ -32,8 +32,9 @@ type XmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string
-      InferTypesFromValues : bool }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool
+      Schema : string }
 
 type JsonProviderArgs =
     { Sample : string
@@ -98,8 +99,9 @@ type TypeProviderInstantiation =
                    box x.Encoding
                    box x.ResolutionFolder
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |]
-            | Json x ->
+                   box x.InferTypesFromValues
+                   box x.Schema |] 
+            | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
@@ -208,8 +210,9 @@ type TypeProviderInstantiation =
                   Culture = args.[4]
                   Encoding = ""
                   ResolutionFolder = ""
-                  EmbeddedResource = ""
-                  InferTypesFromValues = args.[5] |> bool.Parse }
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse
+                  Schema = "" }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
