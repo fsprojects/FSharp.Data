@@ -138,7 +138,6 @@ Target "BuildTests" <| fun () ->
 
 Target "RunTests" <| fun () ->
  if useMsBuildToolchain then
-    // No need to run tests again - results from building should be the same
     ()
  else
     for testProj in testProjs do 
