@@ -32,22 +32,24 @@
   </metadata>
   <files>
     <!-- Place the TPRTCs in the usual locations --> 
-    <file src="..\src\FSharp.Data\bin\Release\net45\FSharp.Data.dll" target="lib/net45" />
-    <file src="..\src\FSharp.Data\bin\Release\net45\FSharp.Data.pdb" target="lib/net45" />
-    <file src="..\src\FSharp.Data\bin\Release\net45\FSharp.Data.xml" target="lib/net45" />
-    <file src="..\src\FSharp.Data\bin\Release\netstandard2.0\FSharp.Data.dll" target="lib/netstandard2.0" />
-    <file src="..\src\FSharp.Data\bin\Release\netstandard2.0\FSharp.Data.pdb" target="lib/netstandard2.0" />
-    <file src="..\src\FSharp.Data\bin\Release\netstandard2.0\FSharp.Data.xml" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\net45\FSharp.Data.dll" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.pdb" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.xml" target="lib/net45" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.pdb" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.xml" target="lib/netstandard2.0" />
 
     <!-- Place the TPDTC in the legacy location alongside FSharp.Data --> 
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\net45\FSharp.Data.DesignTime.dll" target="lib/net45" />
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\net45\FSharp.Data.DesignTime.pdb" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.DesignTime.dll" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.DesignTime.pdb" target="lib/net45" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.DesignTime.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.DesignTime.pdb" target="lib/netstandard2.0" />
 
     <!-- Place the TPDTC in the future-proof location --> 
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\net45\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/net45" />
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\net45\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/net45" />
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\netstandard2.0\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/netstandard2.0" />
-    <file src="..\src\FSharp.Data.DesignTime\bin\Release\netstandard2.0\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/netstandard2.0" />
+    <file src="..\bin\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/net45" />
+    <file src="..\bin\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/net45" />
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/netstandard2.0" />
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/netstandard2.0" />
 
     <file src="linqpad-samples\*.*" target="linqpad-samples" />
   </files>

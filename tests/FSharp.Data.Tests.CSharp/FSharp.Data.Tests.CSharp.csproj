@@ -7,6 +7,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CsvExtensionsTests.cs" />
@@ -16,8 +18,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
-    <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="FSharp.Core" Version="4.3.*" />
+    <Reference Include="FSharp.Data">
+        <HintPath>..\..\bin\lib\$(TargetLibraryFramework)\FSharp.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

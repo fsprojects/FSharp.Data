@@ -20,7 +20,7 @@ To use the type, we first need to reference the library using `#r` (in an F# int
 or add reference to a project. The type is located in `FSharp.Data` namespace:
 *)
 
-#r "../../../bin/net45/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

@@ -15,7 +15,7 @@ To load a sample JSON document, we first need to reference the `FSharp.Data.dll`
 (when using F# Interactive) or to add reference to a project. 
 *)
 
-#r "../../../bin/net45/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

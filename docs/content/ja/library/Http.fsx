@@ -24,7 +24,7 @@ F# Dataライブラリにはオーバーロードを持った4つのメソッド
 この型は `FSharp.Data` 名前空間にあります：
 *)
 
-#r "../../../../bin/net45/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

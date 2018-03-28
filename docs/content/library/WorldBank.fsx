@@ -19,7 +19,7 @@ initializes a connection to the WorldBank using the `GetDataContext` method and 
 retrieves the percentage of population who attend universities in the UK:
 *)
 
-#r "../../../bin/net45/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 let data = WorldBankData.GetDataContext()

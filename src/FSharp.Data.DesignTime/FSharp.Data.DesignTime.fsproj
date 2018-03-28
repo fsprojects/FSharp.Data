@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
@@ -69,5 +70,22 @@
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
     <PackageReference Include="FSharp.Core" Version="4.3.4" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <!-- We build BOTH the design-time DLLs needed to support the use of the runtime DLL in different host tooling -->
+  <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
+  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309. Also for legacy loading -->
+  <!-- we still need a .NET 4.5 design-time DLL to place alongside the runtime DLL -->
+
+  <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
+  <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
+  <Target Name="AfterBuild">  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
+    <!-- For legacy compat (to load into pre VS2017 15.6+ or FCS 20.x.x+ tooling) we place a copy of the .NET 4.x TPDTC DLL alongside the TPRTC DLL --> 
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\lib\net45" Condition="'$(TargetFramework)' == 'net45'" />  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\lib\net45" Condition="'$(TargetFramework)' == 'net45'" />  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\lib\netstandard2.0" Condition="'$(TargetFramework)' == 'net45'" />  
+    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\lib\netstandard2.0" Condition="'$(TargetFramework)' == 'net45'" />  
+  </Target>  
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

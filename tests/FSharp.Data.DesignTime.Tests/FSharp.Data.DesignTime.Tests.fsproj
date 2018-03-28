@@ -6,6 +6,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="InferenceTests.fs" />
@@ -30,6 +32,8 @@
     <PackageReference Include="FSharp.Formatting" Version="2.14.4"   Condition="'$(TargetFramework)' == 'net461'" />
     <PackageReference Include="FSharpVSPowerTools.Core" Version="2.3"   Condition="'$(TargetFramework)' == 'net461'" />
 
-    <ProjectReference Include="..\..\src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" />
+    <Reference Include="FSharp.Data.DesignTime">
+        <HintPath>..\..\src\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

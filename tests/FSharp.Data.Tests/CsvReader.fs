@@ -5,7 +5,7 @@
 module FSharp.Data.Tests.CsvReader
 
 #if INTERACTIVE
-#r "../../bin/net45/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #endif

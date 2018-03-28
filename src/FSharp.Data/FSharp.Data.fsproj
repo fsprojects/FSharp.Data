@@ -55,24 +55,9 @@
   <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
   <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
   <Target Name="AfterBuild">  
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\net45" />  
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\net45" />  
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\netstandard2.0\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\netstandard2.0" />  
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\netstandard2.0\FSharp.Data.DesignTime.pdb"  DestinationFolder="$(OutputPath)\typeproviders\fsharp41\netstandard2.0" />  
-    <!-- For legacy compat (to load into pre VS2017 15.6+ or FCS 20.x.x+ tooling) we place a copy of the .NET 4.x TPDTC DLL alongside the TPRTC DLL --> 
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="$(OutputPath)" />  
-    <Copy  SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="$(OutputPath)" />  
-
-    <!-- We also place the layout in the bin folder for the documentation to access without mentioning Release/Debug --> 
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\net45" />  
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\net45" />  
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\netstandard2.0" />  
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\$(TargetFramework)\typeproviders\fsharp41\netstandard2.0" />  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.dll"  DestinationFolder="..\..\bin\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.pdb"  DestinationFolder="..\..\bin\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.xml"  DestinationFolder="..\..\bin\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.dll"  DestinationFolder="..\..\bin\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.pdb"  DestinationFolder="..\..\bin\$(TargetFramework)" />  
+    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.dll"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
+    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.pdb"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
+    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.xml"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
   </Target>  
   
 </Project>

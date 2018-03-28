@@ -15,7 +15,7 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
-#r "../../../bin/net45/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
