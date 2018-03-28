@@ -69,4 +69,5 @@
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
     <PackageReference Include="FSharp.Core" Version="4.3.4" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
