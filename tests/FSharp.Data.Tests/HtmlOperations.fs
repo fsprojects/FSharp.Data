@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
+#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
 #r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"

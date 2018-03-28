@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../bin/FSharp.Data.DesignTime.dll"
+#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.DesignTime.dll"
 #r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.SignatureTests
@@ -35,8 +35,8 @@ let expectedDirectory = sourceDirectory ++ "expected"
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
-let net45RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "net45" ++ assemblyName
-let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "netstandard2.0" ++ assemblyName
+let net45RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "lib" ++ "net45" ++ assemblyName
+let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "lib" ++ "netstandard2.0" ++ assemblyName
 
 let getRuntimeRefs platform = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform
 
