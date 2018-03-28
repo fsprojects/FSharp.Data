@@ -10,6 +10,7 @@ open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
+open Fake.Testing.NUnit3
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
@@ -101,6 +102,10 @@ Target "CleanInternetCaches" <| fun () ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
+let testNames = 
+    [ "FSharp.Data.DesignTime.Tests" 
+      "FSharp.Data.Tests.CSharp" 
+      "FSharp.Data.Tests"  ]
 let testProjs = 
     [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj" 
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj" 
@@ -138,7 +143,12 @@ Target "BuildTests" <| fun () ->
 
 Target "RunTests" <| fun () ->
  if useMsBuildToolchain then
-    ()
+       for testName in testNames do 
+           !! (sprintf "tests/*/bin/Release/net461/%s.dll" testName)
+           |> NUnit3 (fun p ->
+               { p with
+                   TimeOut = TimeSpan.FromMinutes 20. 
+                   TraceLevel = NUnit3TraceLevel.Info})
  else
     for testProj in testProjs do 
         DotNetCli.Test (fun p -> { p with Configuration = "Release"; Project = testProj; ToolPath = getSdkPath(); AdditionalArgs=["/v:n"] })
@@ -267,7 +277,6 @@ Target "Help" <| fun () ->
     printfn "  * CleanInternetCaches"
     printfn ""
     printfn "  Set USE_MSBUILD=1 in environment to use MSBuild toolchain and .NET Framework/Mono compiler."
-    printfn "  (Tests are not run in that configuration.)"
 
 Target "All" DoNothing
 
