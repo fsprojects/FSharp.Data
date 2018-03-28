@@ -54,6 +54,9 @@ if DotNetCli.isInstalled() then
         | _ -> 
             printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
             sdkPath <- Some (DotNetCli.InstallDotNetSDK desiredSdkVersion)
+else
+    printfn "*** The .NET SDK version '%s' will be installed (no other version was found by FAKE helpers)" desiredSdkVersion 
+    sdkPath <- Some (DotNetCli.InstallDotNetSDK desiredSdkVersion)
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
