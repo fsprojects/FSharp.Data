@@ -33,13 +33,27 @@ let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
-let dotnetSdkVersion = "2.1.100"
+let desiredSdkVersion = "2.1.100"
 let mutable sdkPath = None
 let getSdkPath() = (defaultArg sdkPath "dotnet")
 
-printfn "Desired .NET SDK version = %s" dotnetSdkVersion
+printfn "Desired .NET SDK version = %s" desiredSdkVersion
 printfn "DotNetCli.isInstalled() = %b" (DotNetCli.isInstalled())
-if DotNetCli.isInstalled() then printfn "DotNetCli.getVersion() = %s" (DotNetCli.getVersion())
+let useMsBuildToolchain = environVar "USE_MSBUILD" <> null
+
+if DotNetCli.isInstalled() then 
+    let installedSdkVersion = DotNetCli.getVersion()
+    printfn "The installed default .NET SDK version reported by FAKE's 'DotNetCli.getVersion()' is %s" installedSdkVersion
+    if installedSdkVersion <> desiredSdkVersion then
+        match environVar "CI" with 
+        | null -> 
+            if installedSdkVersion > desiredSdkVersion then 
+                printfn "*** You have .NET SDK version '%s' installed, assuming it is compatible with version '%s'" installedSdkVersion desiredSdkVersion 
+            else
+                printfn "*** You have .NET SDK version '%s' installed, we expect at least version '%s'" installedSdkVersion desiredSdkVersion 
+        | _ -> 
+            printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
+            sdkPath <- Some (DotNetCli.InstallDotNetSDK desiredSdkVersion)
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
@@ -49,7 +63,6 @@ let release =
 
 let bindir = "./bin"
 
-let useMsBuildToolchain = environVar "USE_MSBUILD" <> null
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 let nugetVersion = 
     if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
@@ -118,19 +131,17 @@ let buildProjs =
 
 Target "Build" <| fun () ->
  if useMsBuildToolchain then
-    buildProjs 
-    |> Seq.iter (fun proj -> DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
-    buildProjs
-    |> Seq.iter (fun proj ->
+    buildProjs |> Seq.iter (fun proj -> 
+        DotNetCli.Restore  (fun p -> { p with Project = proj; ToolPath =  getSdkPath() }))
+
+    buildProjs |> Seq.iter (fun proj ->
         let projName = System.IO.Path.GetFileNameWithoutExtension proj
         MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
         |> Log (sprintf "%s-Output:\t" projName))
  else
     // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
-    let build proj = 
-        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj)
-    buildProjs
-    |> Seq.iter build
+    buildProjs |> Seq.iter (fun proj -> 
+        DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))
 
 
 Target "BuildTests" <| fun () ->
