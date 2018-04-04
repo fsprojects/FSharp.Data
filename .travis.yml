@@ -18,11 +18,11 @@ matrix:
     - mono: 5.8.0
       env: USE_MSBUILD=1
       os: osx
-    - mono: latest
-      env: USE_DOTNET_CLI=1
+    - mono: 5.10.0
+      env: USE_MSBUILD=1
       os: linux
-    - mono: latest
-      env: USE_DOTNET_CLI=1
+    - mono: 5.10.0
+      env: USE_MSBUILD=1
       os: osx
     - mono: latest
       env: USE_MSBUILD=1
@@ -34,6 +34,7 @@ matrix:
       env: USE_MSBUILD=1
       os: linux
   allow_failures:
+    - mono: latest
     - mono: weekly
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
   fast_finish: true
