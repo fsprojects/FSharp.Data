@@ -8,7 +8,7 @@ The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.co
 To use CSS selectors, reference the F# Data library. You then need to open `FSharp.Data` namespace, which
 automatically exposes extension methods that implement the CSS selectors.
 *)
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

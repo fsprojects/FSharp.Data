@@ -2,6 +2,11 @@
 module FSharp.Data.Runtime.Caching
 
 open System
+open System.Collections.Concurrent
+open System.Diagnostics
+open System.IO
+open System.Security.Cryptography
+open System.Text
 
 /// Represents a cache (various implementations are available)
 type ICache<'T> = 
@@ -14,26 +19,6 @@ let createNonCachingCache() =
       member __.Set(_, _) = ()
       member __.TryRetrieve(_) = None }
 
-#if FX_NO_CONCURRENT
-
-open System.Collections.Generic
-
-/// Creates a cache that uses in-memory collection
-let createInMemoryCache expiration = 
-  let dict = new Dictionary<_, _>()
-  { new ICache<_> with
-      member __.Set(key, value) = 
-        lock dict <| fun () -> dict.[key] <- (value, DateTime.UtcNow)
-      member __.TryRetrieve(key) =
-        lock dict <| fun () ->
-          match dict.TryGetValue(key) with
-          | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
-          | _ -> None }
-
-#else
-
-open System.Collections.Concurrent
-
 /// Creates a cache that uses in-memory collection
 let createInMemoryCache expiration = 
   let dict = new ConcurrentDictionary<_, _>()
@@ -45,18 +30,6 @@ let createInMemoryCache expiration =
         | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
         | _ -> None }
 
-#endif
-
-#if FX_NO_LOCAL_FILESYSTEM
-
-let createInternetFileCache (_prefix:string) expiration = createInMemoryCache expiration, null
-
-#else
-
-open System.Diagnostics
-open System.IO
-open System.Security.Cryptography
-open System.Text
 
 /// Get hash code of a string - used to determine cache file
 let private hashString (plainText:string) = 
@@ -121,5 +94,3 @@ let createInternetFileCache prefix expiration =
   with e -> 
     Debug.WriteLine("Caching: Fall back to memory cache, because of an exception: {0}", e.Message)
     createInMemoryCache expiration, null
-
-#endif

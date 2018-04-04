@@ -1,5 +1,6 @@
 ﻿module FSharp.Data.Tests.MockServer
 
+#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
 open Nancy
 open Nancy.Hosting.Self
 open System
@@ -143,3 +144,4 @@ type FakeServer() as self =
                             do self.Request.Body.CopyTo stream
                             stream.Flush()
                     response :> _
+#endif

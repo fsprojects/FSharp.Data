@@ -13,7 +13,7 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -106,7 +106,7 @@ let stats =
       k, xs |> Seq.sumBy (fun x -> x.Downloads))
 
 // Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 // Visualize the package stats

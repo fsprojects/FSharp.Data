@@ -19,7 +19,7 @@ CSV 型プロバイダーは入力としてサンプルとなるCSVを受け取�
 F# Interactiveでアセンブリを読み込むには以下のようにします：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -92,7 +92,7 @@ for row in msft.Rows do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 

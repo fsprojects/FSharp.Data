@@ -2,18 +2,6 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
-
-namespace System.Runtime.InteropServices
-
-open System
-
-[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
-type internal OptionalAttribute() =
-    inherit Attribute()
-
-#endif
-
 namespace FSharp.Data
 
 open System
@@ -22,6 +10,7 @@ open System.IO
 open System.Net
 open System.Text
 open System.Text.RegularExpressions
+open System.Threading
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -936,13 +925,9 @@ module HttpEncodings =
     let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
 
     let internal getEncoding (encodingStr:string) =
-#if FX_NO_GETENCODING_BY_CODEPAGE
-        Encoding.GetEncoding encodingStr
-#else
         match Int32.TryParse(encodingStr, NumberStyles.Integer, CultureInfo.InvariantCulture) with
         | true, codepage -> Encoding.GetEncoding codepage
         | _ -> Encoding.GetEncoding encodingStr
-#endif
 
 [<AutoOpen>]
 module private HttpHelpers =
@@ -974,21 +959,10 @@ module private HttpHelpers =
         override x.ResponseUri = res.ResponseUri
         override x.ContentType = res.ContentType
         override x.ContentLength = responseStream.Length
-#if FX_HAS_WEBRESPONSE_SUPPORTS_HEADERS
         override x.SupportsHeaders = res.SupportsHeaders
-#endif
-#if FX_NO_WEBRESPONSE_IS_FROM_CACHE
-#else
         override x.IsFromCache = res.IsFromCache
-#endif
-#if FX_NO_WEBRESPONSE_IS_MUTUALLY_AUTHENTICATED
-#else
         override x.IsMutuallyAuthenticated = res.IsMutuallyAuthenticated
-#endif
-#if FX_NO_WEBRESPONSE_CLOSE
-#else
         override x.Close () = res.Close()
-#endif
         override x.GetResponseStream () = responseStream :> Stream
         member x.ResetResponseStream () = responseStream.Position <- 0L
 
@@ -1055,14 +1029,7 @@ module private HttpHelpers =
         let newlineStream () = new MemoryStream(e.GetBytes "\r\n") :> Stream
         let prefixedBoundary = sprintf "--%s" boundary
         let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
-            let fileExt =
-#if FX_NO_LOCAL_FILESYSTEM
-                match fileName.LastIndexOf('.') with
-                | -1 -> ""
-                | n -> fileName.Substring(n)
-#else
-                Path.GetExtension fileName
-#endif
+            let fileExt = Path.GetExtension fileName    
             let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
             let printHeader (header, value) = sprintf "%s: %s" header value
             let headerpart =
@@ -1092,97 +1059,25 @@ module private HttpHelpers =
         let wholePayloadLength = wholePayload |> Seq.sumBy (fun s -> s.Length)
         new CombinedStream(wholePayloadLength, wholePayload) :> Stream
 
-    let getProperty (typ:Type) obj prop =
-#if FX_NET_CORE_REFLECTION
-        let prop = try typ.GetRuntimeProperty prop with _ -> null
-        if prop <> null && prop.CanRead then
-            try
-                prop.GetValue(obj) |> unbox |> Some
-            with _ ->
-                None
-        else
-            None
-#else
-        let prop = try typ.GetProperty prop with _ -> null
-        if prop <> null && prop.CanRead then
-            try
-                prop.GetValue(obj, [| |]) |> unbox |> Some
-            with _ ->
-                None
-        else
-            None
-#endif
-
-    let (?) obj prop =
-        getProperty (obj.GetType()) obj prop
-
-    let (?<-) obj prop value =
-#if FX_NET_CORE_REFLECTION
-        let prop = obj.GetType().GetRuntimeProperty(prop)
-        if prop <> null && prop.CanWrite then
-            try
-                prop.SetValue(obj, box value) |> ignore
-                true
-            with _ ->
-                false
-        else
-            false
-#else
-        let prop = obj.GetType().GetProperty(prop)
-        if prop <> null && prop.CanWrite then
-            try
-                prop.SetValue(obj, value, [| |]) |> ignore
-                true
-            with _ ->
-                false
-        else
-            false
-#endif
-
     let asyncCopy (source: Stream) (dest: Stream) =
         async {
             do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
             source.Dispose ()
         }
 
+    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+
     let writeBody (req:HttpWebRequest) (data: Stream) =
-        // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
-        // To work around, we use a different FromBeginEnd
-        // See https://github.com/fsharp/FSharp.Data/issues/762
-        // and https://bugzilla.xamarin.com/show_bug.cgi?id=25519
-        let alternateFromBeginEnd beginAction endAction obj =
-            Threading.Tasks.TaskFactory().FromAsync(
-                Func<_, _, _>(fun c s -> beginAction(c, s)),
-                Func<_, _>(endAction),
-                obj)
-            |> Async.AwaitTask
-
         async {
-#if FX_NO_WEBREQUEST_CONTENTLENGTH
-            ignore (req?ContentLength <- int64 data.Length)
-#else
             req.ContentLength <- data.Length
-#endif
-
-#if FX_NO_LOCAL_FILESYSTEM
-            use! output =
-              if Type.GetType("Mono.Runtime") <> null
-              then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
-              else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-#else
             use! output = req.GetRequestStreamAsync () |> Async.AwaitTask
-#endif
             do! asyncCopy data output
             output.Flush()
         }
 
     let reraisePreserveStackTrace (e:Exception) =
         try
-#if FX_NET_CORE_REFLECTION
-            let remoteStackTraceString = typeof<exn>.GetRuntimeField("_remoteStackTraceString");
-#else
             let remoteStackTraceString = typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic);
-#endif
             if remoteStackTraceString <> null then
                 remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
         with _ -> ()
@@ -1234,11 +1129,7 @@ module private HttpHelpers =
             | "allow" -> req.Headers.[HeaderEnum.Allow] <- value
             | "authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
             | "cache-control" -> req.Headers.[HeaderEnum.CacheControl] <- value
-#if FX_NO_WEBREQUEST_CONNECTION
-            | "connection" -> if not (req?Connection <- value) then req.Headers.[HeaderEnum.Connection] <- value
-#else
             | "connection" -> req.Connection <- value
-#endif
             | "content-encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
             | "content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
             | "content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
@@ -1247,29 +1138,13 @@ module private HttpHelpers =
             | "content-type" ->
                 req.ContentType <- value
                 hasContentType := true
-#if FX_NO_WEBREQUEST_DATE
-            | "date" -> if not (req?Date <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)) then req.Headers.[HeaderEnum.Date] <- value
-#else
             | "date" -> req.Date <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)
-#endif
-#if FX_NO_WEBREQUEST_EXPECT
-            | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
-#else
             | "expect" -> req.Expect <- value
-#endif
             | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
             | "from" -> req.Headers.[HeaderEnum.From] <- value
-#if FX_NO_WEBREQUEST_HOST
-            | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
-#else
             | "host" -> req.Host <- value
-#endif
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
-#if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
-#else
             | "if-modified-since" -> req.IfModifiedSince <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)
-#endif
             | "if-none-match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
             | "if-range" -> req.Headers.[HeaderEnum.IfRange] <- value
             | "if-unmodified-since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
@@ -1278,30 +1153,18 @@ module private HttpHelpers =
             | "max-forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
             | "origin" -> req.Headers.["Origin"] <- value
             | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
-#if FX_NO_WEBREQUEST_RANGE
-            | "range" -> req.Headers.[HeaderEnum.Range] <- value
-#else
             | "range" ->
                 if not (value.StartsWith("bytes=")) then failwith "Invalid value for the Range header"
                 let bytes = value.Substring("bytes=".Length).Split('-')
                 if bytes.Length <> 2 then failwith "Invalid value for the Range header"
                 req.AddRange(int64 bytes.[0], int64 bytes.[1])
-#endif
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
-#if FX_NO_WEBREQUEST_REFERER
-            | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
-#else
             | "referer" -> req.Referer <- value
-#endif
             | "te" -> req.Headers.[HeaderEnum.Te] <- value
             | "trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
             | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
             | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
-#if FX_NO_WEBREQUEST_USERAGENT
-            | "user-agent" -> if not (req?UserAgent <- value) then try req.Headers.[HeaderEnum.UserAgent] <- value with _ -> ()
-#else
             | "user-agent" -> req.UserAgent <- value
-#endif
             | "via" -> req.Headers.[HeaderEnum.Via] <- value
             | "warning" -> req.Headers.[HeaderEnum.Warning] <- value
             | _ -> req.Headers.[header] <- value
@@ -1314,11 +1177,7 @@ module private HttpHelpers =
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
         let getResponseAsync (req:HttpWebRequest) =
-#if FX_NO_WEBREQUEST_TIMEOUT
-            ignore <| req // Keeping compiler happy.
-            getResponseFromBeginEnd
-#else
-            if req.Timeout = System.Threading.Timeout.Infinite
+            if req.Timeout = Timeout.Infinite
                 then getResponseFromBeginEnd
                 else
                     async {
@@ -1331,7 +1190,6 @@ module private HttpHelpers =
                             raise <| WebException("Timeout exceeded while getting response", exc, WebExceptionStatus.Timeout, null)
                             return Unchecked.defaultof<_>
                     }
-#endif
 
         if defaultArg silentHttpErrors false
             then
@@ -1348,30 +1206,7 @@ module private HttpHelpers =
                 }
             else getResponseAsync req
 
-
-    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
-    [<MethodImpl(MethodImplOptions.NoInlining)>]
-    let decompressGZip (memoryStream:MemoryStream) =
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        use memoryStream = memoryStream
-        new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-#else
-        failwith "Automatic gzip decompression failed"
-        memoryStream
-#endif
-
-    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
-    [<MethodImpl(MethodImplOptions.NoInlining)>]
-    let decompressDeflate (memoryStream:MemoryStream) =
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        use memoryStream = memoryStream
-        new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
-#else
-        failwith "Automatic deflate decompression failed"
-        memoryStream
-#endif
-
-    let toHttpResponse forceText responseUrl statusCode contentType contentEncoding
+    let toHttpResponse forceText responseUrl statusCode contentType
                        characterSet responseEncodingOverride cookies headers stream = async {
 
         let isText (mimeType:string) =
@@ -1388,12 +1223,7 @@ module private HttpHelpers =
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
-        use! memoryStream = asyncRead stream
-        let memoryStream =
-            // this only applies when automatic decompression is off
-            if contentEncoding = "gzip" then decompressGZip memoryStream
-            elif contentEncoding = "deflate" then decompressDeflate memoryStream
-            else memoryStream
+        let! memoryStream = asyncRead stream
 
         let respBody =
             if forceText || isText contentType then
@@ -1415,22 +1245,6 @@ module private HttpHelpers =
                  Headers = headers
                  Cookies = cookies }
     }
-
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-    let isWindowsPhone =
-        let runningOnMono = Type.GetType("Mono.Runtime") <> null
-        if runningOnMono then
-            false
-        else
-            match getProperty typeof<Environment> null "OSVersion" with
-            | Some osVersion ->
-                match osVersion?Version with
-                | Some (version:Version) ->
-                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
-                    version.Major >= 8
-                | _ -> false
-            | _ -> false
-#endif
 
 module internal CookieHandling =
 
@@ -1510,14 +1324,7 @@ module internal CookieHandling =
 [<AbstractClass>]
 type Http private() =
 
-    static let regexOptions =
-#if FX_NO_REGEX_COMPILATION
-        RegexOptions.None
-#else
-        RegexOptions.Compiled
-#endif
-
-    static let charsetRegex = Regex("charset=([^;\s]*)", regexOptions)
+    static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Compiled)
     
     /// Correctly encodes large form data values.
     /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
@@ -1557,8 +1364,7 @@ type Http private() =
 
         let uri = Http.AppendQueryToUrl(url, defaultArg query []) |> Uri
 
-        // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
-        let req = WebRequest.Create(uri) :?> HttpWebRequest
+        let req = WebRequest.CreateHttp uri
 
         // set method
         let defaultMethod = if body.IsSome then HttpMethod.Post else HttpMethod.Get
@@ -1568,15 +1374,7 @@ type Http private() =
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let hasContentType = setHeaders headers req
 
-        let nativeAutomaticDecompression = ref true
-
-    #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then
-            nativeAutomaticDecompression := false
-            req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
-    #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
-    #endif
 
         // set cookies
         let cookieContainer = defaultArg cookieContainer <| CookieContainer()
@@ -1584,12 +1382,8 @@ type Http private() =
         match cookies with
         | None -> ()
         | Some cookies -> cookies |> List.ofSeq |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
-        try
-            req.CookieContainer <- cookieContainer
-        with :? NotImplementedException ->
-            // silverlight doesn't support setting cookies
-            if cookies.IsSome then
-                failwith "Cookies not supported by this platform"
+
+        req.CookieContainer <- cookieContainer        
 
         let getEncoding contentType =
             let charset = charsetRegex.Match(contentType)
@@ -1621,14 +1415,9 @@ type Http private() =
 
             bytes encoding)
 
-#if FX_NO_WEBREQUEST_TIMEOUT
-        ignore <| timeout /// Tough luck.
-#else
-        /// Set timeout, use Timeout.Infinite if not provided with one.
-        let timeout = defaultArg timeout System.Threading.Timeout.Infinite
-
-        req.Timeout <- timeout
-#endif
+        match timeout with
+        | Some timeout -> req.Timeout <- timeout
+        | None -> ()
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
@@ -1661,24 +1450,14 @@ type Http private() =
 
             let statusCode, characterSet =
                 match resp with
-                | :? HttpWebResponse as resp ->
-#if FX_NO_WEBRESPONSE_CHARACTERSET
-                    int resp.StatusCode, (defaultArg resp?CharacterSet "")
-#else
-                    int resp.StatusCode, resp.CharacterSet
-#endif
+                | :? HttpWebResponse as resp -> int resp.StatusCode, resp.CharacterSet
                 | _ -> 0, ""
 
             let characterSet = if characterSet = null then "" else characterSet
 
-            let contentEncoding =
-                // .NET removes the gzip/deflate from the content encoding header when it handles the decompression itself, but Mono doesn't, so we clear it explicitely
-                if !nativeAutomaticDecompression then ""
-                else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
-
             let stream = resp.GetResponseStream()
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType characterSet responseEncodingOverride cookies headers stream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -1749,17 +1528,7 @@ type Http private() =
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
-            let! stream = async {
-                // this only applies when automatic decompression is off
-                if contentEncoding = "gzip" then
-                    let! memoryStream = asyncRead stream
-                    return decompressGZip memoryStream :> Stream
-                elif contentEncoding = "deflate" then
-                    let! memoryStream = asyncRead stream
-                    return decompressDeflate memoryStream :> Stream
-                else
-                    return stream }
+        let toHttpResponse responseUrl statusCode _contentType _characterSet _responseEncodingOverride cookies headers stream = async {
             return { ResponseStream = stream
                      StatusCode = statusCode
                      ResponseUrl = responseUrl
