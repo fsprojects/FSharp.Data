@@ -1,4 +1,4 @@
-#### 3.0.0-beta - February 27 2018
+#### 3.0.0-beta - April 04 2018
 * Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0
 * Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md)
 * Integer values for optional parameter for the `System.Text.Encoding` are only supported when the F# compiler
