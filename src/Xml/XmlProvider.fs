@@ -2,7 +2,7 @@
 
 open System.IO
 open System.Xml.Linq
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
@@ -16,12 +16,12 @@ open FSharp.Data.Runtime.StructuralTypes
 
 [<TypeProvider>]
 type public XmlProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.XmlProvider'
-  let asm, version, bindingContext = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let xmlProvTy = bindingContext.ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
+  let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let cache = System.Collections.Concurrent.ConcurrentDictionary<string, ProvidedTypeDefinition>()
 
@@ -29,7 +29,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
    cache.GetOrAdd(typeName, fun typeName ->
 
     // Generate the required type
-    let tpType = bindingContext.ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
+    let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -56,7 +56,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, bindingContext)  
+      let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
@@ -68,7 +68,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     let result =
         generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg bindingContext encodingStr resolutionFolder resource typeName None
+                 version this cfg encodingStr resolutionFolder resource typeName None
     async { do! Async.Sleep (10000)
             if cache <> null then cache.TryRemove(typeName) |> ignore } |> Async.Start
     result

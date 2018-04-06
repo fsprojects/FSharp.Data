@@ -19,7 +19,7 @@ CSV 型プロバイダーは入力としてサンプルとなるCSVを受け取�
 F# Interactiveでアセンブリを読み込むには以下のようにします：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -92,7 +92,7 @@ for row in msft.Rows do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
@@ -153,7 +153,7 @@ let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
 以下の単純な計算をみてください：
 *)
 
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
   let speed = row.Distance / row.Time
@@ -405,8 +405,11 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 データセットを小さなサイズに変形した後に限定すべきです：
 *)
 
-let stocks = CsvProvider<"http://www.google.com/finance/historical?q=MSFT&output=csv", CacheRows=false>.GetSample()
-stocks.Take(10).Cache()
+let [<Literal>] ``Sacremento Real Estate`` = 
+  "http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv"
+
+let realEstate = CsvProvider<``Sacremento Real Estate``, CacheRows=false>.GetSample()
+realEstate.Take(10).Cache()
 
 (**
 ## 関連する記事

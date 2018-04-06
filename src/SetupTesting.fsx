@@ -26,7 +26,7 @@ let generateSetupScript dir proj =
         fsProjXml.Document.Descendants(getElemName "Reference")
         |> Seq.choose (fun elem -> getElemValue "HintPath" elem |?? getAttrValue "Include" elem)
         |> Seq.map (fun ref -> ref.Replace(@"\", @"\\").Split(',').[0])
-        |> Seq.filter (fun ref -> ref <> "mscorlib" && ref <> "FSharp.Core")
+        |> Seq.filter (fun ref -> ref <> "mscorlib" && ref <> "FSharp.Core" && not (ref.EndsWith "FSharp.Core.dll"))
         |> Seq.map (fun ref -> "#r \"" + ref + "\"")
         |> Seq.toList
 

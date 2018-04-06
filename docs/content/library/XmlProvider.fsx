@@ -18,7 +18,7 @@ is located in the `../../bin` directory, we can load it in F# Interactive as fol
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type internally): *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
 open FSharp.Data
 

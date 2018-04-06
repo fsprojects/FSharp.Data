@@ -8,6 +8,7 @@ open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
+open System.Runtime.InteropServices
 
 // --------------------------------------------------------------------------------------
 
@@ -197,15 +198,9 @@ module private TextParser =
 
 module internal HtmlParser =
 
-    let private regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-        RegexOptions.None
-#else
-        RegexOptions.Compiled
-#endif
-    let wsRegex = lazy Regex("\\s+", regexOptions)
-    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
-    let headingRegex = lazy Regex("""h\d""", regexOptions)
+    let wsRegex = lazy Regex("\\s+", RegexOptions.Compiled)
+    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", RegexOptions.Compiled)
+    let headingRegex = lazy Regex("""h\d""", RegexOptions.Compiled)
 
     type HtmlToken =
         | DocType of string
@@ -302,7 +297,7 @@ module internal HtmlParser =
             | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
 
-        member private x.ConsAttrValue(c) =
+        member x.ConsAttrValue(c) =
             match !x.Attributes with
             | [] -> x.NewAttribute(); x.ConsAttrValue(c)
             | (_,h) :: _ -> h.Cons(c)
@@ -423,8 +418,50 @@ module internal HtmlParser =
         and script state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
+            | ''' -> state.Cons(); scriptSingleQuoteString state
+            | '"' -> state.Cons(); scriptDoubleQuoteString state
+            | '/' -> state.Cons(); scriptSlash state
             | '<' -> state.Pop(); scriptLessThanSign state
             | _ -> state.Cons(); script state
+        and scriptSingleQuoteString state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | ''' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSingleQuoteString state
+        and scriptDoubleQuoteString state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '"' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptDoubleQuoteString state
+        and scriptSlash state =
+            match state.Peek() with
+            | '/' -> state.Cons(); scriptSingleLineComment state
+            | '*' -> state.Cons(); scriptMultiLineComment state
+            | _ -> scriptRegex state
+        and scriptMultiLineComment state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '*' -> state.Cons(); scriptMultiLineCommentStar state
+            | _ -> state.Cons(); scriptMultiLineComment state
+        and scriptMultiLineCommentStar state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '/' -> state.Cons(); script state
+            | _ -> scriptMultiLineComment state
+        and scriptSingleLineComment state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '\n' -> state.Cons(); script state
+            | _ -> state.Cons(); scriptSingleLineComment state
+        and scriptRegex state =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | '/' -> state.Cons(); script state
+            | '\\' -> state.Cons(); scriptRegexBackslash state
+            | _ -> state.Cons(); scriptRegex state
+        and scriptRegexBackslash state =
+            match state.Peek() with
+            | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
@@ -649,17 +686,21 @@ module internal HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | '"' -> state.Pop(); attributeValueQuoted '"' state
             | '\'' -> state.Pop(); attributeValueQuoted '\'' state
-            | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+            | _ -> attributeValueUnquoted state
         and attributeValueUnquoted state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); beforeAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
+            | '/' -> state.Pop(); attributeValueUnquotedSlash state
             | '>' -> state.Pop(); state.EmitTag(false)
             | '&' -> 
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
                 attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
+        and attributeValueUnquotedSlash state =
+            match state.Peek() with
+            | '>' -> selfClosingStartTag state
+            | _ -> state.ConsAttrValue('/'); state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueQuoted quote state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
@@ -826,14 +867,15 @@ type HtmlDocument with
         HtmlParser.parseDocument reader
         
     /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri:string) = async {
-        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+    static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {
+        let encoding = defaultArg encoding Encoding.UTF8
+        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
         return HtmlParser.parseDocument reader
     }
     
     /// Loads HTML from the specified uri
-    static member Load(uri:string) =
-        HtmlDocument.AsyncLoad(uri)
+    static member Load(uri:string, [<Optional>] ?encoding) =
+        HtmlDocument.AsyncLoad(uri, ?encoding=encoding)
         |> Async.RunSynchronously
 
 type HtmlNode with

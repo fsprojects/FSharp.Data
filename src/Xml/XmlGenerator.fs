@@ -8,7 +8,7 @@ open System.Collections.Generic
 open System.IO
 open System.Reflection
 open System.Xml.Linq
-open Microsoft.FSharp.Quotations
+open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
@@ -27,18 +27,16 @@ open System.Collections.Concurrent
 type internal XmlGenerationContext =
     { CultureStr : string
       ProvidedType : ProvidedTypeDefinition
-      BindingContext : ProvidedTypesContext
       // to nameclash type names
       UniqueNiceName : string -> string 
       UnifyGlobally : bool
       XmlTypeCache : ConcurrentDictionary<string, XmlGenerationResult>
       JsonTypeCache : ConcurrentDictionary<InferedType, ProvidedTypeDefinition> }
-    static member Create(cultureStr, tpType, unifyGlobally, bindingContext) =
+    static member Create(cultureStr, tpType, unifyGlobally) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
         uniqueNiceName "XElement" |> ignore
         { CultureStr = cultureStr
           ProvidedType = tpType
-          BindingContext = bindingContext
           UniqueNiceName = uniqueNiceName
           UnifyGlobally = unifyGlobally
           XmlTypeCache = ConcurrentDictionary()
@@ -126,7 +124,7 @@ module internal XmlTypeBuilder =
             | InferedType.Json(typ, optional) -> 
 
                 let cultureStr = ctx.CultureStr
-                let ctx = JsonGenerationContext.Create(cultureStr, ctx.ProvidedType, ctx.BindingContext, ctx.UniqueNiceName, ctx.JsonTypeCache)
+                let ctx = JsonGenerationContext.Create(cultureStr, ctx.ProvidedType, ctx.UniqueNiceName, ctx.JsonTypeCache)
                 let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true "" typ          
                 
                 let optional = optional || forceOptional
@@ -153,7 +151,6 @@ module internal XmlTypeBuilder =
     /// generates types for read-only access to the document
     let rec generateXmlType ctx inferedType = 
     
-        let bindingContext = ctx.BindingContext
         let mutable cacheItem = Unchecked.defaultof<_> 
         match inferedType with
        
@@ -177,7 +174,7 @@ module internal XmlTypeBuilder =
         | HeterogeneousRecords cases ->
        
             // Generate new choice type for the element
-            let objectTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some typeof<XmlElement>, hideObjectMethods = true, nonNullable = true)
+            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some typeof<XmlElement>, hideObjectMethods = true, nonNullable = true)
             ctx.ProvidedType.AddMember objectTy
        
             // to nameclash property names
@@ -192,14 +189,14 @@ module internal XmlTypeBuilder =
                     let convFunc = ReflectionHelpers.makeDelegate result.Converter typeof<XmlElement>
                     let name = makeUnique (XName.Get(nameWithNS).LocalName)
 
-                    bindingContext.ProvidedProperty(name, ctx.MakeOptionType result.ConvertedType, getterCode = fun (Singleton xml) ->               
+                    ProvidedProperty(name, ctx.MakeOptionType result.ConvertedType, getterCode = fun (Singleton xml) ->               
                         // XmlRuntime.ConvertAsName checks that the name of the current element
                         // has the required name and returns Some/None
                         let xmlRuntime = typeof<XmlRuntime>
                         (xmlRuntime?ConvertAsName (result.ConvertedType) (xml, nameWithNS, convFunc) : Expr)
                        ), 
                     ((if result.ConvertedType :? ProvidedTypeDefinition then "" else nameWithNS),
-                     bindingContext.ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)) ]
+                     ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)) ]
 
             let properties, parameters = List.unzip members            
             objectTy.AddMembers properties
@@ -207,7 +204,7 @@ module internal XmlTypeBuilder =
             let cultureStr = ctx.CultureStr
 
             for nameWithNS, param in parameters do
-                let ctor = bindingContext.ProvidedConstructor([param], invokeCode = fun (Singleton arg) ->
+                let ctor = ProvidedConstructor([param], invokeCode = fun (Singleton arg) ->
                     if nameWithNS = "" then
                         arg
                     else
@@ -216,8 +213,8 @@ module internal XmlTypeBuilder =
                 objectTy.AddMember ctor
 
             objectTy.AddMember <| 
-              bindingContext.ProvidedConstructor(
-                  [bindingContext.ProvidedParameter("xElement",typeof<XElement>)], 
+              ProvidedConstructor(
+                  [ProvidedParameter("xElement",typeof<XElement>)], 
                   invokeCode = fun (Singleton arg) -> <@@ XmlElement.Create(%%arg:XElement) @@>)
 
             { ConvertedType = objectTy
@@ -228,7 +225,7 @@ module internal XmlTypeBuilder =
        
             let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
 
-            let objectTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName names.[0],
+            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName names.[0],
                                                                  Some typeof<XmlElement>, 
                                                                  hideObjectMethods = true, nonNullable = true)
             ctx.ProvidedType.AddMember objectTy
@@ -259,9 +256,9 @@ module internal XmlTypeBuilder =
                 
                     let createMember (typ: Type) (conv : _ -> Expr) =
                         nameWithNS,
-                        bindingContext.ProvidedProperty(makeUnique name, typ, getterCode = fun (Singleton xml) -> 
+                        ProvidedProperty(makeUnique name, typ, getterCode = fun (Singleton xml) -> 
                             conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @> ),
-                        bindingContext.ProvidedParameter(NameUtils.niceCamelName name, typ)
+                        ProvidedParameter(NameUtils.niceCamelName name, typ)
 
                     let createPrimitiveMember typ unit (optional:bool) =            
                         let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Attribute " + name, typ, optional, unit)
@@ -273,7 +270,7 @@ module internal XmlTypeBuilder =
                         // If the attribute has multiple possible type (e.g. "bool|int") then we generate
                         // a choice type that is erased to 'option<string>' (for simplicity, assuming that
                         // the attribute is always optional)
-                        let choiceTy = bindingContext.ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some typeof<option<string>>, hideObjectMethods = true, nonNullable = true)
+                        let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some typeof<option<string>>, hideObjectMethods = true, nonNullable = true)
                         ctx.ProvidedType.AddMember choiceTy
                 
                         for KeyValue(tag, typ) in types do 
@@ -286,18 +283,18 @@ module internal XmlTypeBuilder =
                         
                                 let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true, unit)
                                 choiceTy.AddMember <|
-                                    bindingContext.ProvidedProperty(tag.NiceName, typ , getterCode = fun (Singleton attrVal) -> 
+                                    ProvidedProperty(tag.NiceName, typ , getterCode = fun (Singleton attrVal) -> 
                                         attrVal |> Expr.Cast |> conv)
 
                                 let typ, convBack = ctx.ConvertValueBack <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, false, unit)
                                 choiceTy.AddMember <|
-                                    let parameter = bindingContext.ProvidedParameter("value", typ)
-                                    bindingContext.ProvidedConstructor([parameter], invokeCode = fun (Singleton arg) -> 
+                                    let parameter = ProvidedParameter("value", typ)
+                                    ProvidedConstructor([parameter], invokeCode = fun (Singleton arg) -> 
                                         arg |> convBack |> ProviderHelpers.some typeof<string> )
 
                             | _ -> failwithf "generateXmlType: A choice type of an attribute can only contain primitive types, got %A" typ
 
-                        let defaultCtor = bindingContext.ProvidedConstructor([], invokeCode = fun _ -> <@@ option<string>.None @@>)
+                        let defaultCtor = ProvidedConstructor([], invokeCode = fun _ -> <@@ option<string>.None @@>)
                         choiceTy.AddMember defaultCtor
 
                         createMember choiceTy (fun x -> x :> Expr)
@@ -320,8 +317,8 @@ module internal XmlTypeBuilder =
                         [ for typ, name, conv, optionalJustBecauseThereAreMultiple in getTypesForPrimitives ctx forceOptional primitives ->
                             let nonOptionalType = if optionalJustBecauseThereAreMultiple && typ.IsGenericType then typ.GetGenericArguments().[0] else typ                                
                             let name = makeUnique name
-                            bindingContext.ProvidedProperty(name, typ, getterCode = fun (Singleton xml) -> conv xml),
-                            bindingContext.ProvidedParameter(NameUtils.niceCamelName name, nonOptionalType) ]
+                            ProvidedProperty(name, typ, getterCode = fun (Singleton xml) -> conv xml),
+                            ProvidedParameter(NameUtils.niceCamelName name, nonOptionalType) ]
        
                     // For every possible child element, generate a getter property
                     let childResults =
@@ -352,10 +349,10 @@ module internal XmlTypeBuilder =
                                 | InferedMultiplicity.Single ->
                                     let name = makeUnique names.[names.Length - 1]
                                     nameWithNS,
-                                    bindingContext.ProvidedProperty(name, result.ConvertedType, getterCode = fun (Singleton xml) -> 
+                                    ProvidedProperty(name, result.ConvertedType, getterCode = fun (Singleton xml) -> 
                                         result.Converter <@@ XmlRuntime.GetChild(%%xml, nameWithNS) @@> 
                                        ),
-                                    bindingContext.ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
+                                    ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
        
                                 // For options and arrays, we need to generate call to ConvertArray or ConvertOption
                                 // (because the child may be represented as primitive type - so we cannot just
@@ -366,29 +363,29 @@ module internal XmlTypeBuilder =
                                     let name = makeUnique (if isCollectionName then names.[0] else NameUtils.pluralize names.[0])
                                     let typ = result.ConvertedType.MakeArrayType()
                                     nameWithNS,
-                                    bindingContext.ProvidedProperty(name, typ, getterCode = fun (Singleton xml) -> 
+                                    ProvidedProperty(name, typ, getterCode = fun (Singleton xml) -> 
                                         let xmlRuntime = typeof<XmlRuntime>
                                         xmlRuntime?ConvertArray (result.ConvertedType) (xml, nameWithNS, convFunc)),
-                                    bindingContext.ProvidedParameter(NameUtils.niceCamelName name, typ)
+                                    ProvidedParameter(NameUtils.niceCamelName name, typ)
 
                                 | InferedMultiplicity.OptionalSingle ->
                                     let convFunc = ReflectionHelpers.makeDelegate result.Converter typeof<XmlElement>
                                     let name = makeUnique names.[names.Length - 1]
                                     if result.ConvertedType.Name.StartsWith "FSharpOption`1" then                                      
                                         nameWithNS,
-                                        bindingContext.ProvidedProperty(name, result.ConvertedType, getterCode = fun (Singleton xml) -> 
+                                        ProvidedProperty(name, result.ConvertedType, getterCode = fun (Singleton xml) -> 
                                             let xmlRuntime = typeof<XmlRuntime>
                                             xmlRuntime?ConvertOptional2 (result.ConvertedType.GenericTypeArguments.[0]) (xml, nameWithNS, convFunc)
                                            ),
-                                        bindingContext.ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
+                                        ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
                                     else
                                         let typ = ctx.MakeOptionType result.ConvertedType
                                         nameWithNS,
-                                        bindingContext.ProvidedProperty(name,  typ, getterCode = fun (Singleton xml) -> 
+                                        ProvidedProperty(name,  typ, getterCode = fun (Singleton xml) -> 
                                             let xmlRuntime = typeof<XmlRuntime>
                                             xmlRuntime?ConvertOptional (result.ConvertedType) (xml, nameWithNS, convFunc)
                                            ),
-                                        bindingContext.ProvidedParameter(NameUtils.niceCamelName name, typ)
+                                        ProvidedParameter(NameUtils.niceCamelName name, typ)
        
                             | _ -> failwithf "generateXmlType: Child elements should be named record types, got %A" child ]
 
@@ -409,7 +406,7 @@ module internal XmlTypeBuilder =
                                  | Some primitiveParam -> attrParameters @ [primitiveParam] @ childElemParameters
                                  | None -> attrParameters @ childElemParameters
                 objectTy.AddMember <|                
-                    bindingContext.ProvidedConstructor(parameters, invokeCode = fun args -> 
+                    ProvidedConstructor(parameters, invokeCode = fun args -> 
                         let attributes = 
                             Expr.NewArray(typeof<string * obj>, 
                                           args 
@@ -443,8 +440,8 @@ module internal XmlTypeBuilder =
                     createConstrutor (Some primitiveParam)
 
             objectTy.AddMember <| 
-              bindingContext.ProvidedConstructor(
-                  [bindingContext.ProvidedParameter("xElement", typeof<XElement>)], 
+              ProvidedConstructor(
+                  [ProvidedParameter("xElement", typeof<XElement>)], 
                   invokeCode = fun (Singleton arg) -> 
                       <@@ XmlElement.Create(%%arg:XElement) @@>)
 

@@ -25,7 +25,7 @@ F# Interactive内で読み込むためには以下のようにします
 `System.Xml.Linq` への参照も必要になる点に注意してください)：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
 open FSharp.Data
 

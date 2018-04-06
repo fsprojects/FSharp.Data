@@ -22,7 +22,7 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 イギリスで大学に進学した人口の割合を受信しています；
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 let data = WorldBankData.GetDataContext()
@@ -52,7 +52,7 @@ data
 
 *)
 
-#load "../../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)

@@ -9,10 +9,12 @@ then
   	exit $exit_code
   fi
 
-  export VisualStudioVersion=14.0
   packages/FAKE/tools/FAKE.exe $@ --fsiargs build.fsx 
 else
-  #!/bin/bash
+  # On Linux (or at least, Ubuntu), update the libunwind8 package so .NET Core can run, see https://github.com/dotnet/cli/issues/3390
+  if [ $(uname -s) = 'Linux' ]; then
+      sudo apt-get install libunwind8
+  fi
 
   mono .paket/paket.exe restore
   exit_code=$?
@@ -20,6 +22,5 @@ else
   	exit $exit_code
   fi
 
-  export VisualStudioVersion=14.0
   mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx -d:MONO $@
 fi

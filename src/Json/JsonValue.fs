@@ -343,6 +343,13 @@ type JsonValue with
   static member Parse(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).Parse()
 
+  /// Attempts to parse the specified JSON string
+  static member TryParse(text, [<Optional>] ?cultureInfo) =
+    try
+      Some <| JsonParser(text, cultureInfo, false).Parse()
+    with
+      | _ -> None
+
   /// Loads JSON from the specified stream
   static member Load(stream:Stream, [<Optional>] ?cultureInfo) =
     use reader = new StreamReader(stream)
@@ -355,15 +362,16 @@ type JsonValue with
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified uri asynchronously
-  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
+  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo, [<Optional>] ?encoding) = async {
+    let encoding = defaultArg encoding Encoding.UTF8
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" encoding.WebName uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
 
   /// Loads JSON from the specified uri
-  static member Load(uri:string, [<Optional>] ?cultureInfo) =
-    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
+  static member Load(uri:string, [<Optional>] ?cultureInfo, [<Optional>] ?encoding)=
+    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo, ?encoding=encoding)
     |> Async.RunSynchronously
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
@@ -374,33 +382,33 @@ type JsonValue with
   static member ParseMultiple(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+  member private x.PrepareRequest (httpMethod, headers) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
         if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
         else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    let headers = HttpRequestHeaders.ContentTypeWithEncoding (HttpContentTypes.Json, Encoding.UTF8) :: headers
+    TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers,
+      httpMethod
+ 
+  /// Sends the JSON to the specified URL synchronously. Defaults to a POST request.
+  member x.Request(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
-    let httpMethod = defaultArg httpMethod HttpMethod.Post
-    let headers = defaultArg (Option.map List.ofSeq headers) []
-    let headers =
-        if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+  /// Sends the JSON to the specified URL asynchronously. Defaults to a POST request.
+  member x.RequestAsync(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.AsyncRequest(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 
