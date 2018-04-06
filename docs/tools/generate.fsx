@@ -21,11 +21,11 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Charting/lib/net40"
+#I "../../packages/test/FSharp.Charting/lib/net45"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
-#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
 
 open System.IO
 open Fake
@@ -46,14 +46,14 @@ let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
 #endif
 
 // Paths with template/source/output locations
-let bin         = __SOURCE_DIRECTORY__ @@ "../../bin"
+let bin         = __SOURCE_DIRECTORY__ @@ "../../bin/lib/net45"
 let content     = __SOURCE_DIRECTORY__ @@ "../content"
 let output      = __SOURCE_DIRECTORY__ @@ "../output"
 let files       = __SOURCE_DIRECTORY__ @@ "../files"
 let data        = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templatesEn = __SOURCE_DIRECTORY__ @@ "templates"
 let templatesJa = __SOURCE_DIRECTORY__ @@ "templates/ja"
-let formatting  = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting/"
+let formatting  = __SOURCE_DIRECTORY__ @@ "../../packages/test/FSharp.Formatting/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)

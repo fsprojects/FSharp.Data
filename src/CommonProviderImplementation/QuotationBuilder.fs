@@ -7,9 +7,9 @@ module ProviderImplementation.QuotationBuilder
 
 open System
 open System.Reflection
-open Microsoft.FSharp.Quotations
-open Microsoft.FSharp.Quotations.Patterns
-open Microsoft.FSharp.Reflection
+open FSharp.Quotations
+open FSharp.Quotations.Patterns
+open FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 open UncheckedQuotations
 

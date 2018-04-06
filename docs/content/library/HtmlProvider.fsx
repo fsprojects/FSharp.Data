@@ -13,7 +13,7 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -35,44 +35,44 @@ Usually with HTML files headers are demarked by using the <th> tag, however in t
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness. 
 *)
 
-type MarketDepth = HtmlProvider<"../data/MarketDepth.htm">
+type F1_2017 = HtmlProvider<"../data/2017_F1.htm">
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
 Each type's name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
 entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flatterned out into a list.
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
-The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
+The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
-let bmr = 
-  "http://www.bmreports.com/servlet/" +
-    "com.logica.neta.bwp_MarketDepthServlet"
+let url = 
+  "https://en.wikipedia.org/wiki/" +
+    "2017_FIA_Formula_One_World_Championship"
 
 // Download the latest market depth information
-let mrktDepth = 
-  MarketDepth.Load(bmr).Tables.Table1
+let f1Calendar = 
+  F1_2017.Load(url).Tables.``Season calendar``
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
-let firstRow = mrktDepth.Rows |> Seq.head
-let settlementDate = firstRow.``Settlement Day``
-let acceptedBid = firstRow.``Accepted Bid Vol``
-let acceptedOffer = firstRow.``Accepted Offer Vol``
+let firstRow = f1Calendar.Rows |> Seq.head
+let round = firstRow.Round
+let grandPrix = firstRow.``Grand Prix``
+let date = firstRow.Date
 
 // Print the bid / offer volumes for each row
-for row in mrktDepth.Rows do
-  printfn "Bid/Offer: (%A, %A, %A)" 
-    row.``Settlement Day`` row.``Bid Volume`` row.``Offer Volume``
+for row in f1Calendar.Rows do
+  printfn "Race, round %A is hosted at %A on %A" 
+    row.Round row.``Grand Prix`` row.Date
 
 (**
 The generated type has a property `Rows` that returns the data from the HTML file as a
 collection of rows. We iterate over the rows using a `for` loop. As you can see the
-(generated) type for rows has properties such as `Settlement Day`, `Bid Volume` and `Offer Volume` that correspond
+(generated) type for rows has properties such as `Grand Prix`, `Circuit`, `Round` and `Date` that correspond
 to the columns in the selected HTML table file.
 
 As you can see, the type provider also infers types of individual rows. The `Date`
 property is inferred to be a `DateTime` (because the values in the sample file can all
-be parsed as dates) while other columns are inferred as `decimal` or `float`.
+be parsed as dates) while other columns are inferred as the correct type where possible.
 *)
 
 (**
@@ -106,7 +106,7 @@ let stats =
       k, xs |> Seq.sumBy (fun x -> x.Downloads))
 
 // Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
 open FSharp.Charting
 
 // Visualize the package stats
@@ -122,7 +122,7 @@ Chart.Bar stats
 
 (*** define-output:doctorWhoChart ***)
 let [<Literal>] DrWho = 
-  "http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials"
+  "https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)"
 
 let doctorWho = new HtmlProvider<DrWho>()
 

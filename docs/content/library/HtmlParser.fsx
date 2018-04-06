@@ -9,7 +9,7 @@ Once a document/fragment has been parsed, a set of extension methods over the HT
 independently of the actual HTML Type provider.
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

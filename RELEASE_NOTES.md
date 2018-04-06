@@ -1,5 +1,41 @@
-#### 2.3.4 - Unreleased
+#### 3.0.0-beta - April 04 2018
+* Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0
+* Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md)
+* Integer values for optional parameter for the `System.Text.Encoding` are only supported when the F# compiler
+  is run using .NET Framework. By default, new-style .NET SDK project files run the F# compiler with .NET Core.
+  To force the use of an F# compiler running with .NET Framework see [this guide](https://github.com/Microsoft/visualfsharp/issues/3303)
+
+#### 2.4.6 - March 25 2018
+* Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
+* `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
+* Prevent superfluous encoding of URL parameters.
+
+#### 2.4.5 - February 19 2018
+* Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.
+* Fix handling of multipart form data payloads whose size exceeded ~80k bytes.
+
+#### 2.4.4 - January 20 2018
+* Fix parsing of unquoted HTML attributes containing URLs.
+* Fixed HTTP form body url encoding.
+
+#### 2.4.3 - December 03 2017
+* Added GetColumnIndex and TryGetColumnIndex to CsvFile.
+* Fixed outdated examples in the documentation that no longer worked.
+* Fixed parsing of script elements with JavaScript string literals, regular expression literals, or comments, that looked like HTML tags.
+* Fixed parsing of cookie values containing the '=' character.
+
+#### 2.4.2 - October 09 2017
+* Prioritize dates over decimals in type inference.
+
+#### 2.4.1 - September 30 2017
+* Fix regression introduced in 2.4.0 in HTTP stream reading.
+
+#### 2.4.0 - September 24 2017
 * Fix css selectors not working outside the body element.
+* Add support for Multipart Form Data content in the HTTP implementation.
+* Added TryParse to JsonValue.
+* Fix parsing of self closing HTML tags.
+* FSharp.Core 4.3.0.0 (F# 3.0), .NET 4.0, and PCL profile 47 are no longer supported.
 
 #### 2.3.3 - April 10 2017
 * Specify kind on Date header to UTC.
