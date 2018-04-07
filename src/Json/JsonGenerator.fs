@@ -4,11 +4,11 @@
 namespace ProviderImplementation
 
 open System
+open System.Collections.Generic
 open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
-open FSharp.Data.Runtime.Caching
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.JsonConversionsGenerator
@@ -25,11 +25,11 @@ type internal JsonGenerationContext =
     IJsonDocumentType : Type
     JsonValueType : Type
     JsonRuntimeType : Type
-    TypeCache : ICache<InferedType, ProvidedTypeDefinition> 
+    TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
     GenerateConstructors : bool }
   static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
-    let typeCache = defaultArg typeCache (createInMemoryCache (TimeSpan.FromSeconds 10.))
+    let typeCache = defaultArg typeCache (Dictionary())
     JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, true)
   static member Create(cultureStr, tpType, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
@@ -87,7 +87,13 @@ module JsonTypeBuilder =
     | x -> x
 
     let inferedType = normalize true inferedType
-    let typ = ctx.TypeCache.GetOrAdd inferedType createType
+    let typ = 
+      match ctx.TypeCache.TryGetValue inferedType with
+      | true, typ -> typ
+      | _ -> 
+        let typ = createType()
+        ctx.TypeCache.Add(inferedType, typ)
+        typ
 
     { ConvertedType = typ
       OptionalConverter = None

@@ -106,9 +106,7 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
 module internal ProviderHelpers =
 
     open System.IO
-    open FSharp.Reflection
     open FSharp.Data.Runtime.Caching
-    open FSharp.Data.Runtime.IO
 
     let unitsOfMeasureProvider = 
         { new StructuralInference.IUnitsOfMeasureProvider with
@@ -117,7 +115,7 @@ module internal ProviderHelpers =
             member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Inverse(denominator) }
 
     let asyncMap (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
-        let (?) = ProviderImplementation.QuotationBuilder.(?)
+        let (?) = QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
         let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) 
@@ -262,13 +260,6 @@ module internal ProviderHelpers =
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    type CacheValue = ProvidedTypeDefinition * (string * string * string * Version) 
-    //let (|CacheValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> CacheValue)
-    //let CacheValue (pair: CacheValue) = System.WeakReference (box pair)
-    //let private providedTypesCache = Dictionary<_,WeakReference>()
-
-    let (|CacheValue|_|) (x: CacheValue) = Some x
-    let CacheValue (pair: CacheValue) = pair
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 10.)
     
     // Cache generated types temporarily during partial invalidation of a type provider.
@@ -280,7 +271,7 @@ module internal ProviderHelpers =
         let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
 
         match providedTypesCache.TryRetrieve key with
-        | Some (CacheValue (providedType, fullKey2)) when fullKey = fullKey2 -> 
+        | Some (providedType, fullKey2) when fullKey = fullKey2 -> 
             log (sprintf "Reusing saved generation of type %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 
@@ -296,7 +287,7 @@ module internal ProviderHelpers =
                         providedTypesCache.Invalidate key
                     else
                         log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
-                        providedTypesCache.Set key (CacheValue (providedType, fullKey))
+                        providedTypesCache.Set key (providedType, fullKey)
             providedType
       else 
           f() 
