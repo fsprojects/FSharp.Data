@@ -2,8 +2,8 @@
 module FSharp.Data.Runtime.IO
 
 open System
+open System.Collections.Generic
 open System.IO
-open System.Net
 open System.Text
 open FSharp.Data
 
@@ -116,16 +116,14 @@ type internal IDisposableTypeProvider =
 
 // Use weak references to type provider instances that may get reactively invalidated.  A file watcher alone 
 // shouldn't keep a type provider instance alive.
-type private TypeProviderReference = WeakReference
-let private (|TypeProviderReference|_|) (x:TypeProviderReference) = match x.Target with null -> None | x -> Some (x :?> IDisposableTypeProvider)
-let private TypeProviderReference (x:IDisposableTypeProvider) = System.WeakReference x
+type private TypeProviderReference = WeakReference<IDisposableTypeProvider>
 
 type private Watcher(uri:Uri) =
 
-    let typeProviders = ResizeArray<TypeProviderReference (* tp *) *string>()
+    let typeProviders = ResizeArray<TypeProviderReference*string>()
 
     let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
-    let lastWrite = ref (getLastWrite())
+    let mutable lastWrite = getLastWrite()
     
     let watcher = 
         let path = Path.GetDirectoryName uri.OriginalString
@@ -135,13 +133,13 @@ type private Watcher(uri:Uri) =
     let checkForChanges _ =
         let curr = getLastWrite()
     
-        if !lastWrite <> curr then
+        if lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
-            lastWrite := curr
+            lastWrite <- curr
             let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
-                match tp with 
-                | TypeProviderReference tp -> tp.InvalidateOneType typeName
+                match tp.TryGetTarget() with 
+                | true, tp -> tp.InvalidateOneType typeName
                 | _ -> ()
 
     do
@@ -154,8 +152,13 @@ type private Watcher(uri:Uri) =
 
     member __.Remove (tp:IDisposableTypeProvider) typeName = 
         log (sprintf "Removing %s [%d] from watcher %s" typeName tp.Id uri.OriginalString) 
-        typeProviders.RemoveAll (Predicate(function (TypeProviderReference tp2, typeName2) -> obj.ReferenceEquals(tp,tp2) && typeName = typeName2 | _ -> false)) |> ignore
-        let alive = typeProviders.Exists(Predicate(function (TypeProviderReference _tp, _tn) -> true | _ -> false)) 
+        typeProviders.RemoveAll(fun (tpReference, typeName2) ->
+            match tpReference.TryGetTarget() with
+            | true, tp2 -> obj.ReferenceEquals(tp, tp2) && typeName = typeName2
+            | _ -> false) |> ignore
+        let alive = typeProviders.Exists(fun (tpReference, _) -> 
+            match tpReference.TryGetTarget() with
+            | alive, _ -> alive)
         if not alive then
             log ("Disposing watcher " + uri.OriginalString) 
             watcher.Dispose()
@@ -163,14 +166,7 @@ type private Watcher(uri:Uri) =
         else
             false 
 
-open System.Collections.Generic
-
-#if FX_NO_CONCURRENT 
-let private watchers = Dictionary<string,Watcher>() 
-#else 
-open System.Collections.Concurrent 
-let private watchers = ConcurrentDictionary<string,Watcher>() 
-#endif
+let private watchers = Dictionary<string, Watcher>() 
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
@@ -178,34 +174,29 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 
     let watcher = 
 
-        match watchers.TryGetValue uri.OriginalString with
-        | true, watcher ->
+        lock watchers <| fun () -> 
 
-            log (sprintf "Reusing watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
-            watcher
+            match watchers.TryGetValue uri.OriginalString with
+            | true, watcher ->
 
-        | false, _ ->
+                log (sprintf "Reusing watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
+                watcher.Add key
+                watcher
+
+            | false, _ ->
                    
-            log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
-            let watcher = Watcher uri
-#if FX_NO_CONCURRENT 
-            lock watchers <| fun () -> watchers.Add(uri.OriginalString, watcher)
-#else 
-            watchers.[uri.OriginalString] <- watcher
-#endif
-            watcher
-
-    watcher.Add key
+                log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
+                let watcher = Watcher uri
+                watcher.Add key
+                watchers.Add(uri.OriginalString, watcher)
+                watcher
     
     tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
 
         if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
-            if watcher.Remove tp typeName then
-#if FX_NO_CONCURRENT 
-                lock watchers <| fun () -> watchers.Remove uri.OriginalString |> ignore
-#else 
-                watchers.TryRemove(uri.OriginalString) |> ignore
-#endif
+            lock watchers <| fun () ->
+                if watcher.Remove tp typeName then
+                    watchers.Remove uri.OriginalString |> ignore
             
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
