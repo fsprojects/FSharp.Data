@@ -197,6 +197,31 @@ attributes in our sample, so it is inferred as `string`), then it recursively pr
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
+## Loading Directly from a URL
+
+In many cases we might want to define schema using a local sample file, but then directly
+load the data through a URL either synchronously (with `Load`) or asynchronously (with `AsyncLoad`).
+
+Note that the sample file used here is taken from the actual data. When doing this for your scenario, 
+be careful to ensure that enough data is given for the provider to infer the schema correctly. For 
+example, the first level `dataset` element must be included at least twice for the provider to infer 
+the `Datasets` sequence rather than a single `Dataset` object.
+*)
+
+type Census = XmlProvider<"../data/Census.xml">
+
+let data = Census.Load("https://api.census.gov/data.xml")
+
+let apiLinks = data.Datasets
+               |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+
+(**
+This US Census data is an interesting dataset with this top level API returning hundreds of other
+datasets each with their own API. Here we use the Census data to get a list of titles and URLs for 
+the lower level APIs.
+*)
+
+(**
 ## Reading RSS feeds
 
 To conclude this introduction with a more interesting example, let's look how to parse a
