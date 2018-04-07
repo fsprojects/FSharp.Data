@@ -132,7 +132,7 @@ module internal ProviderHelpers =
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
-    let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
+    let private webUrisCache = createInternetFileCache "DesignTimeURIs" cacheDuration
     
     type private ParseTextResult<'T> =
         { TypedSamples : 'T []
@@ -229,13 +229,9 @@ module internal ProviderHelpers =
               
                 let sample, isWeb = 
                     if isWeb uri then
-                        match webUrisCache.TryRetrieve uri.OriginalString with
-                        | Some value -> value, true
-                        | None ->
-                            let value = readText()
-                            webUrisCache.Set(uri.OriginalString, value)
-                            value, true
-                    else readText(), false
+                        webUrisCache.GetOrAdd uri.OriginalString readText, true
+                    else 
+                        readText(), false
                     
                 { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
                   SampleIsUri = true
