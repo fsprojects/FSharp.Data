@@ -6,8 +6,6 @@
 namespace ProviderImplementation
 
 open System
-open System.Collections.Generic
-open System.Collections.Concurrent
 open System.Reflection
 open System.Text
 open FSharp.Core.CompilerServices
@@ -271,7 +269,7 @@ module internal ProviderHelpers =
 
     let (|CacheValue|_|) (x: CacheValue) = Some x
     let CacheValue (pair: CacheValue) = pair
-    let private providedTypesCache = ConcurrentDictionary<_,CacheValue>()
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 10.)
     
     // Cache generated types temporarily during partial invalidation of a type provider.
     let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) f =
@@ -281,8 +279,8 @@ module internal ProviderHelpers =
         let key = fullTypeName
         let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
 
-        match providedTypesCache.TryGetValue key with
-        | true, CacheValue (providedType, fullKey2) when fullKey = fullKey2 -> 
+        match providedTypesCache.TryRetrieve key with
+        | Some (CacheValue (providedType, fullKey2)) when fullKey = fullKey2 -> 
             log (sprintf "Reusing saved generation of type %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 
@@ -295,13 +293,10 @@ module internal ProviderHelpers =
                 | Some typeNameBeingDisposed -> 
                     // Check if a different type is being invalidated
                     if fullTypeName = typeNameBeingDisposed then
-                        providedTypesCache.TryRemove key |> ignore
+                        providedTypesCache.Invalidate key
                     else
                         log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
-                        providedTypesCache.[key] <- CacheValue (providedType, fullKey)
-                        // Remove the cache entry in 10 seconds
-                        async { do! Async.Sleep (10000)
-                                providedTypesCache.TryRemove(key) |> ignore } |> Async.Start
+                        providedTypesCache.Set key (CacheValue (providedType, fullKey))
             providedType
       else 
           f() 
