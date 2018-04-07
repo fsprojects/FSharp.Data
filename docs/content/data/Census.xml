@@ -1,107 +1,17 @@
 <census-api
     xmlns="http://thedataweb.rm.census.gov/api/discovery/"
     xmlns:dcat="http://www.w3.org/ns/dcat#"
-    xmlns:dct="http://purl.org/dc/terms/"
-    xmlns:pod="https://project-open-data.cio.gov/v1.1/schema/"
-    xmlns:foaf="http://xmlns.com/foaf/0.1/"
-    xmlns:org="http://www.w3.org/ns/org#"
-    xmlns:vcard="http://www.w3.org/2006/vcard/ns#">
-    <dct:dataset
-        vintage="2010"
-        geographyLink="https://api.census.gov/data/2010/acs5/geography.xml"
-        variablesLink="https://api.census.gov/data/2010/acs5/variables.xml"
-        tagsLink="https://api.census.gov/data/2010/acs5/tags.xml"
-        examplesLink="https://api.census.gov/data/2010/acs5/examples.xml"
-        groupsLink="https://api.census.gov/data/2010/acs5/groups.xml"
-        validValuesLink="https://api.census.gov/data/2010/acs5/validValues.xml"
-        documentationLink="http://www.census.gov/developer/"
-        isAggregate="true"
-        isAvailable="true"
-        pod:accessLevel="public"
-        dct:identifier="http://api.census.gov/data/id/ACSSF5Y2010"
-        dct:license="http://creativecommons.org/publicdomain/zero/1.0/Public Domain"
-        dct:modified="2016-12-06"
-        dct:spatial="United States"
-        dct:temporal="July 1, 2005 - Current">
-
-        <dataset-name>
-            <part name="acs5"/>
-        </dataset-name>
+    xmlns:dct="http://purl.org/dc/terms/">
+    <dct:dataset>
         <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
-        <pod:bureauCode>006:07</pod:bureauCode>
-        <dct:description>The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population.  Summary files include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts (114th congress), all counties, all places, and all tracts and block groups.  Summary files contain the most detailed cross-tabulations, many of which are published down to block groups. The data are population and housing counts. There are over 64,000 variables in this dataset.</dct:description>
         <dcat:distribution
-            dcat:accessURL="https://api.census.gov/data/2010/acs5"
-            dcat:mediaType="application/json"
-            dct:format="API">
-            <dct:title>API endpoint</dct:title>
-            <dct:description>API endpoint</dct:description>
+            dcat:accessURL="https://api.census.gov/data/2010/acs5">
         </dcat:distribution>
-        <publisher>
-            <foaf:name>U.S. Census Bureau</foaf:name>        <org:subOrganizationOf>
-            <foaf:name>U.S. Department Of Commerce</foaf:name>
-            <org:subOrganizationOf>
-                  <foaf:name>U.S. Government</foaf:name>
-            </org:subOrganizationOf>
-        </org:subOrganizationOf>
-        </publisher>
-        <dcat:contactPoint>
-            <vcard:fn>American Community Survey Office</vcard:fn>
-            <vcard:hasEmail>acso.users.support@census.gov</vcard:hasEmail>
-        </dcat:contactPoint>
-        <dcat:keyword name="Income"/>
-        <dcat:keyword name="Marital"/>
-        <dcat:keyword name="Poverty"/>
-        <pod:programCode>006:004</pod:programCode>
-        <pod:reference link="http://www.census.gov/developers/"/>
-    </dct:dataset>
-    <dct:dataset
-        vintage="2010"
-        geographyLink="https://api.census.gov/data/2010/acs5/geography.xml"
-        variablesLink="https://api.census.gov/data/2010/acs5/variables.xml"
-        tagsLink="https://api.census.gov/data/2010/acs5/tags.xml"
-        examplesLink="https://api.census.gov/data/2010/acs5/examples.xml"
-        groupsLink="https://api.census.gov/data/2010/acs5/groups.xml"
-        validValuesLink="https://api.census.gov/data/2010/acs5/validValues.xml"
-        documentationLink="http://www.census.gov/developer/"
-        isAggregate="true"
-        isAvailable="true"
-        pod:accessLevel="public"
-        dct:identifier="http://api.census.gov/data/id/ACSSF5Y2010"
-        dct:license="http://creativecommons.org/publicdomain/zero/1.0/Public Domain"
-        dct:modified="2016-12-06"
-        dct:spatial="United States"
-        dct:temporal="July 1, 2005 - Current">
-
-        <dataset-name>
-            <part name="acs5"/>
-        </dataset-name>
+    </dct:dataset>    
+    <dct:dataset>
         <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
-        <pod:bureauCode>006:07</pod:bureauCode>
-        <dct:description>The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population.  Summary files include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts (114th congress), all counties, all places, and all tracts and block groups.  Summary files contain the most detailed cross-tabulations, many of which are published down to block groups. The data are population and housing counts. There are over 64,000 variables in this dataset.</dct:description>
         <dcat:distribution
-            dcat:accessURL="https://api.census.gov/data/2010/acs5"
-            dcat:mediaType="application/json"
-            dct:format="API">
-            <dct:title>API endpoint</dct:title>
-            <dct:description>API endpoint</dct:description>
+            dcat:accessURL="https://api.census.gov/data/2010/acs5">
         </dcat:distribution>
-        <publisher>
-            <foaf:name>U.S. Census Bureau</foaf:name>        <org:subOrganizationOf>
-            <foaf:name>U.S. Department Of Commerce</foaf:name>
-            <org:subOrganizationOf>
-                  <foaf:name>U.S. Government</foaf:name>
-            </org:subOrganizationOf>
-        </org:subOrganizationOf>
-        </publisher>
-        <dcat:contactPoint>
-            <vcard:fn>American Community Survey Office</vcard:fn>
-            <vcard:hasEmail>acso.users.support@census.gov</vcard:hasEmail>
-        </dcat:contactPoint>
-        <dcat:keyword name="Income"/>
-        <dcat:keyword name="Marital"/>
-        <dcat:keyword name="Poverty"/>
-        <pod:programCode>006:004</pod:programCode>
-        <pod:reference link="http://www.census.gov/developers/"/>
     </dct:dataset>
 </census-api>

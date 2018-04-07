@@ -202,10 +202,32 @@ then we print the `Value` (inner text).
 In many cases we might want to define schema using a local sample file, but then directly
 load the data through a URL either synchronously (with `Load`) or asynchronously (with `AsyncLoad`).
 
-Note that the sample file used here is taken from the actual data. When doing this for your scenario, 
-be careful to ensure that enough data is given for the provider to infer the schema correctly. For 
-example, the first level `dataset` element must be included at least twice for the provider to infer 
-the `Datasets` sequence rather than a single `Dataset` object.
+For this example I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
+which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so 
+that it contains only the elements and attributes relevant to us:
+
+    [lang=xml]
+    <census-api
+        xmlns="http://thedataweb.rm.census.gov/api/discovery/"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dct="http://purl.org/dc/terms/">
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>    
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>
+    </census-api>
+
+When doing this for your scenario, be careful to ensure that enough data is given for the provider 
+to infer the schema correctly. For example, the first level `<dct:dataset>` element must be included at 
+least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
 *)
 
 type Census = XmlProvider<"../data/Census.xml">
@@ -220,6 +242,27 @@ This US Census data is an interesting dataset with this top level API returning 
 datasets each with their own API. Here we use the Census data to get a list of titles and URLs for 
 the lower level APIs.
 *)
+
+(**
+## Bringing in Some Async Action
+
+Let's go one step further and assume here a sligthly contrived but certainly plausible example where 
+we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background 
+and then post each link over (for example) a message queue. 
+
+This is where `AsyncLoad` comes into play:
+*)
+
+let enqueue (title,apiUrl) = 
+  // do the real message enqueueing here instead of
+  printfn "%s -> %s" title apiUrl
+
+// helper task which gets scheduled on some background thread somewhere...
+let cacheJanitor() = async {
+  let! reloadData = Census.AsyncLoad("https://api.census.gov/data.xml")
+  reloadData.Datasets |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+                      |> Array.iter enqueue
+}
 
 (**
 ## Reading RSS feeds
