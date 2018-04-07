@@ -73,11 +73,11 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
   
     let disposeActions = ResizeArray()
   
-    static let idCount = ref 0
+    static let mutable idCount = 0
   
-    let id = !idCount
+    let id = idCount
   
-    do incr idCount 
+    do idCount <- idCount + 1
   
     do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
 
@@ -97,8 +97,11 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
         x.Disposing.Add(fun _ -> disposeAll())
               
     interface IDisposableTypeProvider with
-        member __.InvalidateOneType typeName = dispose typeName; ``base``.Invalidate()
-        member __.AddDisposeAction action = addDisposeAction action
+        member __.InvalidateOneType typeName = 
+            dispose typeName
+            ``base``.Invalidate()
+        member __.AddDisposeAction action = 
+            addDisposeAction action
         member __.Id = id
 
 // ----------------------------------------------------------------------------------------------
@@ -262,7 +265,8 @@ module internal ProviderHelpers =
     
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 10.)
     
-    // Cache generated types temporarily during partial invalidation of a type provider.
+    // Cache generated types for a short time, since VS invokes the TP multiple tiems
+    // Also cache temporarily during partial invalidation since the invalidation of one TP always causes invalidation of all TPs
     let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) f =
       
       // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful
@@ -276,6 +280,8 @@ module internal ProviderHelpers =
             providedType
         | _ -> 
             let providedType = f()
+            providedTypesCache.Set key (providedType, fullKey)
+            log (sprintf "Saving generation of type %s for 10 seconds [%d]" fullTypeName tp.Id)
 
             // On disposal of one of the types, temporarily save the type if we know for sure that a different type is being invalidated.
             tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
@@ -284,6 +290,7 @@ module internal ProviderHelpers =
                 | Some typeNameBeingDisposed -> 
                     // Check if a different type is being invalidated
                     if fullTypeName = typeNameBeingDisposed then
+                        log (sprintf "Deleting cache for type %s [%d]" fullTypeName tp.Id)
                         providedTypesCache.Invalidate key
                     else
                         log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
@@ -291,7 +298,6 @@ module internal ProviderHelpers =
             providedType
       else 
           f() 
-
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample

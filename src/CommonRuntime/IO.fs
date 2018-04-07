@@ -58,6 +58,7 @@ type internal UriResolver =
 #if LOGGING_ENABLED
 
 let private logLock = obj()
+let mutable private indentation = 0
 
 let private appendToLogMultiple logFile lines = lock logLock <| fun () ->
     let path = __SOURCE_DIRECTORY__ + "/../../" + logFile
@@ -71,7 +72,11 @@ let private appendToLog logFile line =
     appendToLogMultiple logFile [line]
 
 let internal log str =
-    "[" + DateTime.Now.TimeOfDay.ToString() + "] " + str
+#if NO_TIMESTAMPS
+    String(' ', indentation * 2) + str
+#else
+    "[" + DateTime.Now.TimeOfDay.ToString() + "] " + String(' ', indentation * 2) + str
+#endif
     |> appendToLog "log.txt"
 
 let internal logWithStackTrace (str:string) =
@@ -84,10 +89,12 @@ let internal logWithStackTrace (str:string) =
     str::stackTrace |> appendToLogMultiple "log.txt"
 
 open System.Diagnostics
+open System.Threading
   
 let internal logTime category (instance:string) =
 
     log (sprintf "Started %s %s" category instance)
+    Interlocked.Increment &indentation |> ignore
 
     let s = Stopwatch()
     s.Start()
@@ -96,6 +103,7 @@ let internal logTime category (instance:string) =
         member __.Dispose() =
             s.Stop()
             log (sprintf "Ended %s %s" category instance)
+            Interlocked.Decrement &indentation |> ignore
             let instance = instance.Replace("\r", null).Replace("\n","\\n")
             sprintf "%s|%s|%d" category instance s.ElapsedMilliseconds
             |> appendToLog "log.csv" }
