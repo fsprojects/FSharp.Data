@@ -197,10 +197,11 @@ attributes in our sample, so it is inferred as `string`), then it recursively pr
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
-## Loading Directly from a URL
+## Loading Directly from a File or URL
 
 In many cases we might want to define schema using a local sample file, but then directly
-load the data through a URL either synchronously (with `Load`) or asynchronously (with `AsyncLoad`).
+load the data from disk or from a URL either synchronously (with `Load`) or asynchronously 
+(with `AsyncLoad`).
 
 For this example I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
 which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so 
