@@ -334,7 +334,7 @@ module internal ProviderHelpers =
         let resultType = spec.RepresentationType
         let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) 
 
-        using (logTime "TypeGeneration" sampleOrSampleUri) <| fun _ ->
+        using (logTime "CommonTypeGeneration" sampleOrSampleUri) <| fun _ ->
         
         [ // Generate static Parse method
           let args = [ ProvidedParameter("text", typeof<string>) ]
