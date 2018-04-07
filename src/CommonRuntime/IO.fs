@@ -102,8 +102,8 @@ let internal logTime category (instance:string) =
     { new IDisposable with
         member __.Dispose() =
             s.Stop()
-            log (sprintf "Ended %s %s" category instance)
             Interlocked.Decrement &indentation |> ignore
+            log (sprintf "Ended %s %s" category instance)
             let instance = instance.Replace("\r", null).Replace("\n","\\n")
             sprintf "%s|%s|%d" category instance s.ElapsedMilliseconds
             |> appendToLog "log.csv" }

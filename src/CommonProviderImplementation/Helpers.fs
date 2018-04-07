@@ -167,7 +167,7 @@ module internal ProviderHelpers =
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:DisposableTypeProviderForNamespaces) 
                                       (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
-        using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
+        using (logTime "LoadingSample" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
             if String.IsNullOrWhiteSpace(optResource)
@@ -315,6 +315,8 @@ module internal ProviderHelpers =
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
+        using (logTime "GeneratingType" sampleOrSampleUri) <| fun _ ->
+
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
         
