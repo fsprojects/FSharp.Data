@@ -99,7 +99,7 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
 
     member __.SetFileToWatch(fullTypeName, path) =
         lock filesToWatch <| fun () -> 
-            filesToWatch.Add(fullTypeName, path)
+            filesToWatch.[fullTypeName] <- path
 
     member __.GetFileToWath(fullTypeName) =
         lock filesToWatch <| fun () -> 
@@ -283,7 +283,7 @@ module internal ProviderHelpers =
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 10.)
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
     let private activeDisposeActions = HashSet<_>()
 
     // Cache generated types for a short time, since VS invokes the TP multiple tiems
@@ -324,7 +324,7 @@ module internal ProviderHelpers =
                         // so we need to remove the dispose action so it will won't be added when disposed is called with B
                         true
                     | _ -> 
-                        log (sprintf "Caching %s [%d] for 10 seconds" fullTypeName tp.Id)
+                        log (sprintf "Caching %s [%d] for 5 minutes" fullTypeName tp.Id)
                         providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
                         // for the case where a file used by two TPs, when the file changes
                         // there will be two invalidations: A and B
@@ -339,7 +339,7 @@ module internal ProviderHelpers =
             providedType
         | _ -> 
             let providedType = f()
-            log "Caching for 10 seconds"
+            log "Caching for 5 minutes"
             let fileToWatch = tp.GetFileToWath(fullTypeName)
             providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
             setupDisposeAction providedType fileToWatch

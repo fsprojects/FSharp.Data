@@ -1,3 +1,6 @@
+#### 3.0.0-beta3 - Unreleased
+* Increased type caches TTL from 10 seconds to 5 minutes.
+
 #### 3.0.0-beta2 - April 09 2018
 * Fixed memory leaks inside the the type provider design time components.
 * Improved the performance of the type provider design time components.
