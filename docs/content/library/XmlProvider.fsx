@@ -287,6 +287,158 @@ let orderLines =
                     line.Quantity ) |]
 
 (**
+
+## Using a schema (XSD)
+
+The `Schema` parameter can be used (instead of `Sample`) to specify an XML schema.
+The value of the parameter can be either the name of a schema file or plain text
+like in the following example:
+*)
+
+type Person = XmlProvider<Schema = """
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="person">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="surname" type="xs:string"/>
+          <xs:element name="birthDate" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>""">
+
+let turing = Person.Parse """
+  <person>
+    <surname>Turing</surname>
+    <birthDate>1912-06-23</birthDate>
+  </person>
+  """
+
+printfn "%s was born in %d" turing.Surname turing.BirthDate.Year
+
+
+(**
+The properties of the provided type are derived from the schema instead of being inferred from samples.
+
+When the file includes other schema files, the `ResolutionFolder` parameter can help locating them.
+
+The schema is expected to define a root element (a global element with complex type).
+In case of multiple root elements the provided type has an optional property for each alternative.
+
+### Sequence and Choice
+
+A `sequence` is the most common way of structuring elements in a schema.
+The following xsd defines `foo` as a sequence made of an arbitrary number
+of `bar` elements followed by a single `baz` element.
+*)
+
+type FooSequence = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+
+(**
+here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar`and `baz` elements, where the former is an array in order to hold multiple elements:
+*)
+
+let fooSequence = FooSequence.Parse """
+<foo>
+    <bar>42</bar>
+    <bar>43</bar>
+    <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d" fooSequence.Bars.[0] // 42
+printfn "%d" fooSequence.Bars.[1] // 43
+printfn "%d" fooSequence.Baz.Year // 1957
+
+(**
+Instead of a sequence we may have a `choice`:
+*)
+type FooChoice = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+(**
+although a choice is akin to a union type in F#, the provided type still has
+properties for `bar` and `baz` directly available on the `foo` object; in fact
+the properties representing alternatives in a choice are simply made optional
+(notice that for arrays this is not even necessary because an array can be empty).
+This decision is due to technical limitations (discriminated unions are not supported
+in type providers) but also preferred because it improves discoverability:
+intellisense can show both alternatives. There is a lack of precision but this is not the main goal.
+*)
+
+let fooChoice = FooChoice.Parse """
+<foo>
+  <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d items" fooChoice.Bars.Length // 0 items
+match fooChoice.Baz with
+| Some date -> printfn "%d" date.Year // 1957
+| None -> ()
+
+(**
+Another xsd construct to model the content of an element is `all`, which is used less often and
+it's like a sequence where the order of elements does not matter. The corresponding provided type
+in fact is essentially the same as for a sequence.
+
+### Substitution Groups
+
+XML Schema provides various extensibility mechanisms. The following example
+is a terse summary mixing substitution groups with abstract recursive definitions.
+*)
+
+type Prop = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="Formula" abstract="true"/>
+        <xs:element name="Prop" type="xs:string" substitutionGroup="Formula"/>
+        <xs:element name="And" substitutionGroup="Formula">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Formula" minOccurs="2" maxOccurs="2"/>
+              </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+
+let formula = Prop.Parse """
+    <And>
+        <Prop>p1</Prop>
+        <And>
+            <Prop>p2</Prop>
+            <Prop>p3</Prop>
+        </And>
+    </And>
+    """
+
+printfn "%s" formula.Props.[0] // p1
+printfn "%s" formula.Ands.[0].Props.[0] // p2
+printfn "%s" formula.Ands.[0].Props.[1] // p3
+
+(**
+Substitution groups are like choices, and the type provider produces an optional
+property for each alternative.
+
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to XML type provider
