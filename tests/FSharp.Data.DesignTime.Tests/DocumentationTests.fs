@@ -1,12 +1,5 @@
 ﻿#if INTERACTIVE
-#I "../../packages/test/FSharp.Formatting/lib/net40"
-#I "../../packages/test/FSharpVSPowerTools.Core/lib/net45"
-#r "../../packages/test/FSharp.Formatting/lib/net40/System.Web.Razor.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.MetadataFormat.dll"
-#r "../../packages/test/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
+#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
