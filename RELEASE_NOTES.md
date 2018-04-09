@@ -1,4 +1,4 @@
-#### 3.0.0-beta2 - Unrelease
+#### 3.0.0-beta2 - April 09 2018
 * Fixed memory leaks inside the the type provider design time components.
 * Improved the performance of the type provider design time components.
 
