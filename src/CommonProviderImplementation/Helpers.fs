@@ -226,7 +226,9 @@ module internal ProviderHelpers =
             
             let readText() = 
                 let reader, toWatch = asyncRead resolver formatName encodingStr uri
-                toWatch |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
+                // Non need to register file watchers in fsc.exe and fsi.exe
+                if cfg.IsInvalidationSupported  then 
+                    toWatch |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
                 use reader = reader |> Async.RunSynchronously
                 match maxNumberOfRows with
                 | None -> reader.ReadToEnd()
@@ -288,49 +290,47 @@ module internal ProviderHelpers =
     // Also cache temporarily during partial invalidation since the invalidation of one TP always causes invalidation of all TPs
     let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:DisposableTypeProviderForNamespaces) (fullTypeName:string) f =
       
-      using (logTime "GeneratingProvidedType" (sprintf "%s [%d]" fullTypeName tp.Id)) <| fun _ ->
+        using (logTime "GeneratingProvidedType" (sprintf "%s [%d]" fullTypeName tp.Id)) <| fun _ ->
 
-      // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful
-      if cfg.IsInvalidationSupported  then 
         let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
-
+  
         let setupDisposeAction providedType fileToWatch =
-
-          if activeDisposeActions.Add(fullTypeName, tp.Id) then
-
-            log "Setting up dispose action"
-
-            let watcher = 
-                match fileToWatch with
-                | Some file ->
-                    let name = sprintf "%s [%d]" fullTypeName tp.Id
-                    let invalidateAction() = tp.InvalidateOneType(fullTypeName)
-                    Some (watchForChanges file (name, invalidateAction))
-                | None -> None
-
-            // On disposal of one of the types, remove that type from the cache, and add all others to the cache
-            tp.AddDisposeAction <| fun typeNameBeingDisposedOpt ->
-
-                // might be called more than once for each watcher, but the Dispose action is a NOP the second time
-                watcher |> Option.iter (fun watcher -> watcher.Dispose())
-
-                match typeNameBeingDisposedOpt with
-                | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed -> 
-                    providedTypesCache.Remove(fullTypeName)
-                    log (sprintf "Dropping dispose action for %s [%d]" fullTypeName tp.Id)
-                    // for the case where a file used by two TPs, when the file changes
-                    // there will be two invalidations: A and B
-                    // when the dispose action is called with A, A is removed from the cache
-                    // so we need to remove the dispose action so it will won't be added when disposed is called with B
-                    true
-                | _ -> 
-                    log (sprintf "Caching %s [%d] for 10 seconds" fullTypeName tp.Id)
-                    providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
-                    // for the case where a file used by two TPs, when the file changes
-                    // there will be two invalidations: A and B
-                    // when the dispose action is called with A, B is added to the cache
-                    // so we need to keep the dispose action around so it will be called with B and the cache is removed
-                    false
+  
+            if activeDisposeActions.Add(fullTypeName, tp.Id) then
+            
+                log "Setting up dispose action"
+                
+                let watcher = 
+                    match fileToWatch with
+                    | Some file ->
+                        let name = sprintf "%s [%d]" fullTypeName tp.Id
+                        let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                        Some (watchForChanges file (name, invalidateAction))
+                    | None -> None
+                
+                // On disposal of one of the types, remove that type from the cache, and add all others to the cache
+                tp.AddDisposeAction <| fun typeNameBeingDisposedOpt ->
+                
+                    // might be called more than once for each watcher, but the Dispose action is a NOP the second time
+                    watcher |> Option.iter (fun watcher -> watcher.Dispose())
+                
+                    match typeNameBeingDisposedOpt with
+                    | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed -> 
+                        providedTypesCache.Remove(fullTypeName)
+                        log (sprintf "Dropping dispose action for %s [%d]" fullTypeName tp.Id)
+                        // for the case where a file used by two TPs, when the file changes
+                        // there will be two invalidations: A and B
+                        // when the dispose action is called with A, A is removed from the cache
+                        // so we need to remove the dispose action so it will won't be added when disposed is called with B
+                        true
+                    | _ -> 
+                        log (sprintf "Caching %s [%d] for 10 seconds" fullTypeName tp.Id)
+                        providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
+                        // for the case where a file used by two TPs, when the file changes
+                        // there will be two invalidations: A and B
+                        // when the dispose action is called with A, B is added to the cache
+                        // so we need to keep the dispose action around so it will be called with B and the cache is removed
+                        false
           
         match providedTypesCache.TryRetrieve(fullTypeName) with
         | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 -> 
@@ -344,8 +344,6 @@ module internal ProviderHelpers =
             providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
             setupDisposeAction providedType fileToWatch
             providedType
-      else 
-          f() 
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
