@@ -5,14 +5,12 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
-open System.Reflection
 open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
-open ProviderImplementation.JsonInference
 open ProviderImplementation.JsonConversionsGenerator
 open ProviderImplementation.ProvidedTypes
 

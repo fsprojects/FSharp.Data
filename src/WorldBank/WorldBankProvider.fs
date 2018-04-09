@@ -25,7 +25,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
     let defaultServiceUrl = "http://api.worldbank.org"
     let cacheDuration = TimeSpan.FromDays 30.0
-    let restCache, _ = createInternetFileCache "WorldBankSchema" cacheDuration
+    let restCache = createInternetFileCache "WorldBankSchema" cacheDuration
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
 
