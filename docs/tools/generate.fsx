@@ -80,9 +80,9 @@ let copyFiles () =
 let buildReference () =
   CleanDir (output @@ "reference")
   MetadataFormat.Generate
-    ( referenceBinaries |> List.map ((@@) bin),
-      output @@ "reference",
-      layoutRootsEn, 
+    ( dllFiles = referenceBinaries |> List.map ((@@) bin),
+      outDir = output @@ "reference",
+      layoutRoots = layoutRootsEn, 
       parameters = ("root", root)::info,
       sourceRepo = repo,
       sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "../")
