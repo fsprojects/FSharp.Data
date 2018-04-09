@@ -81,12 +81,13 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
 
     do idCount <- idCount + 1
   
-    let dispose typeNameOpt = lock disposeActions <| fun () -> 
-        for i = disposeActions.Count-1 downto 0 do
-            let disposeAction = disposeActions.[i]
-            let discard = disposeAction typeNameOpt
-            if discard then
-                disposeActions.RemoveAt(i)
+    let dispose typeNameOpt = 
+        lock disposeActions <| fun () -> 
+            for i = disposeActions.Count-1 downto 0 do
+                let disposeAction = disposeActions.[i]
+                let discard = disposeAction typeNameOpt
+                if discard then
+                    disposeActions.RemoveAt(i)
 
     do
         log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
@@ -97,12 +98,14 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
     member __.Id = id
 
     member __.SetFileToWatch(fullTypeName, path) =
-        filesToWatch.Add(fullTypeName, path)
+        lock filesToWatch <| fun () -> 
+            filesToWatch.Add(fullTypeName, path)
 
     member __.GetFileToWath(fullTypeName) =
-        match filesToWatch.TryGetValue(fullTypeName) with
-        | true, path -> Some path
-        | _ -> None
+        lock filesToWatch <| fun () -> 
+            match filesToWatch.TryGetValue(fullTypeName) with
+            | true, path -> Some path
+            | _ -> None
 
     member __.AddDisposeAction action = 
         lock disposeActions <| fun () -> disposeActions.Add action
@@ -315,6 +318,10 @@ module internal ProviderHelpers =
                 | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed -> 
                     providedTypesCache.Remove(fullTypeName)
                     log (sprintf "Dropping dispose action for %s [%d]" fullTypeName tp.Id)
+                    // for the case where a file used by two TPs, when the file changes
+                    // there will be two invalidations: A and B
+                    // when the dispose action is called with A, A is removed from the cache
+                    // so we need to remove the dispose action so it will won't be added when disposed is called with B
                     true
                 | _ -> 
                     log (sprintf "Caching %s [%d] for 10 seconds" fullTypeName tp.Id)

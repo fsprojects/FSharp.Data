@@ -55,9 +55,9 @@
   <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
   <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
   <Target Name="AfterBuild">  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.dll"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.pdb"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
-    <Copy  SourceFiles="$(OutputPath)\FSharp.Data.xml"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
+    <Copy SourceFiles="$(OutputPath)\FSharp.Data.dll"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
+    <Copy SourceFiles="$(OutputPath)\FSharp.Data.pdb"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
+    <Copy SourceFiles="$(OutputPath)\FSharp.Data.xml"  DestinationFolder="..\..\bin\lib\$(TargetFramework)" />  
   </Target>  
   
 </Project>
