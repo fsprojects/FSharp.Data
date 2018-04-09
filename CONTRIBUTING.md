@@ -15,6 +15,8 @@ as Portable libraries).
    suggestions how you might contribute, check out the
    [Issue list](https://github.com/fsharp/FSharp.Data/issues) on GitHub or send
    an email to the [F# Open-Source mailing list](http://groups.google.com/group/fsharp-opensource).
+   
+   * Easier tasks to get started with are marked with the [up-for-grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) tag.
 
 ## Solution files
 
