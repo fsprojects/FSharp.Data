@@ -1,6 +1,6 @@
 #### 3.0.0-beta2 - Unrelease
-* Fixed memory leaks inside the design time components.
-* Improved performance of CSV,HTML,XML,JSON type providers.
+* Fixed memory leaks inside the the type provider design time components.
+* Improved the performance of the type provider design time components.
 
 #### 3.0.0-beta - April 04 2018
 * Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0.

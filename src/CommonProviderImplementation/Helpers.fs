@@ -6,6 +6,7 @@
 namespace ProviderImplementation
 
 open System
+open System.Collections.Generic
 open System.Reflection
 open System.Text
 open FSharp.Core.CompilerServices
@@ -76,33 +77,48 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
     static let mutable idCount = 0
   
     let id = idCount
-  
+    let filesToWatch = Dictionary()
+
     do idCount <- idCount + 1
   
-    do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
-
-    let addDisposeAction action = lock disposeActions <| fun () -> disposeActions.Add action
-
-    let dispose typeName = lock disposeActions <| fun () -> 
-        log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
-        for dispose in disposeActions do
-            dispose (Some typeName)
-
-    let disposeAll() = lock disposeActions <| fun () ->
-        log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
-        for dispose in disposeActions do
-            dispose None
+    let dispose typeNameOpt = lock disposeActions <| fun () -> 
+        for i = disposeActions.Count-1 downto 0 do
+            let disposeAction = disposeActions.[i]
+            let discard = disposeAction typeNameOpt
+            if discard then
+                disposeActions.RemoveAt(i)
 
     do
-        x.Disposing.Add(fun _ -> disposeAll())
-              
-    interface IDisposableTypeProvider with
-        member __.InvalidateOneType typeName = 
-            dispose typeName
-            ``base``.Invalidate()
-        member __.AddDisposeAction action = 
-            addDisposeAction action
-        member __.Id = id
+        log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
+        x.Disposing.Add <| fun _ -> 
+            using (logTime "DisposingEvent" (sprintf "%O [%d]" x id)) <| fun _ ->
+                dispose None
+
+    member __.Id = id
+
+    member __.SetFileToWatch(fullTypeName, path) =
+        filesToWatch.Add(fullTypeName, path)
+
+    member __.GetFileToWath(fullTypeName) =
+        match filesToWatch.TryGetValue(fullTypeName) with
+        | true, path -> Some path
+        | _ -> None
+
+    member __.AddDisposeAction action = 
+        lock disposeActions <| fun () -> disposeActions.Add action
+
+    member __.InvalidateOneType typeName = 
+        using (logTime "InvalidateOneType" (sprintf "%s in %O [%d]" typeName x id)) <| fun _ ->
+            dispose (Some typeName)
+            log (sprintf "Calling invalidate for %O [%d]" x id)
+        base.Invalidate()
+
+#if LOGGING_ENABLED
+
+    override x.Finalize() = 
+        log (sprintf "Finalize %O [%d]" x id)
+
+#endif
 
 // ----------------------------------------------------------------------------------------------
 
@@ -153,7 +169,6 @@ module internal ProviderHelpers =
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
-    /// and a filesystem watcher that calls the invalidate function whenever the file changes is setup
     /// 
     /// Parameters:
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
@@ -207,9 +222,9 @@ module internal ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                use reader = 
-                    asyncRead (Some ((tp :> IDisposableTypeProvider), fullTypeName)) resolver formatName encodingStr uri
-                    |> Async.RunSynchronously
+                let reader, toWatch = asyncRead resolver formatName encodingStr uri
+                toWatch |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
+                use reader = reader |> Async.RunSynchronously
                 match maxNumberOfRows with
                 | None -> reader.ReadToEnd()
                 | Some max ->
@@ -228,7 +243,7 @@ module internal ProviderHelpers =
               
                 let sample, isWeb = 
                     if isWeb uri then
-                        webUrisCache.GetOrAdd uri.OriginalString readText, true
+                        webUrisCache.GetOrAdd(uri.OriginalString, readText), true
                     else 
                         readText(), false
                     
@@ -264,37 +279,63 @@ module internal ProviderHelpers =
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 10.)
-    
+    let private activeDisposeActions = HashSet<_>()
+
     // Cache generated types for a short time, since VS invokes the TP multiple tiems
     // Also cache temporarily during partial invalidation since the invalidation of one TP always causes invalidation of all TPs
-    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) f =
+    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:DisposableTypeProviderForNamespaces) (fullTypeName:string) f =
       
+      using (logTime "GeneratingProvidedType" (sprintf "%s [%d]" fullTypeName tp.Id)) <| fun _ ->
+
       // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful
       if cfg.IsInvalidationSupported  then 
-        let key = fullTypeName
         let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
 
-        match providedTypesCache.TryRetrieve key with
-        | Some (providedType, fullKey2) when fullKey = fullKey2 -> 
-            log (sprintf "Reusing saved generation of type %s [%d]" fullTypeName tp.Id)
+        let setupDisposeAction providedType fileToWatch =
+
+          if activeDisposeActions.Add(fullTypeName, tp.Id) then
+
+            log "Setting up dispose action"
+
+            let watcher = 
+                match fileToWatch with
+                | Some file ->
+                    let name = sprintf "%s [%d]" fullTypeName tp.Id
+                    let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                    Some (watchForChanges file (name, invalidateAction))
+                | None -> None
+
+            // On disposal of one of the types, remove that type from the cache, and add all others to the cache
+            tp.AddDisposeAction <| fun typeNameBeingDisposedOpt ->
+
+                // might be called more than once for each watcher, but the Dispose action is a NOP the second time
+                watcher |> Option.iter (fun watcher -> watcher.Dispose())
+
+                match typeNameBeingDisposedOpt with
+                | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed -> 
+                    providedTypesCache.Remove(fullTypeName)
+                    log (sprintf "Dropping dispose action for %s [%d]" fullTypeName tp.Id)
+                    true
+                | _ -> 
+                    log (sprintf "Caching %s [%d] for 10 seconds" fullTypeName tp.Id)
+                    providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
+                    // for the case where a file used by two TPs, when the file changes
+                    // there will be two invalidations: A and B
+                    // when the dispose action is called with A, B is added to the cache
+                    // so we need to keep the dispose action around so it will be called with B and the cache is removed
+                    false
+          
+        match providedTypesCache.TryRetrieve(fullTypeName) with
+        | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 -> 
+            log "Retrieved from cache"
+            setupDisposeAction providedType watchedFile
             providedType
         | _ -> 
             let providedType = f()
-            providedTypesCache.Set key (providedType, fullKey)
-            log (sprintf "Saving generation of type %s for 10 seconds [%d]" fullTypeName tp.Id)
-
-            // On disposal of one of the types, temporarily save the type if we know for sure that a different type is being invalidated.
-            tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
-                match typeNameBeingDisposedOpt with 
-                | None -> ()
-                | Some typeNameBeingDisposed -> 
-                    // Check if a different type is being invalidated
-                    if fullTypeName = typeNameBeingDisposed then
-                        log (sprintf "Deleting cache for type %s [%d]" fullTypeName tp.Id)
-                        providedTypesCache.Invalidate key
-                    else
-                        log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
-                        providedTypesCache.Set key (providedType, fullKey)
+            log "Caching for 10 seconds"
+            let fileToWatch = tp.GetFileToWath(fullTypeName)
+            providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
+            setupDisposeAction providedType fileToWatch
             providedType
       else 
           f() 
@@ -315,7 +356,7 @@ module internal ProviderHelpers =
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
-        using (logTime "GeneratingType" sampleOrSampleUri) <| fun _ ->
+        getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
@@ -326,7 +367,6 @@ module internal ProviderHelpers =
             else
                 [| parseSingle extension value |]
         
-        getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows

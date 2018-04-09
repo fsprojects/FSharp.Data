@@ -7,37 +7,44 @@ open System.Diagnostics
 open System.IO
 open System.Security.Cryptography
 open System.Text
+open FSharp.Data.Runtime.IO
 
 type ICache<'TKey, 'TValue> = 
   abstract TryRetrieve : key:'TKey -> 'TValue option
-  abstract Set : key:'TKey -> value:'TValue -> unit
-  abstract GetOrAdd : key:'TKey -> valueFactory:(unit -> 'TValue) -> 'TValue
-  abstract Invalidate : key:'TKey -> unit
+  abstract Set : key:'TKey * value:'TValue -> unit
+  abstract GetOrAdd : key:'TKey * valueFactory:(unit -> 'TValue) -> 'TValue
+  abstract Remove : key:'TKey -> unit
 
 /// Creates a cache that uses in-memory collection
 let createInMemoryCache (expiration:TimeSpan) = 
-  let dict = ConcurrentDictionary<'TKey_,'TValue*DateTime>()
-  let queueInvalidation key = 
-    async { 
-        do! Async.Sleep (expiration.Milliseconds) 
-        match dict.TryGetValue(key) with
-        | true, (_, timestamp) when DateTime.UtcNow - timestamp >= expiration -> dict.TryRemove(key) |> ignore
-        | _ -> () }
-  { new ICache<_,_> with
-      member __.Set key value =
-        dict.[key] <- (value, DateTime.UtcNow)
-        queueInvalidation key |> ignore
-      member __.GetOrAdd key valueFactory = 
-        dict.GetOrAdd(key, fun key ->
-          queueInvalidation key |> ignore
-          valueFactory(), DateTime.UtcNow) |> fst
-      member __.TryRetrieve(key) =
-        match dict.TryGetValue(key) with
-        | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
-        | _ -> None
-      member __.Invalidate(key) = 
-        dict.TryRemove(key) |> ignore }
-
+    let dict = ConcurrentDictionary<'TKey_,'TValue*DateTime>()
+    let queueInvalidation key = 
+        async { 
+            do! Async.Sleep (int expiration.TotalMilliseconds) 
+            match dict.TryGetValue(key) with
+            | true, (_, timestamp) when DateTime.UtcNow - timestamp >= expiration -> 
+                match dict.TryRemove(key) with
+                | true, _ -> log (sprintf "Cache expired: %O" key)
+                | _ -> ()
+            | _ -> ()
+        } |> Async.Start
+    { new ICache<_,_> with
+        member __.Set(key, value) =
+            dict.[key] <- (value, DateTime.UtcNow)
+            queueInvalidation key
+        member __.GetOrAdd(key, valueFactory) = 
+            dict.GetOrAdd(key, fun key ->
+                queueInvalidation key
+                valueFactory(), DateTime.UtcNow) |> fst
+        member __.TryRetrieve(key) =
+            match dict.TryGetValue(key) with
+            | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
+            | _ -> None
+        member __.Remove(key) = 
+            match dict.TryRemove(key) with
+            | true, _ -> log (sprintf "Explicitly removed from cache: %O" key)
+            | _ -> ()
+    }
 
 /// Get hash code of a string - used to determine cache file
 let private hashString (plainText:string) = 
@@ -87,31 +94,33 @@ let createInternetFileCache prefix expiration =
               Debug.WriteLine("Caching: Failed to read file {0} with an exception: {1}", cacheFile, e.Message)
               None
                 
-          member __.Set key value = 
+          member __.Set(key, value) = 
             let cacheFile = cacheFile key
             try File.WriteAllText(cacheFile, value)
             with e ->
                 Debug.WriteLine("Caching: Failed to write file {0} with an exception: {1}", cacheFile, e.Message)
 
-          member x.GetOrAdd key valueFactory = 
+          member x.GetOrAdd(key, valueFactory) = 
             match x.TryRetrieve key with
             | Some value -> value
             | None -> 
                 let value = valueFactory()
-                x.Set key value
+                x.Set(key, value)
                 value
 
-          member __.Invalidate(key) = 
+          member __.Remove(key) = 
             let cacheFile = cacheFile key
-            try File.Delete(cacheFile)
+            try 
+              File.Delete(cacheFile)
             with e ->
-              Debug.WriteLine("Caching: Failed to delete file {0} with an exception: {1}", cacheFile, e.Message) }
+              Debug.WriteLine("Caching: Failed to delete file {0} with an exception: {1}", cacheFile, e.Message)
+      }
     
     // Ensure that we can access the file system by writing a sample value to the cache
-    cache.Set "$$$test$$$" "dummyValue"
-    match cache.TryRetrieve "$$$test$$$" with
+    cache.Set("$$$test$$$", "dummyValue")
+    match cache.TryRetrieve("$$$test$$$") with
     | Some "dummyValue" -> 
-        cache.Invalidate("$$$test$$$")
+        cache.Remove("$$$test$$$") |> ignore
         cache
     | _ -> 
         // fallback to an in memory cache
