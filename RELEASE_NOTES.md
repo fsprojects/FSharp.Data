@@ -1,4 +1,4 @@
-#### 3.0.0-beta3 - Unreleased
+#### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.
 
 #### 3.0.0-beta2 - April 09 2018
