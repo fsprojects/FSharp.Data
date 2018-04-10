@@ -1,7 +1,23 @@
-#### 2.4.6 - Unreleased
+#### 3.0.0-beta4 - Unreleased
+* Fix parsing of JSON arrays when specified culture is using comma as a decimal separator.
+
+#### 3.0.0-beta3 - April 9 2018
+* Increased type caches TTL from 10 seconds to 5 minutes.
+
+#### 3.0.0-beta2 - April 09 2018
+* Fixed memory leaks inside the the type provider design time components.
+* Improved the performance of the type provider design time components.
+
+#### 3.0.0-beta - April 04 2018
+* Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0.
+* Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md).
+* Integer values for optional parameter for the `System.Text.Encoding` are only supported when the F# compiler
+  is run using .NET Framework. By default, new-style .NET SDK project files run the F# compiler with .NET Core.
+  To force the use of an F# compiler running with .NET Framework see [this guide](https://github.com/Microsoft/visualfsharp/issues/3303).
+
+#### 2.4.6 - March 25 2018
 * Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
 * `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
-* Fix parsing of JSON arrays when specified culture is using comma as a decimal separator
 
 #### 2.4.5 - February 19 2018
 * Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.

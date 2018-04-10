@@ -59,7 +59,7 @@ type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type Platform = Net45 | Portable7 | Portable259
+type Platform = Net45 | NetStandard20
 
 type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
@@ -235,9 +235,8 @@ type TypeProviderInstantiation =
 
     static member GetRuntimeAssemblyRefs platform =
         match platform with
-        | Net45 -> Targets.DotNet45FSharp31Refs()
-        | Portable7 -> Targets.Portable7FSharp31Refs()
-        | Portable259 -> Targets.Portable259FSharp31Refs()
+        | Net45 -> Targets.DotNet45FSharp41Refs()
+        | NetStandard20 -> Targets.DotNetStandard20FSharp41Refs()
 
 open System.Runtime.CompilerServices
 
