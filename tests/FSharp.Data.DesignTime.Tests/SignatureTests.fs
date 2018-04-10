@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.DesignTime.dll"
-#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.SignatureTests
 #endif
@@ -65,7 +65,7 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
     let output = outputRaw |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" outputRaw
-    //System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
+        File.WriteAllText(testCase.ExpectedPath expectedDirectory + ".obtained", outputRaw)
     output |> should equal expected
 
 [<Test>]

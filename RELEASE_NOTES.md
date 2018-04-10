@@ -1,5 +1,5 @@
 #### 3.0.0-beta4 - Unreleased
-* Fix parsing of JSON arrays when specified culture is using comma as a decimal separator.
+* (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
 
 #### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.

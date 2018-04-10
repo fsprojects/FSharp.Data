@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonValue
 #endif
@@ -114,9 +114,9 @@ let ``Can parse floats in different cultures``() =
         j?age.AsFloat() |> should equal 25.5
         let j = JsonValue.Parse "{ \"age\": \"25.5\"}"
         j?age.AsFloat() |> should equal 25.5
-        let j = JsonValue.Parse("{ \"age\": 25,5}", CultureInfo.CurrentCulture)
-        j?age.AsFloat(CultureInfo.CurrentCulture) |> should equal 25.5
-        let j = JsonValue.Parse("{ \"age\": \"25,5\"}", CultureInfo.CurrentCulture)
+        let j = JsonValue.TryParse("{ \"age\": 25,5}")
+        j |> should equal None
+        let j = JsonValue.Parse("{ \"age\": \"25,5\"}")
         j?age.AsFloat(CultureInfo.CurrentCulture) |> should equal 25.5
 
 [<Test>]
@@ -126,9 +126,9 @@ let ``Can parse decimals in different cultures``() =
         j?age.AsDecimal() |> should equal 25.5m
         let j = JsonValue.Parse "{ \"age\": \"25.5\"}"
         j?age.AsDecimal() |> should equal 25.5m
-        let j = JsonValue.Parse("{ \"age\": 25,5}", CultureInfo.CurrentCulture)
-        j?age.AsDecimal(CultureInfo.CurrentCulture) |> should equal 25.5m
-        let j = JsonValue.Parse("{ \"age\": \"25,5\"}", CultureInfo.CurrentCulture)
+        let j = JsonValue.TryParse("{ \"age\": 25,5}")
+        j |> should equal None
+        let j = JsonValue.Parse("{ \"age\": \"25,5\"}")
         j?age.AsDecimal(CultureInfo.CurrentCulture) |> should equal 25.5m
 
 [<Test>]
@@ -136,7 +136,7 @@ let ``Can parse dates in different cultures``() =
     withCulture "pt-PT" <| fun () ->
         let j = JsonValue.Parse "{ \"birthdate\": \"01/02/2000\"}"
         j?birthdate.AsDateTime().Month |> should equal 1
-        let j = JsonValue.Parse("{ \"birthdate\": \"01/02/2000\"}", CultureInfo.CurrentCulture)
+        let j = JsonValue.Parse("{ \"birthdate\": \"01/02/2000\"}")
         j?birthdate.AsDateTime(CultureInfo.CurrentCulture).Month |> should equal 2
 
 [<Test>]
@@ -188,13 +188,13 @@ let ``Can parse array of numbers``() =
 
 [<Test>]
 let ``Can parse array of numbers when culture is using comma as decimal separator``() =
-    let cultureInfo = CultureInfo.GetCultureInfo("sv-SE")
-    cultureInfo.NumberFormat.CurrencyDecimalSeparator |> should equal ","
-    let j = JsonValue.Parse("[25,5,5,25]", cultureInfo)
-    j.[0] |> should equal (JsonValue.Number 25m)
-    j.[1] |> should equal (JsonValue.Number 5m)
-    j.[2] |> should equal (JsonValue.Number 5m)
-    j.[3] |> should equal (JsonValue.Number 25m)
+    withCulture "sv-SE" <| fun () ->
+        CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator |> should equal ","
+        let j = JsonValue.Parse("[25,5,5,25]")
+        j.[0] |> should equal (JsonValue.Number 25m)
+        j.[1] |> should equal (JsonValue.Number 5m)
+        j.[2] |> should equal (JsonValue.Number 5m)
+        j.[3] |> should equal (JsonValue.Number 25m)
 
 [<Test>]
 let ``Quotes in strings are properly escaped``() =

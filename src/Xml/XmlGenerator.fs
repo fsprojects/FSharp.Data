@@ -133,8 +133,8 @@ module internal XmlTypeBuilder =
 
                 let conv = fun xml ->
                     if optional
-                    then <@@ XmlRuntime.TryGetJsonValue(%%xml, cultureStr) @@>
-                    else <@@ XmlRuntime.GetJsonValue(%%xml, cultureStr) @@>
+                    then <@@ XmlRuntime.TryGetJsonValue(%%xml) @@>
+                    else <@@ XmlRuntime.GetJsonValue(%%xml) @@>
                     |> result.Convert
 
                 typ, name, conv, optionalJustBecauseThereAreMultiple
