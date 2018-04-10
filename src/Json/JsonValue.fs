@@ -15,7 +15,6 @@ open System.ComponentModel
 open System.Globalization
 open System.Runtime.InteropServices
 open System.Text
-open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Specifies the formatting behaviour of JSON values

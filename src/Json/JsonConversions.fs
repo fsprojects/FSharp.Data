@@ -39,6 +39,7 @@ type JsonConversions =
     | _ -> None
 
   static member AsFloat missingValues useNoneForMissingValues cultureInfo = function
+    | JsonValue.Number n -> Some (float n)
     | JsonValue.Float n -> Some n
     | JsonValue.String s -> TextConversions.AsFloat missingValues useNoneForMissingValues cultureInfo s
     | _ -> None
