@@ -14,8 +14,8 @@ open FSharp.Data.Runtime.StructuralTypes
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
 let rec inferType inferTypesFromValues cultureInfo parentName json =
-  let inline inrange lo hi v = (v >= decimal lo) && (v <= decimal hi)
-  let inline integer v = Math.Round(v:decimal) = v
+  let inline inRange lo hi v = (v >= decimal lo) && (v <= decimal hi)
+  let inline isInteger v = Math.Round(v:decimal) = v
 
   match json with
   // Null and primitives without subtyping hiearchies
@@ -26,8 +26,8 @@ let rec inferType inferTypesFromValues cultureInfo parentName json =
   // For numbers, we test if it is integer and if it fits in smaller range
   | JsonValue.Number 0M when inferTypesFromValues -> InferedType.Primitive(typeof<Bit0>, None, false)
   | JsonValue.Number 1M when inferTypesFromValues -> InferedType.Primitive(typeof<Bit1>, None, false)
-  | JsonValue.Number n when inferTypesFromValues && inrange Int32.MinValue Int32.MaxValue n && integer n -> InferedType.Primitive(typeof<int>, None, false)
-  | JsonValue.Number n when inferTypesFromValues && inrange Int64.MinValue Int64.MaxValue n && integer n -> InferedType.Primitive(typeof<int64>, None, false)
+  | JsonValue.Number n when inferTypesFromValues && inRange Int32.MinValue Int32.MaxValue n && isInteger n -> InferedType.Primitive(typeof<int>, None, false)
+  | JsonValue.Number n when inferTypesFromValues && inRange Int64.MinValue Int64.MaxValue n && isInteger n -> InferedType.Primitive(typeof<int64>, None, false)
   | JsonValue.Number _ -> InferedType.Primitive(typeof<decimal>, None, false)
   | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false)
   // More interesting types 
