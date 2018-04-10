@@ -130,5 +130,16 @@ let buildDocumentation () =
 
 // Generate
 copyFiles()
+
+let refWatch = System.Diagnostics.Stopwatch()
+refWatch.Start()
 buildReference()
+refWatch.Stop()
+
+let libWatch = System.Diagnostics.Stopwatch()
+libWatch.Start()
 buildDocumentation()
+libWatch.Stop()
+
+printfn "Reference Documentation took %O to generate" refWatch.Elapsed
+printfn "Library Documentation took %O to generate" libWatch.Elapsed
