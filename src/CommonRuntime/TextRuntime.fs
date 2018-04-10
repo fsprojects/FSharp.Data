@@ -8,12 +8,26 @@ open FSharp.Data.Runtime
 /// Static helper methods called from the generated code for working with text
 type TextRuntime = 
 
+  [<ThreadStatic>]
+  [<DefaultValue>]
+  static val mutable private cultureInfoCache : Collections.Generic.Dictionary<string, CultureInfo>
+
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
   static member GetCulture(cultureStr) =
     if String.IsNullOrWhiteSpace cultureStr 
     then CultureInfo.InvariantCulture 
-    else CultureInfo cultureStr
+    else
+      let mutable cache = TextRuntime.cultureInfoCache
+      if cache = null then
+        cache                         <- Collections.Generic.Dictionary<string, CultureInfo> ()
+        TextRuntime.cultureInfoCache  <- cache
+      match cache.TryGetValue cultureStr with
+      | true, v -> v
+      | _   , _ ->
+        let v = CultureInfo cultureStr
+        cache.[cultureStr] <- v
+        v
 
   static member GetMissingValues(missingValuesStr) =
     if String.IsNullOrWhiteSpace missingValuesStr

@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlProvider
 #endif
@@ -11,7 +11,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let simpleHtml = """<html>
@@ -58,7 +58,7 @@ let ``Can create type for simple table``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 1`` |> should equal 1
 
-type MarketDepth = HtmlProvider<"data/marketdepth.htm">
+type MarketDepth = HtmlProvider<"Data/MarketDepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
@@ -68,7 +68,7 @@ let ``Can infer tables out of the market depth file``() =
 
 [<Test>]
 let ``NuGet table gets all rows``() =
-    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.``Version History``
+    let table = HtmlProvider<"Data/NuGet.html">.GetSample().Tables.``Version History``
     table.Rows.Length |> should equal 35
 
 [<Test>]
@@ -310,7 +310,7 @@ let ``Handles closing tag with number in script (Bug 800)``() =
     let data = html.Html.Descendants ["a"] |> Seq.toList
     data.Length |> should equal 4
 
-type DoctorWho = FSharp.Data.HtmlProvider<"data/doctor_who2.html">
+type DoctorWho = FSharp.Data.HtmlProvider<"Data/doctor_who2.html">
 
 [<Test>]   
 let ``List and Table with same nome don't clash``() =

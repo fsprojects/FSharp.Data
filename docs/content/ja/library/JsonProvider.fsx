@@ -23,7 +23,7 @@ JSON 型プロバイダーにはJSONドキュメントを静的に型付けさ�
 以下のようにするとF# Interactive上でアセンブリをロードできます：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

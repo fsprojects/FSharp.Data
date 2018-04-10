@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36E72EB1-5847-4B38-8993-B951648CB0D9}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,18 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		src\SetupTesting.fsx = src\SetupTesting.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data", "src\FSharp.Data\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
 	ProjectSection(ProjectDependencies) = postProject
-		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC} = {B85F245B-3FB9-4253-8251-16F98F05B6EC}
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable47", "src\FSharp.Data.Portable47.fsproj", "{993A6EEF-6E82-4964-8F91-BE72CC63D000}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable259", "src\FSharp.Data.Portable259.fsproj", "{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable7", "src\FSharp.Data.Portable7.fsproj", "{40512F73-8187-4361-A42C-E8C96F3F4592}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,20 +34,11 @@ Global
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40512F73-8187-4361-A42C-E8C96F3F4592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40512F73-8187-4361-A42C-E8C96F3F4592}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40512F73-8187-4361-A42C-E8C96F3F4592}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40512F73-8187-4361-A42C-E8C96F3F4592}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {34E4FA16-B344-439D-A789-1E8355E5659F}
 	EndGlobalSection
 EndGlobal

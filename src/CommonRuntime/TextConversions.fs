@@ -23,15 +23,9 @@ module private Helpers =
   let (|OneOfIgnoreCase|_|) set str = 
     if Array.exists (fun s -> StringComparer.OrdinalIgnoreCase.Compare(s, str) = 0) set then Some() else None
 
-  let regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-    RegexOptions.None
-#else
-    RegexOptions.Compiled
-#endif
   // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
   // is already taken care of before AsDateTime is called
-  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)([-+]\d+)?\)/$", regexOptions)
+  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", RegexOptions.Compiled)
 
   let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 

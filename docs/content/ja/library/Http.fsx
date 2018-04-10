@@ -21,10 +21,10 @@ F# Dataライブラリにはオーバーロードを持った4つのメソッド
 
 この型を使うには、まず(F# Interactiveの場合は) `#r` あるいはプロジェクトで
 参照の追加を行ってライブラリを参照する必要があります。
-この型は `FSharp.Net` 名前空間にあります：
+この型は `FSharp.Data` 名前空間にあります：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

@@ -1,18 +1,59 @@
-language: objective-c
+language: csharp
+
+sudo: required
+dist: trusty
+
+# have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
+matrix:
+  include:
+    - mono: 5.8.0
+      env: USE_DOTNET_CLI=1
+      os: linux
+    - mono: 5.8.0
+      env: USE_DOTNET_CLI=1
+      os: osx
+    - mono: 5.8.0
+      env: USE_MSBUILD=1
+      os: linux
+    - mono: 5.8.0
+      env: USE_MSBUILD=1
+      os: osx
+    - mono: 5.10.0
+      env: USE_MSBUILD=1
+      os: linux
+    - mono: 5.10.0
+      env: USE_MSBUILD=1
+      os: osx
+    - mono: latest
+      env: USE_MSBUILD=1
+      os: linux
+    - mono: latest
+      env: USE_MSBUILD=1
+      os: osx
+    - mono: weekly
+      env: USE_MSBUILD=1
+      os: linux
+  allow_failures:
+    - mono: latest
+    - mono: weekly
+  # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
+  fast_finish: true
+
+# We suspect this is no longer needed but is included just in case per Mono install instructions
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y referenceassemblies-pcl; fi
 
 env:
   global:
-    - MONO_VERSION=4.2.0
-    - MONO_MANAGED_WATCHER=disabled
-
-install:
-  - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
-  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
+  - MONO_MANAGED_WATCHER=disabled
 
 script:
   - ./build.sh CleanInternetCaches && ./build.sh All
 
 branches:
   except:
-    - gh-pages
-    - release
+  - gh-pages
+  - release

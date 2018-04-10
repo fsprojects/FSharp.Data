@@ -9,7 +9,7 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open FSharp.Data
 open FSharp.Data.Runtime
-open Microsoft.FSharp.Core
+open FSharp.Core
 
 [<Extension>]
 /// Extension methods with operations on JSON values
