@@ -9,7 +9,7 @@ open System.IO
 open System.Net
 open System.Reflection
 open System.Xml.Linq
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 

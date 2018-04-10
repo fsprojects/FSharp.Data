@@ -9,7 +9,7 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open FSharp.Data
 open FSharp.Data.Runtime
-open Microsoft.FSharp.Core
+open FSharp.Core
 
 [<Extension>]
 /// Extension methods with operations on JSON values
@@ -66,7 +66,7 @@ type JsonExtensions =
   /// Returns the empty string for JsonValue.Null
   [<Extension>] 
   static member AsString(x, [<Optional>] ?cultureInfo) =
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     match JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x with
     | Some s -> s
     | _ -> failwithf "Not a string: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
@@ -74,7 +74,7 @@ type JsonExtensions =
   /// Get a number as an integer (assuming that the value fits in integer)
   [<Extension>]
   static member AsInteger(x, [<Optional>] ?cultureInfo) = 
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     match JsonConversions.AsInteger cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
@@ -82,7 +82,7 @@ type JsonExtensions =
   /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
   [<Extension>]
   static member AsInteger64(x, [<Optional>] ?cultureInfo) = 
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     match JsonConversions.AsInteger64 cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int64: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
@@ -90,7 +90,7 @@ type JsonExtensions =
   /// Get a number as a decimal (assuming that the value fits in decimal)
   [<Extension>]
   static member AsDecimal(x, [<Optional>] ?cultureInfo) = 
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     match JsonConversions.AsDecimal cultureInfo x with
     | Some d -> d
     | _ -> failwithf "Not a decimal: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
@@ -98,7 +98,7 @@ type JsonExtensions =
   /// Get a number as a float (assuming that the value is convertible to a float)
   [<Extension>]
   static member AsFloat(x, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) = 
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
     match JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
     | Some f -> f
@@ -115,7 +115,7 @@ type JsonExtensions =
   /// containing well-formed ISO date or MSFT JSON date)
   [<Extension>]
   static member AsDateTime(x, [<Optional>] ?cultureInfo) = 
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     match JsonConversions.AsDateTime cultureInfo x with
     | Some d -> d
     | _ -> failwithf "Not a datetime: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
@@ -191,39 +191,39 @@ module Options =
   
     /// Get the string value of an element (assuming that the value is a scalar)
     member x.AsString(?cultureInfo) =
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x
   
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger(?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsInteger cultureInfo x
   
     /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
     member x.AsInteger64(?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsInteger64 cultureInfo x
   
     /// Get a number as a decimal (assuming that the value fits in decimal)
     member x.AsDecimal(?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsDecimal cultureInfo x
   
     /// Get a number as a float (assuming that the value is convertible to a float)
     member x.AsFloat(?cultureInfo, [<Optional>] ?missingValues) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
       JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)true cultureInfo x
   
     /// Get the boolean value of an element (assuming that the value is a boolean)
     member x.AsBoolean(?cultureInfo) =
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsBoolean cultureInfo x
   
     /// Get the datetime value of an element (assuming that the value is a string
     /// containing well-formed ISO date or MSFT JSON date)
     member x.AsDateTime(?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsDateTime cultureInfo x
   
     /// Get the guid value of an element (assuming that the value is a guid)
@@ -280,45 +280,45 @@ module Options =
     /// Get the string value of an element (assuming that the value is a scalar)
     [<Extension>] 
     static member AsString(x, [<Optional>] ?cultureInfo) =
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo)
   
     /// Get a number as an integer (assuming that the value fits in integer)
     [<Extension>] 
     static member AsInteger(x, [<Optional>] ?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsInteger cultureInfo)
   
     /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
     [<Extension>] 
     static member AsInteger64(x, [<Optional>] ?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsInteger64 cultureInfo)
   
     /// Get a number as a decimal (assuming that the value fits in decimal)
     [<Extension>] 
     static member AsDecimal(x, [<Optional>] ?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsDecimal cultureInfo)
   
     /// Get a number as a float (assuming that the value is convertible to a float)
     [<Extension>] 
     static member AsFloat(x, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
       x |> Option.bind (JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)true cultureInfo)
   
     /// Get the boolean value of an element (assuming that the value is a boolean)
     [<Extension>] 
     static member AsBoolean(x, [<Optional>] ?cultureInfo) =
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsBoolean cultureInfo)
   
     /// Get the datetime value of an element (assuming that the value is a string
     /// containing well-formed ISO date or MSFT JSON date)
     [<Extension>] 
     static member AsDateTime(x, [<Optional>] ?cultureInfo) = 
-      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsDateTime cultureInfo)
   
     /// Get the guid value of an element (assuming that the value is a guid)

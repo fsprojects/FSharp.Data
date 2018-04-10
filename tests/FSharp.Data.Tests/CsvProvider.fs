@@ -1,16 +1,16 @@
-﻿module FSharp.Data.Tests.CsvProvider
-
-#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+﻿#if INTERACTIVE
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
+#else
+module FSharp.Data.Tests.CsvProvider
 #endif
 
 open NUnit.Framework
 open FsUnit
 open System
 open System.IO
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 
 let [<Literal>] simpleCsv = """
@@ -299,7 +299,6 @@ let ``Csv without sample``() =
     row.Timestamp |> should equal "3"
 
 type UTF8 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
-type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
 [<Test>]
 let ``Uses UTF8 for sample file when encoding not specified``() =
@@ -307,11 +306,15 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
     let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, "NaN (�񐔒l)")
 
+#if USE_MSBUILD // only valid when running with the .NET Framework compiler
+type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+
 [<Test>]
 let ``Respects encoding when specified``() =
     let cp932 = CP932.GetSample()
     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, Double.NaN)
+#endif
 
 [<Test>]
 let ``Disposing CsvProvider shouldn't throw``() =
@@ -345,7 +348,7 @@ type PercentageCsv = CsvProvider<percentageCsv>
 
 [<Test>]
 let ``Can handle percentages in the values``() = 
-    let data = PercentageCsv.GetSample().Rows |> Seq.nth 1
+    let data = PercentageCsv.GetSample().Rows |> Seq.item 1
     data.Column3 |> should equal 1.92M
 
 let [<Literal>] currency = """
@@ -385,7 +388,7 @@ let ``Can duplicate own rows``() =
   let out = csv'.SaveToString()
   let reParsed = SimpleWithStrCsv.Parse(out)
   reParsed.Rows |> Seq.length |> should equal 4
-  let row = reParsed.Rows |> Seq.nth 3
+  let row = reParsed.Rows |> Seq.item 3
   row.Column1 |> should equal true
   row.ColumnB |> should equal "Freddy"
   row.Column3 |> should equal 1.92
@@ -403,8 +406,8 @@ let ``Can set created rows``() =
   let row1 = new SimpleWithStrCsv.Row(true, "foo", 1.3M)
   let row2 = new SimpleWithStrCsv.Row(column1 = false, columnB = "foo", column3 = 42M)
   let csv = new SimpleWithStrCsv([row1; row2])
-  csv.Rows |> Seq.nth 0 |> should equal row1
-  csv.Rows |> Seq.nth 1 |> should equal row2
+  csv.Rows |> Seq.item 0 |> should equal row1
+  csv.Rows |> Seq.item 1 |> should equal row2
 
   csv.Headers.Value.[1]  |> should equal "ColumnB"
   let s = csv.SaveToString()

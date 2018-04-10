@@ -1,9 +1,9 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.Experimental.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlCssSelectors
 #endif

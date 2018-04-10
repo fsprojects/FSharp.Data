@@ -59,7 +59,7 @@ class XmlProvider+X : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute intLike", TextRuntime.ConvertInteger("", value), value)
 
     member JsonLike: XmlProvider+JsonLike with get
-    XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "jsonLike"), "")
+    XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "jsonLike"))
 
 
 class XmlProvider+JsonLike : FDR.BaseTypes.IJsonDocument

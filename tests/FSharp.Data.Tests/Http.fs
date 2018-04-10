@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.Http
 #endif
@@ -101,8 +101,7 @@ let testFormDataSizesInBytes = [
 let testFormDataBodySize (size: int) = 
     let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
     let body = FormValues([("input", bodyString)])
-
-    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testMultipartFormDataBodySize (size: int) = 
@@ -110,4 +109,18 @@ let testMultipartFormDataBodySize (size: int) =
     let multipartItem = [ MultipartItem("input", "input.txt", new IO.MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> IO.Stream) ]
     let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
-    Assert.DoesNotThrow(fun () -> Http.Request (url="http://httpbin.org/post", httpMethod="POST", body=body) |> ignore)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
+
+[<Test>]
+let ``escaping of url parameters`` () =
+    let url = "https://graph.microsoft.com/beta/me/insights/shared"
+    let queryParams = [
+        "$select", "Property1,Property2/SubProperty,*"
+        "$filter", "Subject eq 'A? & #B = C/D'"
+        "$top", "10"
+        "$expand", "ExtendedProperties($filter=PropertyId eq 'String {36FF76DC-215F-4246-9544-DAB709259CE8} Name Some/Property2.0')"
+        "$orderby", "Property2 desc"
+    ]
+
+    Http.AppendQueryToUrl(url, queryParams)
+    |> should equal "https://graph.microsoft.com/beta/me/insights/shared?$select=Property1,Property2/SubProperty,*&$filter=Subject%20eq%20'A?%20%26%20%23B%20=%20C/D'&$top=10&$expand=ExtendedProperties($filter=PropertyId%20eq%20'String%20%7B36FF76DC-215F-4246-9544-DAB709259CE8%7D%20Name%20Some/Property2.0')&$orderby=Property2%20desc"
