@@ -1,7 +1,7 @@
 framework: >=net45
 source https://api.nuget.org/v3/index.json
 
-nuget FAKE
+nuget FAKE prerelease
 nuget Nuget.CommandLine
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx

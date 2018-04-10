@@ -1,10 +1,10 @@
 RESTRICTION: >= net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FAKE (4.64.11)
+    FAKE (5.0.0-rc004)
     Microsoft.NETCore.App (2.0.6)
     Microsoft.NETCore.Platforms (2.0.1) - restriction: >= net461
-    NETStandard.Library (2.0.1) - restriction: >= net461
+    NETStandard.Library (2.0.2) - restriction: >= net461
       Microsoft.NETCore.Platforms (>= 1.1)
     NetStandard.Library.NetFramework (2.0.0-preview2-25405-01)
       Microsoft.NETCore.Platforms (>= 2.0.0-preview2-25405-01) - restriction: >= net461
@@ -13,7 +13,7 @@ NUGET
     Octokit (0.29)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (2bd41546d8549654ad4d4b5639425537afe5e1f7)
+    modules/Octokit/Octokit.fsx (b011a602d0b690fb80a30e5b97df53523d6c4b23)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.StarterPack
     src/ProvidedTypes.fs (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
@@ -87,7 +87,7 @@ NUGET
       System.Text.Encoding (>= 4.3)
       System.Threading (>= 4.3)
     Microsoft.Net.Compilers (2.7)
-    Microsoft.NETCore.Platforms (2.0.1) - restriction: || (&& (== net461) (>= monoandroid) (>= netstandard2.0)) (&& (== net461) (>= monotouch) (>= netstandard2.0)) (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (< portable-net451+win81+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= uap10.1)) (&& (== net461) (>= netstandard2.0) (>= xamarinios)) (&& (== net461) (>= netstandard2.0) (>= xamarinmac)) (&& (== net461) (>= netstandard2.0) (>= xamarintvos)) (&& (== net461) (>= netstandard2.0) (>= xamarinwatchos)) (== netcoreapp2.0)
+    Microsoft.NETCore.Platforms (2.0.1) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= wp8)) (== netcoreapp2.0)
     Microsoft.NETCore.Targets (2.0) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net45)) (== netcoreapp2.0)
     Microsoft.Win32.Primitives (4.3) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
       Microsoft.NETCore.Platforms (>= 1.1) - restriction: || (&& (== net461) (< net46)) (== netcoreapp2.0)
@@ -100,7 +100,7 @@ NUGET
     Nancy (1.4.4)
     Nancy.Hosting.Self (1.4.1)
       Nancy (>= 1.4.1)
-    NETStandard.Library (2.0.1) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
+    NETStandard.Library (2.0.2) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
       Microsoft.NETCore.Platforms (>= 1.1)
     NUnit (3.10.1)
       NETStandard.Library (>= 2.0) - restriction: || (&& (== net461) (< net20) (>= netstandard2.0)) (== netcoreapp2.0)
