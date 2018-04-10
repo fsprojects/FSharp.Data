@@ -118,10 +118,10 @@ let ``Can parse negative time span with days and fraction``() =
     j?duration.AsTimeSpan() |> should equal (TimeSpan(-1, -3, -16, -50, -500))
 
 [<Test>]
-[<SetCulture("fr")>]
 let ``Can parse time span in different culture``() =
-    let j = JsonValue.Parse("{\"duration\": \"1:3:16:50,5\"}")
-    j?duration.AsTimeSpan CultureInfo.CurrentCulture |> should equal (TimeSpan(1, 3, 16, 50, 500))
+    withCulture "fr" <| fun () ->
+        let j = JsonValue.Parse("{\"duration\": \"1:3:16:50,5\"}")
+        j?duration.AsTimeSpan CultureInfo.CurrentCulture |> should equal (TimeSpan(1, 3, 16, 50, 500))
 
 [<Test>]
 let ``Can parse UTF-32 unicode characters`` () = 
