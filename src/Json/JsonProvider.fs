@@ -41,9 +41,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let inlineSample = args.[8] :?> bool
 
     let cultureInfo = TextRuntime.GetCulture cultureStr
-    let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
+    let parseSingle _ value = JsonValue.Parse(value)
     let parseList _ value = 
-        JsonDocument.CreateList(new StringReader(value), cultureStr)
+        JsonDocument.CreateList(new StringReader(value))
         |> Array.map (fun doc -> doc.JsonValue)
     
     let getSpecFromSamples samples = 
@@ -60,9 +60,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          result.Convert <@@ JsonDocument.Create(%reader, cultureStr) @@>
+          result.Convert <@@ JsonDocument.Create(%reader) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
+          result.Convert <@@ JsonDocument.CreateList(%reader) @@> }
 
     generateType "JSON" sample sampleIsList (fun _ -> not inlineSample) parseSingle parseList getSpecFromSamples 
                  version this cfg encodingStr resolutionFolder resource typeName None
