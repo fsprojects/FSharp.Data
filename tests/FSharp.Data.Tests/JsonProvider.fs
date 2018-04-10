@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonProvider
 #endif
@@ -9,6 +9,7 @@ module FSharp.Data.Tests.JsonProvider
 open NUnit.Framework
 open FsUnit
 open System
+open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
@@ -485,19 +486,27 @@ let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
     dates.UtcTime.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 19, 50, 30, 0)) 
 
-[<Test>]
-[<SetCulture("zh-CN")>]
-let ``Can parse ISO 8601 dates in the correct culture``() =
-    let dates = DateJSON.GetSample()
-    dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+let withCulture (cultureName: string) test = 
+    let originalCulture = CultureInfo.CurrentCulture;
+    try
+        CultureInfo.CurrentCulture <- CultureInfo cultureName
+        test()
+    finally
+        CultureInfo.CurrentCulture <- originalCulture
 
 [<Test>]
-[<SetCulture("pt-PT")>]
+let ``Can parse ISO 8601 dates in the correct culture``() =
+    withCulture "zh-CN" <| fun () ->
+        let dates = DateJSON.GetSample()
+        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+
+[<Test>]
 let ``Can parse ISO 8601 dates in the specified culture``() =
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
-    dates.Birthdate.Month |> should equal 1
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
-    dates.Birthdate.Month |> should equal 2
+    withCulture "pt-PT" <| fun () ->
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
+        dates.Birthdate.Month |> should equal 1
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
+        dates.Birthdate.Month |> should equal 2
 
 type TimeSpanJSON = JsonProvider<"Data/TimeSpans.json">
 

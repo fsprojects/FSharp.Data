@@ -14,7 +14,7 @@ To load a sample CSV document, we first need to reference the `FSharp.Data.dll` 
 (when using F# Interactive) or to add reference to a project. 
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -26,7 +26,7 @@ points to a live CSV file on the Yahoo finance web site:
 *)
  
 // Download the stock prices
-let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT").Cache()
+let msft = CsvFile.Load("http://www.google.com/finance/historical?q=MSFT&output=csv").Cache()
 
 // Print the prices in the HLOC format
 for row in msft.Rows do

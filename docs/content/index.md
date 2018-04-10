@@ -9,9 +9,7 @@ CSV, HTML and JSON files and for sending HTTP requests.
 
 This library focuses on providing a simple, mostly read-only, access to the structured documents 
 and other data sources. It does not aim to be a comprehensive collection of F# type providers 
-(which can be used for numerous other purposes). It's also designed to play well with other libraries
-like [Deedle](http://bluemountaincapital.github.io/Deedle), [R Type Provider](http://bluemountaincapital.github.io/FSharpRProvider), 
-[F# Charting](http://fsharp.github.io/FSharp.Charting) and [FunScript](http://funscript.info).
+(which can be used for numerous other purposes).
 
 ### F# Data type providers in action
 

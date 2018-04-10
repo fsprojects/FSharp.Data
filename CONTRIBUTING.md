@@ -15,6 +15,8 @@ as Portable libraries).
    suggestions how you might contribute, check out the
    [Issue list](https://github.com/fsharp/FSharp.Data/issues) on GitHub or send
    an email to the [F# Open-Source mailing list](http://groups.google.com/group/fsharp-opensource).
+   
+   * Easier tasks to get started with are marked with the [up-for-grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) tag.
 
 ## Solution files
 
@@ -43,23 +45,13 @@ platform. Type providers consist of two components:
    CSV provider, this component does the type inference and generates types
    (that are mapped to runtime components by the compiler).
 
-To support multiple targets, we need a _runtime component_ for every single target
-(.NET Framework 4.0, PCL profile 7, PCL profile 47, PCL profile 259). However, we only need one _design time_
-component, because that is always going to be executed on desktop .NET in Visual Studio
-or Xamarin Studio.
+To support multiple targets, we need a _runtime component_ for both .NET Framework 4.5 (net45) and
+.NET Standard 2.0 (netstandard2.0). We also need a _design time_
+component for each, to be able to to host the type provider in .NET Core-based tooling.
 
-So, there are 3 versions of _runtime_ components and 1 version of _design time_ 
-components. At the moment, this is done by having separate project file for each
-component, but they share the same files - the project just defines some symbols that
-are then used to include/exclude parts that are not available on certain platforms
-using `#if`.
+The _runtime_ components are in the following project:
 
-If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
-
- * **FSharp.Data** - .NET Framework 4.0
- * **FSharp.Data.Portable7** - PCL profile 7 (.NET Framework 4.5, Windows 8)
- * **FSharp.Data.Portable47** - PCL profile 47 (.NET Framework 4.5, Silverlight 5, Windows 8)
- * **FSharp.Data.Portable259** - PCL profile 259 (.NET Framework 4.5, Windows 8, Windows Phone 8.1, Windows Phone Silverlight 8)
+ * **FSharp.Data**
  
 The _design time_ components are in the following project:
 

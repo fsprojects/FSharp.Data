@@ -1,9 +1,9 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlCssSelectors
 #endif
@@ -450,3 +450,19 @@ let ``special characters can be escaped``() =
     selection |> should haveLength 1
     let values = selection |> Seq.exactlyOne |> HtmlNode.innerText
     values |> should equal "Matched, has id and class"
+
+
+[<Test>]
+let ``selector outside body tag``() = 
+    let html = """<!doctype html>
+        <html lang="en">
+        <head>
+          <title>Page Title</title>
+        </head>
+        <body>
+        </body>
+        </html>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "title"
+    selection |> should haveLength 1
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Page Title"]

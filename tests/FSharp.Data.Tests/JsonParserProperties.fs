@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/FsCheck/lib/net45/FsCheck.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonParserProperties
 #endif
@@ -121,14 +121,6 @@ type Generators =
                 | JsonValue.Record props -> seq {for n in props -> JsonValue.Record([|n|])}
                 | _ -> Seq.empty }
 
-[<OneTimeSetUp>]
-let fixtureSetup() =
-    Arb.register<Generators>() |> ignore
-
-#if INTERACTIVE
-fixtureSetup()
-#endif
-
 let unescape s =
     let convert (m:Text.RegularExpressions.Match) =
         match m.Value.[1] with
@@ -139,8 +131,9 @@ let unescape s =
     r.Replace(s, convert)
 
 [<Test>]
-[<Ignore("#977")>]
 let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
+    Arb.register<Generators>() |> ignore
+
     let parseStringified (json: JsonValue) =
         json.ToString(JsonSaveOptions.DisableFormatting)
         |> JsonValue.Parse = json

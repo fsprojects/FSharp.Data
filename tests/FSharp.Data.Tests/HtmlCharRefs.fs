@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlCharRefs
 #endif
@@ -14,7 +14,7 @@ open FSharp.Data.HtmlNode
 open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
-    JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
+    JsonValue.Load(__SOURCE_DIRECTORY__ + "/Data/charrefs.json")?items.AsArray()
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 [<Test>]
