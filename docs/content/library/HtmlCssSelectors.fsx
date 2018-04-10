@@ -8,7 +8,7 @@ The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.co
 To use CSS selectors, reference the F# Data library. You then need to open `FSharp.Data` namespace, which
 automatically exposes extension methods that implement the CSS selectors.
 *)
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -46,20 +46,19 @@ let searchResults =
 
 (**
 
-## Practice 2: Search F# books on Youscribe
+## Practice 2: Search F# books on Google Books
 
-We will parse links of the Youscribe web site, searching for `F#`. After downloading the document,
-we simply ensure to match good links with their CSS's styles and DOM's hierachy. In case of Youscribe,
-we need to look for `<div>` with `class` set to `document-infos` and then for all `<a>` elements with
-CSS class `doc-explore-title`:
+We will parse links of the Google Books web site, searching for `F#`. After downloading the document,
+we simply ensure to match good links with their CSS's styles and DOM's hierachy. In case of Google Books,
+we need to look for `<div>` with `class` set to `g`, then for `<h3>` with CSS class `r` and then for all `<a>` elements:
 *)
-let fsys = "http://en.youscribe.com/o-reilly-media/?quick_search=f%23"
+let fsys = "https://www.google.com/search?tbm=bks&q=F%23"
 let doc2 = HtmlDocument.Load(fsys)
 
 let books = 
-  doc2.CssSelect("div.document-infos a.doc-explore-title")
-  |> List.map(fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
-  |> List.filter(fun (title, href) -> title.Contains("F#"))
+    doc2.CssSelect("div.g h3.r a")
+    |> List.map(fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
+    |> List.filter(fun (title, href) -> title.Contains("F#"))
 
 (**
 ## JQuery selectors

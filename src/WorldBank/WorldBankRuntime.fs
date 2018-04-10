@@ -39,7 +39,7 @@ module Implementation =
           Name : string
           Description : string }
 
-    type internal ServiceConnection(restCache:ICache<_>,serviceUrl:string, sources) =
+    type internal ServiceConnection(restCache:ICache<_,_>,serviceUrl:string, sources) =
 
         let worldBankUrl (functions: string list) (props: (string * string) list) = 
             let url = 
@@ -154,7 +154,7 @@ module Implementation =
         /// At compile time, download the schema
         let topics = lazy (getTopics() |> Async.RunSynchronously)
         let topicsIndexed = lazy (topics.Force() |> Seq.map (fun t -> t.Id, t) |> dict)
-        let indicators = lazy (getIndicators() |> Async.RunSynchronously)
+        let indicators = lazy (getIndicators() |> Async.RunSynchronously |> List.toSeq |> Seq.distinctBy (fun i -> i.Name) |> Seq.toList)
         let indicatorsIndexed = lazy (indicators.Force() |> Seq.map (fun i -> i.Id, i) |> dict)
         let indicatorsByTopic = lazy (
             indicators.Force() 
@@ -384,7 +384,7 @@ type IWorldBankData =
 /// [omit]
 type WorldBankData(serviceUrl:string, sources:string) = 
     let sources = sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
-    let restCache, _ = createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays 30.0)
+    let restCache = createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays 30.0)
     let connection = new ServiceConnection(restCache, serviceUrl, sources)
     interface IWorldBankData with
         member x.GetCountries() = CountryCollection(connection, None) :> seq<_>

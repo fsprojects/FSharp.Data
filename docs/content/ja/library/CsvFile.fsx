@@ -18,7 +18,7 @@ F#の [CSV 型プロバイダー](CsvProvider.html) はF#で作成された
 プロジェクトで参照を追加する必要があります。
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**

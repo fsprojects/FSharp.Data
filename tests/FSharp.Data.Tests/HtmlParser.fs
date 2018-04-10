@@ -1,8 +1,7 @@
-﻿
-#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+﻿#if INTERACTIVE
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
@@ -79,6 +78,40 @@ let ``Can handle unclosed divs inside lis correctly``() =
                      HtmlNode.NewElement("li")]) ]
     result |> should equal expected
 
+[<TestCase(@"<a href=http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href = http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href =http://test.com/index>Test</a>")>]
+[<TestCase(@"<a href= http://test.com/index>Test</a>")>]
+let ``Can handle slashes in unquoted attributes`` content =
+    let result = HtmlDocument.Parse content
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "href", @"http://test.com/index" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
+[<Test>]
+let ``Can handle char refs in unquoted attributes``() =
+    let result = HtmlDocument.Parse "<a alt=&lt;>Test</a>"
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "alt", "<" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
+[<Test>]
+let ``Can handle multiple unquoted attributes``() =
+    let result = HtmlDocument.Parse "<a src = target alt = logo>Test</a>"
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement("a",
+                [ "src", "target"
+                  "alt", "logo" ],
+                [ HtmlNode.NewText "Test" ]) ]
+    result |> should equal expected
+
 [<Test>]
 let ``Can handle multiple char refs in a text run``() = 
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
@@ -95,6 +128,32 @@ let ``Can handle attributes with no value``() =
             HtmlAttribute.New("itemtype", "http://schema.org/Place")
         ]
     node.Attributes() |> should equal expected
+
+[<TestCase("var r = \"</script>\"")>]
+[<TestCase("var r = '</script>'")>]
+[<TestCase("var r = /</g")>]
+[<TestCase("""var r = /\/</g""")>]
+[<TestCase("""var r = /a\/</g""")>]
+[<TestCase("""var r = /\\/g""")>]
+[<TestCase("//</script>\n")>]
+[<TestCase("/*</script>*/")>]
+[<TestCase("/*</script>**/")>]
+[<TestCase("""/*
+</script>
+Test comment
+*/""")>]
+let ``Can handle special characters in scripts`` content =
+    let html = sprintf "<script>%s</script>" content
+    let node = HtmlNode.Parse html |> List.head
+    let expected = HtmlNode.NewElement("script", [ HtmlNode.NewText content ])
+    node |> should equal expected
+
+[<Test>]
+let ``Can handle special characters in single line script comments`` () =
+    let html = "<script>//</script><body></body>"
+    let node = HtmlNode.Parse html |> List.head
+    let expected = HtmlNode.NewElement("script")
+    node |> should equal expected
 
 [<Test>]
 let ``Can parse tables from a simple html``() = 

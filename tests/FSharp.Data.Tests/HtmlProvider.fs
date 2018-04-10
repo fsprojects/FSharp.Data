@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../packages/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlProvider
 #endif
@@ -11,7 +11,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let simpleHtml = """<html>

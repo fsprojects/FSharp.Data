@@ -2,8 +2,8 @@
 module FSharp.Data.Runtime.IO
 
 open System
+open System.Collections.Generic
 open System.IO
-open System.Net
 open System.Text
 open FSharp.Data
 
@@ -43,11 +43,9 @@ type internal UriResolver =
     ///      * otherwise, use 'CurrentDomain.BaseDirectory'
     /// returns an absolute uri * isWeb flag
     member x.Resolve(uri:Uri) = 
-      if uri.IsAbsoluteUri then uri, isWeb uri
+      if uri.IsAbsoluteUri then 
+        uri, isWeb uri
       else
-#if FX_NO_LOCAL_FILESYSTEM
-        failwith "Only web locations are supported on the PCL versions of F# Data. Please use the full .NET version instead."
-#else
         let root = 
           match x.ResolutionType with
           | DesignTime -> if String.IsNullOrEmpty x.ResolutionFolder
@@ -56,14 +54,11 @@ type internal UriResolver =
           | RuntimeInFSI -> x.DefaultResolutionFolder
           | Runtime -> AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
         Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
-#endif
-
-#if FX_NO_LOCAL_FILESYSTEM
-#else
 
 #if LOGGING_ENABLED
 
 let private logLock = obj()
+let mutable private indentation = 0
 
 let private appendToLogMultiple logFile lines = lock logLock <| fun () ->
     let path = __SOURCE_DIRECTORY__ + "/../../" + logFile
@@ -77,7 +72,11 @@ let private appendToLog logFile line =
     appendToLogMultiple logFile [line]
 
 let internal log str =
-    "[" + DateTime.Now.TimeOfDay.ToString() + "] " + str
+#if TIMESTAMPS_IN_LOG
+    "[" + DateTime.Now.TimeOfDay.ToString() + "] " + String(' ', indentation * 2) + str
+#else
+    String(' ', indentation * 2) + str
+#endif
     |> appendToLog "log.txt"
 
 let internal logWithStackTrace (str:string) =
@@ -90,10 +89,12 @@ let internal logWithStackTrace (str:string) =
     str::stackTrace |> appendToLogMultiple "log.txt"
 
 open System.Diagnostics
+open System.Threading
   
 let internal logTime category (instance:string) =
 
-    log (sprintf "Started %s %s" category instance)
+    log (sprintf "%s %s" category instance)
+    Interlocked.Increment &indentation |> ignore
 
     let s = Stopwatch()
     s.Start()
@@ -101,7 +102,8 @@ let internal logTime category (instance:string) =
     { new IDisposable with
         member __.Dispose() =
             s.Stop()
-            log (sprintf "Ended %s %s" category instance)
+            Interlocked.Decrement &indentation |> ignore
+            log (sprintf "Finished %s [%dms]" category s.ElapsedMilliseconds)
             let instance = instance.Replace("\r", null).Replace("\n","\\n")
             sprintf "%s|%s|%d" category instance s.ElapsedMilliseconds
             |> appendToLog "log.csv" }
@@ -114,103 +116,86 @@ let inline internal logWithStackTrace (_:string) = ()
 let inline internal logTime (_:string) (_:string) = dummyDisposable
 
 #endif
-#endif
 
-type internal IDisposableTypeProvider =
-    abstract InvalidateOneType : string -> unit
-    abstract AddDisposeAction : (string option -> unit) -> unit
-    abstract Id : int
+type private FileWatcher(path) =
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
+    let subscriptions = Dictionary<string, unit -> unit>()
 
-// Use weak references to type provider instances that may get reactively invalidated.  A file watcher alone 
-// shouldn't keep a type provider instance alive.
-type private TypeProviderReference = WeakReference
-let private (|TypeProviderReference|_|) (x:TypeProviderReference) = match x.Target with null -> None | x -> Some (x :?> IDisposableTypeProvider)
-let private TypeProviderReference (x:IDisposableTypeProvider) = System.WeakReference x
-
-
-type private Watcher(uri:Uri) =
-
-    let typeProviders = ResizeArray<TypeProviderReference (* tp *) *string>()
-
-    let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
-    let lastWrite = ref (getLastWrite())
+    let getLastWrite() = File.GetLastWriteTime path
+    let mutable lastWrite = getLastWrite()
     
     let watcher = 
-        let path = Path.GetDirectoryName uri.OriginalString
-        let name = Path.GetFileName uri.OriginalString
-        new FileSystemWatcher(Filter = name, Path = path, EnableRaisingEvents = true)
+        new FileSystemWatcher(
+            Filter = Path.GetFileName path, 
+            Path = Path.GetDirectoryName path, 
+            EnableRaisingEvents = true)
 
-    let checkForChanges _ =
+    let checkForChanges action _ =
         let curr = getLastWrite()
     
-        if !lastWrite <> curr then
-            log ("Invalidated " + uri.OriginalString)
-            lastWrite := curr
-            let typeProviders = typeProviders.ToArray()
-            for tp, typeName in typeProviders do
-                match tp with 
-                | TypeProviderReference tp -> tp.InvalidateOneType typeName
-                | _ -> ()
+        if lastWrite <> curr then
+            log (sprintf "File %s: %s" action path)
+            lastWrite <- curr
+            // creating a copy since the handler can be unsubscribed during the iteration
+            let handlers = subscriptions.Values |> Seq.toArray
+            for handler in handlers do
+                handler()
 
     do
-        watcher.Changed.Add checkForChanges
-        watcher.Renamed.Add checkForChanges
-        watcher.Deleted.Add checkForChanges
+        watcher.Changed.Add (checkForChanges "changed")
+        watcher.Renamed.Add (checkForChanges "renamed")
+        watcher.Deleted.Add (checkForChanges "deleted")
 
-    member __.Add(tp:IDisposableTypeProvider, typeName) = 
-        typeProviders.Add(TypeProviderReference tp,typeName)
+    member __.Subscribe(name, action) = 
+        subscriptions.Add(name, action)
 
-    member __.Remove (tp:IDisposableTypeProvider) typeName = 
-        log (sprintf "Removing %s [%d] from watcher %s" typeName tp.Id uri.OriginalString) 
-        typeProviders.RemoveAll (Predicate(function (TypeProviderReference tp2, typeName2) -> obj.ReferenceEquals(tp,tp2) && typeName = typeName2 | _ -> false)) |> ignore
-        let alive = typeProviders.Exists(Predicate(function (TypeProviderReference _tp, _tn) -> true | _ -> false)) 
-        if not alive then
-            log ("Disposing watcher " + uri.OriginalString) 
-            watcher.Dispose()
-            true
+    member __.Unsubscribe(name) = 
+        if subscriptions.Remove(name) then
+            log (sprintf "Unsubscribed %s from %s watcher" name path)         
+            if subscriptions.Count = 0 then
+                log (sprintf "Disposing %s watcher" path) 
+                watcher.Dispose()
+                true
+            else
+                false 
         else
-            false 
+            false
 
-open System.Collections.Generic
-
-let private watchers = Dictionary<string,Watcher>()
+let private watchers = Dictionary<string, FileWatcher>() 
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
-// adds the filesystem watcher to the list of objects to dispose by the type provider
-let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) as key) =
+let watchForChanges path (owner, onChange) =
 
     let watcher = 
 
-        match watchers.TryGetValue uri.OriginalString with
-        | true, watcher ->
+        lock watchers <| fun () -> 
 
-            log (sprintf "Reusing watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
-            watcher
+            match watchers.TryGetValue(path) with
+            | true, watcher ->
 
-        | false, _ ->
+                log (sprintf "Reusing %s watcher" path)
+                watcher.Subscribe(owner, onChange)
+                watcher
+
+            | false, _ ->
                    
-            log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
-            let watcher = Watcher uri
-            watchers.Add(uri.OriginalString, watcher)
-            watcher
-
-    watcher.Add key
+                log (sprintf "Setting up %s watcher" path)
+                let watcher = FileWatcher path
+                watcher.Subscribe(owner, onChange)
+                watchers.Add(path, watcher)
+                watcher
     
-    tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
-
-        if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
-            if watcher.Remove tp typeName then
-                watchers.Remove uri.OriginalString |> ignore
+    { new IDisposable with
+        member __.Dispose() =
+            lock watchers <| fun () ->
+                if watcher.Unsubscribe(owner) then
+                    watchers.Remove(path) |> ignore 
+    }
             
-#endif
-    
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncRead (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) formatName encodingStr (uri:Uri) =
+let internal asyncRead (uriResolver:UriResolver) formatName encodingStr (uri:Uri) =
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
@@ -227,19 +212,14 @@ let internal asyncRead (_tp:(IDisposableTypeProvider*string) option) (uriResolve
         // Download the whole web resource at once, otherwise with some servers we won't get the full file
         let! text = Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)
         return new StringReader(text) :> TextReader
-    }
+    }, None
   else
-#if FX_NO_LOCAL_FILESYSTEM
-    failwith "Only web locations are supported"
-#else
     let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
     async {
         let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-        _tp |> Option.iter (watchForChanges uri)
         let encoding = if encodingStr = "" then Encoding.UTF8 else HttpEncodings.getEncoding encodingStr
         return new StreamReader(file, encoding) :> TextReader
-    }
-#endif
+    }, Some path
 
 let private withUri uri f =
   match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
@@ -251,11 +231,11 @@ let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder forma
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
                                       defaultResolutionFolder, resolutionFolder)
-    asyncRead None resolver formatName encodingStr uri
+    asyncRead resolver formatName encodingStr uri |> fst
 
 /// Returns a TextReader for the uri using the designtime resolution rules
 let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
-    asyncRead None resolver formatName encodingStr uri
+    asyncRead resolver formatName encodingStr uri |> fst
 

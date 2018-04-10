@@ -19,21 +19,19 @@ let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Desig
 let assemblyName = "FSharp.Data.dll"
 
 let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
+    let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
     let runtimeAssembly =
         match platform with
-        | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
-        | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
-        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
-        | Portable259 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable259" ++ assemblyName
+        | Net45 -> root ++ "net45" ++ assemblyName
+        | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
     let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
 let dumpAll inst =
-    dump false false Net40 false inst
-//    dump false false Portable7 false inst
-//    dump false false Portable47 false inst
-//    dump false false Portable259 false inst
+    dump false false Net45 false inst
+//    dump false false NetStandard16 false inst
+//    dump false false NetStandard20 false inst
 
 let parameters : HtmlInference.Parameters = 
     { MissingValues = TextConversions.DefaultMissingValues
@@ -110,4 +108,4 @@ let testCases =
     |> Array.map (TypeProviderInstantiation.Parse >> snd)
 
 for testCase in testCases do
-    dump false false Net40 true testCase
+    dump false false Net45 true testCase
