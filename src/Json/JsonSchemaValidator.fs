@@ -1,9 +1,6 @@
 ﻿module FSharp.Data.JsonSchemaValidator
 
 open System.Text.RegularExpressions
-open FSharp.Data.JsonExtensions
-open FSharp.Data.JsonExtensions
-open FSharp.Data.JsonExtensions
 
 // --------------------------------------------------------
 // Json Schema Validation
@@ -11,6 +8,10 @@ open FSharp.Data.JsonExtensions
 // For more information see this page : 
 //  http://json-schema.org/latest/json-schema-validation.html
 // ---------------------------------------------------------
+
+module Option = 
+
+    let defaultValue defaultValue opt = defaultArg opt defaultValue
 
 type JsonSchema = {
     MultipleOf : int
