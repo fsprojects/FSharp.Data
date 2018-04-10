@@ -147,7 +147,8 @@ type TypeProviderInstantiation =
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture
-             x.InferTypesFromValues.ToString() ]
+             x.InferTypesFromValues.ToString()
+             x.Schema ]
         | Json x ->
             ["Json"
              x.Sample
@@ -212,7 +213,7 @@ type TypeProviderInstantiation =
                   ResolutionFolder = ""
                   EmbeddedResource = "" 
                   InferTypesFromValues = args.[5] |> bool.Parse
-                  Schema = "" }
+                  Schema = args.[6] }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
