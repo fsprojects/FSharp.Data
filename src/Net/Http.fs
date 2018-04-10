@@ -137,16 +137,8 @@ module HttpRequestHeaders =
     let Origin (origin:string) = "Origin", origin
     /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
     let Pragma (pragma:string) = "Pragma", pragma
-    type PreferParameter =
-    | Preference of key: string
-    | Parameters of key: string * value: string
-    with
-        override this.ToString() =
-            match this with
-            | Preference (key) -> key
-            | Parameters (key, value) -> sprintf "%s=%s" key value
     /// Optional instructions to the server to control request processing. See RFC https://tools.ietf.org/html/rfc7240 for more details
-    let Prefer (prefer: PreferParameter seq) = "Prefer", prefer |> Seq.map (fun prefer -> prefer.ToString()) |> String.concat "; "
+    let Prefer (prefer:string) = "Prefer", prefer
     /// Authorization credentials for connecting to a proxy.
     let ProxyAuthorization (credentials:string) = "Proxy-Authorization", credentials
     /// Request only part of an entity. Bytes are numbered from 0
