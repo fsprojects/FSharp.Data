@@ -62,13 +62,13 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
     XmlRuntime.GetChild(this, "BlahDataSomethingFoo3")
 
     member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo3 option with get
-    XmlRuntime.ConvertOptional(this, "BlahDataSomethingFoo4", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
+    XmlRuntime.ConvertOptional(this, "BlahDataSomethingFoo4", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t)))
 
     member BlahDataSomethingFoos: XmlProvider+BlahDataSomethingFoo[] with get
-    XmlRuntime.ConvertArray(this, "BlahDataSomethingFoo", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
+    XmlRuntime.ConvertArray(this, "BlahDataSomethingFoo", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t)))
 
     member X: XmlProvider+X[] with get
-    JsonRuntime.ConvertArray(XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "X"), ""), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "X")), new Func<_,_>(id)))
 
 
 class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
@@ -106,7 +106,7 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
     XmlElement.Create(xElement)
 
     member Json: XmlProvider+BlahDataSomethingFoo3 option with get
-    XmlRuntime.TryGetJsonValue(this, "")
+    XmlRuntime.TryGetJsonValue(this)
 
     member Number: int option with get
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
@@ -146,7 +146,7 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute size", TextRuntime.ConvertInteger("", value), value)
 
     member Value: XmlProvider+BlahDataSomethingFoo3 with get
-    XmlRuntime.GetJsonValue(this, "")
+    XmlRuntime.GetJsonValue(this)
 
 
 class XmlProvider+X : FDR.BaseTypes.IJsonDocument
