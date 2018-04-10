@@ -38,16 +38,9 @@ let private nameToType =
    "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
-// Compiled regex is not supported in Portable profile
-let private regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-  RegexOptions.RightToLeft
-#else
-  RegexOptions.Compiled ||| RegexOptions.RightToLeft
-#endif
-let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
-let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
-let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
+let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
