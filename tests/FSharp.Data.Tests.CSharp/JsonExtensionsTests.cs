@@ -13,7 +13,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void Properties_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             
             var properties = jsonValue.Properties();
             
@@ -25,7 +25,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void GetProperty_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             var property = jsonValue.GetProperty("PropertyOne");
             Assert.AreEqual("string value", property.AsString());
         }
@@ -33,7 +33,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void TryGetProperty_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             var property = jsonValue.TryGetProperty("PropertyTwo");
             Assert.AreEqual(FSharpOption<JsonValue>.None, property);
         }
