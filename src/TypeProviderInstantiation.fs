@@ -4,9 +4,10 @@ open System
 open System.IO
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.ProvidedTypesTesting
 open FSharp.Data.Runtime
 
-type CsvProviderArgs = 
+type CsvProviderArgs =
     { Sample : string
       Separators : string
       InferRows : int
@@ -25,27 +26,27 @@ type CsvProviderArgs =
       EmbeddedResource : string
       FixedWidth : bool }
 
-type XmlProviderArgs = 
+type XmlProviderArgs =
     { Sample : string
       SampleIsList : bool
       Global : bool
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string 
+      EmbeddedResource : string
       InferTypesFromValues : bool }
 
-type JsonProviderArgs = 
+type JsonProviderArgs =
     { Sample : string
       SampleIsList : bool
       RootName : string
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string 
+      EmbeddedResource : string
       InferTypesFromValues : bool }
 
-type HtmlProviderArgs = 
+type HtmlProviderArgs =
     { Sample : string
       PreferOptionals : bool
       IncludeLayoutTables : bool
@@ -59,17 +60,19 @@ type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type TypeProviderInstantiation = 
+type Platform = Net45 | NetStandard20
+
+type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
 
-    member x.GenerateType resolutionFolder runtimeAssembly =
+    member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
         let f, args =
             match x with
-            | Csv x -> 
+            | Csv x ->
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.Separators
@@ -95,20 +98,20 @@ type TypeProviderInstantiation =
                    box x.Global
                    box x.Culture
                    box x.Encoding
-                   box x.ResolutionFolder 
+                   box x.ResolutionFolder
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |] 
-            | Json x -> 
+                   box x.InferTypesFromValues |]
+            | Json x ->
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
                    box x.Culture
                    box x.Encoding
-                   box x.ResolutionFolder 
+                   box x.ResolutionFolder
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |] 
-            | Html x -> 
+                   box x.InferTypesFromValues |]
+            | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.PreferOptionals
@@ -116,17 +119,18 @@ type TypeProviderInstantiation =
                    box x.MissingValues
                    box x.Culture
                    box x.Encoding
-                   box x.ResolutionFolder 
+                   box x.ResolutionFolder
                    box x.EmbeddedResource |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
-                   box x.Asynchronous |] 
-        Debug.generate resolutionFolder runtimeAssembly f args
+                   box x.Asynchronous |]
+
+        Testing.GenerateProvidedTypeInstantiation(resolutionFolder, runtimeAssembly, runtimeAssemblyRefs, f, args)
 
     override x.ToString() =
         match x with
-        | Csv x -> 
+        | Csv x ->
             ["Csv"
              x.Sample
              x.Separators
@@ -138,41 +142,43 @@ type TypeProviderInstantiation =
              x.Culture
              x.Encoding
              x.FixedWidth.ToString() ]
-        | Xml x -> 
+        | Xml x ->
             ["Xml"
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture
              x.InferTypesFromValues.ToString() ]
-        | Json x -> 
+        | Json x ->
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
              x.Culture
              x.InferTypesFromValues.ToString() ]
-        | Html x -> 
+        | Html x ->
             ["Html"
              x.Sample
              x.PreferOptionals.ToString()
+             x.IncludeLayoutTables.ToString()
              x.Culture]
-        | WorldBank x -> 
+        | WorldBank x ->
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString()]
         |> String.concat ","
 
-    member x.ExpectedPath outputFolder = 
+    member x.ExpectedPath outputFolder =
         Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
 
-    member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
-        let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
-        let output = 
-            x.GenerateType resolutionFolder runtimeAssembly
-            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+    member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
+        let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)
+        let output =
+            let tp = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
+            Testing.FormatProvidedType(tp, signatureOnly, ignoreOutput, 10, 100)
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+            |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
         if outputFolder <> "" then
             File.WriteAllText(x.ExpectedPath outputFolder, output)
         output
@@ -206,23 +212,23 @@ type TypeProviderInstantiation =
                   Culture = args.[4]
                   Encoding = ""
                   ResolutionFolder = ""
-                  EmbeddedResource = "" 
+                  EmbeddedResource = ""
                   InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
-                   Culture = args.[4] 
+                   Culture = args.[4]
                    Encoding = ""
                    ResolutionFolder = ""
-                   EmbeddedResource = "" 
+                   EmbeddedResource = ""
                    InferTypesFromValues = args.[5] |> bool.Parse }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
                    IncludeLayoutTables = args.[3] |> bool.Parse
                    MissingValues = ""
-                   Culture = args.[4] 
+                   Culture = args.[4]
                    Encoding = ""
                    ResolutionFolder = ""
                    EmbeddedResource = "" }
@@ -230,6 +236,11 @@ type TypeProviderInstantiation =
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
         | _ -> failwithf "Unknown: %s" args.[0]
+
+    static member GetRuntimeAssemblyRefs platform =
+        match platform with
+        | Net45 -> Targets.DotNet45FSharp41Refs()
+        | NetStandard20 -> Targets.DotNetStandard20FSharp41Refs()
 
 open System.Runtime.CompilerServices
 

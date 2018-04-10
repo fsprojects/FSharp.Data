@@ -37,8 +37,7 @@ type HtmlTable =
       Html : HtmlNode }
     override x.ToString() =
         let sb = StringBuilder()
-        use wr = new StringWriter(sb) 
-        wr.WriteLine(x.Name)
+        sb.AppendLine x.Name |> ignore
         let data = array2D x.Rows
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
@@ -47,8 +46,8 @@ type HtmlTable =
             widths.[c] <- max (widths.[c]) (cell.Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
-            wr.WriteLine()
+                sb.Append(data.[r,c].PadRight(widths.[c] + 1)) |> ignore
+            sb.AppendLine() |> ignore
         sb.ToString()
 
 /// Representation of an HTML list
@@ -56,12 +55,26 @@ type HtmlList =
     { Name : string
       Values : string[]
       Html : HtmlNode }
+    override x.ToString() = 
+        let sb = StringBuilder()
+        sb.AppendLine x.Name |> ignore
+        for value in x.Values do 
+            sb.AppendLine value |> ignore
+        sb.ToString()
 
 /// Representation of an HTML definition list
 type HtmlDefinitionList = 
     { Name : string
       Definitions : HtmlList list
       Html : HtmlNode }
+    override x.ToString() = 
+        let sb = StringBuilder()
+        sb.AppendLine x.Name |> ignore
+        for list in x.Definitions do 
+            sb.AppendLine list.Name |> ignore
+            for value in list.Values do 
+                sb.AppendLine value |> ignore
+        sb.ToString()
 
 /// Representation of an HTML table, list, or definition list
 type HtmlObject = 
@@ -70,15 +83,18 @@ type HtmlObject =
     | DefinitionList of HtmlDefinitionList
     member x.Name =
         match x with
-        | Table(t) -> t.Name
-        | List(l) -> l.Name
-        | DefinitionList(l) -> l.Name
+        | Table t -> t.Name
+        | List l -> l.Name
+        | DefinitionList dl -> dl.Name
 
 // --------------------------------------------------------------------------------------
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
     
+    let private normalizeWs (str:String) =
+        HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
+
     let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let parents = parents |> Seq.truncate 2 |> Seq.toList
@@ -110,24 +126,33 @@ module HtmlRuntime =
             let isHeading s = s |> HtmlNode.name |> HtmlParser.headingRegex.Value.IsMatch
             tryFindPrevious isHeading element parents
 
-        let cleanup (str:String) =
-            HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
-
         match deriveFromSibling element parents with
         | Some e -> 
             let innerText = e.InnerText()
             if String.IsNullOrWhiteSpace(innerText)
             then defaultName
-            else cleanup(innerText)
+            else normalizeWs innerText
         | _ ->
                 match List.ofSeq <| element.Descendants("caption", false) with
                 | [] ->
                      match tryGetName ["id"; "name"; "title"; "summary"] with
-                     | Some name -> cleanup name
+                     | Some name -> normalizeWs name
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
                 
+    module private Array =
+        
+        let countWhile predicate array =
+            let mutable i = 0
+            while i < Array.length array && predicate array.[i] do
+                i <- i + 1                
+            i
+
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+        let rowSpan cell = 
+            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) 
+        let colSpan cell = 
+            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0)
         let rows =
             let header =
                 match table.Descendants("thead", false) |> Seq.toList with
@@ -139,11 +164,11 @@ module HtmlRuntime =
                 | _ -> []
             header @ (table.Descendants("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i,r)
-        
+
         if rows.Length <= 1 then None else
 
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
-        let rowLengths = cells |> List.map (fun x -> x.Length)
+        let rowLengths = cells |> List.map (fun row -> row |> List.map (fun (_, col) -> colSpan col ) |> List.fold (+) 0)
         let numberOfColumns = List.max rowLengths
         
         if not includeLayoutTables && (numberOfColumns < 1) then None else
@@ -153,33 +178,47 @@ module HtmlRuntime =
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
-                let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
-                let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
-
                 let data =
                     let getContents contents = 
-                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
+                        contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat |> normalizeWs
                     match cell with
                     | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
                     | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
                     | _ -> Empty
                 let col_i = ref colindex
                 while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
-                for j in [!col_i..(!col_i + colSpan)] do
-                    for i in [rowindex..(rowindex + rowSpan)] do
+                for j in [!col_i..(!col_i + colSpan cell - 1)] do
+                    for i in [rowindex..(rowindex + rowSpan cell - 1)] do
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
+        let numberOfHeaderRows = res |> Array.countWhile (Array.forall (fun cell -> cell.IsHeader))
+
+        let hasRealHeaders, res = 
+            match numberOfHeaderRows with
+            | 0 -> false, res
+            | 1 -> true, res
+            | _ ->
+                for i = 1 to numberOfHeaderRows - 1 do
+                    for j = 0 to numberOfColumns - 1 do
+                        let previousCell = res.[i-1].[j]
+                        let thisCell = res.[i].[j]
+                        if previousCell.Data <> "" && thisCell.Data <> "" && thisCell.Data <> previousCell.Data then
+                            res.[i].[j] <- Cell(true, previousCell.Data + " - " + thisCell.Data)
+        
+                true, res.[numberOfHeaderRows-1..]
+            
         let hasHeaders, headerNamesAndUnits, inferedProperties = 
             match inferenceParameters with
             | None -> None, None, None
             | Some inferenceParameters ->
                 let hasHeaders, headerNames, units, inferedProperties = 
-                    if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-                    then true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
-                    else res
-                         |> Array.map (Array.map (fun x -> x.Data))
-                         |> HtmlInference.inferHeaders inferenceParameters
+                    if hasRealHeaders then 
+                        true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
+                    else 
+                        res
+                        |> Array.map (Array.map (fun x -> x.Data))
+                        |> HtmlInference.inferHeaders inferenceParameters
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =
@@ -199,27 +238,11 @@ module HtmlRuntime =
           Html = table } |> Some
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
-        
-        let rec walkListItems s (items:HtmlNode list) =
-            match items with
-            | [] -> s
-            | HtmlElement("li", _, elements) :: t -> 
-                let state = 
-                    elements |> List.fold (fun s node ->
-                        match node with
-                        | HtmlText(content) -> (content.Trim()) :: s
-                        | _ -> s
-                    ) s
-                    |> List.rev
-                walkListItems state t
-            | _ :: t -> walkListItems s t
-            
 
         let rows = 
-            list.Descendants("li", false) 
-            |> List.ofSeq
-            |> List.collect (fun node -> walkListItems [] (node.DescendantsAndSelf() |> List.ofSeq))
-            |> List.toArray
+            list.Descendants("li", true)
+            |> Seq.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"] >> normalizeWs)
+            |> Seq.toArray
     
         if rows.Length <= 1 then None else
 
@@ -286,9 +309,9 @@ module HtmlRuntime =
         |> List.choose id
 
     let getHtmlObjects inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
-        (doc |> getTables inferenceParameters includeLayoutTables |> List.map Table) 
-        @ (doc |> getLists |> List.map List)
-        @ (doc |> getDefinitionLists |> List.map DefinitionList)
+        Seq.concat [doc |> getTables inferenceParameters includeLayoutTables |> List.map Table
+                    doc |> getLists |> List.map List
+                    doc |> getDefinitionLists |> List.map DefinitionList]
 
 // --------------------------------------------------------------------------------------
 
@@ -301,7 +324,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Underlying representation of the root types generated by HtmlProvider
-type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string,HtmlObject>) =
+type HtmlDocument internal (doc, tables, lists, definitionLists) =
 
     member __.Html = doc
 
@@ -312,18 +335,40 @@ type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string
         let doc = 
             reader 
             |> HtmlDocument.Load
-        let htmlObjects = 
+        let tables = 
             doc
-            |> HtmlRuntime.getHtmlObjects None includeLayoutTables
+            |> HtmlRuntime.getTables None includeLayoutTables
             |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
-        HtmlDocument(doc, htmlObjects)
+        let lists = 
+            doc
+            |> HtmlRuntime.getLists
+            |> List.map (fun e -> e.Name, e) 
+            |> Map.ofList        
+        let definitionLists = 
+            doc
+            |> HtmlRuntime.getDefinitionLists
+            |> List.map (fun e -> e.Name, e) 
+            |> Map.ofList        
+        HtmlDocument(doc, tables, lists, definitionLists)
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member __.GetObject(id:string) = 
-        htmlObjects |> Map.find id
+    member __.GetTable(id:string) = 
+        tables |> Map.find id
+
+    /// [omit]
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    member __.GetList(id:string) = 
+        lists |> Map.find id
+
+    /// [omit]
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    member __.GetDefinitionList(id:string) = 
+        definitionLists |> Map.find id
 
 /// Underlying representation of table types generated by HtmlProvider
 type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:'RowType[], html:HtmlNode) =
@@ -337,15 +382,13 @@ type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'RowType>, doc:HtmlDocument, id:string, hasHeaders:bool) =
-        match doc.GetObject id with
-        | Table table -> 
-            let headers, rows = 
-                if hasHeaders then
-                    Some table.Rows.[0], table.Rows.[1..]
-                else
-                    None, table.Rows
-            HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
-        | _ -> failwithf "Element %s is not a table" id
+        let table = doc.GetTable id
+        let headers, rows = 
+            if hasHeaders then
+                Some table.Rows.[0], table.Rows.[1..]
+            else
+                None, table.Rows
+        HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
 
 /// Underlying representation of list types generated by HtmlProvider
 type HtmlList<'ItemType> internal (name:string, values:'ItemType[], html) = 
@@ -357,16 +400,12 @@ type HtmlList<'ItemType> internal (name:string, values:'ItemType[], html) =
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string,'ItemType>, doc:HtmlDocument, id:string) =
-        match doc.GetObject id with
-        | List list -> HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)
-        | _ -> failwithf "Element %s is not a list" id
+        let list = doc.GetList id
+        HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)
 
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member CreateNested(rowConverter:Func<string,'ItemType>, doc:HtmlDocument, id:string, index:int) =
-        let list = 
-            match doc.GetObject id with
-            | List list-> list
-            | DefinitionList definitionList -> definitionList.Definitions.[index]
-            | _ -> failwithf "Element %s is not a list" id
+        let definitionList = doc.GetDefinitionList id
+        let list = definitionList.Definitions.[index]
         HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)

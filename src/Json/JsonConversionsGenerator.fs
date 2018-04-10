@@ -5,7 +5,7 @@
 module ProviderImplementation.JsonConversionsGenerator
 
 open System
-open Microsoft.FSharp.Quotations
+open FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
@@ -31,7 +31,7 @@ type JsonConversionCallingType =
 
 /// Creates a function that takes Expr<JsonValue option> and converts it to 
 /// an expression of other type - the type is specified by `field`
-let convertJsonValue (replacer:AssemblyReplacer) missingValuesStr cultureStr canPassAllConversionCallingTypes (field:PrimitiveInferedProperty) = 
+let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field:PrimitiveInferedProperty) = 
 
   assert (field.TypeWithMeasure = field.RuntimeType)
   assert (field.Name = "")
@@ -41,7 +41,6 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValuesStr cultureStr can
     | TypeWrapper.None -> field.RuntimeType
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.RuntimeType
     | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.RuntimeType
-    |> replacer.ToRuntime
 
   let wrapInLetIfNeeded (value:Expr) getBody =
     match value with
@@ -74,7 +73,6 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValuesStr cultureStr can
     | TypeWrapper.Nullable, false -> 
         //TODO: not covered in tests
         typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ Some (%%value:IJsonDocument).JsonValue @>)
-    |> replacer.ToRuntime
 
   let conversionCallingType =
     if canPassAllConversionCallingTypes then

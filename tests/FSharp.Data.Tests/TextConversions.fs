@@ -1,9 +1,9 @@
 ﻿module FSharp.Data.Tests.Conversions
 
 #if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #endif
 
 open NUnit.Framework
@@ -31,3 +31,13 @@ let ``Decimal conversions``() =
   TextConversions.AsDecimal (CultureInfo "en-GB") "£50" |> should equal (Some 50M)
   TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal (Some 50M)
   TextConversions.AsDecimal CultureInfo.InvariantCulture "(10,000,000.99)" |> should equal (Some -10000000.99M)
+
+[<Test>]
+let ``DateTime conversions`` () =
+  let case sample result =
+    TextConversions.AsDateTime CultureInfo.InvariantCulture sample
+    |> should equal (Some result)
+
+  case "2016-11-21T10:29:05Z"      <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc)
+  case "2016-11-21T10:29:05"       <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Local)
+  case "2016-11-21T13:29:05+03:00" <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc).ToLocalTime()

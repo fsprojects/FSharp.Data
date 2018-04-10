@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonProvider
 #endif
@@ -9,6 +9,7 @@ module FSharp.Data.Tests.JsonProvider
 open NUnit.Framework
 open FsUnit
 open System
+open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
@@ -26,20 +27,31 @@ let ``Decimal optional field is read as None`` () =
   let prov = NumericFields.Parse(""" {"a":123} """)
   prov.B |> should equal None
 
+let shouldThrow message func =
+    let succeeded = 
+        try 
+            func() |> ignore
+            true
+        with e ->
+            e.Message |> should equal message
+            false
+    if succeeded then
+        Assert.Fail("Exception expected")
+
 [<Test>]
 let ``Reading a required field that is null throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required field that is missing throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"b":123} """)
-  (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required decimal that is not a valid decimal throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":"hello", "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "Expecting a Decimal at '/a', got \"hello\""
 
 [<Test>]
 let ``Reading a required float that is not a valid float returns NaN`` () = 
@@ -88,7 +100,7 @@ let ``Optional strings correctly handled when missing or null``() =
 let ``Optional records correctly handled when missing``() = 
   let tweets = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
   tweets.[0].Place |> should equal None
-  tweets.[13].Place |> should notEqual None
+  tweets.[13].Place |> should not' (equal None)
   tweets.[13].Place.Value.Id |> should equal "741e21eeea82f00a"
 
 [<Test>]
@@ -96,6 +108,34 @@ let ``Optional records correctly handled when null``() =
   let json = JsonProvider<"""[{"milestone":null},{"milestone":{"url":"https://api.github.com/repos/twitter/bootstrap/milestones/19","labels_url":"https://api.github.com/repos/twitter/bootstrap/milestones/19/labels","id":230651}}]""">.GetSamples()
   json.[0].Milestone.IsNone |> should equal true
   json.[0].Milestone.IsSome |> should equal false
+
+[<Literal>]
+let personJson = """
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "address":
+    {
+        "state": "Texas",
+        "city": "Dallas"
+    }
+  }
+,
+{
+    "firstName": "Bas",
+    "lastName": "Rutten",
+    "address": ""
+  }
+]
+"""
+
+[<Test>]
+let ``Optional records correctly handled when empty string``() =
+    let j = JsonProvider<personJson>.GetSamples()
+    j.[0].Address.IsSome |> should equal true
+    j.[0].Address.Value.City |> should equal "Dallas"
+    j.[1].Address |> should equal None
 
 [<Test>]
 let ``Optional collections correctly handled when null``() = 
@@ -177,7 +217,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[3].B.Array    |> should equal (Some [|1|])
     j.[3].C.Boolean  |> should equal None
     j.[3].C.Number   |> should equal None
-    j.[3].C.Record   |> should notEqual None
+    j.[3].C.Record   |> should not' (equal None)
     j.[3].C.Record.Value.Z |> should equal 1
 
 [<Test>]
@@ -312,7 +352,7 @@ let ``Can compare typed JSON documents``() =
     let nested = NestedJSON.GetSample()
 
     simple1 |> should equal simple2
-    nested |> should notEqual simple2
+    nested |> should not' (equal simple2)
 
 type JsonArray = JsonProvider<"""["Adam","Eve","Bonnie","Clyde","Donald","Daisy","Han","Leia"]""">
 
@@ -451,19 +491,27 @@ let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
     dates.UtcTime.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 19, 50, 30, 0)) 
 
-[<Test>]
-[<SetCulture("zh-CN")>]
-let ``Can parse ISO 8601 dates in the correct culture``() =
-    let dates = DateJSON.GetSample()
-    dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+let withCulture (cultureName: string) test = 
+    let originalCulture = CultureInfo.CurrentCulture;
+    try
+        CultureInfo.CurrentCulture <- CultureInfo cultureName
+        test()
+    finally
+        CultureInfo.CurrentCulture <- originalCulture
 
 [<Test>]
-[<SetCulture("pt-PT")>]
+let ``Can parse ISO 8601 dates in the correct culture``() =
+    withCulture "zh-CN" <| fun () ->
+        let dates = DateJSON.GetSample()
+        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+
+[<Test>]
 let ``Can parse ISO 8601 dates in the specified culture``() =
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
-    dates.Birthdate.Month |> should equal 1
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
-    dates.Birthdate.Month |> should equal 2
+    withCulture "pt-PT" <| fun () ->
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
+        dates.Birthdate.Month |> should equal 1
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
+        dates.Birthdate.Month |> should equal 2
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
@@ -616,9 +664,14 @@ let ``Can construct heterogeneous arrays with optionals``() =
 let ``Weird UnitSystem case``() =
     let comments = JsonProvider<"Data/reddit.json">.GetSample()
     let data = comments.Data.Children.[0].Data
-    data.LinkId |> shouldEqual "t3_2424px"
+    data.LinkId |> should equal "t3_2424px"
 
 [<Test>]
 let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
+
+[<Test>]
+let ``Getting a decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 0.800 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting a Int32 at '/y', got 0.800"

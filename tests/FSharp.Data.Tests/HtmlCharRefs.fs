@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlCharRefs
 #endif
@@ -14,7 +14,7 @@ open FSharp.Data.HtmlNode
 open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
-    JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
+    JsonValue.Load(__SOURCE_DIRECTORY__ + "/Data/charrefs.json")?items.AsArray()
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 [<Test>]
@@ -43,3 +43,7 @@ let ``Should substitute char references in attribute``() =
 [<Test>]
 let ``Should handle indeterminate CharRefs``() =
     HtmlCharRefs.substitute "&#xD;" |> should equal "&#xD;"
+
+[<Test>]
+let ``Should handle Unicode characters above 655355``() =
+    HtmlCharRefs.substitute "&#128516;" |> should equal "😄"

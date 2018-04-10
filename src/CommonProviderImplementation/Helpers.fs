@@ -1,6 +1,7 @@
-﻿// --------------------------------------------------------------------------------------
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
 // Helpers for writing type providers
-// ----------------------------------------------------------------------------------------------
 
 namespace ProviderImplementation
 
@@ -8,8 +9,8 @@ open System
 open System.Collections.Generic
 open System.Reflection
 open System.Text
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.IO
 open FSharp.Data.Runtime.StructuralTypes
@@ -20,7 +21,7 @@ open ProviderImplementation.ProvidedTypes
 // ----------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
-module PrimitiveInferedPropertyExtensions =
+module internal PrimitiveInferedPropertyExtensions =
 
     type PrimitiveInferedProperty with
     
@@ -29,13 +30,14 @@ module PrimitiveInferedPropertyExtensions =
           | None -> x.RuntimeType
           | Some unit -> 
               if supportsUnitsOfMeasure x.RuntimeType
-              then ProvidedMeasureBuilder.Default.AnnotateType(x.RuntimeType, [unit])
+              then ProvidedMeasureBuilder.AnnotateType(x.RuntimeType, [unit])
               else failwithf "Units of measure not supported by type %s" x.RuntimeType.Name
+
 
 // ----------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
-module ActivePatterns =
+module internal ActivePatterns =
 
     /// Helper active pattern that can be used when constructing InvokeCode
     /// (to avoid writing pattern matching or incomplete matches):
@@ -55,91 +57,100 @@ module ActivePatterns =
 
 // ----------------------------------------------------------------------------------------------
 
-module ReflectionHelpers = 
+module internal ReflectionHelpers = 
 
-    open Microsoft.FSharp.Quotations
-    
+    open FSharp.Quotations
+    open UncheckedQuotations
+
     let makeDelegate (exprfunc:Expr -> Expr) argType = 
         let var = Var("t", argType)
         let convBody = exprfunc (Expr.Var var)
-        Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
+        Expr.NewDelegateUnchecked(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
 
 // ----------------------------------------------------------------------------------------------
 
-type DisposableTypeProviderForNamespaces() as x =
-    inherit TypeProviderForNamespaces()
+type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
+    inherit TypeProviderForNamespaces(config, ?assemblyReplacementMap=assemblyReplacementMap)
   
-    let mutable disposeActionsByTypeName = Dictionary()
+    let disposeActions = ResizeArray()
   
-    static let idCount = ref 0
+    static let mutable idCount = 0
   
-    let id = !idCount
-  
-    do incr idCount 
-  
-    do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
-  
-    let addDisposeAction typeName action = lock disposeActionsByTypeName <| fun () ->
-        match disposeActionsByTypeName.TryGetValue typeName with
-        | false, _ -> 
-            let disposeActions = ResizeArray()
-            disposeActions.Add action
-            disposeActionsByTypeName.Add(typeName, disposeActions)
-        | true, disposeActions -> disposeActions.Add action
+    let id = idCount
+    let filesToWatch = Dictionary()
 
-    let dispose typeName = lock disposeActionsByTypeName <| fun () ->
-        log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
-        match disposeActionsByTypeName.TryGetValue typeName with
-        | true, disposeActions ->
-            disposeActionsByTypeName.Remove typeName |> ignore
-            for action in disposeActions do
-                action()
-        | false, _ -> ()
-
-    let disposeAll() = lock disposeActionsByTypeName <| fun () ->
-        log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
-        for typeName in Seq.toArray disposeActionsByTypeName.Keys do
-            dispose typeName
+    do idCount <- idCount + 1
+  
+    let dispose typeNameOpt = 
+        lock disposeActions <| fun () -> 
+            for i = disposeActions.Count-1 downto 0 do
+                let disposeAction = disposeActions.[i]
+                let discard = disposeAction typeNameOpt
+                if discard then
+                    disposeActions.RemoveAt(i)
 
     do
-        x.Disposing.Add(fun _ -> disposeAll())
-              
-    interface IDisposableTypeProvider with
-        member __.Invalidate typeName = dispose typeName; ``base``.Invalidate()
-        member __.AddDisposeAction typeName action = addDisposeAction typeName action
-        member __.Id = id
+        log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
+        x.Disposing.Add <| fun _ -> 
+            using (logTime "DisposingEvent" (sprintf "%O [%d]" x id)) <| fun _ ->
+                dispose None
+
+    member __.Id = id
+
+    member __.SetFileToWatch(fullTypeName, path) =
+        lock filesToWatch <| fun () -> 
+            filesToWatch.[fullTypeName] <- path
+
+    member __.GetFileToWath(fullTypeName) =
+        lock filesToWatch <| fun () -> 
+            match filesToWatch.TryGetValue(fullTypeName) with
+            | true, path -> Some path
+            | _ -> None
+
+    member __.AddDisposeAction action = 
+        lock disposeActions <| fun () -> disposeActions.Add action
+
+    member __.InvalidateOneType typeName = 
+        using (logTime "InvalidateOneType" (sprintf "%s in %O [%d]" typeName x id)) <| fun _ ->
+            dispose (Some typeName)
+            log (sprintf "Calling invalidate for %O [%d]" x id)
+        base.Invalidate()
+
+#if LOGGING_ENABLED
+
+    override x.Finalize() = 
+        log (sprintf "Finalize %O [%d]" x id)
+
+#endif
 
 // ----------------------------------------------------------------------------------------------
 
-module ProviderHelpers =
+module internal ProviderHelpers =
 
     open System.IO
-    open Microsoft.FSharp.Reflection
     open FSharp.Data.Runtime.Caching
-    open FSharp.Data.Runtime.IO
 
     let unitsOfMeasureProvider = 
         { new StructuralInference.IUnitsOfMeasureProvider with
-            member x.SI(str) = ProvidedMeasureBuilder.Default.SI str
-            member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Default.Product(measure1, measure2)
-            member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Default.Inverse(denominator) }
+            member x.SI(str) = ProvidedMeasureBuilder.SI str
+            member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Product(measure1, measure2)
+            member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Inverse(denominator) }
 
-    let asyncMap (replacer:AssemblyReplacer) (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
-        let (?) = ProviderImplementation.QuotationBuilder.(?)
+    let asyncMap (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
+        let (?) = QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
-        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
-        Expr.Let(f, convFunc, body) |> replacer.ToRuntime
+        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) 
+        Expr.Let(f, convFunc, body) 
 
     let some (typ:Type) arg =
-        let unionCase = 
-            FSharpType.GetUnionCases(typedefof<option<_>>.MakeGenericType typ)
-            |> Seq.find (fun x -> x.Name = "Some")
-        Expr.NewUnionCase(unionCase, [ arg ])
+        let unionType = typedefof<option<_>>.MakeGenericType typ
+        let meth = unionType.GetMethod("Some")
+        Expr.Call(meth, [arg])
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
-    let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
+    let private webUrisCache = createInternetFileCache "DesignTimeURIs" cacheDuration
     
     type private ParseTextResult<'T> =
         { TypedSamples : 'T []
@@ -147,48 +158,20 @@ module ProviderHelpers =
           SampleIsWebUri : bool
           SampleIsResource : bool }
 
-    type private EmbeddedResourceReader() =
-        inherit MarshalByRefObject()
-
-        static do
-            AppDomain.CurrentDomain.add_AssemblyResolve(ResolveEventHandler(fun _ args -> 
-                if args.Name = typeof<EmbeddedResourceReader>.Assembly.FullName then 
-                    typeof<EmbeddedResourceReader>.Assembly 
-                else 
-                    null))
-
-        member private __.ReadResource(referencedAssemblies, asmName, resourceName) =
-            try
-                let asmLocation = 
-                    referencedAssemblies
-                    |> Array.tryFind (fun (x:string) -> x.EndsWith(asmName + ".dll", StringComparison.InvariantCultureIgnoreCase))
-                let asm = 
-                    match asmLocation with
-                    | Some asmLocation -> Assembly.LoadFrom(asmLocation)
-                    | None -> Assembly.Load(asmName)
-                use sr = new StreamReader(asm.GetManifestResourceStream(resourceName))
+    let ReadResource(tp: DisposableTypeProviderForNamespaces, resourceName:string) =
+        match resourceName.Split(',') with
+        | [| asmName; name |] -> 
+            let bindingCtxt = tp.TargetContext
+            match bindingCtxt.TryBindSimpleAssemblyNameToTarget(asmName.Trim()) with
+            | Choice1Of2 asm -> 
+                use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
                 Some(sr.ReadToEnd())
-            with _ -> 
-                None
-
-        static member ReadResource(referencedAssemblies, resourceName:string) =
-            match resourceName.Split(',') with
-            | [| asmName; name |] ->
-                try 
-                    let domain = AppDomain.CreateDomain "Embedded Resource Reader"
-                    try
-                        let reader = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location,
-                                                                        typeof<EmbeddedResourceReader>.FullName) :?> EmbeddedResourceReader
-                        reader.ReadResource(referencedAssemblies, asmName.Trim(), name.Trim())
-                    finally
-                        AppDomain.Unload domain
-                with _ -> None
             | _ -> None
+        | _ -> None
 
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
-    /// and a filesystem watcher that calls the invalidate function whenever the file changes is setup
     /// 
     /// Parameters:
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
@@ -199,15 +182,15 @@ module ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
-    let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
+    let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:DisposableTypeProviderForNamespaces) 
                                       (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
-        using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
+        using (logTime "LoadingSample" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
             if String.IsNullOrWhiteSpace(optResource)
             then None 
-            else EmbeddedResourceReader.ReadResource(cfg.ReferencedAssemblies, optResource)
+            else ReadResource(tp, optResource)
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -242,9 +225,11 @@ module ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                use reader = 
-                    asyncRead (Some (tp, fullTypeName)) resolver formatName encodingStr uri
-                    |> Async.RunSynchronously
+                let reader, toWatch = asyncRead resolver formatName encodingStr uri
+                // Non need to register file watchers in fsc.exe and fsi.exe
+                if cfg.IsInvalidationSupported  then 
+                    toWatch |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
+                use reader = reader |> Async.RunSynchronously
                 match maxNumberOfRows with
                 | None -> reader.ReadToEnd()
                 | Some max ->
@@ -263,13 +248,9 @@ module ProviderHelpers =
               
                 let sample, isWeb = 
                     if isWeb uri then
-                        match webUrisCache.TryRetrieve uri.OriginalString with
-                        | Some value -> value, true
-                        | None ->
-                            let value = readText()
-                            webUrisCache.Set(uri.OriginalString, value)
-                            value, true
-                    else readText(), false
+                        webUrisCache.GetOrAdd(uri.OriginalString, readText), true
+                    else 
+                        readText(), false
                     
                 { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
                   SampleIsUri = true
@@ -296,31 +277,72 @@ module ProviderHelpers =
         { //the generated type
           GeneratedType : ProvidedTypeDefinition 
           //the representation type (what's returned from the constructors, may or may not be the same as Type)
-          RepresentationType : Type 
+          RepresentationType : Type
           // the constructor from a text reader to the representation
           CreateFromTextReader : Expr<TextReader> -> Expr
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    let private providedTypesCache = Dictionary()
-    
-    // Caches the generated types by name for up to 30 minutes, the same duration of web caches
-    // If there's a file invalidation, this cache is also invalidated
-    let internal getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion) cacheDuration f =
-      
-        let key = fullTypeName, runtimeVersion
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
+    let private activeDisposeActions = HashSet<_>()
 
-        match providedTypesCache.TryGetValue key with
-        | true, (providedType, time) when DateTime.Now - time < cacheDuration -> 
-            log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
+    // Cache generated types for a short time, since VS invokes the TP multiple tiems
+    // Also cache temporarily during partial invalidation since the invalidation of one TP always causes invalidation of all TPs
+    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:DisposableTypeProviderForNamespaces) (fullTypeName:string) f =
+      
+        using (logTime "GeneratingProvidedType" (sprintf "%s [%d]" fullTypeName tp.Id)) <| fun _ ->
+
+        let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
+  
+        let setupDisposeAction providedType fileToWatch =
+  
+            if activeDisposeActions.Add(fullTypeName, tp.Id) then
+            
+                log "Setting up dispose action"
+                
+                let watcher = 
+                    match fileToWatch with
+                    | Some file ->
+                        let name = sprintf "%s [%d]" fullTypeName tp.Id
+                        let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                        Some (watchForChanges file (name, invalidateAction))
+                    | None -> None
+                
+                // On disposal of one of the types, remove that type from the cache, and add all others to the cache
+                tp.AddDisposeAction <| fun typeNameBeingDisposedOpt ->
+                
+                    // might be called more than once for each watcher, but the Dispose action is a NOP the second time
+                    watcher |> Option.iter (fun watcher -> watcher.Dispose())
+                
+                    match typeNameBeingDisposedOpt with
+                    | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed -> 
+                        providedTypesCache.Remove(fullTypeName)
+                        log (sprintf "Dropping dispose action for %s [%d]" fullTypeName tp.Id)
+                        // for the case where a file used by two TPs, when the file changes
+                        // there will be two invalidations: A and B
+                        // when the dispose action is called with A, A is removed from the cache
+                        // so we need to remove the dispose action so it will won't be added when disposed is called with B
+                        true
+                    | _ -> 
+                        log (sprintf "Caching %s [%d] for 5 minutes" fullTypeName tp.Id)
+                        providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
+                        // for the case where a file used by two TPs, when the file changes
+                        // there will be two invalidations: A and B
+                        // when the dispose action is called with A, B is added to the cache
+                        // so we need to keep the dispose action around so it will be called with B and the cache is removed
+                        false
+          
+        match providedTypesCache.TryRetrieve(fullTypeName) with
+        | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 -> 
+            log "Retrieved from cache"
+            setupDisposeAction providedType watchedFile
             providedType
         | _ -> 
             let providedType = f()
-            log (sprintf "Creating cache for %s [%d]" fullTypeName tp.Id)
-            providedTypesCache.[key] <- (providedType, DateTime.Now)
-            tp.AddDisposeAction fullTypeName <| fun () -> 
-                log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
-                providedTypesCache.Remove key |> ignore
+            log "Caching for 5 minutes"
+            let fileToWatch = tp.GetFileToWath(fullTypeName)
+            providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
+            setupDisposeAction providedType fileToWatch
             providedType
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
@@ -331,15 +353,16 @@ module ProviderHelpers =
     /// * getSpecFromSamples - receives a seq of parsed samples and returns a TypeProviderSpec
     /// * tp -> the type provider
     /// * cfg -> the type provider config
-    /// * replacer -> the assemblyReplacer
     /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
-                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
+    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
+                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
+        getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
+
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
         
@@ -349,7 +372,6 @@ module ProviderHelpers =
             else
                 [| parseSingle extension value |]
         
-        getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
@@ -357,51 +379,52 @@ module ProviderHelpers =
         let spec = getSpecFromSamples parseResult.TypedSamples
         
         let resultType = spec.RepresentationType
-        let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
-        
-        using (logTime "TypeGeneration" sampleOrSampleUri) <| fun _ ->
+        let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) 
+
+        using (logTime "CommonTypeGeneration" sampleOrSampleUri) <| fun _ ->
         
         [ // Generate static Parse method
           let args = [ ProvidedParameter("text", typeof<string>) ]
-          let m = ProvidedMethod("Parse", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton text) -> 
-              <@ new StringReader(%%text) :> TextReader @>
-              |> spec.CreateFromTextReader 
+          let m = ProvidedMethod("Parse", args, resultType, isStatic = true,  
+                                    invokeCode  = fun (Singleton text) -> 
+                                        <@ new StringReader(%%text) :> TextReader @> 
+                                        |> spec.CreateFromTextReader )
           m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
           yield m :> MemberInfo
           
           // Generate static Load stream method
           let args = [ ProvidedParameter("stream", typeof<Stream>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton stream) ->       
-              <@ new StreamReader(%%stream:Stream) :> TextReader @>
-              |> spec.CreateFromTextReader 
+          let m = ProvidedMethod("Load", args, resultType, isStatic = true, 
+                                    invokeCode = fun (Singleton stream) ->   
+                                        <@ new StreamReader(%%stream:Stream) :> TextReader @> 
+                                        |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified stream" formatName
           yield m :> _
         
           // Generate static Load reader method
           let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton reader) -> 
-              reader |> Expr.Cast |> spec.CreateFromTextReader
+          let m = ProvidedMethod("Load", args, resultType, isStatic = true, 
+                                    invokeCode = fun (Singleton reader) ->  
+                                        let reader = reader |> Expr.Cast 
+                                        reader |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified reader" formatName
           yield m :> _
           
           // Generate static Load uri method
           let args = [ ProvidedParameter("uri", typeof<string>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton uri) -> 
-              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @>
-              |> spec.CreateFromTextReader 
+          let m = ProvidedMethod("Load", args, resultType, isStatic = true,  
+                                    invokeCode = fun (Singleton uri) -> 
+                                         <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @> 
+                                         |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
         
           // Generate static AsyncLoad uri method
           let args = [ ProvidedParameter("uri", typeof<string>) ]
-          let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton uri) -> 
-              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
-              asyncMap replacer resultType readerAsync spec.CreateFromTextReader
+          let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, isStatic = true,
+                                     invokeCode = fun (Singleton uri) -> 
+                                         let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
+                                         asyncMap resultType readerAsync spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
           
@@ -415,48 +438,49 @@ module ProviderHelpers =
                   if not resultType.IsArray then
                   
                       let resultTypeArray = resultType.MakeArrayType()
-                      let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
+                      let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) 
                       
                       // Generate static GetSamples method
-                      let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
-                      m.InvokeCode <- fun _ -> 
-                          if parseResult.SampleIsUri 
-                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
-                          else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
-                          |> spec.CreateFromTextReaderForSampleList
+                      let m = ProvidedMethod("GetSamples", [], resultTypeArray, isStatic = true,
+                                                invokeCode = fun _ -> 
+                                                  if parseResult.SampleIsUri 
+                                                  then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
+                                                  else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
+                                                  |> spec.CreateFromTextReaderForSampleList)
                       yield m :> _
                               
                       if parseResult.SampleIsUri  then
                           // Generate static AsyncGetSamples method
-                          let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
-                          m.InvokeCode <- fun _ -> 
-                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
-                              asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
+                          let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, isStatic = true,
+                                                    invokeCode = fun _ -> 
+                                                      let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
+                                                      spec.CreateFromTextReaderForSampleList 
+                                                      |> asyncMap resultTypeArray readerAsync)
                           yield m :> _
               
               else 
               
                 let name = if resultType.IsArray then "GetSamples" else "GetSample"
-              
-                let getSampleCode = fun _ -> 
+                let getSampleCode _ =
                     if parseResult.SampleIsUri  
                     then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
                     else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                     |> spec.CreateFromTextReader
-              
+
                 // Generate static GetSample method
-                yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
+                yield ProvidedMethod(name, [], resultType, isStatic = true, 
+                                        invokeCode = getSampleCode) :> _
                           
                 if not sampleIsList && spec.GeneratedType :> Type = spec.RepresentationType then
                     // Generate default constructor
-                    yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
+                    yield ProvidedConstructor([], invokeCode = getSampleCode) :> _
               
                 if parseResult.SampleIsUri then
                     // Generate static AsyncGetSample method
-                    let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
-                    m.InvokeCode <- fun _ -> 
-                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
-                        asyncMap replacer resultType readerAsync spec.CreateFromTextReader
+                    let m = ProvidedMethod("Async" + name, [], resultTypeAsync, isStatic = true, 
+                                              invokeCode = fun _ -> 
+                                                let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
+                                                asyncMap resultType readerAsync spec.CreateFromTextReader)
                     yield m :> _
         
         ] |> spec.GeneratedType.AddMembers

@@ -171,17 +171,17 @@ type XmlRuntime =
     else None
 
   /// Returns the contents of the element as a JsonValue
-  static member GetJsonValue(xml, cultureStr) = 
+  static member GetJsonValue(xml) = 
     match XmlRuntime.TryGetValue(xml) with
-    | Some jsonStr -> JsonDocument.Create(new StringReader(jsonStr), cultureStr)
+    | Some jsonStr -> JsonDocument.Create(new StringReader(jsonStr))
     | None -> failwithf "XML mismatch: Element doesn't contain value: %A" xml
 
   /// Tries to return the contents of the element as a JsonValue
-  static member TryGetJsonValue(xml, cultureStr) = 
+  static member TryGetJsonValue(xml) = 
     match XmlRuntime.TryGetValue(xml) with
     | Some jsonStr -> 
         try
-            JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
+            JsonDocument.Create(new StringReader(jsonStr)) |> Some
         with _ -> None
     | None -> None
 
@@ -197,7 +197,14 @@ type XmlRuntime =
             (^a : (member ToString : IFormatProvider -> string) (v, cultureInfo)) 
         let serialize (v:obj) =
             match v with
-            | :? XmlElement as v -> box v.XElement
+            | :? XmlElement as v ->
+                let xElement = 
+                    if v.XElement.Parent = null then
+                        v.XElement
+                    else 
+                        // clone, as element is connected to previous parent
+                        XElement(v.XElement)
+                box xElement
             | _ ->
                 match v with
                 | :? string        as v -> v
@@ -249,6 +256,7 @@ type XmlRuntime =
         | [| |] -> ()
         | [| v |] when v :? string && element.Attribute(xname) = null -> element.SetAttributeValue(xname, v)
         | _ -> failwithf "Unexpected attribute value: %A" value
+    let parents = System.Collections.Generic.Dictionary()
     for nameWithNS, value in elements do
         if nameWithNS = "" then // it's the value
             match toXmlContent value with
@@ -263,17 +271,24 @@ type XmlRuntime =
                     if v.Name.ToString() <> parentNames.[0] then
                         failwithf "Unexpected element: %O" v
                     let v = 
-                        (v, Seq.skip 1 parentNames)
-                        ||> Seq.fold (fun element nameWithNS -> 
+                        (v, Seq.skip 1 parentNames |> Seq.mapi (fun x i -> x, i))
+                        ||> Seq.fold (fun element ((_, nameWithNS) as key) -> 
                             if element.Parent = null then 
-                                let parent = createElement null nameWithNS 
+                                let parent = 
+                                    match parents.TryGetValue key with
+                                    | true, parent -> parent
+                                    | false, _ -> 
+                                        let parent = createElement null nameWithNS 
+                                        parents.Add(key, parent)
+                                        parent
                                 parent.Add element
                                 parent
                             else 
                                 if element.Parent.Name.ToString() <> nameWithNS then
                                     failwithf "Unexpected element: %O" v
                                 element.Parent)
-                    element.Add v
+                    if v.Parent = null then
+                        element.Add v
                 | :? string as v -> 
                     let child = createElement element nameWithNS 
                     child.Value <- v

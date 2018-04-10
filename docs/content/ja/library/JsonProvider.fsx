@@ -23,7 +23,7 @@ JSON 型プロバイダーにはJSONドキュメントを静的に型付けさ�
 以下のようにするとF# Interactive上でアセンブリをロードできます：
 *)
 
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -251,8 +251,8 @@ printfn "%s (%d 回リツイートされました)\n:%s"
 
 *)
 
-
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+// GitHub.json downloaded from https://api.github.com/repos/fsharp/FSharp.Data/issues to prevent rate limit when generating these docs
+type GitHub = JsonProvider<"../../data/GitHub.json">
 
 let topRecentlyUpdatedIssues = 
     GitHub.GetSamples()

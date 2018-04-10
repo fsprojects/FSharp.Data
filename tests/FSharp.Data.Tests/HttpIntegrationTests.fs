@@ -1,5 +1,6 @@
 ﻿module FSharp.Data.Tests.HttpIntegrationTests
 
+#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
 open System
 open System.IO
 open System.Net
@@ -15,18 +16,18 @@ open FSharp.Data.HttpRequestHeaders
 // ? operator to get values from a Nancy DynamicDictionary
 let (?) (parameters:obj) param =
     (parameters :?> Nancy.DynamicDictionary).[param]
- 
+let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+
 let config = HostConfiguration()
 config.UrlReservations.CreateAutomatically <- true
 let nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
 
-let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
-[<TestFixtureSetUp>]
+[<OneTimeSetUp>]
 let fixtureSetup() =
     nancyHost.Start()
 
-[<TestFixtureTearDown>]
+[<OneTimeTearDown>]
 let fixtureTearDown() =
     nancyHost.Stop()
 
@@ -34,14 +35,14 @@ let fixtureTearDown() =
 let setUp() =
     MockServer.recordedRequest := null
 
-[<Test>] 
+[<Test>]
 let ``should set everything correctly in the HTTP request`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  query = [ "search", "jeebus"; "qs2", "hi mum" ],
                  headers = [ Accept "application/xml" ],
                  cookies = ["SESSIONID", "1234"],
                  body = TextRequest "some JSON or whatever") |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Query?search.ToString() |> should equal "jeebus"
     MockServer.recordedRequest.Value.Query?qs2.ToString() |> should equal "hi mum"
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("application/xml", 1m)
@@ -73,18 +74,23 @@ let ``all details of the response should be available`` () =
     response.Headers.["X-New-Fangled-Header"] |> should equal "some value"
 
 [<Test>]
+let ``cookies with protocol-prefixed domains should be handled`` () =
+    let response = Http.Request("http://localhost:1235/TestServer/BadCookieDomain", silentHttpErrors=true)
+    response.Cookies.["gift"] |> should equal "krampus"
+
+[<Test>]
 let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
 [<Test>]
-[<Platform("Net")>]
 let ``all of the manually-set request headers get sent to the server`` ()=
+  if not runningOnMono then 
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ "accept", "application/xml,text/html;q=0.3"
-                             AcceptCharset "utf-8, utf-16;q=0.5" 
+                             AcceptCharset "utf-8, utf-16;q=0.5"
                              AcceptDatetime (DateTime(2007,5,31,20,35,0))
                              AcceptLanguage "en-GB, en-US;q=0.1"
-                             Authorization  "QWxhZGRpbjpvcGVuIHNlc2FtZQ==" 
+                             Authorization  "QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
                              Connection "conn1"
                              ContentMD5 "Q2hlY2sgSW50ZWdyaXR5IQ=="
                              ContentType "application/json"
@@ -107,7 +113,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
                              Warning "199 Miscellaneous warning"
                              "X-Greeting", "Happy Birthday" ]) |> ignore
 
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("application/xml", 1m)
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("text/html", 0.3m)
     MockServer.recordedRequest.Value.Headers.AcceptCharset |> should contain ("utf-8", 1m)
@@ -133,7 +139,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.["Range"] |> should equal ["bytes=0-500"]
     MockServer.recordedRequest.Value.Headers.["Referer"] |> should equal ["http://en.wikipedia.org/"]
     MockServer.recordedRequest.Value.Headers.["Upgrade"] |> should contain "HTTP/2.0"
-    MockServer.recordedRequest.Value.Headers.["Upgrade"] |> should contain "SHTTP/1.3" 
+    MockServer.recordedRequest.Value.Headers.["Upgrade"] |> should contain "SHTTP/1.3"
     MockServer.recordedRequest.Value.Headers.UserAgent |> should equal "(X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0"
     MockServer.recordedRequest.Value.Headers.["Via"] |> should contain ("1.0 fred")
     MockServer.recordedRequest.Value.Headers.["Via"] |> should contain ("1.1 example.com (Apache/1.1)")
@@ -141,15 +147,26 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.["X-Greeting"] |> should equal ["Happy Birthday"]
 
 [<Test>]
+let ``Encoding from content-type used`` () =
+    Http.Request(
+        "http://localhost:1235/TestServer/RecordRequest",
+        body = TextRequest "Hi Müm",
+        headers = [ ContentType "application/bike; charset=utf-8"]) |> ignore
+    MockServer.recordedRequest.Value |> should not' (be null)
+    use bodyStream = new StreamReader(MockServer.recordedRequest.Value.Body,Encoding.GetEncoding("utf-8"))
+    bodyStream.ReadToEnd() |> should equal "Hi Müm"
+    MockServer.recordedRequest.Value.Headers.ContentLength |> should equal 7
+
+[<Test>]
 let ``Content-Length header is set automatically for Posts with a body`` () =
     Http.Request("http://localhost:1235/TestServer/RecordRequest", body = TextRequest "Hi Mum") |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.ContentLength |> should equal 6
 
 [<Test>]
 let ``accept-encoding header is set automatically when decompression scheme is set`` () =
     Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
+    MockServer.recordedRequest.Value |> should not' (be null)
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "gzip"
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "deflate"
 
@@ -157,7 +174,7 @@ open FSharp.Data.HttpResponseHeaders
 
 [<Test>]
 let ``all of the response headers are available`` () =
-    let response = Http.Request "http://localhost:1235/TestServer/AllHeaders" 
+    let response = Http.Request "http://localhost:1235/TestServer/AllHeaders"
     response.Headers.[AccessControlAllowOrigin] |> should equal "*"
     response.Headers.[AcceptRanges] |> should equal "bytes"
     response.Headers.[Age] |> should equal "12"
@@ -189,10 +206,7 @@ let ``all of the response headers are available`` () =
         response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
     response.Headers.[StrictTransportSecurity] |> should equal "max-age=16070400; includeSubDomains"
     response.Headers.[Trailer] |> should equal "Max-Forwards"
-    if runningOnMono then
-        response.Headers.[TransferEncoding] |> should equal "chunked,chunked"
-    else
-        response.Headers.[TransferEncoding] |> should equal "chunked"
+    response.Headers.[TransferEncoding] |> should equal "chunked"
     response.Headers.[Vary] |> should equal "*"
     response.Headers.[Via] |> should equal "1.0 fred, 1.1 example.com (Apache/1.1)"
     response.Headers.[Warning] |> should equal "199 Miscellaneous warning"
@@ -206,20 +220,39 @@ let ``if a response character encoding is specified, that encoding is used regar
 
 [<Test>]
 let ``if an invalid response character encoding is specified, an exception is thrown`` () =
-    (fun() -> Http.Request("http://localhost:1235/TestServer/MoonLanguageCorrectEncoding", responseEncodingOverride="gibberish") |> ignore) 
+    (fun() -> Http.Request("http://localhost:1235/TestServer/MoonLanguageCorrectEncoding", responseEncodingOverride="gibberish") |> ignore)
     |> should throw typeof<ArgumentException>
 
 [<Test>]
 let ``if a response character encoding is NOT specified, the body is read using the character encoding specified in the response's content-type header`` () =
-    let response = Http.Request "http://localhost:1235/TestServer/MoonLanguageCorrectEncoding" 
+    let response = Http.Request "http://localhost:1235/TestServer/MoonLanguageCorrectEncoding"
     response.Body |> should equal (Text "яЏ§§їДЙ")
 
 [<Test>]
 let ``if a response character encoding is NOT specified, and character encoding is NOT specified in the response's content-type header, the body is read using ISO Latin 1 character encoding`` () =
-    let response = Http.Request "http://localhost:1235/TestServer/MoonLanguageNoEncoding" 
+    let response = Http.Request "http://localhost:1235/TestServer/MoonLanguageNoEncoding"
     response.Body |> should equal (Text "ÿ§§¿ÄÉ") // "яЏ§§їДЙ" (as encoded with windows-1251) decoded with ISO-8859-1 (Latin 1)
 
 [<Test>]
 let ``if a response character encoding is NOT specified, and the character encoding specified in the response's content-type header is invalid, an exception is thrown`` () =
-    (fun() -> Http.Request "http://localhost:1235/TestServer/MoonLanguageInvalidEncoding"  |> ignore) 
+    (fun() -> Http.Request "http://localhost:1235/TestServer/MoonLanguageInvalidEncoding"  |> ignore)
     |> should throw typeof<ArgumentException>
+
+open System.IO
+
+[<Test>]
+let ``can send multipart without blowing up`` () =
+    let normalizeNewlines (s: string) = s.Replace("\r\n", "\n")
+    let text = "I am some file bytes"
+    let expected = """--test
+Content-Disposition: form-data; name="file"; filename="thing.txt"
+Content-Type: text/plain
+
+I am some file bytes
+--test--"""
+    let body = Multipart("test", [ MultipartItem("file", "thing.txt", new MemoryStream(System.Text.Encoding.UTF8.GetBytes text) :> Stream) ])
+    let response = Http.RequestStream("http://localhost:1235/TestServer/Multipart", silentHttpErrors = true, httpMethod = "Post", body = body)
+    response.StatusCode |> should equal 200
+    let contents = (new StreamReader(response.ResponseStream)).ReadToEnd() |> normalizeNewlines
+    contents |> should equal (normalizeNewlines expected)
+#endif

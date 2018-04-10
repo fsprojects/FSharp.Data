@@ -5,8 +5,8 @@ namespace ProviderImplementation
 
 open System
 open System.IO
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data
@@ -19,12 +19,12 @@ open ProviderImplementation.QuotationBuilder
 
 [<TypeProvider>]
 type public CsvProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some typeof<obj>)
+  let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -59,8 +59,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       let value = 
         if value = "" then 
           use reader = new StringReader(schema)
-          let schemaStr = 
-              CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+          let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
           Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
         else
           value
@@ -79,27 +78,40 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) 
 
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
       
-      let paramType = (replacer.ToRuntime typedefof<seq<_>>).MakeGenericType(rowType)
+      let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
       let headers = 
         match sampleCsv.Headers with 
         | None -> <@@ None: string[] option @@> 
         | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
 
-      let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], InvokeCode = (fun (Singleton paramValue) ->
-        let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, fixedWidth, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
-        Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
+      let ctor = 
+          ProvidedConstructor(
+              [ ProvidedParameter("rows", paramType) ], 
+              invokeCode = (fun (Singleton paramValue) ->
+                let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, fixedWidth, headers, sampleCsv.NumberOfColumns, separators, quote)
+                Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
-       
+
+      let parseRows = 
+          ProvidedMethod("ParseRows", 
+              [ProvidedParameter("text", typeof<string>)], 
+              rowType.MakeArrayType(), 
+              isStatic = true,
+              invokeCode = fun (Singleton text) ->         
+                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
+                Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
+      csvType.AddMember parseRows
+
       { GeneratedType = csvType
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
           let body = 
-            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, fixedWidth,
+            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, fixedWidth,
                                               separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
@@ -107,7 +119,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName maxNumberOfRows
+                 getSpecFromSamples version this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
@@ -138,7 +150,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        You can also specify a unit and the name of the column like this: `Name (type&lt;unit&gt;)`, or you can override only the name. If you don't want to specify all the columns, you can reference the columns by name like this: `ColumnName=type`.</param>
        <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line.</param>
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.</param>
-       <param name='SkipRows'>SKips the first n rows of the CSV file.</param>
+       <param name='SkipRows'>Skips the first n rows of the CSV file.</param>
        <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</param>
        <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `""` for missing values. Defaults to false.</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to `"`.</param>

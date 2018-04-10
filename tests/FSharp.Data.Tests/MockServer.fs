@@ -1,10 +1,13 @@
 ﻿module FSharp.Data.Tests.MockServer
 
+#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
 open Nancy
 open Nancy.Hosting.Self
 open System
 open System.Threading
 open System.Text
+open System.Text.RegularExpressions
+open System.IO
 
 // A Nancy Response overridden to allow different encoding on the body
 type EncodedResponse(body:string, encoding:string) =
@@ -120,3 +123,25 @@ type FakeServer() as self =
                 let response = "body" |> Nancy.Response.op_Implicit
                 response.StatusCode <- HttpStatusCode.OK
                 response :> obj
+
+        self.Get.["BadCookieDomain"] <-
+            fun _ ->
+                let response = "body" |> Nancy.Response.op_Implicit
+                response.WithCookie("gift", "krampus", Nullable<DateTime>(), "http://localhost", "/")
+                        .WithStatusCode(HttpStatusCode.OK) :> obj
+
+        self.Post.["Multipart"] <- 
+            fun _ -> 
+                let multipartRegex = Regex("^multipart/form-data;\\s*boundary=(.*)$", RegexOptions.IgnoreCase)
+                match multipartRegex.Match self.Request.Headers.ContentType with
+                | m when not m.Success  -> 
+                    let response = "Expected Multipart form data" |> Nancy.Response.op_Implicit
+                    response.WithStatusCode(HttpStatusCode.BadRequest) :> _
+                | m -> 
+                    let response = Nancy.Response.op_Implicit 200
+                    response.Contents <- 
+                        fun stream -> 
+                            do self.Request.Body.CopyTo stream
+                            stream.Flush()
+                    response :> _
+#endif

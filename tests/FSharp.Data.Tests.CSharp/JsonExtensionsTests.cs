@@ -13,7 +13,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void Properties_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             
             var properties = jsonValue.Properties();
             
@@ -25,7 +25,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void GetProperty_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             var property = jsonValue.GetProperty("PropertyOne");
             Assert.AreEqual("string value", property.AsString());
         }
@@ -33,7 +33,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void TryGetProperty_with_valid_JSON()
         {
-            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson);
             var property = jsonValue.TryGetProperty("PropertyTwo");
             Assert.AreEqual(FSharpOption<JsonValue>.None, property);
         }
@@ -92,6 +92,22 @@ namespace FSharp.Data.Tests.CSharp
             JsonValue jsonValue = JsonValue.NewString("4/23/1982");
             DateTime result = jsonValue.AsDateTime();
             Assert.AreEqual(new DateTime(1982, 4, 23), result);
+        }
+
+        [Test]
+        public void AsDateTime_with_valid_epoch_date_and_negative_timezone()
+        {
+            JsonValue jsonValue = JsonValue.NewString(@"/Date(1434067200000-0000)/");
+            DateTime result = jsonValue.AsDateTime();
+            Assert.AreEqual(new DateTime(2015, 6, 12), result);
+        }
+
+        [Test]
+        public void AsDateTime_with_valid_epoch_date_and_positive_timezone()
+        {
+            JsonValue jsonValue = JsonValue.NewString(@"/Date(1434067200000+0000)/");
+            DateTime result = jsonValue.AsDateTime();
+            Assert.AreEqual(new DateTime(2015, 6, 12), result);
         }
 
         [Test]

@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlProvider
 #endif
@@ -11,7 +11,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let simpleHtml = """<html>
@@ -58,7 +58,7 @@ let ``Can create type for simple table``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 1`` |> should equal 1
 
-type MarketDepth = HtmlProvider<"data/marketdepth.htm">
+type MarketDepth = HtmlProvider<"Data/MarketDepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
@@ -68,7 +68,7 @@ let ``Can infer tables out of the market depth file``() =
 
 [<Test>]
 let ``NuGet table gets all rows``() =
-    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.``Version History``
+    let table = HtmlProvider<"Data/NuGet.html">.GetSample().Tables.``Version History``
     table.Rows.Length |> should equal 35
 
 [<Test>]
@@ -309,5 +309,38 @@ let ``Handles closing tag with number in script (Bug 800)``() =
             </html>""">.GetSample()
     let data = html.Html.Descendants ["a"] |> Seq.toList
     data.Length |> should equal 4
-   
-   
+
+type DoctorWho = FSharp.Data.HtmlProvider<"Data/doctor_who2.html">
+
+[<Test>]   
+let ``List and Table with same nome don't clash``() =
+    DoctorWho().Lists.``Reference websites``.Values.[0] |> should equal "Doctor Who on TARDIS Data Core, an external wiki"
+    DoctorWho().Tables.``Reference websites``.Rows.[0].Awards |> should equal "Preceded by The Bill"
+
+[<Test>]
+let ``Count columns correctly in the presence of colspans (Bug 989)``() =
+    let html = HtmlProvider<"""
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                   <table>
+                            <tbody>
+                                <tr>
+                                    <th scope="col" colspan="2">Double</th>
+                                    <th scope="col" colspan="1">Single</th>
+                                </tr>
+                                <tr>
+                                    <td>Single</th>
+                                    <td colspan="2">Double</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </body>
+                </body>
+            </html>""">.GetSample()
+    let table = html.Tables.Table1
+    match table.Headers with
+    | None -> failwith "No headers found"
+    | Some headers -> headers |> should equal [| "Double"; "Double"; "Single" |]
