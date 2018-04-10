@@ -27,20 +27,31 @@ let ``Decimal optional field is read as None`` () =
   let prov = NumericFields.Parse(""" {"a":123} """)
   prov.B |> should equal None
 
+let shouldThrow message func =
+    let succeeded = 
+        try 
+            func() |> ignore
+            true
+        with e ->
+            e.Message |> should equal message
+            false
+    if succeeded then
+        Assert.Fail("Exception expected")
+
 [<Test>]
 let ``Reading a required field that is null throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required field that is missing throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"b":123} """)
-  (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required decimal that is not a valid decimal throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":"hello", "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "Expecting a Decimal at '/a', got \"hello\""
 
 [<Test>]
 let ``Reading a required float that is not a valid float returns NaN`` () = 
@@ -660,3 +671,7 @@ let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
 
+[<Test>]
+let ``Getting a decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 0.800 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting a Int32 at '/y', got 0.800"
