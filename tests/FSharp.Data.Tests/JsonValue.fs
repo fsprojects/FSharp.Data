@@ -188,7 +188,7 @@ let ``Can parse array of numbers``() =
 
 [<Test>]
 let ``Can parse array of numbers when culture is using comma as decimal separator``() =
-    withCulture "sv-SE" <| fun () ->
+    withCulture "de-DE" <| fun () ->
         CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator |> should equal ","
         let j = JsonValue.Parse("[25,5,5,25]")
         j.[0] |> should equal (JsonValue.Number 25m)
