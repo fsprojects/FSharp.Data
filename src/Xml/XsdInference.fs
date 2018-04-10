@@ -18,6 +18,7 @@ namespace ProviderImplementation
 
 open System.Xml
 open System.Xml.Schema
+open FSharp.Data
 
 /// Simplified model to represent schemas (XSD).
 module XsdModel =
@@ -192,7 +193,7 @@ module XsdParsing =
     type ResolutionFolderResolver(resolutionFolder: string) =
         inherit XmlUrlResolver()
 
-        let cache, _ = Caching.createInternetFileCache "XmlSchema" (System.TimeSpan.FromMinutes 30.0)
+        let cache = Caching.createInternetFileCache "XmlSchema" (System.TimeSpan.FromMinutes 30.0)
 
         let uri = // Uri must end with separator (maybe there's a better way)
             if resolutionFolder = "" then ""
@@ -226,10 +227,10 @@ module XsdParsing =
             if IO.isWeb absoluteUri 
             then
                 let uri = absoluteUri.OriginalString
-                match cache.TryRetrieve uri with
+                match cache.TryRetrieve(uri) with
                 | Some value -> value
                 | None ->
-                    let value = FSharp.Data.Http.RequestString uri //TODO async?
+                    let value = Http.RequestString uri //TODO async?
                     cache.Set(uri, value)
                     value
                 |> fun value ->

@@ -23,11 +23,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   let ns = "FSharp.Data"
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
 
-  let cache = System.Collections.Concurrent.ConcurrentDictionary<string, ProvidedTypeDefinition>()
-
   let buildTypes (typeName:string) (args:obj[]) = 
-   cache.GetOrAdd(typeName, fun typeName ->
-
+  
     // Generate the required type
     let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
@@ -91,17 +88,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    let result =
-        if schema = "" then
-            generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                version this cfg encodingStr resolutionFolder resource typeName None
-        else
-            generateType "XML" schema false parseSingleSchema parseListOfSchema getSpecFromSchema 
-                version this cfg "" resolutionFolder resource typeName None
-    async { do! Async.Sleep (10000)
-            if cache <> null then cache.TryRemove(typeName) |> ignore } |> Async.Start
-    result
-   )
+    if schema = "" then
+        generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
+            version this cfg encodingStr resolutionFolder resource typeName None
+    else
+        generateType "XML" schema false parseSingleSchema parseListOfSchema getSpecFromSchema 
+            version this cfg "" resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
