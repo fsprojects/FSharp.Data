@@ -22,17 +22,16 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
     let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
     let runtimeAssembly =
         match platform with
-        | Net45 -> root ++ assemblyName
-        | Portable7 -> root ++ "portable7" ++ assemblyName
-        | Portable259 -> root ++ "portable259" ++ assemblyName
+        | Net45 -> root ++ "net45" ++ assemblyName
+        | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
     let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
 let dumpAll inst =
     dump false false Net45 false inst
-//    dump false false Portable7 false inst
-//    dump false false Portable259 false inst
+//    dump false false NetStandard16 false inst
+//    dump false false NetStandard20 false inst
 
 let parameters : HtmlInference.Parameters = 
     { MissingValues = TextConversions.DefaultMissingValues

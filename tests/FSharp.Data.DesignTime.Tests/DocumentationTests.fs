@@ -1,18 +1,12 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting/lib/net40"
-#I "../../packages/FSharpVSPowerTools.Core/lib/net45"
-#r "System.Web.Razor.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.MetadataFormat.dll"
-#r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.DocumentationTests
 #endif
 
+#if !NETCOREAPP2_0 // no FSharp.Formatting available
 open NUnit.Framework
 open System.IO
 open FSharp.Literate
@@ -24,6 +18,7 @@ open FSharp.CodeFormat
 let (@@) a b = Path.Combine(a, b)
 
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
+let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
@@ -46,15 +41,13 @@ let processFile file =
 #else
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
 #endif
-  Seq.append
-    (literateDoc.Errors 
-     |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
+  [| for  (SourceError(startl, endl, kind, msg)) in literateDoc.Errors do
        if msg <> "Multiple references to 'mscorlib.dll' are not permitted" &&
           not (msg.Contains("Possible incorrect indentation: this token is offside of context started at position")) then
-         Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-       else None))
-    (evaluationErrors |> Seq.map (fun x -> x.ToString()))
-  |> String.concat "\n"
+         yield sprintf "%A %s (%s)" (startl, endl) msg file
+     for x in evaluationErrors  do
+         yield x.ToString()
+  |] |> String.concat "\n"
 
 // ------------------------------------------------------------------------------------
 // Core API documentation
@@ -71,10 +64,11 @@ for file in docFiles do
 
 [<Test>]
 [<TestCaseSource "docFiles">]
-[<Platform("Mono")>]
 let ``Documentation generated correctly `` file = 
-  let errors = processFile file
-  if errors <> "" then
-    Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
+  if runningOnMono then 
+    let errors = processFile file
+    if errors <> "" then
+      Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
 
+#endif
 #endif

@@ -25,7 +25,7 @@ JSONとXML間の変換を自身のコードで使いたい場合には
 *)
 
 #r "System.Xml.Linq.dll"
-#r "../../../../bin/FSharp.Data.dll"
+#r "../../../../bin/lib/net45/FSharp.Data.dll"
 open System.Xml.Linq
 open FSharp.Data
 

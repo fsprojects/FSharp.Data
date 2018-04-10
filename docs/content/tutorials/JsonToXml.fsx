@@ -23,7 +23,7 @@ We will be using the LINQ to XML API (available in `System.Xml.Linq.dll`) and th
 *)
 
 #r "System.Xml.Linq.dll"
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open System.Xml.Linq
 open FSharp.Data
 

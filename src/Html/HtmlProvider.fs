@@ -4,7 +4,7 @@
 namespace ProviderImplementation
 
 open System
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data
