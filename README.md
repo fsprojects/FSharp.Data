@@ -8,6 +8,8 @@ We're open to contributions from anyone. If you want to help out but don't know 
 
 You can see the version history [here](RELEASE_NOTES.md).
 
+[![NuGet Badge](http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data)
+
 ## Building
 
 - Install .NET SDK 2.1.100 or higher
