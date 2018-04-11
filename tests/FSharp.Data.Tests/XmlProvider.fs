@@ -559,7 +559,7 @@ let ``Roundtripping works correctly``() =
 
 
 type ElemWithAttrs = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
@@ -577,9 +577,9 @@ let ``attributes are parsed``() =
     let elm = ElemWithAttrs.Parse "<foo bar='aa' />"
     elm.Bar |> should equal "aa"
     elm.Baz |> should equal None
-    
+
 type ElemWithQualifiedAttrs = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       targetNamespace="http://test.001"
       elementFormDefault="qualified" attributeFormDefault="qualified">
       <xs:element name="foo">
@@ -597,10 +597,10 @@ let ``qualified attributes are parsed``() =
     let elm = ElemWithQualifiedAttrs.Parse xml
     elm.Baz |> should equal 2
     elm.Bar |> should equal "aa"
-    
+
 
 type TwoElems = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
@@ -621,13 +621,13 @@ type TwoElems = XmlProvider<Schema = """
 let ``multiple root elements are handled``() =
     let elm = TwoElems.Parse "<foo bar='aa' baz='2' />"
     match elm.Foo, elm.Azz with
-    | Some x, None -> 
+    | Some x, None ->
         x.Bar |> should equal "aa"
         x.Baz |> should equal (Some 2)
     | _ -> failwith "Invalid"
     let elm = TwoElems.Parse "<azz foffolo='aa' fuffola='2017-12-22' />"
     match elm.Foo, elm.Azz with
-    | None, Some x -> 
+    | None, Some x ->
         x.Foffolo |> should equal "aa"
         x.Fuffola |> should equal (Some <| System.DateTime(2017, 12, 22))
     | _ -> failwith "Invalid"
@@ -636,7 +636,7 @@ let ``multiple root elements are handled``() =
 
 
 type AttrsAndSimpleContent = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
@@ -665,7 +665,7 @@ let ``element with attributes can have simple content``() =
 
 
 type UntypedElement = XmlProvider<Schema = """
-  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo" />
   </xs:schema>""">
@@ -683,7 +683,7 @@ let ``untyped elements have only the XElement property``() =
 
 
 type Wildcard = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
@@ -708,8 +708,8 @@ let ``wildcard elements have only the XElement property``() =
   foo.XElement.Element(XName.Get "anything").FirstAttribute.Value
   |> should equal "abc"
 
-type RecursiveElements = XmlProvider<Schema = """ 
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+type RecursiveElements = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:complexType name="TextType" mixed="true">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -735,22 +735,22 @@ let ``recursive elements are supported``() =
         <bold />
       </bold>
     </italic>
-    """ 
+    """
   //printfn "%A" doc.XElement
   match doc.Bold, doc.Italic, doc.Underline with
-  | None, Some x, None -> 
+  | None, Some x, None ->
     x.Bolds.Length |> should equal 2
     x.Italics.Length |>should equal 0
     x.Underlines.Length |> should equal 1
     x.Bolds.[1].Bolds.Length |> should equal 1
-        
-  | _ -> failwith "unexpected"
-  
 
- 
+  | _ -> failwith "unexpected"
+
+
+
 
 type ElmWithChildChoice = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
@@ -766,14 +766,14 @@ type ElmWithChildChoice = XmlProvider<Schema = """
 let ``choice makes properties optional``() =
     let foo = ElmWithChildChoice.Parse "<foo><baz>1957-08-13</baz></foo>"
     foo.Bar |> should equal None
-    foo.Baz |> should equal (Some <| System.DateTime(1957, 8, 13))  
+    foo.Baz |> should equal (Some <| System.DateTime(1957, 8, 13))
     let foo = ElmWithChildChoice.Parse "<foo><bar>5</bar></foo>"
     foo.Bar |> should equal (Some 5)
     foo.Baz |> should equal None
 
 
 type ElmWithMultipleChildElements = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
           <xs:complexType>
@@ -797,10 +797,10 @@ let ``multiple child elements become an array``() =
     foo.Bars.[0] |> should equal 42
     foo.Bars.[1] |> should equal 43
     foo.Baz |> should equal (Some(System.DateTime(1957, 08, 13)))
-        
+
 
 type SubstGroup = XmlProvider<Schema = """
-  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="name" type="xs:string"/>
         <xs:element name="navn" substitutionGroup="name"/>
@@ -817,22 +817,22 @@ type SubstGroup = XmlProvider<Schema = """
 let ``substitution groups are like choices``() =
   let doc = SubstGroup.Parse "<kunde><name>hello</name></kunde>"
   match doc.Customer, doc.Kunde with
-  | None, Some x -> 
+  | None, Some x ->
     x.Name |> should equal (Some "hello")
     x.Navn |> should equal None
   | _ -> failwith "unexpected"
-  
+
   let doc = SubstGroup.Parse "<kunde><navn>hello2</navn></kunde>"
   match doc.Customer, doc.Kunde with
-  | None, Some x -> 
+  | None, Some x ->
     x.Navn |> should equal (Some "hello2")
-    x.Name |> should equal None    
+    x.Name |> should equal None
   | _ -> failwith "unexpected"
 
 
 
 type SimpleSchema = XmlProvider<Schema = """
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" 
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/"
   xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
   <complexType name="root">
     <sequence>
@@ -897,7 +897,7 @@ type SimpleSchema = XmlProvider<Schema = """
 
 [<Test>]
 let ``simple schema is parsed``() =
-    let xml = 
+    let xml =
          """<?xml version="1.0" encoding="utf-8"?>
               <tns:rootElm xmlns:tns="https://github.com/FSharp.Data/">
                 <elem>it starts with a number</elem>
@@ -915,7 +915,7 @@ let ``simple schema is parsed``() =
                   <covert>True</covert>
                 </anonymousTyped>
               </tns:rootElm>
-         """ 
+         """
     let root = SimpleSchema.Parse xml
     let choices = root.Choices
     choices.[1].Country.Value     |> should equal "1" // an integer is mapped to string (BigInteger would be better)
@@ -925,7 +925,7 @@ let ``simple schema is parsed``() =
     root.AnonymousTyped.Windy     |> should equal (Some "strong")
 
 type Nums = XmlProvider<Schema = """
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
         elementFormDefault="qualified" >
         <xs:element name='A'>
             <xs:complexType>
@@ -948,3 +948,35 @@ let ``numeric types are partially supported``() =
     Nums.Parse("<A float='2' />").Float |> should equal (Some "2") // should be float32
     Nums.Parse("<A double='2' />").Double |> should equal (Some 2.0) // float
 
+type SameNames = XmlProvider<Schema="""
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="X">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="E1" type="xs:string"/>
+        <xs:element name="X" type="T"/>
+      </xs:sequence>
+    </xs:complexType>
+   </xs:element>
+  <xs:complexType name="T">
+    <xs:sequence>
+      <xs:element name="E2" type="xs:string"/>
+      <xs:element name="X" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>""">
+
+[<Test>]
+let ``different types with the same name are supported``() =
+    let xml = """
+    <X>
+      <E1>a</E1>
+      <X>
+        <E2>b</E2>
+        <X>c</X>
+      </X>
+    </X>"""
+    let x = SameNames.Parse xml
+    x.E1   |> should equal "a"
+    x.X.E2 |> should equal "b"
+    x.X.X  |> should equal "c"
