@@ -980,3 +980,108 @@ let ``different types with the same name are supported``() =
     x.E1   |> should equal "a"
     x.X.E2 |> should equal "b"
     x.X.X  |> should equal "c"
+
+type SchemaWithExtension = XmlProvider<Schema="""<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="items" type="ItemsType"/>
+  <xs:complexType name="ItemsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="hat" type="ProductType"/>
+      <xs:element name="umbrella" type="RestrictedProductType"/>
+      <xs:element name="shirt" type="ShirtType"/>
+    </xs:choice>
+  </xs:complexType>
+  <!--Empty Content Type-->
+  <xs:complexType name="ItemType" abstract="true">
+  </xs:complexType>
+  <!--Empty Content Extension (with Attribute Extension)-->
+  <xs:complexType name="ProductType">
+    <xs:sequence>
+      <xs:element name="number" type="xs:integer"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="description"
+                   type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:anyAttribute />
+  </xs:complexType>
+  <!--Complex Content Restriction-->
+  <xs:complexType name="RestrictedProductType">
+    <xs:complexContent>
+      <xs:restriction base="ProductType">
+        <xs:sequence>
+          <xs:element name="number" type="xs:integer"/>
+          <xs:element name="name" type="xs:token"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--Complex Content Extension-->
+  <xs:complexType name="ShirtType">
+    <xs:complexContent>
+      <xs:extension base="ProductType">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="size" type="SmallSizeType"/>
+          <xs:element name="color" type="ColorType"/>
+        </xs:choice>
+        <xs:attribute name="sleeve" type="xs:integer"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--Simple Content Extension-->
+  <xs:complexType name="SizeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:integer">
+        <xs:attribute name="system" type="xs:token"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!--Simple Content Restriction-->
+  <xs:complexType name="SmallSizeType">
+    <xs:simpleContent>
+      <xs:restriction base="SizeType">
+        <xs:minInclusive value="2"/>
+        <xs:maxInclusive value="6"/>
+        <xs:attribute  name="system" type="xs:token"
+                        use="required"/>
+      </xs:restriction>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ColorType">
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+</xs:schema>""">
+
+[<Test>]
+let ``Extension on complex types``() =
+    let xml =
+        """<?xml version="1.0"?>
+           <items>
+             <!--You have a CHOICE of the next 3 items at this level-->
+             <hat routingNum="100" effDate="2008-09-29" lang="string">
+               <number>100</number>
+               <name>string</name>
+               <!--Optional:-->
+               <description>string</description>
+             </hat>
+             <umbrella routingNum="1" effDate="1900-01-01">
+               <number>100</number>
+               <name>token</name>
+             </umbrella>
+             <shirt routingNum="1" effDate="1900-01-01" sleeve="100">
+               <number>100</number>
+               <name>token</name>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <size system="token">6</size>
+               <color value="string"/>
+             </shirt>
+           </items>"""
+
+    let items = SchemaWithExtension.Parse xml
+    items.Hats.Length |> should equal 1
+    items.Hats.[0].Number |> should equal "100"
+    items.Hats.[0].Name |> should equal "string"
+    items.Hats.[0].Description |> should equal (Some "string")
+    items.Umbrellas.Length |> should equal 1
+    items.Umbrellas.[0].Number |> should equal "100"
+    items.Umbrellas.[0].Name |> should equal "token"
+    items.Shirts.Length |> should equal 1
+    items.Shirts.[0].Sleeve |> should equal (Some "100")
