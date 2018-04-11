@@ -839,7 +839,24 @@ let ``substitution groups are supported``() =
 
     check xsd [| sample1; sample2; sample3; sample4 |]
 
-
+[<Test>]
+let ``list fallback to string``() =
+    let xsd = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:simpleType name="listOfInts">
+          <xs:list itemType="xs:int"/>
+        </xs:simpleType>
+        <xs:element name="nums">
+          <xs:complexType>
+		    <xs:simpleContent>
+			  <xs:extension base="listOfInts" />
+		    </xs:simpleContent>
+		  </xs:complexType>
+        </xs:element>
+    </xs:schema>"""
+    let sample = """<nums>40 50 60</nums>"""
+    check xsd [| sample |]
 
 
 open System.Xml.Schema

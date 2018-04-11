@@ -103,6 +103,11 @@ module XsdParsing =
 
     open XsdModel
 
+    let getTypeCode (xmlSchemaDatatype: XmlSchemaDatatype) =
+        if xmlSchemaDatatype.Variety = XmlSchemaDatatypeVariety.Atomic
+        then xmlSchemaDatatype.TypeCode
+        else XmlTypeCode.None // list and union not supported
+
     let rec parseElement (ctx: ParsingContext) elm =
         match ctx.Elements.TryGetValue elm with
         | true, x -> x
@@ -125,7 +130,7 @@ module XsdParsing =
         // computing the real type after filling the dictionary allows for cycles
         result.Type <-
             match elm.ElementSchemaType with
-            | :? XmlSchemaSimpleType  as x -> SimpleType x.Datatype.TypeCode
+            | :? XmlSchemaSimpleType  as x -> SimpleType  (getTypeCode x.Datatype)
             | :? XmlSchemaComplexType as x -> ComplexType (parseComplexType ctx x)
             | x -> failwithf "unknown ElementSchemaType: %A" x
         result
@@ -137,12 +142,12 @@ module XsdParsing =
             |> Seq.filter (fun a -> a.Use <> XmlSchemaUse.Prohibited)
             |> Seq.map (fun a ->
                 a.QualifiedName,
-                a.AttributeSchemaType.Datatype.TypeCode,
+                getTypeCode a.AttributeSchemaType.Datatype,
                 a.Use <> XmlSchemaUse.Required)
             |> List.ofSeq
           Contents =
             match x.ContentType with
-            | XmlSchemaContentType.TextOnly -> SimpleContent x.Datatype.TypeCode
+            | XmlSchemaContentType.TextOnly -> SimpleContent (getTypeCode x.Datatype)
             | XmlSchemaContentType.Mixed
             | XmlSchemaContentType.Empty
             | XmlSchemaContentType.ElementOnly ->
