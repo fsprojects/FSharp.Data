@@ -1279,11 +1279,9 @@ module internal CookieHandling =
             if startsWithIgnoreCase prefix str
             then str.Substring(prefix.Length)
             else str
-
-        [| for cookieStr in cookies do
+        let createCookie (cookieParts:string[]) =
             let cookie = Cookie()
-            cookieStr.Split ';'
-            |> Array.iteri (fun i cookiePart ->
+            cookieParts |> Array.iteri (fun i cookiePart ->
                 let cookiePart = cookiePart.Trim()
                 if i = 0 then
                     let firstEqual = cookiePart.IndexOf '='
@@ -1299,8 +1297,8 @@ module internal CookieHandling =
                 elif cookiePart |> startsWithIgnoreCase "domain" then
                     let kvp = cookiePart.Split '='
                     if kvp.Length > 1 then
-                        let domain =
-                            kvp.[1]
+                        let domain = 
+                            kvp.[1] 
                             // remove spurious domain prefixes
                             |> stripPrefix "http://"
                             |> stripPrefix "https://"
@@ -1311,14 +1309,17 @@ module internal CookieHandling =
                 elif cookiePart |> equalsIgnoreCase "httponly" then
                     cookie.HttpOnly <- true
             )
-
-            if cookie.Domain = "" then
-                cookie.Domain <- responseUri.Host
-
-            let uriString = (if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path
-            match Uri.TryCreate(uriString, UriKind.Absolute) with
-                    | true, uri -> yield uri, cookie
-                    | _ -> ()
+            cookie
+        [| for cookieStr in cookies do
+            let cookieParts = cookieStr.Split([|';'|],StringSplitOptions.RemoveEmptyEntries)
+            if cookieParts.Length > 0 then
+                let cookie = createCookie cookieParts
+                if cookie.Domain = "" then
+                    cookie.Domain <- responseUri.Host
+                let uriString = (if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path
+                match Uri.TryCreate(uriString, UriKind.Absolute) with
+                | true, uri -> yield uri, cookie
+                | _ -> ()
         |]
 
 /// Utilities for working with network via HTTP. Includes methods for downloading
