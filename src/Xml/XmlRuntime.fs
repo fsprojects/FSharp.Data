@@ -86,7 +86,7 @@ type XmlElement =
   static member Create(reader:TextReader) =    
     use reader = reader
     let text = reader.ReadToEnd()
-    let element = XDocument.Parse(text).Root 
+    let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
   
   /// [omit]
