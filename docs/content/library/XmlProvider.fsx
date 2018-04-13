@@ -390,12 +390,63 @@ printfn "%s was born in %d" turing.Surname turing.BirthDate.Year
 (**
 The properties of the provided type are derived from the schema instead of being inferred from samples.
 
+Usually a schema is not specified as plain text but stored in a file like
+[`data/po.xsd`](../data/po.xsd) and the uri is set in the `Schema` parameter:
+*)
+
+type PurchaseOrder = XmlProvider<Schema="../data/po.xsd">
+
+(**
 When the file includes other schema files, the `ResolutionFolder` parameter can help locating them.
+The uri may also refer to online resources:
+*)
+
+type RssXsd = XmlProvider<Schema = "http://europa.eu/rapid/conf/RSS20.xsd">
+
+(**
 
 The schema is expected to define a root element (a global element with complex type).
-In case of multiple root elements the provided type has an optional property for each alternative.
+In case of multiple root elements:
+*)
 
-### Sequence and Choice
+type TwoRoots = XmlProvider<Schema = """
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="root1">
+      <xs:complexType>
+        <xs:attribute name="foo" type="xs:string" use="required" />
+        <xs:attribute name="fow" type="xs:int" />
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="root2">
+      <xs:complexType>
+        <xs:attribute name="bar" type="xs:string" use="required" />
+        <xs:attribute name="baz" type="xs:date" use="required" />
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+""">
+
+(**
+the provided type has an optional property for each alternative:
+*)
+
+let e1 = TwoRoots.Parse "<root1 foo='aa' fow='2' />"
+match e1.Root1, e1.Root2 with
+| Some x, None ->
+    printfn "Foo = %s and Fow = %A" x.Foo x.Fow
+| _ -> failwith "Unexpected"
+
+let e2 = TwoRoots.Parse "<root2 bar='aa' baz='2017-12-22' />"
+match e2.Root1, e2.Root2 with
+| None, Some x ->
+    printfn "Bar = %s and Baz = %O" x.Bar x.Baz
+| _ -> failwith "Unexpected"
+
+(**
+
+
+### Common XSD constructs: sequence and choice
 
 A `sequence` is the most common way of structuring elements in a schema.
 The following xsd defines `foo` as a sequence made of an arbitrary number
@@ -470,7 +521,7 @@ Another xsd construct to model the content of an element is `all`, which is used
 it's like a sequence where the order of elements does not matter. The corresponding provided type
 in fact is essentially the same as for a sequence.
 
-### Substitution Groups
+### Advanced schema constructs
 
 XML Schema provides various extensibility mechanisms. The following example
 is a terse summary mixing substitution groups with abstract recursive definitions.
@@ -507,6 +558,26 @@ printfn "%s" formula.Ands.[0].Props.[1] // p3
 (**
 Substitution groups are like choices, and the type provider produces an optional
 property for each alternative.
+
+### Remarks on using a schema
+The XML Type Provider supports most XSD features.
+Anyway the [XML Schema](https://www.w3.org/XML/Schema) specification is rich and complex and also provides a
+fair degree of [openness](http://docstore.mik.ua/orelly/xml/schema/ch13_02.htm)
+which may be [difficult to handle](https://link.springer.com/chapter/10.1007/978-3-540-76786-2_6) in
+data binding tools; but in F# Data, when providing typed views on elements becomes too challenging
+(take for example [wildcards](https://www.w3.org/TR/xmlschema11-1/#Wildcards)) the underlying `XElement`
+is still available.
+
+An important design decision is to focus on elements and not on complex types; while the latter
+may be valuable in schema design, our goal is simply to obtain an easy and safe way to access xml data.
+In other words the provided types are not intended for domain modeling (it's one of the very few cases
+where optional properties are preferred to sum types).
+Hence, we do not provide types corresponding to complex types in a schema but only corresponding
+to elements (of course the underlying complex types still affect the shape of the provided types
+but this happens only implicitly).
+Focusing on element shapes let us generate a type that should be essentially the same as one
+inferred from a significant set of valid samples. This allows a smooth transition (replacing `Sample` with `Schema`)
+when a schema becomes available.
 
 ## Related articles
 
