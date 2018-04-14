@@ -10,35 +10,36 @@ open System.Text
 open FSharp.Data.Runtime.IO
 
 type ICache<'TKey, 'TValue> = 
-  abstract TryRetrieve : key:'TKey -> 'TValue option
   abstract Set : key:'TKey * value:'TValue -> unit
-  abstract GetOrAdd : key:'TKey * valueFactory:(unit -> 'TValue) -> 'TValue
+  abstract TryRetrieve : key:'TKey * ?extendCacheExpiration:bool -> 'TValue option
   abstract Remove : key:'TKey -> unit
 
 /// Creates a cache that uses in-memory collection
 let createInMemoryCache (expiration:TimeSpan) = 
     let dict = ConcurrentDictionary<'TKey_,'TValue*DateTime>()
-    let queueInvalidation key = 
+    let rec invalidationFunction key = 
         async { 
             do! Async.Sleep (int expiration.TotalMilliseconds) 
             match dict.TryGetValue(key) with
-            | true, (_, timestamp) when DateTime.UtcNow - timestamp >= expiration -> 
-                match dict.TryRemove(key) with
-                | true, _ -> log (sprintf "Cache expired: %O" key)
-                | _ -> ()
+            | true, (_, timestamp) -> 
+                if DateTime.UtcNow - timestamp >= expiration then
+                    match dict.TryRemove(key) with
+                    | true, _ -> log (sprintf "Cache expired: %O" key)
+                    | _ -> ()
+                else
+                    do! invalidationFunction key
             | _ -> ()
-        } |> Async.Start
+        }
     { new ICache<_,_> with
         member __.Set(key, value) =
             dict.[key] <- (value, DateTime.UtcNow)
-            queueInvalidation key
-        member __.GetOrAdd(key, valueFactory) = 
-            dict.GetOrAdd(key, fun key ->
-                queueInvalidation key
-                valueFactory(), DateTime.UtcNow) |> fst
-        member __.TryRetrieve(key) =
+            invalidationFunction key |> Async.Start
+        member x.TryRetrieve(key, ?extendCacheExpiration) =
             match dict.TryGetValue(key) with
-            | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> Some value
+            | true, (value, timestamp) when DateTime.UtcNow - timestamp < expiration -> 
+                if extendCacheExpiration = Some true then 
+                    dict.[key] <- (value, DateTime.UtcNow)
+                Some value
             | _ -> None
         member __.Remove(key) = 
             match dict.TryRemove(key) with
@@ -81,7 +82,15 @@ let createInternetFileCache prefix expiration =
 
     let cache = 
       { new ICache<string, string> with 
-          member __.TryRetrieve(key) = 
+          member __.Set(key, value) = 
+            let cacheFile = cacheFile key
+            try File.WriteAllText(cacheFile, value)
+            with e ->
+                Debug.WriteLine("Caching: Failed to write file {0} with an exception: {1}", cacheFile, e.Message)
+
+          member __.TryRetrieve(key, ?extendCacheExpiration) = 
+            if extendCacheExpiration = Some true then 
+                failwith "Not implemented"
             let cacheFile = cacheFile key
             try
               if File.Exists cacheFile && File.GetLastWriteTimeUtc cacheFile - DateTime.UtcNow < expiration then
@@ -94,20 +103,6 @@ let createInternetFileCache prefix expiration =
               Debug.WriteLine("Caching: Failed to read file {0} with an exception: {1}", cacheFile, e.Message)
               None
                 
-          member __.Set(key, value) = 
-            let cacheFile = cacheFile key
-            try File.WriteAllText(cacheFile, value)
-            with e ->
-                Debug.WriteLine("Caching: Failed to write file {0} with an exception: {1}", cacheFile, e.Message)
-
-          member x.GetOrAdd(key, valueFactory) = 
-            match x.TryRetrieve key with
-            | Some value -> value
-            | None -> 
-                let value = valueFactory()
-                x.Set(key, value)
-                value
-
           member __.Remove(key) = 
             let cacheFile = cacheFile key
             try 
