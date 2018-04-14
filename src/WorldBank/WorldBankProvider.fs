@@ -20,7 +20,7 @@ open FSharp.Data.Runtime.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
-    let asm, _version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
