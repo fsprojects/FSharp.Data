@@ -248,7 +248,14 @@ module internal ProviderHelpers =
               
                 let sample, isWeb = 
                     if isWeb uri then
-                        webUrisCache.GetOrAdd(uri.OriginalString, readText), true
+                        let text = 
+                            match webUrisCache.TryRetrieve(uri.OriginalString) with
+                            | Some text -> text
+                            | None -> 
+                                let text = readText()
+                                webUrisCache.Set(uri.OriginalString, text)
+                                text
+                        text, true
                     else 
                         readText(), false
                     
@@ -332,7 +339,7 @@ module internal ProviderHelpers =
                         // so we need to keep the dispose action around so it will be called with B and the cache is removed
                         false
           
-        match providedTypesCache.TryRetrieve(fullTypeName) with
+        match providedTypesCache.TryRetrieve(fullTypeName, true) with
         | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 -> 
             log "Retrieved from cache"
             setupDisposeAction providedType watchedFile
