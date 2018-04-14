@@ -25,7 +25,7 @@ module private Helpers =
 
   // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
   // is already taken care of before AsDateTime is called
-  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", RegexOptions.Compiled)
+  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)([-+]\d+)?\)/$", RegexOptions.Compiled)
 
   let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
