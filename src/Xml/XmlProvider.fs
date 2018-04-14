@@ -64,8 +64,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    let parseSingleSchema _ value = XsdParsing.parseSchema resolutionFolder value
-    let parseListOfSchema _ _ = failwith "unexpected call to parseListOfSchema"
+    let parseXsd _ xsdText = [| XsdParsing.parseSchema resolutionFolder xsdText |]
 
     let getSpecFromSchema schemaSet = 
 
@@ -92,8 +91,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
                      this cfg encodingStr resolutionFolder resource typeName None
     else
-        generateType "XML" schema false parseSingleSchema parseListOfSchema getSpecFromSchema 
-            this cfg "" resolutionFolder resource typeName None
+        getOrCreateProvidedType cfg this typeName <| fun () ->
+        let parseResult = parseTextAtDesignTime schema parseXsd "XSD" this cfg 
+                            encodingStr resolutionFolder resource typeName None
+        let spec = getSpecFromSchema parseResult.TypedSamples
+        generateParseAndLoadMembers spec cfg.IsHostedExecution cfg.ResolutionFolder resolutionFolder "XSD" encodingStr
+        spec.GeneratedType
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
