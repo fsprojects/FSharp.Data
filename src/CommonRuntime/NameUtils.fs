@@ -13,8 +13,8 @@ let private tryAt (s:string) i = if i >= s.Length then None else Some s.[i]
 let private sat f (c:option<char>) = match c with Some c when f c -> Some c | _ -> None
 let private (|EOF|_|) c = match c with Some _ -> None | _ -> Some ()
 let private (|LetterDigit|_|) = sat Char.IsLetterOrDigit
-let private (|Upper|_|) = sat Char.IsUpper
-let private (|Lower|_|) = sat Char.IsLower
+let private (|Upper|_|) = sat (fun c -> Char.IsUpper c || Char.IsDigit c)
+let private (|Lower|_|) = sat (fun c -> Char.IsLower c || Char.IsDigit c)
 
 // --------------------------------------------------------------------------------------
 

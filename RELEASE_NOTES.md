@@ -1,12 +1,140 @@
-#### 2.2.0 - Unreleased
+#### 3.0.0-beta4 - Unreleased
+* (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
+* Fixed handling of empty cookie headers.
+* (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
+* Improved the performance of the type provider design time components.
+* Added support for fixed width files.
+
+#### 3.0.0-beta3 - April 9 2018
+* Increased type caches TTL from 10 seconds to 5 minutes.
+
+#### 3.0.0-beta2 - April 09 2018
+* Fixed memory leaks inside the the type provider design time components.
+* Improved the performance of the type provider design time components.
+
+#### 3.0.0-beta - April 04 2018
+* Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0.
+* Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md).
+* Integer values for optional parameter for the `System.Text.Encoding` are only supported when the F# compiler
+  is run using .NET Framework. By default, new-style .NET SDK project files run the F# compiler with .NET Core.
+  To force the use of an F# compiler running with .NET Framework see [this guide](https://github.com/Microsoft/visualfsharp/issues/3303).
+
+#### 2.4.6 - March 25 2018
+* Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
+* `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
+* Prevent superfluous encoding of URL parameters.
+
+#### 2.4.5 - February 19 2018
+* Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.
+* Fix handling of multipart form data payloads whose size exceeded ~80k bytes.
+
+#### 2.4.4 - January 20 2018
+* Fix parsing of unquoted HTML attributes containing URLs.
+* Fixed HTTP form body url encoding.
+
+#### 2.4.3 - December 03 2017
+* Added GetColumnIndex and TryGetColumnIndex to CsvFile.
+* Fixed outdated examples in the documentation that no longer worked.
+* Fixed parsing of script elements with JavaScript string literals, regular expression literals, or comments, that looked like HTML tags.
+* Fixed parsing of cookie values containing the '=' character.
+
+#### 2.4.2 - October 09 2017
+* Prioritize dates over decimals in type inference.
+
+#### 2.4.1 - September 30 2017
+* Fix regression introduced in 2.4.0 in HTTP stream reading.
+
+#### 2.4.0 - September 24 2017
+* Fix css selectors not working outside the body element.
+* Add support for Multipart Form Data content in the HTTP implementation.
+* Added TryParse to JsonValue.
+* Fix parsing of self closing HTML tags.
+* FSharp.Core 4.3.0.0 (F# 3.0), .NET 4.0, and PCL profile 47 are no longer supported.
+
+#### 2.3.3 - April 10 2017
+* Specify kind on Date header to UTC.
+* Support for escaped special characters in CSS selectors.
+* Fix crash when saving CSV files with nulls.
+* Fix leakage of connections when HTTP requests time out.
+* Fixed numbers not being preserved correctly when generating names.
+* Fixed DOCTYPE being dropped when saving HTML documents.
+* Added omission on the API that prevented creating HTML CDATA elements.
+* Improved performance when parsing CDATA in HTML documents.
+* Improve performance of number and DateTime parsing.
+
+#### 2.3.2 - July 24 2016
+* Add support for HTML entities with Unicode characters above 65535.
+* Improve resilience when parsing invalid Set-Cookie headers.
+
+#### 2.3.1 - June 19 2016
+* Add support for specifying timeouts when doing HTTP request.
+
+#### 2.3.1-beta2 - May 21 2016
+* Preserve response stream in case of HTTP failures.
+* Handle cookies with commas in their value correctly.
+
+#### 2.3.1-beta1 - May 2 2016
+* Fix runtime parsing of optional records with empty strings in JsonProvider.
+* Added HTML CSS selectors to browse the DOM of parsed HTML files using the jQuery selectors syntax.
+* Fix round tripping of XmlProvider generated types.
+
+#### 2.3.0 - May 1 2016
+* Handle cookies with "http://"-prefixed domain value correctly.
+* Fixed Pre and Code HTML tags loosing the formating.
+* Added LINQPad samples.
+* Fixed quotes not being escaped when saving CSV files.
+* Fixed crash on systems where WebRequest.DefaultWebProxy is null.
+
+#### 2.3.0-beta2 - December 21 2015
+* Improved JSON parsing performance by 20%.
+* Fixed dependencies of NuGet package for PCL profiles 7 and 259.
+
+#### 2.3.0-beta1 - October 11 2015
+* Support for PCL profile 7 and PCL profile 259.
+* Added support for single column CSV files in CsvProvider.
+* Fix saving of CSV files with cells spanning multiple lines.
+* Fixed parsing of HTML tables with headers spanning multiple rows.
+* Fixed parsing of HTML definition lists without description elements.
+
+#### 2.2.5 - July 12 2015
+* Fix HtmlNode.hasClass to work on multi class elements.
+
+#### 2.2.4 - July 11 2015
+* Relax the parsing of the charset field in HTTP response headers to accommodate servers not 100% compliant with RFC2616.
+* Fix parsing of HTML lists with links.
+* Fix parsing of HTML pages with tables and lists with the same name.
+* Fix parsing of HTML documents with missing closing tags.
+
+#### 2.2.3 - June 13 2015
+* Fixed compatibility with Mono 4.0.
+* Support for trailing empty columns in CsvProvider.
+* Fix datetime convertion when epoch date contains positive in timezone part.
+
+#### 2.2.2 - May 11 2015
+* Allow arrays in addition to objects when detecting Json values inside Xml documents.
+* Simplify generated API for collections in XmlProvider in more cases.
+
+#### 2.2.1 - May 4 2015
+* Improved performance of JsonValue.Parse().
+* Fixed crash processing HTTP responses without content type.
+* Fixed encoding from content type not being used on the POST requests.
+* Improved compatibility with different versions of FSharp.Core.
+* Added BasicAuth helper to HttpRequestHeaders.
+
+#### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element.
 * Improved global inference in XmlProvider.
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
-* Fixes for issue 791 (stack overflow in Html Parser)
-* Adding support for Fixed width files (Issue #801)
+* Fix possible stack overflow in HTML parser.
+* Exclude elements with aria-hidden attribute when parsing tables in HtmlProvider.
+* Use ISO-8601 format when outputing dates.
+* Fix parsing of HTML closing tags with numbers.
+* Fixed handling of URI's with fragment but no query.
+* Fixed arrays created with XML provider having unneeded parent tags on some situations.
+* Allow to parse rows in CsvProvider without having to create a CsvFile.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.

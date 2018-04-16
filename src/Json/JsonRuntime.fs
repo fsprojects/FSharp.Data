@@ -53,21 +53,19 @@ type JsonDocument =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create(reader:TextReader, cultureStr) = 
+  static member Create(reader:TextReader) = 
     use reader = reader
     let text = reader.ReadToEnd()
-    let cultureInfo = TextRuntime.GetCulture cultureStr
-    let value = JsonValue.Parse(text, cultureInfo)
+    let value = JsonValue.Parse(text)
     JsonDocument.Create(value, "")
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member CreateList(reader:TextReader, cultureStr) = 
+  static member CreateList(reader:TextReader) = 
     use reader = reader
     let text = reader.ReadToEnd()
-    let cultureInfo = TextRuntime.GetCulture cultureStr    
-    match JsonValue.ParseMultiple(text, cultureInfo) |> Seq.toArray with
+    match JsonValue.ParseMultiple(text) |> Seq.toArray with
     | [| JsonValue.Array array |] -> array
     | array -> array
     |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
@@ -153,7 +151,7 @@ type JsonRuntime =
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
     doc.JsonValue.TryGetProperty(name)
-    |> Option.bind (function JsonValue.Null -> None | x -> Some x) 
+    |> Option.bind (function JsonValue.Null | JsonValue.String "" -> None | x -> Some x) 
 
   /// Get optional json property and wrap it together with path
   static member TryGetPropertyUnpackedWithPath(doc:IJsonDocument, name) =

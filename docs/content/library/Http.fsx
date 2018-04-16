@@ -16,11 +16,11 @@ the response URL, or the returned headers and cookies.
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
 
-To use the type, we first need to reference the library using `#r` (in an F# interactive) 
-or add reference to a project. The type is located in `FSharp.Net` namespace:
+To use the type, we first need to reference the library using `#r` (in an F# interactive)
+or add reference to a project. The type is located in `FSharp.Data` namespace:
 *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -50,7 +50,9 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="GET")
+Http.RequestString
+  ( "http://httpbin.org/get", 
+    query=["test", "foo"], httpMethod="GET" )
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -233,7 +235,29 @@ let clientCert =
 // Send the request with certificate
 Http.Request
   ( "http://yourprotectedresouce.com/data",
-    customizeHttpRequest = fun req -> req.ClientCertificates.Add(clientCert) |> ignore; req)
+    customizeHttpRequest = fun req -> 
+        req.ClientCertificates.Add(clientCert) |> ignore; req)
+
+(**
+## Handling multipart form data
+
+You can also send http multipart form data via the `Multipart` `HttpRequestBody` case.
+Data sent in this way is streamed instead of being read into memory in its entirety, allowing for 
+uploads of arbitrary size.
+
+*)
+
+let largeFilePath = "//path/to/large/file.mp4"
+let data = System.IO.File.OpenRead(largeFilePath) :> System.IO.Stream
+
+Http.Request
+  ( "http://endpoint/for/multipart/data", 
+  body = Multipart(
+    boundary = "define a custom boundary here", // this is used to separate the items you're streaming
+    parts = [
+      MultipartItem("formFieldName", System.IO.Path.GetFileName(largeFilePath), data)
+    ]
+  ))
 
 (**
 ## Related articles

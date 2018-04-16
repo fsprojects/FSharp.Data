@@ -4,6 +4,8 @@
 
 namespace FSharp.Data.Runtime
 
+#nowarn "10001"
+
 open System
 open System.ComponentModel
 open System.Collections.Generic
@@ -160,7 +162,7 @@ module private CsvHelpers =
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
     
-  let parseIntoLines newReader (lineIterator : _ -> _ -> _ -> seq<string[] * int>)  separators quote hasHeaders skipRows =
+  let parseIntoLines newReader (lineIterator : _ -> _ -> _ -> seq<string[] * int>) separators quote hasHeaders skipRows =
 
     // Get the first iterator and read the first line
     let firstReader : TextReader = newReader()
@@ -232,7 +234,15 @@ module private CsvHelpers =
     // Return data with parsed columns
     seq {
       for untypedRow, lineNumber in untypedRows do
-        if untypedRow.Length <> numberOfColumns then
+        let hasCorrectNumberOfColumns, untypedRow =
+          match untypedRow.Length with
+          | length when length = numberOfColumns -> true, untypedRow
+          //row is also valid when it ends with single separator 
+          | length when length = numberOfColumns + 1 && String.IsNullOrEmpty(untypedRow.[untypedRow.Length-1])
+            -> true, untypedRow.[..numberOfColumns-1]
+          | _ -> false, untypedRow
+       
+        if not hasCorrectNumberOfColumns then
           // Ignore rows with different number of columns when ignoreErrors is set to true
           if not ignoreErrors then
             let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
@@ -286,6 +296,14 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
     let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, isFixedWidth, separators, quote, ignoreErrors) =    
+    let reader = new StringReader(text) :> TextReader
+    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, isFixedWidth, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false)
+    csv.Rows |> Seq.toArray
 
   /// [omit]
   new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
@@ -372,6 +390,11 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     use writer = writer
 
+    let nullSafeguard str =
+      match str with
+      | null -> String.Empty
+      | _ -> str
+
     let writeLine writeItem (items:string[]) =
       for i = 0 to items.Length-2 do
         writeItem items.[i]
@@ -385,7 +408,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     for row in x.Rows do
       row |> rowToStringArray.Invoke |> writeLine (fun item -> 
-        if item.Contains separator then
+        let item = item |> nullSafeguard
+        if item.Contains separator || item.Contains quote || item.Contains "\n"  then
           writer.Write quote
           writer.Write (item.Replace(quote, doubleQuote))
           writer.Write quote
@@ -397,13 +421,10 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let writer = new StreamWriter(stream)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
   /// Saves CSV to the specified file
   member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
-#endif
 
   /// Saves CSV to a string
   member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 

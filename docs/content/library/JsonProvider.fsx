@@ -16,7 +16,7 @@ loaded file does not match the structure of the sample, a runtime error may occu
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
 is located in the `../../../bin` directory, we can load it in F# Interactive as follows: *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -84,7 +84,9 @@ following example uses two records - one with `name` and `age` and the second wi
 If we want to just use the same text used for the schema at runtime, we can use the `GetSamples` method:
 *)
 
-type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
+type People = JsonProvider<""" 
+  [ { "name":"John", "age":94 }, 
+    { "name":"Tomas" } ] """>
 
 for item in People.GetSamples() do 
   printf "%s " item.Name 
@@ -120,6 +122,22 @@ between the two options. This is similar to the handling of heterogeneous arrays
 Note that we have a `GetSamples` method because the sample is a JSON list. If it was a JSON
 object, we would have a `GetSample` method instead.
 
+#### More complex object type on root level
+
+If you want the root type to be an object type, not an array, but
+you need more samples at root level, you can use the SampleIsList parameter.
+Applied to the previous example this would be:
+
+*)
+
+type People2 = JsonProvider<""" 
+  [ { "name":"John", "age":94 }, 
+    { "name":"Tomas" } ] """, SampleIsList=true>
+
+let person = People2.Parse("""{ "name":"Gustavo" }""")
+
+(**
+	
 ## Loading WorldBank data
 
 Now let's use the type provider to process some real data. We use a data set returned by 
@@ -150,8 +168,12 @@ let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
+let wbReq = 
+  "http://api.worldbank.org/country/cz/indicator/" + 
+    "GC.DOD.TOTL.GD.ZS?format=json"
 
-let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
+let docAsync = 
+  WorldBank.AsyncLoad(wbReq)
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
@@ -206,7 +228,10 @@ Let's start by listing the 5 most recently updated open issues in the FSharp.Dat
 
 *)
 
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+// GitHub.json downloaded from 
+// https://api.github.com/repos/fsharp/FSharp.Data/issues 
+// to prevent rate limit when generating these docs
+type GitHub = JsonProvider<"../data/GitHub.json">
 
 let topRecentlyUpdatedIssues = 
     GitHub.GetSamples()
@@ -249,11 +274,13 @@ create an instance, and send a POST request:
 
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
-let newIssue = GitHubIssue.Issue("Test issue",
-                                 "This is a test issue created in F# Data documentation", 
-                                 assignee = "",
-                                 labels = [| |], 
-                                 milestone = 0)
+let newIssue = 
+  GitHubIssue.Issue
+    ( "Test issue",
+      "This is a test issue created in F# Data documentation", 
+      assignee = "",
+      labels = [| |], 
+      milestone = 0)
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**
@@ -271,7 +298,8 @@ For this reason, the JSON provider lets you specify samples as embedded resource
 static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
 
 *)
-type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldbank.json">
+type WB = JsonProvider<"../data/WorldBank.json", 
+  EmbeddedResource="MyLib, worldbank.json">
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 

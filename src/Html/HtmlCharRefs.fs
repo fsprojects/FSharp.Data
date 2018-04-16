@@ -2251,12 +2251,12 @@ module internal HtmlCharRefs =
                     if discriminator <> 'x'
                     then s.Substring(2, s.Length - 2)
                     else s.Substring(3, s.Length - 3)
-                match Int32.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+                match UInt32.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture) with
                 | true, i -> Number(i)
                 | false, _ -> Lookup(orig)
             | ("&x", _) ->  
                 let num = s.Substring(2, s.Length - 2)
-                match Int32.TryParse(num, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture) with
+                match UInt32.TryParse(num, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture) with
                 | true, i -> Number(i)
                 | false, _ -> Lookup(orig)
             | _ -> Lookup(orig) 
@@ -2264,5 +2264,10 @@ module internal HtmlCharRefs =
 
     let substitute (ref:string) = 
         match ref with
-        | Number(num) -> Convert.ToChar(num).ToString()
+        | Number(num) -> 
+            if num > 65535u then
+                let lead, tail = UnicodeHelper.getUnicodeSurrogatePair num
+                string lead + string tail
+            else
+                string (char num)
         | Lookup(ref) -> defaultArg (refs.TryFind ref) ref

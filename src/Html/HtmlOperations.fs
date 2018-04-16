@@ -52,7 +52,7 @@ module HtmlNode =
     let name n =
         match n with
         | HtmlElement(name = name) -> name
-        | _ -> String.Empty
+        | _ -> ""
         
     /// Gets all of the nodes immediately under this node
     let elements n =
@@ -215,10 +215,12 @@ module HtmlNode =
         hasAttribute "id" id n
 
     /// Returns true if the current node has the specified class
-    let inline hasClass cssClass n = 
-        hasAttribute "class" cssClass n
+    let inline hasClass (cssClass:string) n = 
+        let presentClasses = (attributeValue "class" n).Split [|' '|] 
+        let classesToLookFor = cssClass.Split [|' '|]
+        classesToLookFor |> Array.forall (fun cssClass -> presentClasses |> Array.exists ((=) cssClass))
 
-    let innerTextExcluding exclusions n = 
+    let private innerTextExcluding' recurse exclusions n = 
         let exclusions = "style" :: "script" :: exclusions
         let isAriaHidden (n:HtmlNode) = 
             match tryGetAttribute "aria-hidden" n with
@@ -227,24 +229,38 @@ module HtmlNode =
                 | true, v -> v
                 | false, _ -> false 
             | None -> false
-        let rec innerText' n =
+        let rec innerText' inRoot n =
+            let exclusions = if inRoot then ["style"; "script"] else exclusions
             match n with
-            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) && (not (isAriaHidden n)) ->
+            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
                 seq { for e in content do
                         match e with
                         | HtmlText(text) -> yield text
-                        | HtmlComment(_) -> yield String.Empty
-                        | elem -> yield innerText' elem }
+                        | HtmlComment(_) -> yield ""
+                        | elem -> 
+                            if recurse then
+                                yield innerText' false elem 
+                            else
+                                yield "" }
                 |> String.Concat
             | HtmlText(text) -> text
-            | _ -> String.Empty
-        innerText' n
+            | _ -> ""
+        innerText' true n
+
+    let innerTextExcluding exclusions n =
+        innerTextExcluding' true exclusions n
 
     /// Returns the inner text of the current node
     /// Parameters:
     /// * n - The given node
     let inline innerText n = 
         innerTextExcluding [] n
+
+    /// Returns the direct inner text of the current node
+    /// Parameters:
+    /// * n - The given node
+    let directInnerText n = 
+        innerTextExcluding' false [] n
 
 // --------------------------------------------------------------------------------------
 
@@ -582,6 +598,11 @@ type HtmlNodeExtensions =
     static member InnerText(n:HtmlNode) = 
         HtmlNode.innerText n
 
+    /// Returns the direct inner text of the current node
+    [<Extension>]
+    static member DirectInnerText(n:HtmlNode) = 
+        HtmlNode.directInnerText n
+
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -656,6 +677,24 @@ module HtmlDocument =
         match List.ofSeq <| descendantsNamed false ["body"] x with
         | [] -> None
         | body:: _ -> Some body
+
+    /// Finds the html element of the given document,
+    /// this throws an exception if no html element exists.
+    /// Parameters:
+    /// * x - The given document
+    let inline html (x:HtmlDocument) = 
+        match List.ofSeq <| descendantsNamed false ["html"] x with
+        | [] -> failwith "No element html found!"
+        | html:: _ -> html
+
+    /// Tries to find the html element of the given document.
+    /// Parameters:
+    /// * x - The given document
+    let inline tryGetHtml (x:HtmlDocument) = 
+        match List.ofSeq <| descendantsNamed false ["html"] x with
+        | [] -> None
+        | html:: _ -> Some html
+
 
 [<Extension>]
 /// Extension methods with operations on HTML documents
@@ -811,6 +850,17 @@ type HtmlDocumentExtensions =
     [<Extension>]
     static member TryGetBody(doc:HtmlDocument) = 
         HtmlDocument.tryGetBody doc
+
+    /// Finds the html element of the given document,
+    /// this throws an exception if no html element exists.
+    [<Extension>]
+    static member Html(doc:HtmlDocument) = 
+        HtmlDocument.html doc
+
+    /// Tries to find the html element of the given document.
+    [<Extension>]
+    static member TryGetHtml(doc:HtmlDocument) = 
+        HtmlDocument.tryGetHtml doc
 
 // --------------------------------------------------------------------------------------
 

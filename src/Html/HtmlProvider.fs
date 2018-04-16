@@ -4,7 +4,7 @@
 namespace ProviderImplementation
 
 open System
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data
@@ -15,12 +15,12 @@ open FSharp.Data.Runtime.BaseTypes
 
 [<TypeProvider>]
 type public HtmlProvider(cfg:TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces()
+    inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm, version, replacer = AssemblyResolver.init cfg
+    let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
     let ns = "FSharp.Data"
-    let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", Some typeof<obj>)
+    let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
     
     let buildTypes (typeName:string) (args:obj[]) =
 
@@ -45,17 +45,17 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       PreferOptionals  = preferOptionals }
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
+                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr)
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName None
+                     getSpecFromSamples version this cfg encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

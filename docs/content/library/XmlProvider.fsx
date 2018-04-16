@@ -18,7 +18,7 @@ is located in the `../../bin` directory, we can load it in F# Interactive as fol
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type internally): *)
 
-#r "../../../bin/FSharp.Data.dll"
+#r "../../../bin/lib/net45/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
 open FSharp.Data
 
@@ -197,6 +197,75 @@ attributes in our sample, so it is inferred as `string`), then it recursively pr
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
+## Loading Directly from a File or URL
+
+In many cases we might want to define schema using a local sample file, but then directly
+load the data from disk or from a URL either synchronously (with `Load`) or asynchronously 
+(with `AsyncLoad`).
+
+For this example I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
+which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so 
+that it contains only the elements and attributes relevant to us:
+
+    [lang=xml]
+    <census-api
+        xmlns="http://thedataweb.rm.census.gov/api/discovery/"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dct="http://purl.org/dc/terms/">
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>    
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>
+    </census-api>
+
+When doing this for your scenario, be careful to ensure that enough data is given for the provider 
+to infer the schema correctly. For example, the first level `<dct:dataset>` element must be included at 
+least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
+*)
+
+type Census = XmlProvider<"../data/Census.xml">
+
+let data = Census.Load("https://api.census.gov/data.xml")
+
+let apiLinks = data.Datasets
+               |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+
+(**
+This US Census data is an interesting dataset with this top level API returning hundreds of other
+datasets each with their own API. Here we use the Census data to get a list of titles and URLs for 
+the lower level APIs.
+*)
+
+(**
+## Bringing in Some Async Action
+
+Let's go one step further and assume here a sligthly contrived but certainly plausible example where 
+we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background 
+and then post each link over (for example) a message queue. 
+
+This is where `AsyncLoad` comes into play:
+*)
+
+let enqueue (title,apiUrl) = 
+  // do the real message enqueueing here instead of
+  printfn "%s -> %s" title apiUrl
+
+// helper task which gets scheduled on some background thread somewhere...
+let cacheJanitor() = async {
+  let! reloadData = Census.AsyncLoad("https://api.census.gov/data.xml")
+  reloadData.Datasets |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+                      |> Array.iter enqueue
+}
+
+(**
 ## Reading RSS feeds
 
 To conclude this introduction with a more interesting example, let's look how to parse a
@@ -280,10 +349,11 @@ let orderLines =
     for customer in InputXml.GetSample().Customers do
       for order in customer.Orders do
         for line in order.OrderLines do
-          yield OutputXml.OrderLine(customer.Name,
-                                    order.Number,
-                                    line.Item,
-                                    line.Quantity) |]
+          yield OutputXml.OrderLine
+                  ( customer.Name,
+                    order.Number,
+                    line.Item,
+                    line.Quantity ) |]
 
 (**
 ## Related articles

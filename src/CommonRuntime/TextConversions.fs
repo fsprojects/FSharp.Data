@@ -23,29 +23,23 @@ module private Helpers =
   let (|OneOfIgnoreCase|_|) set str = 
     if Array.exists (fun s -> StringComparer.OrdinalIgnoreCase.Compare(s, str) = 0) set then Some() else None
 
-  let regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-    RegexOptions.None
-#else
-    RegexOptions.Compiled
-#endif
   // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
   // is already taken care of before AsDateTime is called
-  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:-\d+)?\)/$", regexOptions)
+  let msDateRegex = lazy Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", RegexOptions.Compiled)
 
 // --------------------------------------------------------------------------------------
 
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions private() = 
 
-  /// `NaN` `NA` `#N/A` `:` `-` `TBA` `TBD`
-  static member DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
+  /// `NaN` `NA` `N/A` `#N/A` `:` `-` `TBA` `TBD`
+  static member val DefaultMissingValues = [| "NaN"; "NA"; "N/A"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
   
   /// `%` `‰` `‱`
-  static member DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
+  static member val DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
   
   /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
-  static member DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
+  static member val DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
 
   static member val private DefaultRemovableAdornerCharacters = 
     Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners
@@ -108,3 +102,16 @@ type TextConversions private() =
 
   static member AsGuid (text:string) = 
     Guid.TryParse(text.Trim()) |> asOption
+
+module internal UnicodeHelper =
+
+    // used http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF as a guide below
+    let getUnicodeSurrogatePair num =
+        // only code points U+010000 to U+10FFFF supported
+        // for coversion to UTF16 surrogate pair
+        let codePoint = num - 0x010000u
+        let HIGH_TEN_BIT_MASK = 0xFFC00u                     // 1111|1111|1100|0000|0000
+        let LOW_TEN_BIT_MASK = 0x003FFu                      // 0000|0000|0011|1111|1111
+        let leadSurrogate = (codePoint &&& HIGH_TEN_BIT_MASK >>> 10) + 0xD800u
+        let trailSurrogate = (codePoint &&& LOW_TEN_BIT_MASK) + 0xDC00u
+        char leadSurrogate, char trailSurrogate

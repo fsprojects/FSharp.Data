@@ -59,6 +59,12 @@ let ``Detects word after underscore`` () =
   niceCamelName "hello_world"  |> should equal "helloWorld"
 
 [<Test>]
+let ``Works with numbers`` () = 
+  nicePascalName "A21_SERVICE" |> should equal "A21Service"
+  niceCamelName "A21_SERVICE"  |> should equal "a21Service"
+
+
+[<Test>]
 let ``Detects word after case change`` () = 
   nicePascalName "helloWorld" |> should equal "HelloWorld"
   niceCamelName "helloWorld"  |> should equal "helloWorld"

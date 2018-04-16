@@ -1,19 +1,12 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting/lib/net40"
-#I "../../packages/RazorEngine/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.MetadataFormat.dll"
-#r "../../packages/NUnit/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
+#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.DesignTime.Tests.DocumentationTests
 #endif
 
-open FsUnit
+#if !NETCOREAPP2_0 // no FSharp.Formatting available
 open NUnit.Framework
 open System.IO
 open FSharp.Literate
@@ -25,6 +18,7 @@ open FSharp.CodeFormat
 let (@@) a b = Path.Combine(a, b)
 
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
+let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
@@ -47,14 +41,13 @@ let processFile file =
 #else
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
 #endif
-  Seq.append
-    (literateDoc.Errors 
-     |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-         Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-       else None))
-    (evaluationErrors |> Seq.map (fun x -> x.ToString()))
-  |> String.concat "\n"
+  [| for  (SourceError(startl, endl, kind, msg)) in literateDoc.Errors do
+       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" &&
+          not (msg.Contains("Possible incorrect indentation: this token is offside of context started at position")) then
+         yield sprintf "%A %s (%s)" (startl, endl) msg file
+     for x in evaluationErrors  do
+         yield x.ToString()
+  |] |> String.concat "\n"
 
 // ------------------------------------------------------------------------------------
 // Core API documentation
@@ -72,8 +65,10 @@ for file in docFiles do
 [<Test>]
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` file = 
-  let errors = processFile file
-  if errors <> "" then
-    Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
+  if runningOnMono then 
+    let errors = processFile file
+    if errors <> "" then
+      Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
 
+#endif
 #endif

@@ -2,7 +2,7 @@
 
 open System
 open System.IO
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
@@ -17,17 +17,17 @@ open FSharp.Data.Runtime.StructuralTypes
 
 [<TypeProvider>]
 type public JsonProvider(cfg:TypeProviderConfig) as this =
-  inherit DisposableTypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
-  let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some typeof<obj>)
+  let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
+    let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
@@ -40,9 +40,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let inferTypesFromValues = args.[7] :?> bool
 
     let cultureInfo = TextRuntime.GetCulture cultureStr
-    let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
+    let parseSingle _ value = JsonValue.Parse(value)
     let parseList _ value = 
-        JsonDocument.CreateList(new StringReader(value), cultureStr)
+        JsonDocument.CreateList(new StringReader(value))
         |> Array.map (fun doc -> doc.JsonValue)
     
     let getSpecFromSamples samples = 
@@ -53,18 +53,18 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
+      let ctx = JsonGenerationContext.Create(cultureStr, tpType)
       let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
 
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
+          result.Convert <@@ JsonDocument.Create(%reader) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
+          result.Convert <@@ JsonDocument.CreateList(%reader) @@> }
 
     generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg replacer encodingStr resolutionFolder resource typeName None
+                 version this cfg encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

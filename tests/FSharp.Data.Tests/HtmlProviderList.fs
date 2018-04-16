@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
-#load "../Common/FsUnit.fs"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlProviderLists
 #endif
@@ -42,7 +42,7 @@ let ``Can handle nested lists``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal ["1";"Foo Bar";"2";"2";"3"]
+    list.Values |> should equal ["Foo Bar";"1";"2";"2";"3"]
 
 [<Test>]
 let ``Simple List handles missing values``() = 
