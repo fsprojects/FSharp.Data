@@ -96,7 +96,7 @@ type XmlElement =
     use reader = reader
     let text = reader.ReadToEnd()
     try
-      XDocument.Parse(text).Root.Elements()
+      XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ when text.TrimStart().StartsWith "<" ->
