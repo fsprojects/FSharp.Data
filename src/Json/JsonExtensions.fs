@@ -121,7 +121,7 @@ type JsonExtensions =
     | _ -> failwithf "Not a datetime: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
    /// Get the datetime offset value of an element (assuming that the value is a string
-  /// containing well-formed ISO date time with offset)
+  /// containing well-formed ISO date time with offset or MSFT JSON datetime with offset)
   [<Extension>]
   static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
