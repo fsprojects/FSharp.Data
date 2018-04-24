@@ -142,6 +142,7 @@ let ``Can handle attributes with no value``() =
 </script>
 Test comment
 */""")>]
+[<TestCase("function(sel) {return sel.replace(/([/.])/g, '\\$1');};")>]
 let ``Can handle special characters in scripts`` content =
     let html = sprintf "<script>%s</script>" content
     let node = HtmlNode.Parse html |> List.head
