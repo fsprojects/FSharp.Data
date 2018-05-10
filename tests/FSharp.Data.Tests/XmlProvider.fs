@@ -554,7 +554,7 @@ type RoundtripXmlDocument = XmlProvider<"""<?xml version="1.0"?>
 let ``Roundtripping works correctly``() =
     let original = RoundtripXmlDocument.GetSample()
     let afterRoundtrip = new RoundtripXmlDocument.Doc(original.Assembly, original.Members)
-    original.XElement.ToString() |> should equal <| afterRoundtrip.XElement.ToString()
+    XDocument.Parse(original.XElement.ToString()).ToString() |> should equal <| XDocument.Parse(afterRoundtrip.XElement.ToString()).ToString()
 
 type DrugsXml = XmlProvider<"""<drugs>
   <drug>
