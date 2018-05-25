@@ -485,3 +485,8 @@ module internal ProviderHelpers =
         ] |> spec.GeneratedType.AddMembers
         
         spec.GeneratedType
+
+open System.Runtime.CompilerServices
+
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
+do()
