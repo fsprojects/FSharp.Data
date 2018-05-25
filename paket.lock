@@ -1,10 +1,10 @@
 RESTRICTION: >= net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FAKE (5.0.0-rc004)
-    Microsoft.NETCore.App (2.0.6)
-    Microsoft.NETCore.Platforms (2.0.1) - restriction: >= net461
-    NETStandard.Library (2.0.2) - restriction: >= net461
+    FAKE (5.0.0-rc016.225)
+    Microsoft.NETCore.App (2.0.7)
+    Microsoft.NETCore.Platforms (2.0.2) - restriction: >= net461
+    NETStandard.Library (2.0.3) - restriction: >= net461
       Microsoft.NETCore.Platforms (>= 1.1)
     NetStandard.Library.NetFramework (2.0.0-preview2-25405-01)
       Microsoft.NETCore.Platforms (>= 2.0.0-preview2-25405-01) - restriction: >= net461
@@ -13,12 +13,12 @@ NUGET
     Octokit (0.29)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (b011a602d0b690fb80a30e5b97df53523d6c4b23)
+    modules/Octokit/Octokit.fsx (896e227b6da98b21001a1e5940df01d442bc7a25)
       Octokit (>= 0.20)
-  remote: fsprojects/FSharp.TypeProviders.StarterPack
-    src/ProvidedTypes.fs (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
-    src/ProvidedTypes.fsi (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
-    src/ProvidedTypesTesting.fs (f0c4a6300db313eb2616c4f792cd6ae68c255e56)
+  remote: fsprojects/FSharp.TypeProviders.SDK
+    src/ProvidedTypes.fs (1930ca61eeea12143622adf7d2811a56b3202996)
+    src/ProvidedTypes.fsi (1930ca61eeea12143622adf7d2811a56b3202996)
+    src/ProvidedTypesTesting.fs (1930ca61eeea12143622adf7d2811a56b3202996)
 GROUP fs31
 RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
@@ -42,9 +42,9 @@ REDIRECTS: ON
 RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FsCheck (2.10.8)
+    FsCheck (2.10.10)
       FSharp.Core (>= 4.0.0.1) - restriction: || (== net461) (&& (== netcoreapp2.0) (>= net452)) (&& (== netcoreapp2.0) (< netstandard1.6)) (&& (== netcoreapp2.0) (< portable-net45+win8+wp8))
-      FSharp.Core (>= 4.2.3) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
+      FSharp.Core (>= 4.3.4) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
       NETStandard.Library (>= 1.6.1) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
       System.ValueTuple (>= 4.4) - restriction: || (&& (== net461) (< net452) (>= netstandard1.6)) (== netcoreapp2.0)
     FSharp.Charting (0.91.1)
@@ -66,7 +66,7 @@ NUGET
       FSharp.Core (>= 4.2.3)
       NETStandard.Library (>= 2.0.1) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
       NUnit (>= 3.9 < 4.0)
-    Microsoft.AspNet.Razor (3.2.4)
+    Microsoft.AspNet.Razor (3.2.6)
     Microsoft.DiaSymReader (1.2)
       Microsoft.Net.Compilers (>= 2.3)
       NETStandard.Library (>= 1.6.1) - restriction: || (&& (== net461) (< net20)) (== netcoreapp2.0)
@@ -86,8 +86,8 @@ NUGET
       System.Runtime.InteropServices (>= 4.3)
       System.Text.Encoding (>= 4.3)
       System.Threading (>= 4.3)
-    Microsoft.Net.Compilers (2.7)
-    Microsoft.NETCore.Platforms (2.0.1) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= wp8)) (== netcoreapp2.0)
+    Microsoft.Net.Compilers (2.8.2)
+    Microsoft.NETCore.Platforms (2.0.2) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= wp8)) (== netcoreapp2.0)
     Microsoft.NETCore.Targets (2.0) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net45)) (== netcoreapp2.0)
     Microsoft.Win32.Primitives (4.3) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
       Microsoft.NETCore.Platforms (>= 1.1) - restriction: || (&& (== net461) (< net46)) (== netcoreapp2.0)
@@ -100,7 +100,7 @@ NUGET
     Nancy (1.4.4)
     Nancy.Hosting.Self (1.4.1)
       Nancy (>= 1.4.1)
-    NETStandard.Library (2.0.2) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
+    NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
     NUnit (3.10.1)
       NETStandard.Library (>= 2.0) - restriction: || (&& (== net461) (< net20) (>= netstandard2.0)) (== netcoreapp2.0)
@@ -349,7 +349,7 @@ NUGET
       System.Runtime.Handles (>= 4.3) - restriction: || (&& (== net461) (< net46)) (== netcoreapp2.0)
     System.ValueTuple (4.4)
   remote: https://ci.appveyor.com/nuget/fsharp-formatting
-    FSharp.Formatting (3.0.0-beta10)
+    FSharp.Formatting (3.0.0-beta11)
       FSharp.Compiler.Service (>= 22.0.3 < 23.0)
       Microsoft.AspNet.Razor (>= 3.2.4 < 4.0)
       System.ValueTuple (>= 4.4 < 5.0)
