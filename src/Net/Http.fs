@@ -272,6 +272,134 @@ type HttpResponseWithStream =
     Headers : Map<string,string>
     Cookies : Map<string,string> }
 
+/// Constants for HTTP status codes.
+/// Based on https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+module HttpStatusCodes =
+    /// Continue - 100
+    let [<Literal>] Continue = 100
+    /// Switching Protocols - 101
+    let [<Literal>] SwitchingProtocols = 101
+    /// Processing - 102
+    let [<Literal>] Processing = 102
+    /// Early Hints - 103
+    let [<Literal>] EarlyHints = 103
+    /// OK - 200
+    let [<Literal>] OK = 200
+    /// Created - 201
+    let [<Literal>] Created = 201
+    /// Accepted - 202
+    let [<Literal>] Accepted = 202
+    /// Non-Authoritative Information - 203
+    let [<Literal>] NonauthoritativeInformation = 203
+    /// No Content - 204
+    let [<Literal>] NoContent = 204
+    /// Reset Content - 205
+    let [<Literal>] ResetContent = 205
+    /// Partial Content - 206
+    let [<Literal>] PartialContent = 206
+    /// Multi-Status - 207
+    let [<Literal>] Multistatus = 207
+    /// Already Reported - 208
+    let [<Literal>] AlreadyReported = 208
+    /// IM Used - 226
+    let [<Literal>] IMUsed = 226
+    /// Multiple Choices - 300
+    let [<Literal>] MultipleChoices = 300
+    /// Moved Permanently - 301
+    let [<Literal>] MovedPermanently = 301
+    /// Found - 302
+    let [<Literal>] Found = 302
+    /// See Other - 303
+    let [<Literal>] SeeOther = 303
+    /// Not Modified - 304
+    let [<Literal>] NotModified = 304
+    /// Use Proxy - 305
+    let [<Literal>] UseProxy = 305
+    /// Switch Proxy - 306
+    let [<Literal>] SwitchProxy = 306
+    /// Temporary Redirect - 307
+    let [<Literal>] TemporaryRedirect = 307
+    /// Permanent Redirect - 308
+    let [<Literal>] PermanentRedirect = 308
+    /// Bad Request - 400
+    let [<Literal>] BadRequest = 400
+    /// Unauthorized - 401
+    let [<Literal>] Unauthorized = 401
+    /// Payment Required - 402
+    let [<Literal>] PaymentRequired = 402
+    /// Forbidden - 403
+    let [<Literal>] Forbidden = 403
+    /// Not Found - 404
+    let [<Literal>] NotFound = 404
+    /// Method Not Allowed - 405
+    let [<Literal>] MethodNotAllowed = 405
+    /// Not Acceptable - 406
+    let [<Literal>] NotAcceptable = 406
+    /// Proxy Authentication Required - 407
+    let [<Literal>] ProxyAuthenticationRequired = 407
+    /// Request Timeout - 40
+    let [<Literal>] RequestTimeout = 408
+    /// Conflict - 409
+    let [<Literal>] Conflict = 409
+    /// Gone - 410
+    let [<Literal>] Gone = 410
+    /// Length Required - 411
+    let [<Literal>] LengthRequired = 411
+    /// Precondition Failed - 412
+    let [<Literal>] PreconditionFailed = 412
+    /// Payload Too Large - 413
+    let [<Literal>] PayloadTooLarge = 413
+    /// URI Too Long - 414
+    let [<Literal>] URITooLong = 414
+    /// Unsupported Media Type - 415
+    let [<Literal>] UnsupportedMediaType = 415
+    /// Range Not Satisfiable - 416
+    let [<Literal>] RangeNotSatisfiable = 416
+    /// Expectation Failed - 417
+    let [<Literal>] ExpectationFailed = 417
+    /// I'm a teapot - 418
+    let [<Literal>] ImATeapot = 418
+    /// Misdirected Request - 421
+    let [<Literal>] MisdirectedRequest = 421
+    /// Unprocessable Entity - 422
+    let [<Literal>] UnprocessableEntity = 422
+    /// Locked - 423
+    let [<Literal>] Locked = 423
+    /// Failed Dependency - 424
+    let [<Literal>] FailedDependency = 424
+    /// Upgrade Required - 426
+    let [<Literal>] UpgradeRequired = 426
+    /// Precondition Required - 428
+    let [<Literal>] PreconditionRequired = 428
+    /// Too Many Requests - 429
+    let [<Literal>] TooManyRequests = 429
+    /// Request Header Fields Too Large - 431
+    let [<Literal>] RequestHeaderFieldsTooLarge = 431
+    /// Unavailable For Legal Reasons - 451
+    let [<Literal>] UnavailableForLegalReasons = 451
+    /// Internal Server Error - 500
+    let [<Literal>] InternalServerError = 500
+    /// Not Implemented - 501
+    let [<Literal>] NotImplemented = 501
+    /// Bad Gateway - 502
+    let [<Literal>] BadGateway = 502
+    /// Service Unavailable - 503
+    let [<Literal>] ServiceUnavailable = 503
+    /// Gateway Timeout - 504
+    let [<Literal>] GatewayTimeout = 504
+    /// HTTP Version Not Supported - 505
+    let [<Literal>] HTTPVersionNotSupported = 505
+    /// Variant Also Negotiates - 506
+    let [<Literal>] VariantAlsoNegotiates = 506
+    /// Insufficient Storage - 507
+    let [<Literal>] InsufficientStorage = 507
+    /// Loop Detected - 508
+    let [<Literal>] LoopDetected = 508
+    /// Not Extended - 510
+    let [<Literal>] NotExtended = 510
+    /// Network Authentication Required - 511
+    let [<Literal>] NetworkAuthenticationRequired = 511
+
 /// Constants for common HTTP content types
 module HttpContentTypes =
     /// */*
