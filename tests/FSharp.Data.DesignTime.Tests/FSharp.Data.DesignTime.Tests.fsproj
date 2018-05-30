@@ -10,10 +10,7 @@
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
   </PropertyGroup>
   <ItemGroup>
-    <!--   
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypesTesting.fs">
-    --> 
-    <Compile Include="C:\GitHub\dsyme\FSharp.TypeProviders.SDK\src\ProvidedTypesTesting.fs">
       <Link>ProvidedTypesTesting.fs</Link> 
     </Compile>
     <Compile Include="TypeProviderInstantiation.fs" />
