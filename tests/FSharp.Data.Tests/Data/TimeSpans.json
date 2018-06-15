@@ -1,5 +1,7 @@
 ﻿{
   "positiveWithDayWithFraction": "1:3:16:50.5",
   "positiveWithoutDayWithoutFraction": "00:30:00",
-  "negativeWithDayWithFraction": "-1:3:16:50.5"
+  "negativeWithDayWithFraction": "-1:3:16:50.5",
+  "timespanOneTickGreaterThanMaxValue": "10675199.02:48:05.4775808",
+  "timespanOneTickLessThanMinValue": "-10675199.02:48:05.4775809"
 }

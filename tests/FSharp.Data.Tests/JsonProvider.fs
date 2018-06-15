@@ -526,6 +526,16 @@ let ``Can parse negative time span with day and fraction``() =
     timeSpans.NegativeWithDayWithFraction |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
 
 [<Test>]
+let ``Parses timespan greater than max as string`` () = 
+    let span = TimeSpanJSON.GetSample().TimespanOneTickGreaterThanMaxValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Parses timespan less than min as string`` () = 
+    let span = TimeSpanJSON.GetSample().TimespanOneTickLessThanMinValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
 let ``Can parse time span in different culture``() =
     let timeSpans = JsonProvider<"""{"frTimeSpan": "1:3:16:50,5"}""", Culture="fr">.GetSample()
     timeSpans.FrTimeSpan |> should equal (new TimeSpan(1, 3, 16, 50, 500))

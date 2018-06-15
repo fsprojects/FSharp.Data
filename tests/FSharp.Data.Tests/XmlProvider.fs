@@ -555,3 +555,30 @@ let ``Roundtripping works correctly``() =
     let original = RoundtripXmlDocument.GetSample()
     let afterRoundtrip = new RoundtripXmlDocument.Doc(original.Assembly, original.Members)
     original.XElement.ToString() |> should equal <| afterRoundtrip.XElement.ToString()
+
+type TimeSpanXML = XmlProvider<"Data/TimeSpans.xml">
+
+[<Test>]
+let ``Can parse positive time span with day and fraction``() =
+    let span = TimeSpanXML.GetSample().PositiveWithDayWithFraction
+    span |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
+let ``Can parse positive time span without day and without fraction``() =
+    let span = TimeSpanXML.GetSample().PositiveWithoutDayWithoutFraction
+    span |> should equal (new TimeSpan(0, 30, 0))
+
+[<Test>]
+let ``Can parse negative time span with day and fraction``() =
+    let span = TimeSpanXML.GetSample().NegativeWithDayWithFraction
+    span |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
+
+[<Test>]
+let ``Parses timespan greater than max as string`` () = 
+    let span = TimeSpanXML.GetSample().TimespanOneTickGreaterThanMaxValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Parses timespan less than min as string`` () = 
+    let span = TimeSpanXML.GetSample().TimespanOneTickLessThanMinValue
+    span.GetType() |> should equal (typeof<string>)
