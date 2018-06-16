@@ -5,7 +5,7 @@ group Test
     NUnit3TestAdapter
     NUnit
     FsUnit
-
+    FSharp.Core copy_local: true
     FSharp.Charting framework: net462
     FSharp.Compiler.Service framework: net462
     FSharp.Formatting framework: net462

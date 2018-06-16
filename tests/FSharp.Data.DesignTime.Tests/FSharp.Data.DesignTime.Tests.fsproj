@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0; net462</TargetFrameworks>
@@ -29,5 +30,11 @@
       <HintPath>..\..\bin\lib\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <!-- for some reason f#.formatting is having a hard time finding the sigdata/optdata in the fsharp.core dll location.... -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\$(FSharpCoreTargetFramework)\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\..\packages\FSharp.Core\lib\$(FSharpCoreTargetFramework)\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
+  </Target>
 </Project>

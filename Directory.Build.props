@@ -3,5 +3,9 @@
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net462'">net45</TargetLibraryFramework>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netstandard2.0'">netstandard2.0</TargetLibraryFramework>
+    <!-- This is defined to make coptying sigdata/optdata easier -->
+    <FSharpCoreTargetFramework Condition="'$(TargetFramework)' == 'net462'">net45</FSharpCoreTargetFramework>
+    <FSharpCoreTargetFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard1.6</FSharpCoreTargetFramework>
+    <FSharpCoreTargetFramework Condition="'$(TargetFramework)' == 'netstandard2.0'">netstandard1.6</FSharpCoreTargetFramework>
   </PropertyGroup>
 </Project>
