@@ -1,17 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0; net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
-    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypesTesting.fs">
-      <Link>ProvidedTypesTesting.fs</Link> 
+      <Paket>True</Paket>
+      <Link>ProvidedTypesTesting.fs</Link>
     </Compile>
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="InferenceTests.fs" />
@@ -24,20 +25,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="FsUnit" Version="3.1.0" />
-    <PackageReference Include="FSharp.Core" Version="4.3.*" />
-
-    <!-- Conditional references, see https://github.com/fsprojects/Paket/issues/3091 for why Paket doesn't seem to be able to handle these yet --> 
-    <PackageReference Include="FSharp.Charting" Version="0.91.1"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="2.0.0.6"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharp.Formatting" Version="2.14.4"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharpVSPowerTools.Core" Version="2.3"   Condition="'$(TargetFramework)' == 'net461'" />
-
     <Reference Include="FSharp.Data.DesignTime">
-        <HintPath>..\..\src\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\bin\lib\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

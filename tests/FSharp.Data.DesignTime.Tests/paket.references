@@ -1,0 +1,12 @@
+File: ProvidedTypesTesting.fs .
+
+group Test
+    Microsoft.Net.Test.Sdk
+    NUnit3TestAdapter
+    NUnit
+    FsUnit
+
+    FSharp.Charting framework: net462
+    FSharp.Compiler.Service framework: net462
+    FSharp.Formatting framework: net462
+    FSharpVSPowerTools.Core framework: net462

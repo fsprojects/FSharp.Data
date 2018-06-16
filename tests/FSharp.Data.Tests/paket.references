@@ -1,0 +1,10 @@
+group Test
+    Microsoft.Net.Test.Sdk
+    NUnit3TestAdapter
+    NUnit
+    FsUnit
+    FsCheck
+    FSharp.Core
+
+    Nancy framework: net462
+    Nancy.Hosting.Self framework: net462

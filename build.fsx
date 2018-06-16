@@ -33,7 +33,7 @@ let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
-let desiredSdkVersion = "2.1.100"
+let desiredSdkVersion = "2.1.300"
 let mutable sdkPath = None
 let getSdkPath() = (defaultArg sdkPath "dotnet")
 
@@ -142,7 +142,7 @@ Target "Build" <| fun () ->
         MSBuildReleaseExt null ["SourceLinkCreate", "true"] "Build" [proj]
         |> Log (sprintf "%s-Output:\t" projName))
  else
-    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
+    // Both flavours of FSharp.Data.DesignTime.dll (net462 and netstandard2.0) must be built _before_ building FSharp.Data
     buildProjs |> Seq.iter (fun proj -> 
         DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath() }) (sprintf "build -c Release \"%s\" /p:SourceLinkCreate=true" proj))
 
@@ -158,7 +158,7 @@ Target "BuildTests" <| fun () ->
 Target "RunTests" <| fun () ->
  if useMsBuildToolchain then
        for testName in testNames do 
-           !! (sprintf "tests/*/bin/Release/net461/%s.dll" testName)
+           !! (sprintf "tests/*/bin/Release/net462/%s.dll" testName)
            |> NUnit3 (fun p ->
                { p with
                    TimeOut = TimeSpan.FromMinutes 20. 
@@ -254,7 +254,7 @@ Target "TestSourcelink" <| fun () ->
         let pdb = sprintf "bin/Release/netstandard2.0/%s.pdb" basePath
         DotNetCli.RunCommand (fun p -> { p with ToolPath = getSdkPath(); WorkingDir = Path.GetDirectoryName proj }) (sprintf "sourcelink test %s" pdb)
 
-    ["net45"; "netstandard2.0"]
+    ["net462"; "netstandard2.0"]
     |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
     |> Seq.iter id
 
