@@ -70,6 +70,14 @@ let ``Cookies with '=' are parsed correctly`` () =
         [| "IdSession", "Qze9H7HpvcVoh/ANulOl6Z1P8Omd1cLb9FOLL5o2aOlDMn/dFJi+RWDAPHZ4nDmWeno2puyOTFM/P4yzZMQsPoJ1gvEaJqG54kerM6WW4bv6ql72/Tn3NnCZTaokm8uaboLICgckUM2J7KOx5iL8uGyTN/g04/jZKlP1HgyatQL6kCG4qCQUMrdqZjqkbgW3eCpeyeI9rXF1bNC8hsKaqJ37Du/oBvbIMUbgenogfjzmlCgtAzv4la2Eo8+3cvDHkKPnksCP8kt8JbyXECyXBOjPrpFjtYv9UUGfyhwqRTRNTmH5+5UAsDDFrYe+vonYiDwXel8TfK3AZhQGXcF598AVPVfB1RO5S/mt7faDS7cEfz14nUsYtaNAZcwH7gwm06VJUX5eWiZzlBGx4SVBkNzP0QhLM9AqNP889y9BmZ2JaGb3fJtCWL3MfzM23mbwSemcERkoV3v1rIH8mb6ZgGm0hyEbbtu/RegkLAgNO+YB6c0Os6Pv6OnK0So4xlNakchaWhl1eMfOf4Gx0miJv4o2XbmAmbSNYkybi3n8vz4="|]
 
 [<Test>]
+let ``Cookies with JSON are parsed correctly`` () =
+    let uri = Uri "http://nevermind.com"
+    let cookieHeader = "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}"
+    let cookieContainer = System.Net.CookieContainer()
+    CookieHandling.getAllCookiesFromHeader cookieHeader uri
+    |> Array.iter cookieContainer.Add
+    
+[<Test>]
 let ``An empty cookie header is parsed correctly`` () =
     let uri = Uri "https://news.google.com/news?hl=en&ned=us&ie=UTF8&nolr=1&output=rss&q=FSharp&num=1000"
     let cookieHeader = ""
