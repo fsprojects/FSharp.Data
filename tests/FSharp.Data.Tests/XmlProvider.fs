@@ -1085,3 +1085,110 @@ let ``Extension on complex types``() =
     items.Umbrellas.[0].Name |> should equal "token"
     items.Shirts.Length |> should equal 1
     items.Shirts.[0].Sleeve |> should equal (Some "100")
+
+type NillableElements = XmlProvider<Schema= """
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="passport" type="passportType" />
+    <xs:complexType name="passportType">
+        <xs:sequence>
+          <xs:element nillable="true" name="PassportCountry" type="xs:string"/>
+          <xs:element nillable="true" name="PassportNumber" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>""">
+
+[<Test>]
+let ``nillable elements are supported``() =
+    let xml = """
+    <passport>
+      <PassportCountry>XY</PassportCountry>
+      <PassportNumber xsi:nil="true"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+    </passport>"""
+
+    let x = NillableElements.Parse xml
+    x.PassportCountry.Nil |> should equal None
+    x.PassportCountry.Value |> should equal (Some "XY")
+    x.PassportNumber.Nil |> should equal (Some true)
+    x.PassportNumber.Value |> should equal None
+
+[<Literal>]
+let SimpleTypesXsd = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified" >
+        <xs:element name='A'>
+            <xs:complexType>
+                <xs:attribute name='int'      type='xs:int'      use="required" />
+                <xs:attribute name='long'     type='xs:long'     use="required" />
+                <xs:attribute name='dateTime' type='xs:dateTime' use="required" />
+                <xs:attribute name='boolean'  type='xs:boolean'  use="required" />
+                <xs:attribute name='decimal'  type='xs:decimal'  use="required" />
+                <xs:attribute name='double'   type='xs:double'   use="required" />
+            </xs:complexType>
+        </xs:element>
+    </xs:schema>"""
+
+
+type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd>
+
+open System.Xml
+open System.Xml.Schema
+
+let parseSchema xsdText =    
+    let schemaSet = XmlSchemaSet() 
+    use reader = XmlReader.Create(new System.IO.StringReader(xsdText))
+    schemaSet.Add(null, reader) |> ignore
+    schemaSet.Compile()
+    schemaSet
+
+let isValid xsd =
+    let xmlSchemaSet = parseSchema xsd
+    fun xml -> 
+        let settings = XmlReaderSettings(ValidationType = ValidationType.Schema)
+        settings.Schemas <- xmlSchemaSet
+        use reader = XmlReader.Create(new System.IO.StringReader(xml), settings)
+        try
+            while reader.Read() do ()
+            true
+        with :? XmlSchemaException as e -> 
+            printfn "%s/n%s" e.Message xml
+            false
+
+
+[<Test>]
+let ``simple types are formatted properly``() =
+    let simpleValues =
+      SimpleTypes.A(
+        int = 0,
+        long = 0L,
+        dateTime = System.DateTime.Now,
+        boolean = false,
+        decimal = 0M,
+        double = System.Double.NaN)
+        .ToString()
+    
+    let minValues =
+      SimpleTypes.A(
+        int = System.Int32.MinValue,
+        long = System.Int64.MinValue,
+        dateTime = System.DateTime.MinValue,
+        boolean = false,
+        decimal = System.Decimal.MinValue,
+        double = System.Double.NegativeInfinity)
+        .ToString()
+
+    let maxValues = 
+      SimpleTypes.A(
+        int = System.Int32.MaxValue,
+        long = System.Int64.MaxValue,
+        dateTime = System.DateTime.MaxValue,
+        boolean = true,
+        decimal = System.Decimal.MaxValue,
+        double = System.Double.PositiveInfinity)
+        .ToString()
+
+    let isValid = isValid SimpleTypesXsd
+    isValid simpleValues |> should equal true
+    isValid minValues |> should equal true
+    isValid maxValues |> should equal true
