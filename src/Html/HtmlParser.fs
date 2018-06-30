@@ -427,11 +427,13 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | ''' -> state.Cons(); script state
+            | '\\' -> state.Cons(); state.Cons(); scriptSingleQuoteString state
             | _ -> state.Cons(); scriptSingleQuoteString state
         and scriptDoubleQuoteString state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | '"' -> state.Cons(); script state
+            | '\\' -> state.Cons(); state.Cons(); scriptDoubleQuoteString state
             | _ -> state.Cons(); scriptDoubleQuoteString state
         and scriptSlash state =
             match state.Peek() with
