@@ -6,6 +6,7 @@
 * Preserve white-space when parsing XML.
 * Recognise media type application/json-rpc as text.
 * Fix parsing of escaped charaters in string literals within HTML script tags.
+* Added constants for HTTP status codes.
 
 #### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.
