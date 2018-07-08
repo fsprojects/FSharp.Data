@@ -2,6 +2,7 @@
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
 * Fixed handling of empty cookie headers.
 * (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
+* Preserve white-space when parsing XML.
 
 #### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.
