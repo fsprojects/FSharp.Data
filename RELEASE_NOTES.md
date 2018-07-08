@@ -4,6 +4,7 @@
 * (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
 * Improved the performance of the type provider design time components.
 * Preserve white-space when parsing XML.
+* Recognise media type application/json-rpc as text.
 
 #### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.
