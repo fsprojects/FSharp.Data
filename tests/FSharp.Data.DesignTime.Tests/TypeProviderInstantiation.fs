@@ -174,8 +174,8 @@ type TypeProviderInstantiation =
     member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)
         let output =
-            let tp = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
-            Testing.FormatProvidedType(tp, signatureOnly, ignoreOutput, 10, 100)
+            let tp, t = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
+            Testing.FormatProvidedType(tp, t, signatureOnly, ignoreOutput, 10, 100)
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
             |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
@@ -242,7 +242,3 @@ type TypeProviderInstantiation =
         | Net45 -> Targets.DotNet45FSharp41Refs()
         | NetStandard20 -> Targets.DotNetStandard20FSharp41Refs()
 
-open System.Runtime.CompilerServices
-
-[<assembly:InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
-do()

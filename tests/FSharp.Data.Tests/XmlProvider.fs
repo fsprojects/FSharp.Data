@@ -554,9 +554,25 @@ type RoundtripXmlDocument = XmlProvider<"""<?xml version="1.0"?>
 let ``Roundtripping works correctly``() =
     let original = RoundtripXmlDocument.GetSample()
     let afterRoundtrip = new RoundtripXmlDocument.Doc(original.Assembly, original.Members)
-    original.XElement.ToString() |> should equal <| afterRoundtrip.XElement.ToString()
+    XDocument.Parse(original.XElement.ToString()).ToString() |> should equal <| XDocument.Parse(afterRoundtrip.XElement.ToString()).ToString()
 
+type DrugsXml = XmlProvider<"""<drugs>
+  <drug>
+    <name>Paracetamol</name>
+    <dose>
+      <div>
+        <p>In children</p> <p>every six hours</p>
+      </div>
+    </dose>
+  </drug>
+</drugs>
+""">
 
+[<Test>]
+let ``Should preserve whitespace between elements``() =
+    let drugs = DrugsXml.GetSample().Drug
+    let elements = drugs.Dose.Div.XElement.Value
+    elements |> should equal "\n        In children every six hours\n      "
 
 type ElemWithAttrs = XmlProvider<Schema = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
