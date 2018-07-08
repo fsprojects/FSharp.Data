@@ -1513,7 +1513,7 @@ type Http private() =
                 | Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
         }
 
-    /// Download an HTTP web resource from the specified URL synchronously
+    /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
