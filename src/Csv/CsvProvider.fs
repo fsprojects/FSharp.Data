@@ -22,7 +22,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+  let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
 
@@ -118,7 +118,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
+                 getSpecFromSamples this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
