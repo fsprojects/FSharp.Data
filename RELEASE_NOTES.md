@@ -1,4 +1,4 @@
-#### 3.0.0-beta4 - Unreleased
+#### 3.0.0-beta4 - July 8 2018
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
 * Fixed handling of empty cookie headers.
 * (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
