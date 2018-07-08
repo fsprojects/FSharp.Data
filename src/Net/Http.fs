@@ -241,131 +241,131 @@ module HttpResponseHeaders =
 
 /// Status codes that can be received in an HTTP response
 module HttpStatusCodes = 
-    // The server has received the request headers and the client should proceed to send the request body.
+    /// The server has received the request headers and the client should proceed to send the request body.
     let [<Literal>] Continue = 100
-    // The requester has asked the server to switch protocols and the server has agreed to do so.
+    /// The requester has asked the server to switch protocols and the server has agreed to do so.
     let [<Literal>] SwitchingProtocols = 101
-    // This code indicates that the server has received and is processing the request, but no response is available yet.
+    /// This code indicates that the server has received and is processing the request, but no response is available yet.
     let [<Literal>] Processing = 102
-    // Used to return some response headers before final HTTP message.
+    /// Used to return some response headers before final HTTP message.
     let [<Literal>] EarlyHints = 103
 
-    // Standard response for successful HTTP requests.
-    let [<Literal>] Ok = 200
-    // The request has been fulfilled, resulting in the creation of a new resource.
+    /// Standard response for successful HTTP requests.
+    let [<Literal>] OK = 200
+    /// The request has been fulfilled, resulting in the creation of a new resource.
     let [<Literal>] Created = 201
-    // The request has been accepted for processing, but the processing has not been completed.
+    /// The request has been accepted for processing, but the processing has not been completed.
     let [<Literal>] Accepted = 202
-    // The server is a transforming proxy (e.g. a Web accelerator) that received a 200 OK from its origin, but is returning a modified version of the origin's response.
+    /// The server is a transforming proxy (e.g. a Web accelerator) that received a 200 OK from its origin, but is returning a modified version of the origin's response.
     let [<Literal>] NonAuthoritativeInformation = 203
-    // The server successfully processed the request and is not returning any content.
+    /// The server successfully processed the request and is not returning any content.
     let [<Literal>] NoContent = 204
-    // The server successfully processed the request, but is not returning any content.
+    /// The server successfully processed the request, but is not returning any content.
     let [<Literal>] ResetContent = 205
-    // The server is delivering only part of the resource (byte serving) due to a range header sent by the client.
+    /// The server is delivering only part of the resource (byte serving) due to a range header sent by the client.
     let [<Literal>] PartialContent = 206
-    // The message body that follows is by default an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.
+    /// The message body that follows is by default an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.
     let [<Literal>] MultiStatus = 207
-    // The members of a DAV binding have already been enumerated in a preceding part of the (multistatus) response, and are not being included again.
+    /// The members of a DAV binding have already been enumerated in a preceding part of the (multistatus) response, and are not being included again.
     let [<Literal>] AlreadyReported = 208
-    // The server has fulfilled a request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance.
-    let [<Literal>] ImUsed = 226
+    /// The server has fulfilled a request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance.
+    let [<Literal>] IMUsed = 226
 
-    // Indicates multiple options for the resource from which the client may choose (via agent-driven content negotiation).
+    /// Indicates multiple options for the resource from which the client may choose (via agent-driven content negotiation).
     let [<Literal>] MultipleChoices = 300
-    // This and all future requests should be directed to the given URI.
+    /// This and all future requests should be directed to the given URI.
     let [<Literal>] MovedPermanently = 301
-    // Tells the client to look at (browse to) another url. 302 has been superseded by 303 and 307. 
+    /// Tells the client to look at (browse to) another url. 302 has been superseded by 303 and 307. 
     let [<Literal>] Found = 302
-    // The response to the request can be found under another URI using the GET method.
+    /// The response to the request can be found under another URI using the GET method.
     let [<Literal>] SeeOther = 303
-    // Indicates that the resource has not been modified since the version specified by the request headers If-Modified-Since or If-None-Match.
+    /// Indicates that the resource has not been modified since the version specified by the request headers If-Modified-Since or If-None-Match.
     let [<Literal>] NotModified = 304
-    // The requested resource is available only through a proxy, the address for which is provided in the response. 
+    /// The requested resource is available only through a proxy, the address for which is provided in the response. 
     let [<Literal>] UseProxy = 305
-    // No longer used. Originally meant "Subsequent requests should use the specified proxy."
+    /// No longer used. Originally meant "Subsequent requests should use the specified proxy."
     let [<Literal>] SwitchProxy = 306
-    // In this case, the request should be repeated with another URI; however, future requests should still use the original URI.
+    /// In this case, the request should be repeated with another URI; however, future requests should still use the original URI.
     let [<Literal>] TemporaryRedirect = 307
-    // The request and all future requests should be repeated using another URI. 
+    /// The request and all future requests should be repeated using another URI. 
     let [<Literal>] PermanentRedirect = 308
 
-    // The server cannot or will not process the request due to an apparent client error.
+    /// The server cannot or will not process the request due to an apparent client error.
     let [<Literal>] BadRequest = 400
-    // Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.
+    /// Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.
     let [<Literal>] Unauthorized = 401
-    // Reserved for future use. 
+    /// Reserved for future use. 
     let [<Literal>] PaymentRequired = 402
-    // The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort.
+    /// The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort.
     let [<Literal>] Forbidden = 403
-    // The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.
+    /// The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.
     let [<Literal>] NotFound = 404
-    // A request method is not supported for the requested resource.
+    /// A request method is not supported for the requested resource.
     let [<Literal>] MethodNotAllowed = 405
-    // The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
+    /// The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
     let [<Literal>] NotAcceptable = 406
-    // The client must first authenticate itself with the proxy.
+    /// The client must first authenticate itself with the proxy.
     let [<Literal>] ProxyAuthenticationRequired = 407
-    // The server timed out waiting for the request.
+    /// The server timed out waiting for the request.
     let [<Literal>] RequestTimeout = 408
-    // Indicates that the request could not be processed because of conflict in the request, such as an edit conflict between multiple simultaneous updates.
+    /// Indicates that the request could not be processed because of conflict in the request, such as an edit conflict between multiple simultaneous updates.
     let [<Literal>] Conflict = 409
-    // Indicates that the resource requested is no longer available and will not be available again.
+    /// Indicates that the resource requested is no longer available and will not be available again.
     let [<Literal>] Gone = 410
-    // The request did not specify the length of its content, which is required by the requested resource.
+    /// The request did not specify the length of its content, which is required by the requested resource.
     let [<Literal>] LengthRequired = 411
-    // The server does not meet one of the preconditions that the requester put on the request.
+    /// The server does not meet one of the preconditions that the requester put on the request.
     let [<Literal>] PreconditionFailed = 412
-    // The request is larger than the server is willing or able to process.
+    /// The request is larger than the server is willing or able to process.
     let [<Literal>] PayloadTooLarge = 413
-    // The URI provided was too long for the server to process.
-    let [<Literal>] UriTooLong = 414
-    // The request entity has a media type which the server or resource does not support.
+    /// The URI provided was too long for the server to process.
+    let [<Literal>] URITooLong = 414
+    /// The request entity has a media type which the server or resource does not support.
     let [<Literal>] UnsupportedMediaType = 415
-    // The client has asked for a portion of the file (byte serving), but the server cannot supply that portion.
+    /// The client has asked for a portion of the file (byte serving), but the server cannot supply that portion.
     let [<Literal>] RangeNotSatisfiable = 416
-    // The server cannot meet the requirements of the Expect request-header field.
+    /// The server cannot meet the requirements of the Expect request-header field.
     let [<Literal>] ExpectationFailed = 417
-    // The request was directed at a server that is not able to produce a response.
+    /// The request was directed at a server that is not able to produce a response.
     let [<Literal>] MisdirectedRequest = 421
-    // The request was well-formed but was unable to be followed due to semantic errors.
+    /// The request was well-formed but was unable to be followed due to semantic errors.
     let [<Literal>] UnprocessableEntity = 422
-    // The resource that is being accessed is locked.
+    /// The resource that is being accessed is locked.
     let [<Literal>] Locked = 423
-    // The request failed because it depended on another request and that request failed (e.g., a PROPPATCH).
+    /// The request failed because it depended on another request and that request failed (e.g., a PROPPATCH).
     let [<Literal>] FailedDependency = 424
-    // The client should switch to a different protocol such as TLS/1.0, given in the Upgrade header field.
+    /// The client should switch to a different protocol such as TLS/1.0, given in the Upgrade header field.
     let [<Literal>] UpgradeRequired = 426
-    // The origin server requires the request to be conditional.
+    /// The origin server requires the request to be conditional.
     let [<Literal>] PreconditionRequired = 428
-    // The user has sent too many requests in a given amount of time.
+    /// The user has sent too many requests in a given amount of time.
     let [<Literal>] TooManyRequests = 429
-    // The server is unwilling to process the request because either an individual header field, or all the header fields collectively, are too large.
+    /// The server is unwilling to process the request because either an individual header field, or all the header fields collectively, are too large.
     let [<Literal>] RequestHeaderFieldsTooLarge = 431
-    // A server operator has received a legal demand to deny access to a resource or to a set of resources that includes the requested resource.
+    /// A server operator has received a legal demand to deny access to a resource or to a set of resources that includes the requested resource.
     let [<Literal>] UnavailableForLegalReasons = 451
 
-    // A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+    /// A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
     let [<Literal>] InternalServerError = 500 
-    // The server either does not recognize the request method, or it lacks the ability to fulfil the request. 
+    /// The server either does not recognize the request method, or it lacks the ability to fulfil the request. 
     let [<Literal>] NotImplemented = 501
-    // The server was acting as a gateway or proxy and received an invalid response from the upstream server.
+    /// The server was acting as a gateway or proxy and received an invalid response from the upstream server.
     let [<Literal>] BadGateway = 502
-    // The server is currently unavailable (because it is overloaded or down for maintenance).
+    /// The server is currently unavailable (because it is overloaded or down for maintenance).
     let [<Literal>] ServiceUnavailable = 503
-    // The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.
+    /// The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.
     let [<Literal>] GatewayTimeout = 504
-    // The server does not support the HTTP protocol version used in the request.
-    let [<Literal>] HttpVersionNotSupported = 505 
-    // Transparent content negotiation for the request results in a circular reference.
+    /// The server does not support the HTTP protocol version used in the request.
+    let [<Literal>] HTTPVersionNotSupported = 505 
+    /// Transparent content negotiation for the request results in a circular reference.
     let [<Literal>] VariantAlsoNegotiates = 506
-    // The server is unable to store the representation needed to complete the request.
+    /// The server is unable to store the representation needed to complete the request.
     let [<Literal>] InsufficientStorage = 507
-    // The server detected an infinite loop while processing the request.
+    /// The server detected an infinite loop while processing the request.
     let [<Literal>] LoopDetected = 508
-    // Further extensions to the request are required for the server to fulfil it.
+    /// Further extensions to the request are required for the server to fulfil it.
     let [<Literal>] NotExtended = 510
-    // The client needs to authenticate to gain network access.
+    /// The client needs to authenticate to gain network access.
     let [<Literal>] NetworkAuthenticationRequired = 511
 
 
@@ -401,134 +401,6 @@ type HttpResponseWithStream =
     /// If the same header is present multiple times, the values will be concatenated with comma as the separator
     Headers : Map<string,string>
     Cookies : Map<string,string> }
-
-/// Constants for HTTP status codes.
-/// Based on https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-module HttpStatusCodes =
-    /// Continue - 100
-    let [<Literal>] Continue = 100
-    /// Switching Protocols - 101
-    let [<Literal>] SwitchingProtocols = 101
-    /// Processing - 102
-    let [<Literal>] Processing = 102
-    /// Early Hints - 103
-    let [<Literal>] EarlyHints = 103
-    /// OK - 200
-    let [<Literal>] OK = 200
-    /// Created - 201
-    let [<Literal>] Created = 201
-    /// Accepted - 202
-    let [<Literal>] Accepted = 202
-    /// Non-Authoritative Information - 203
-    let [<Literal>] NonauthoritativeInformation = 203
-    /// No Content - 204
-    let [<Literal>] NoContent = 204
-    /// Reset Content - 205
-    let [<Literal>] ResetContent = 205
-    /// Partial Content - 206
-    let [<Literal>] PartialContent = 206
-    /// Multi-Status - 207
-    let [<Literal>] Multistatus = 207
-    /// Already Reported - 208
-    let [<Literal>] AlreadyReported = 208
-    /// IM Used - 226
-    let [<Literal>] IMUsed = 226
-    /// Multiple Choices - 300
-    let [<Literal>] MultipleChoices = 300
-    /// Moved Permanently - 301
-    let [<Literal>] MovedPermanently = 301
-    /// Found - 302
-    let [<Literal>] Found = 302
-    /// See Other - 303
-    let [<Literal>] SeeOther = 303
-    /// Not Modified - 304
-    let [<Literal>] NotModified = 304
-    /// Use Proxy - 305
-    let [<Literal>] UseProxy = 305
-    /// Switch Proxy - 306
-    let [<Literal>] SwitchProxy = 306
-    /// Temporary Redirect - 307
-    let [<Literal>] TemporaryRedirect = 307
-    /// Permanent Redirect - 308
-    let [<Literal>] PermanentRedirect = 308
-    /// Bad Request - 400
-    let [<Literal>] BadRequest = 400
-    /// Unauthorized - 401
-    let [<Literal>] Unauthorized = 401
-    /// Payment Required - 402
-    let [<Literal>] PaymentRequired = 402
-    /// Forbidden - 403
-    let [<Literal>] Forbidden = 403
-    /// Not Found - 404
-    let [<Literal>] NotFound = 404
-    /// Method Not Allowed - 405
-    let [<Literal>] MethodNotAllowed = 405
-    /// Not Acceptable - 406
-    let [<Literal>] NotAcceptable = 406
-    /// Proxy Authentication Required - 407
-    let [<Literal>] ProxyAuthenticationRequired = 407
-    /// Request Timeout - 40
-    let [<Literal>] RequestTimeout = 408
-    /// Conflict - 409
-    let [<Literal>] Conflict = 409
-    /// Gone - 410
-    let [<Literal>] Gone = 410
-    /// Length Required - 411
-    let [<Literal>] LengthRequired = 411
-    /// Precondition Failed - 412
-    let [<Literal>] PreconditionFailed = 412
-    /// Payload Too Large - 413
-    let [<Literal>] PayloadTooLarge = 413
-    /// URI Too Long - 414
-    let [<Literal>] URITooLong = 414
-    /// Unsupported Media Type - 415
-    let [<Literal>] UnsupportedMediaType = 415
-    /// Range Not Satisfiable - 416
-    let [<Literal>] RangeNotSatisfiable = 416
-    /// Expectation Failed - 417
-    let [<Literal>] ExpectationFailed = 417
-    /// I'm a teapot - 418
-    let [<Literal>] ImATeapot = 418
-    /// Misdirected Request - 421
-    let [<Literal>] MisdirectedRequest = 421
-    /// Unprocessable Entity - 422
-    let [<Literal>] UnprocessableEntity = 422
-    /// Locked - 423
-    let [<Literal>] Locked = 423
-    /// Failed Dependency - 424
-    let [<Literal>] FailedDependency = 424
-    /// Upgrade Required - 426
-    let [<Literal>] UpgradeRequired = 426
-    /// Precondition Required - 428
-    let [<Literal>] PreconditionRequired = 428
-    /// Too Many Requests - 429
-    let [<Literal>] TooManyRequests = 429
-    /// Request Header Fields Too Large - 431
-    let [<Literal>] RequestHeaderFieldsTooLarge = 431
-    /// Unavailable For Legal Reasons - 451
-    let [<Literal>] UnavailableForLegalReasons = 451
-    /// Internal Server Error - 500
-    let [<Literal>] InternalServerError = 500
-    /// Not Implemented - 501
-    let [<Literal>] NotImplemented = 501
-    /// Bad Gateway - 502
-    let [<Literal>] BadGateway = 502
-    /// Service Unavailable - 503
-    let [<Literal>] ServiceUnavailable = 503
-    /// Gateway Timeout - 504
-    let [<Literal>] GatewayTimeout = 504
-    /// HTTP Version Not Supported - 505
-    let [<Literal>] HTTPVersionNotSupported = 505
-    /// Variant Also Negotiates - 506
-    let [<Literal>] VariantAlsoNegotiates = 506
-    /// Insufficient Storage - 507
-    let [<Literal>] InsufficientStorage = 507
-    /// Loop Detected - 508
-    let [<Literal>] LoopDetected = 508
-    /// Not Extended - 510
-    let [<Literal>] NotExtended = 510
-    /// Network Authentication Required - 511
-    let [<Literal>] NetworkAuthenticationRequired = 511
 
 /// Constants for common HTTP content types
 module HttpContentTypes =
