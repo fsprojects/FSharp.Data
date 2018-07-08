@@ -100,7 +100,7 @@ type XmlElement =
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ when text.TrimStart().StartsWith "<" ->
-      XDocument.Parse("<root>" + text + "</root>").Root.Elements()
+      XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
 
