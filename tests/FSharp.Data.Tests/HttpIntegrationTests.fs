@@ -52,8 +52,8 @@ let ``should set everything correctly in the HTTP request`` ()=
 
 [<Test>]
 let ``should return the http status code for all response types`` () =
-    Http.Request("http://localhost:1235/TestServer/GoodStatusCode").StatusCode |> should equal 200
-    Http.Request("http://localhost:1235/TestServer/BadStatusCode", silentHttpErrors=true).StatusCode |> should equal 401
+    Http.Request("http://localhost:1235/TestServer/GoodStatusCode").StatusCode |> should equal HttpStatusCodes.OK
+    Http.Request("http://localhost:1235/TestServer/BadStatusCode", silentHttpErrors=true).StatusCode |> should equal HttpStatusCodes.Unauthorized
 
 [<Test>]
 let ``should return the entity body as a string`` () =
@@ -80,7 +80,7 @@ let ``cookies with protocol-prefixed domains should be handled`` () =
 
 [<Test>]
 let ``when called on a non-existant page returns 404`` () =
-    Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
+    Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal HttpStatusCodes.NotFound
 
 [<Test>]
 let ``all of the manually-set request headers get sent to the server`` ()=
@@ -252,7 +252,7 @@ I am some file bytes
 --test--"""
     let body = Multipart("test", [ MultipartItem("file", "thing.txt", new MemoryStream(System.Text.Encoding.UTF8.GetBytes text) :> Stream) ])
     let response = Http.RequestStream("http://localhost:1235/TestServer/Multipart", silentHttpErrors = true, httpMethod = "Post", body = body)
-    response.StatusCode |> should equal 200
+    response.StatusCode |> should equal HttpStatusCodes.OK
     let contents = (new StreamReader(response.ResponseStream)).ReadToEnd() |> normalizeNewlines
     contents |> should equal (normalizeNewlines expected)
 #endif
