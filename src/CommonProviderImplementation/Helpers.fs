@@ -155,7 +155,6 @@ module internal ProviderHelpers =
     type private ParseTextResult<'T> =
         { TypedSamples : 'T []
           SampleIsUri : bool
-          SampleIsWebUri : bool
           SampleIsResource : bool }
 
     let ReadResource(tp: DisposableTypeProviderForNamespaces, resourceName:string) =
@@ -202,7 +201,6 @@ module internal ProviderHelpers =
         match tryGetResource() with
         | Some res -> { TypedSamples = parseFunc "" res
                         SampleIsUri = false
-                        SampleIsWebUri = false
                         SampleIsResource = true }
         | _ -> 
 
@@ -212,7 +210,6 @@ module internal ProviderHelpers =
             try
                 { TypedSamples = parseFunc "" sampleOrSampleUri
                   SampleIsUri = false
-                  SampleIsWebUri = false
                   SampleIsResource = false }
             with e -> 
                 failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
@@ -246,15 +243,21 @@ module internal ProviderHelpers =
     
             try
               
-                let sample, isWeb = 
+                let sample = 
                     if isWeb uri then
-                        webUrisCache.GetOrAdd(uri.OriginalString, readText), true
+                        let text = 
+                            match webUrisCache.TryRetrieve(uri.OriginalString) with
+                            | Some text -> text
+                            | None -> 
+                                let text = readText()
+                                webUrisCache.Set(uri.OriginalString, text)
+                                text
+                        text
                     else 
-                        readText(), false
+                        readText()
                     
                 { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
                   SampleIsUri = true
-                  SampleIsWebUri = isWeb
                   SampleIsResource = false }
     
             with e ->
@@ -264,7 +267,6 @@ module internal ProviderHelpers =
                     try 
                         { TypedSamples = parseFunc "" sampleOrSampleUri
                           SampleIsUri = false
-                          SampleIsWebUri = false
                           SampleIsResource = false }
                     with _ -> 
                         // if not, return the first exception
@@ -332,7 +334,7 @@ module internal ProviderHelpers =
                         // so we need to keep the dispose action around so it will be called with B and the cache is removed
                         false
           
-        match providedTypesCache.TryRetrieve(fullTypeName) with
+        match providedTypesCache.TryRetrieve(fullTypeName, true) with
         | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 -> 
             log "Retrieved from cache"
             setupDisposeAction providedType watchedFile
@@ -357,7 +359,7 @@ module internal ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
+    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
@@ -428,9 +430,7 @@ module internal ProviderHelpers =
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
           
-          if sampleOrSampleUri <> "" && 
-             not (parseResult.SampleIsResource) && 
-             (runtimeVersion.SupportsLocalFileSystem || not parseResult.SampleIsUri || parseResult.SampleIsWebUri) then
+          if sampleOrSampleUri <> "" && not parseResult.SampleIsResource then
         
               if sampleIsList then
               
@@ -449,7 +449,7 @@ module internal ProviderHelpers =
                                                   |> spec.CreateFromTextReaderForSampleList)
                       yield m :> _
                               
-                      if parseResult.SampleIsUri  then
+                      if parseResult.SampleIsUri then
                           // Generate static AsyncGetSamples method
                           let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, isStatic = true,
                                                     invokeCode = fun _ -> 
@@ -468,9 +468,8 @@ module internal ProviderHelpers =
                     |> spec.CreateFromTextReader
 
                 // Generate static GetSample method
-                yield ProvidedMethod(name, [], resultType, isStatic = true, 
-                                        invokeCode = getSampleCode) :> _
-                          
+                yield ProvidedMethod(name, [], resultType, isStatic = true, invokeCode = getSampleCode) :> _
+
                 if not sampleIsList && spec.GeneratedType :> Type = spec.RepresentationType then
                     // Generate default constructor
                     yield ProvidedConstructor([], invokeCode = getSampleCode) :> _
@@ -486,3 +485,8 @@ module internal ProviderHelpers =
         ] |> spec.GeneratedType.AddMembers
         
         spec.GeneratedType
+
+open System.Runtime.CompilerServices
+
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
+do()

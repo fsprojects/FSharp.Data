@@ -1,14 +1,14 @@
 framework: >=net45
 source https://api.nuget.org/v3/index.json
 
-nuget FAKE
+nuget FAKE prerelease
 nuget Nuget.CommandLine
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
 
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypesTesting.fs
 
 # These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
 # The TPSDK testing helpers like these to be placed in pacakges/...
