@@ -86,7 +86,7 @@ type XmlElement =
   static member Create(reader:TextReader) =    
     use reader = reader
     let text = reader.ReadToEnd()
-    let element = XDocument.Parse(text).Root 
+    let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
   
   /// [omit]
@@ -96,11 +96,11 @@ type XmlElement =
     use reader = reader
     let text = reader.ReadToEnd()
     try
-      XDocument.Parse(text).Root.Elements()
+      XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ when text.TrimStart().StartsWith "<" ->
-      XDocument.Parse("<root>" + text + "</root>").Root.Elements()
+      XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
 
