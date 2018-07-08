@@ -306,6 +306,8 @@ module HttpContentTypes =
     let [<Literal>] Soap = "application/soap+xml"
     /// text/csv
     let [<Literal>] Csv = "text/csv"
+    /// application/json-rpc
+    let [<Literal>] JsonRpc = "application/json-rpc"    
     /// multipart/form-data
     let Multipart boundary = sprintf "multipart/form-data; boundary=%s" boundary
 
@@ -1218,6 +1220,7 @@ module private HttpHelpers =
                 mimeType = HttpContentTypes.Json ||
                 mimeType = HttpContentTypes.Xml ||
                 mimeType = HttpContentTypes.JavaScript ||
+                mimeType = HttpContentTypes.JsonRpc ||
                 mimeType = "application/ecmascript" ||
                 mimeType = "application/xml-dtd" ||
                 mimeType.StartsWith "application/" && mimeType.EndsWith "+xml" ||
