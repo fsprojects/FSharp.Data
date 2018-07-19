@@ -1323,13 +1323,15 @@ module internal CookieHandling =
         |]
 
     let getCookiesAndManageCookieContainer uri responseUri (headers:Map<string, string>) (cookieContainer:CookieContainer) addCookiesInCookieContainer silentCookieErrors =
+        let cookiesFromCookieContainer = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+
         match headers.TryFind HttpResponseHeaders.SetCookie with
         | Some cookieHeader ->
             getAllCookiesFromHeader cookieHeader responseUri
-            |> Array.iter cookieContainer.Add
-        | None -> ()
-
-        Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+            |> Array.fold (fun cookies (uri, cookie) ->
+                cookieContainer.Add(uri, cookie)
+                cookies |> Map.add cookie.Name cookie.Value) cookiesFromCookieContainer
+        | None -> cookiesFromCookieContainer
 
 /// Utilities for working with network via HTTP. Includes methods for downloading
 /// resources with specified headers, query parameters and HTTP body
