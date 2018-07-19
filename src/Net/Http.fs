@@ -1489,12 +1489,13 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -1511,13 +1512,14 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
         async {
-            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors = silentCookieErrors,
                                               ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
             return
                 match response.Body with
@@ -1539,6 +1541,7 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1550,7 +1553,7 @@ type Http private() =
                      Headers = headers
                      Cookies = cookies }
         }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -1567,12 +1570,13 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1590,12 +1594,13 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                                 ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1613,10 +1618,11 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                                 ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
