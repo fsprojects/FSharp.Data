@@ -1329,7 +1329,10 @@ module internal CookieHandling =
         | Some cookieHeader ->
             getAllCookiesFromHeader cookieHeader responseUri
             |> Array.fold (fun cookies (uri, cookie) ->
-                cookieContainer.Add(uri, cookie)
+                if addCookiesInCookieContainer then
+                    try cookieContainer.Add(uri, cookie)
+                    with | :? CookieException as e ->
+                        if defaultArg silentCookieErrors false then () else raise e
                 cookies |> Map.add cookie.Name cookie.Value) cookiesFromCookieContainer
         | None -> cookiesFromCookieContainer
 
