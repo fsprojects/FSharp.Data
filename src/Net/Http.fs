@@ -1322,6 +1322,15 @@ module internal CookieHandling =
                 | _ -> ()
         |]
 
+    let getCookiesAndManageCookieContainer uri responseUri (headers:Map<string, string>) (cookieContainer:CookieContainer) addCookiesInCookieContainer silentCookieErrors =
+        match headers.TryFind HttpResponseHeaders.SetCookie with
+        | Some cookieHeader ->
+            getAllCookiesFromHeader cookieHeader responseUri
+            |> Array.iter cookieContainer.Add
+        | None -> ()
+
+        Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+
 /// Utilities for working with network via HTTP. Includes methods for downloading
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
@@ -1359,6 +1368,7 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies:seq<_>,
                 [<Optional>] ?cookieContainer,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
@@ -1380,7 +1390,10 @@ type Http private() =
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
 
         // set cookies
-        let cookieContainer = defaultArg cookieContainer <| CookieContainer()
+        let internalCookieContainer, cookieContainer =
+            match cookieContainer with
+            | Some x -> false, x
+            | None -> true, CookieContainer()
 
         match cookies with
         | None -> ()
@@ -1441,13 +1454,7 @@ type Http private() =
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
 
-            match headers.TryFind HttpResponseHeaders.SetCookie with
-            | Some cookieHeader ->
-                CookieHandling.getAllCookiesFromHeader cookieHeader resp.ResponseUri
-                |> Array.iter cookieContainer.Add
-            | None -> ()
-
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+            let cookies = CookieHandling.getCookiesAndManageCookieContainer uri resp.ResponseUri headers cookieContainer internalCookieContainer silentCookieErrors
 
             let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
 

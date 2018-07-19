@@ -70,19 +70,48 @@ let ``Cookies with '=' are parsed correctly`` () =
         [| "IdSession", "Qze9H7HpvcVoh/ANulOl6Z1P8Omd1cLb9FOLL5o2aOlDMn/dFJi+RWDAPHZ4nDmWeno2puyOTFM/P4yzZMQsPoJ1gvEaJqG54kerM6WW4bv6ql72/Tn3NnCZTaokm8uaboLICgckUM2J7KOx5iL8uGyTN/g04/jZKlP1HgyatQL6kCG4qCQUMrdqZjqkbgW3eCpeyeI9rXF1bNC8hsKaqJ37Du/oBvbIMUbgenogfjzmlCgtAzv4la2Eo8+3cvDHkKPnksCP8kt8JbyXECyXBOjPrpFjtYv9UUGfyhwqRTRNTmH5+5UAsDDFrYe+vonYiDwXel8TfK3AZhQGXcF598AVPVfB1RO5S/mt7faDS7cEfz14nUsYtaNAZcwH7gwm06VJUX5eWiZzlBGx4SVBkNzP0QhLM9AqNP889y9BmZ2JaGb3fJtCWL3MfzM23mbwSemcERkoV3v1rIH8mb6ZgGm0hyEbbtu/RegkLAgNO+YB6c0Os6Pv6OnK0So4xlNakchaWhl1eMfOf4Gx0miJv4o2XbmAmbSNYkybi3n8vz4="|]
 
 [<Test>]
-let ``Cookies with JSON are parsed correctly`` () =
-    let uri = Uri "http://nevermind.com"
-    let cookieHeader = "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}"
-    let cookieContainer = System.Net.CookieContainer()
-    CookieHandling.getAllCookiesFromHeader cookieHeader uri
-    |> Array.iter cookieContainer.Add
-    
-[<Test>]
 let ``An empty cookie header is parsed correctly`` () =
     let uri = Uri "https://news.google.com/news?hl=en&ned=us&ie=UTF8&nolr=1&output=rss&q=FSharp&num=1000"
     let cookieHeader = ""
     let cookies = CookieHandling.getAllCookiesFromHeader cookieHeader uri
     cookies |> should equal [| |]
+
+[<Test>]
+let ``Cookies in CookieContainer are returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key", "value"))
+    let header = Map.empty
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookies |> should haveCount cookieContainer.Count
+
+[<Test>]
+let ``Cookies in header are added to CookieContainer and returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key1", "value1"))
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key2=value2"))]
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookieContainer.Count |> should equal 2
+    cookies |> should haveCount cookieContainer.Count
+
+[<Test>]
+let ``Cookies in header already existing in CookieContainer are added twice, and only new value is returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key", "value1"))
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key=value2"))]
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookieContainer.Count |> should equal 2
+    cookies |> should haveCount 1
+    cookies.["key"] |> should equal "value2"
+
+[<Test>]
+let ``Cookies with unescaped JSON raise a CookieException (need to avoid cookieContainer parameter or ignoreCookieErrors`` () =
+    let uri = Uri "http://nevermind.com"
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
+    let cookieContainer = System.Net.CookieContainer()
+    (fun () -> CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true false |> ignore) |> should throw typeof<System.Net.CookieException>
 
 [<Test>]
 let ``Web request's timeout is used`` () =
