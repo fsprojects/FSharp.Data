@@ -675,3 +675,14 @@ let ``Whitespace is preserved``() =
 let ``Getting a decimal at runtime when an integer was inferred should throw``() =
     let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 0.800 }""")
     (fun () -> json.Y) |> shouldThrow "Expecting a Int32 at '/y', got 0.800"
+
+[<Test>]
+let ``Getting a large decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 12345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting a Int32 at '/y', got 12345678901234567890"
+
+[<Test>]
+let ``Getting a large float at runtime when an integer was inferred should throw``() =
+    let f = 1234567890123456789012345678901234567890.
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 1234567890123456789012345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow (sprintf "Expecting a Int32 at '/y', got %s" (f.ToString "E14"))
