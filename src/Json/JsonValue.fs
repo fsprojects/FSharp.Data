@@ -42,7 +42,10 @@ type JsonValue =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  member x._Print = x.ToString()
+  member x._Print = 
+    let str = x.ToString()
+    if str.Length > 512 then str.Substring(0, 509) + "..."
+    else str 
 
   /// Serializes the JsonValue to the specified System.IO.TextWriter.
   member x.WriteTo (w:TextWriter, saveOptions) =

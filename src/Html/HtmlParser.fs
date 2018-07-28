@@ -146,7 +146,10 @@ type HtmlNode =
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
+    member x._Print = 
+      let str = x.ToString()
+      if str.Length > 512 then str.Substring(0, 509) + "..."
+      else str 
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
@@ -178,7 +181,10 @@ type HtmlDocument =
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
+    member x._Print = 
+      let str = x.ToString()
+      if str.Length > 512 then str.Substring(0, 509) + "..."
+      else str 
 
 // --------------------------------------------------------------------------------------
 
