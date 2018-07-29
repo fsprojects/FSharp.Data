@@ -68,14 +68,14 @@ type XmlElement =
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   member x._Print = 
-    let str = x.XElement.ToString()
+    let str = x.ToString()
     if str.Length > 512 then str.Substring(0, 509) + "..."
     else str 
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  override x.ToString() = x._Print
+  override x.ToString() = x.XElement.ToString()
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
