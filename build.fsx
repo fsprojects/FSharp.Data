@@ -16,7 +16,6 @@ open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.Tools.Git
 
-
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
 
@@ -72,8 +71,7 @@ else
     sdkPath <- Some (installDesiredVersion ())
 
 // Read release notes & version info from RELEASE_NOTES.md
-let release = ReleaseNotes.load"RELEASE_NOTES.md"
-
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 let bindir = "./bin"
 
@@ -114,7 +112,6 @@ Target.create "Clean" <| fun _ ->
         yield! !!"**/bin"
         yield! !!"**/obj"
     } |> Shell.cleanDirs
-
 
 Target.create "CleanDocs" <| fun _ ->
     Shell.cleanDirs ["docs/output"]
