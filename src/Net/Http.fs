@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
@@ -1455,6 +1455,26 @@ module internal CookieHandling =
                 | _ -> ()
         |]
 
+    let getCookiesAndManageCookieContainer uri responseUri (headers:Map<string, string>) (cookieContainer:CookieContainer) addCookiesToCookieContainer silentCookieErrors =
+        let cookiesFromCookieContainer =
+            cookieContainer.GetCookies uri
+            |> Seq.cast<Cookie>
+            |> Seq.map (fun cookie -> cookie.Name, cookie.Value)
+            |> Map.ofSeq
+
+        match headers.TryFind HttpResponseHeaders.SetCookie with
+        | Some cookieHeader ->
+            getAllCookiesFromHeader cookieHeader responseUri
+            |> Array.fold (fun cookies (uri, cookie) ->
+                if addCookiesToCookieContainer then
+                    if silentCookieErrors then
+                        try cookieContainer.Add(uri, cookie)
+                        with :? CookieException -> ()
+                    else
+                        cookieContainer.Add(uri, cookie)
+                cookies |> Map.add cookie.Name cookie.Value) cookiesFromCookieContainer
+        | None -> cookiesFromCookieContainer
+
 /// Utilities for working with network via HTTP. Includes methods for downloading
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
@@ -1493,6 +1513,7 @@ type Http private() =
                 [<Optional>] ?cookies:seq<_>,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1513,7 +1534,10 @@ type Http private() =
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
 
         // set cookies
-        let cookieContainer = defaultArg cookieContainer <| CookieContainer()
+        let addCookiesFromHeadersToCookieContainer, cookieContainer =
+            match cookieContainer with
+            | Some x -> false, x
+            | None -> true, CookieContainer()
 
         match cookies with
         | None -> ()
@@ -1574,13 +1598,8 @@ type Http private() =
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
 
-            match headers.TryFind HttpResponseHeaders.SetCookie with
-            | Some cookieHeader ->
-                CookieHandling.getAllCookiesFromHeader cookieHeader resp.ResponseUri
-                |> Array.iter cookieContainer.Add
-            | None -> ()
-
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+            let cookies = CookieHandling.getCookiesAndManageCookieContainer uri resp.ResponseUri headers cookieContainer
+                                                                            addCookiesFromHeadersToCookieContainer (defaultArg silentCookieErrors false)
 
             let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
 
@@ -1611,11 +1630,12 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -1633,12 +1653,13 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
         async {
-            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors = silentCookieErrors,
                                               ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
             return
                 match response.Body with
@@ -1661,6 +1682,7 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
@@ -1671,7 +1693,7 @@ type Http private() =
                      Headers = headers
                      Cookies = cookies }
         }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -1689,11 +1711,12 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1712,11 +1735,12 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                                 ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously
 
@@ -1735,9 +1759,10 @@ type Http private() =
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
+        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                                 ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?timeout=timeout)
         |> Async.RunSynchronously

@@ -2,6 +2,7 @@
 * (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
 * (Breaking Change) Added support for TimeSpan to JSON, XML, CSV, and HTML providers.
 * Fixed large float values being silently converted to int.MinValue when parsing JSON.
+* Improved handling of invalid cookies.
 
 #### 3.0.0-beta4 - July 8 2018
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
