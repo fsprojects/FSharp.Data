@@ -1,5 +1,6 @@
-#### 3.0.0-beta5 - Unreleases
+#### 3.0.0-beta5 - Unreleased
 * (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
+* Fixed large float values being silently converted to int.MinValue when parsing JSON.
 
 #### 3.0.0-beta4 - July 8 2018
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.

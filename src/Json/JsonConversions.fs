@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Helper operations for converting converting json values to other types
 // --------------------------------------------------------------------------------------
 
@@ -9,8 +9,8 @@ open FSharp.Data
 
 [<AutoOpen>]
 module private Helpers =
-  let inline inRangeDecimal (lo:'a) (hi:'b) (v:decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
-  let inline inRangeFloat (lo:'a) (hi:'b) (v:float) : bool = (v >= float lo) && (v <= float hi)
+  let inline inRangeDecimal lo hi (v:decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
+  let inline inRangeFloat lo hi (v:float) : bool = (v >= float lo) && (v <= float hi)
   let inline isIntegerDecimal (v:decimal) : bool = Math.Round v = v
   let inline isIntegerFloat (v:float) : bool = Math.Round v = v
 

@@ -128,7 +128,7 @@ type JsonRuntime =
   static member GetNonOptionalValue<'T>(path:string, opt:option<'T>, originalValue) : 'T = 
     let getTypeName() = 
         let name = typeof<'T>.Name
-        if name.StartsWith "int" 
+        if name.StartsWith("i", StringComparison.OrdinalIgnoreCase)
         then "an " + name
         else "a " + name
     match opt, originalValue with 
