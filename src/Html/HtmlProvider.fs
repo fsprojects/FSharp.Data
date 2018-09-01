@@ -33,9 +33,10 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let resolutionFolder = args.[6] :?> string
         let resource = args.[7] :?> string
 
-        let getSpecFromSamples samples = 
+        let getSpec _ value = 
 
-            let doc : FSharp.Data.HtmlDocument = Seq.exactlyOne samples
+            let doc = using (IO.logTime "Parsing" sample) <| fun _ ->
+                HtmlDocument.Parse value
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
                 let inferenceParameters : HtmlInference.Parameters = 
@@ -54,8 +55,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples this cfg encodingStr resolutionFolder resource typeName None
+        generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

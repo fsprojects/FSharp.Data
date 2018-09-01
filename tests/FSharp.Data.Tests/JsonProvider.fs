@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -484,12 +484,12 @@ let ``Can parse microsoft format dates``() =
 [<Test>]
 let ``Can parse ISO 8601 dates``() =
     let dates = DateJSON.GetSample()
-    dates.Anniversary.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 18, 20, 30, 450)) 
+    dates.Anniversary |> should equal (new DateTimeOffset(1997, 7, 16, 19, 20, 30, 450, TimeSpan.FromHours 1.)) 
 
 [<Test>]
 let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
-    dates.UtcTime.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 19, 50, 30, 0)) 
+    dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero)) 
 
 let withCulture (cultureName: string) test = 
     let originalCulture = CultureInfo.CurrentCulture;
@@ -580,7 +580,7 @@ let ``Can construct complex objects``() =
     let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
     let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
     let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
-                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
+                            JsonValue.Null, JsonValue.Null, 2, DateTimeOffset(2013,03,15,0,0,0,TimeSpan.Zero), DateTimeOffset(2013,03,16,0,0,0,TimeSpan.Zero), JsonValue.Null, pullRequest, None)
     json.JsonValue.ToString() |> normalize |> should equal (normalize """{
   "url": "url",
   "labels_url": "labelsUrl",
@@ -624,8 +624,8 @@ let ``Can construct complex objects``() =
   "assignee": null,
   "milestone": null,
   "comments": 2,
-  "created_at": "2013-03-15T00:00:00.0000000",
-  "updated_at": "2013-03-16T00:00:00.0000000",
+  "created_at": "2013-03-15T00:00:00.0000000+00:00",
+  "updated_at": "2013-03-16T00:00:00.0000000+00:00",
   "closed_at": null,
   "pull_request": {
     "html_url": null,
@@ -674,4 +674,25 @@ let ``Whitespace is preserved``() =
 [<Test>]
 let ``Getting a decimal at runtime when an integer was inferred should throw``() =
     let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 0.800 }""")
-    (fun () -> json.Y) |> shouldThrow "Expecting a Int32 at '/y', got 0.800"
+    (fun () -> json.Y) |> shouldThrow "Expecting an Int32 at '/y', got 0.800"
+
+[<Test>]
+let ``DateTime and DateTimeOffset mix results in DateTime`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "2016-10-05T04:05:03", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTime>) |> should equal true
+
+[<Test>]
+let ``Collection of DateTimeOffset should have the type DateTimeOffset`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "/Date(123123+0600)/", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTimeOffset>) |> should equal true
+
+[<Test>]
+let ``Getting a large decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 12345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting an Int32 at '/y', got 12345678901234567890"
+
+[<Test>]
+let ``Getting a large float at runtime when an integer was inferred should throw``() =
+    let f = 1234567890123456789012345678901234567890.
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 1234567890123456789012345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow (sprintf "Expecting an Int32 at '/y', got %s" (f.ToString("E14").Replace("+0", "+")))

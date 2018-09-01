@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Helper operations for converting converting json values to other types
 // --------------------------------------------------------------------------------------
 
@@ -9,10 +9,12 @@ open FSharp.Data
 
 [<AutoOpen>]
 module private Helpers =
-  let inline inRange lo hi v = (v >= decimal lo) && (v <= decimal hi)
-  let inline isInteger v = Math.Round(v:decimal) = v
+  let inline inRangeDecimal lo hi (v:decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
+  let inline inRangeFloat lo hi (v:float) : bool = (v >= float lo) && (v <= float hi)
+  let inline isIntegerDecimal (v:decimal) : bool = Math.Round v = v
+  let inline isIntegerFloat (v:float) : bool = Math.Round v = v
 
-/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
+/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/datetimeoffset/guid options
 type JsonConversions =
 
   static member AsString useNoneForNullOrEmpty (cultureInfo:IFormatProvider) = function
@@ -24,12 +26,14 @@ type JsonConversions =
     | _ -> None
 
   static member AsInteger cultureInfo = function
-    | JsonValue.Number n when inRange Int32.MinValue Int32.MaxValue n && isInteger n -> Some (int n)
+    | JsonValue.Number n when inRangeDecimal Int32.MinValue Int32.MaxValue n && isIntegerDecimal n -> Some (int n)
+    | JsonValue.Float f when inRangeFloat Int32.MinValue Int32.MaxValue f && isIntegerFloat f -> Some (int f)
     | JsonValue.String s -> TextConversions.AsInteger cultureInfo s
     | _ -> None
 
   static member AsInteger64 cultureInfo = function
-    | JsonValue.Number n when inRange Int64.MinValue Int64.MaxValue n && isInteger n -> Some (int64 n)
+    | JsonValue.Number n when inRangeDecimal Int64.MinValue Int64.MaxValue n && isIntegerDecimal n -> Some (int64 n)
+    | JsonValue.Float f when inRangeFloat Int64.MinValue Int64.MaxValue f && isIntegerFloat f -> Some (int64 f)
     | JsonValue.String s -> TextConversions.AsInteger64 cultureInfo s
     | _ -> None
 
@@ -51,6 +55,10 @@ type JsonConversions =
     | JsonValue.String s -> TextConversions.AsBoolean s
     | _ -> None
 
+  static member AsDateTimeOffset cultureInfo = function
+    | JsonValue.String s -> TextConversions.AsDateTimeOffset cultureInfo s
+    | _ -> None
+  
   static member AsDateTime cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTime cultureInfo s
     | _ -> None

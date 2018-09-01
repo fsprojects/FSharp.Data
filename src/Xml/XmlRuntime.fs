@@ -86,7 +86,7 @@ type XmlElement =
   static member Create(reader:TextReader) =    
     use reader = reader
     let text = reader.ReadToEnd()
-    let element = XDocument.Parse(text).Root 
+    let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
   
   /// [omit]
@@ -96,11 +96,11 @@ type XmlElement =
     use reader = reader
     let text = reader.ReadToEnd()
     try
-      XDocument.Parse(text).Root.Elements()
+      XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ when text.TrimStart().StartsWith "<" ->
-      XDocument.Parse("<root>" + text + "</root>").Root.Elements()
+      XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
 
@@ -207,30 +207,32 @@ type XmlRuntime =
                 box xElement
             | _ ->
                 match v with
-                | :? string        as v -> v
-                | :? DateTime      as v -> v.ToString("O", cultureInfo)
-                | :? int           as v -> strWithCulture v
-                | :? int64         as v -> strWithCulture v
-                | :? float         as v -> strWithCulture v
-                | :? decimal       as v -> strWithCulture v
-                | :? bool          as v -> if v then "true" else "false"
-                | :? Guid          as v -> v.ToString()
-                | :? IJsonDocument as v -> v.JsonValue.ToString()
+                | :? string         as v -> v
+                | :? DateTime       as v -> v.ToString("O", cultureInfo)
+                | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
+                | :? int            as v -> strWithCulture v
+                | :? int64          as v -> strWithCulture v
+                | :? float          as v -> strWithCulture v
+                | :? decimal        as v -> strWithCulture v
+                | :? bool           as v -> if v then "true" else "false"
+                | :? Guid           as v -> v.ToString()
+                | :? IJsonDocument  as v -> v.JsonValue.ToString()
                 | _ -> failwithf "Unexpected value: %A" v
                 |> box
         let inline optionToArray f = function Some x -> [| f x |] | None -> [| |]
         match v with
         | :? Array as v -> [| for elem in v -> serialize elem |]
-        | :? option<XmlElement>    as v -> optionToArray serialize v
-        | :? option<string>        as v -> optionToArray serialize v
-        | :? option<DateTime>      as v -> optionToArray serialize v
-        | :? option<int>           as v -> optionToArray serialize v
-        | :? option<int64>         as v -> optionToArray serialize v
-        | :? option<float>         as v -> optionToArray serialize v
-        | :? option<decimal>       as v -> optionToArray serialize v
-        | :? option<bool>          as v -> optionToArray serialize v
-        | :? option<Guid>          as v -> optionToArray serialize v
-        | :? option<IJsonDocument> as v -> optionToArray serialize v
+        | :? option<XmlElement>     as v -> optionToArray serialize v
+        | :? option<string>         as v -> optionToArray serialize v
+        | :? option<DateTime>       as v -> optionToArray serialize v
+        | :? option<DateTimeOffset> as v -> optionToArray serialize v
+        | :? option<int>            as v -> optionToArray serialize v
+        | :? option<int64>          as v -> optionToArray serialize v
+        | :? option<float>          as v -> optionToArray serialize v
+        | :? option<decimal>        as v -> optionToArray serialize v
+        | :? option<bool>           as v -> optionToArray serialize v
+        | :? option<Guid>           as v -> optionToArray serialize v
+        | :? option<IJsonDocument>  as v -> optionToArray serialize v
         | v -> [| box (serialize v) |]
     let createElement (parent:XElement) (nameWithNS:string) =
         let namesWithNS = nameWithNS.Split '|'
