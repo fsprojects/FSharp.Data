@@ -8,6 +8,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>

@@ -11,6 +11,8 @@
     <!-- dotnet toolchain. The msbuild.exe toolchain uses the .NET Framework (or Mono) to execute the F# compiler, which allows one -->
     <!-- additional feature to continue to be supported - the use of integer code page numbers, see CsvProvider.fs -->
     <DefineConstants Condition="'$(USE_MSBUILD)' == '1'">USE_MSBUILD;$(DefineConstants)</DefineConstants>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>

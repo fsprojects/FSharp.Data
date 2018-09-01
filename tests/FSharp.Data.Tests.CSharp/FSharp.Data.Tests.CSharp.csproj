@@ -8,6 +8,9 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CsvExtensionsTests.cs" />
