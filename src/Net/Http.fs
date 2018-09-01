@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
@@ -1455,17 +1455,23 @@ module internal CookieHandling =
                 | _ -> ()
         |]
 
-    let getCookiesAndManageCookieContainer uri responseUri (headers:Map<string, string>) (cookieContainer:CookieContainer) addCookiesInCookieContainer silentCookieErrors =
-        let cookiesFromCookieContainer = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]
+    let getCookiesAndManageCookieContainer uri responseUri (headers:Map<string, string>) (cookieContainer:CookieContainer) addCookiesToCookieContainer silentCookieErrors =
+        let cookiesFromCookieContainer =
+            cookieContainer.GetCookies uri
+            |> Seq.cast<Cookie>
+            |> Seq.map (fun cookie -> cookie.Name, cookie.Value)
+            |> Map.ofSeq
 
         match headers.TryFind HttpResponseHeaders.SetCookie with
         | Some cookieHeader ->
             getAllCookiesFromHeader cookieHeader responseUri
             |> Array.fold (fun cookies (uri, cookie) ->
-                if addCookiesInCookieContainer then
-                    try cookieContainer.Add(uri, cookie)
-                    with | :? CookieException as e ->
-                        if defaultArg silentCookieErrors false then () else raise e
+                if addCookiesToCookieContainer then
+                    if silentCookieErrors then
+                        try cookieContainer.Add(uri, cookie)
+                        with :? CookieException -> ()
+                    else
+                        cookieContainer.Add(uri, cookie)
                 cookies |> Map.add cookie.Name cookie.Value) cookiesFromCookieContainer
         | None -> cookiesFromCookieContainer
 
@@ -1506,8 +1512,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies:seq<_>,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1528,7 +1534,7 @@ type Http private() =
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
 
         // set cookies
-        let internalCookieContainer, cookieContainer =
+        let addCookiesFromHeadersToCookieContainer, cookieContainer =
             match cookieContainer with
             | Some x -> false, x
             | None -> true, CookieContainer()
@@ -1592,7 +1598,8 @@ type Http private() =
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
 
-            let cookies = CookieHandling.getCookiesAndManageCookieContainer uri resp.ResponseUri headers cookieContainer internalCookieContainer silentCookieErrors
+            let cookies = CookieHandling.getCookiesAndManageCookieContainer uri resp.ResponseUri headers cookieContainer
+                                                                            addCookiesFromHeadersToCookieContainer (defaultArg silentCookieErrors false)
 
             let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
 
@@ -1622,8 +1629,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1645,8 +1652,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1674,8 +1681,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
@@ -1703,8 +1710,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1727,8 +1734,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?responseEncodingOverride,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
@@ -1751,8 +1758,8 @@ type Http private() =
                 [<Optional>] ?body,
                 [<Optional>] ?cookies,
                 [<Optional>] ?cookieContainer,
-                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?silentHttpErrors,
+                [<Optional>] ?silentCookieErrors,
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
