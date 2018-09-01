@@ -1,3 +1,6 @@
+#### 3.0.0-beta5 - Unreleases
+* (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
+
 #### 3.0.0-beta4 - July 8 2018
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
 * Fixed handling of empty cookie headers.
