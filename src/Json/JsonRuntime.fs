@@ -113,6 +113,9 @@ type JsonRuntime =
   static member ConvertBoolean(json) = 
     json |> Option.bind JsonConversions.AsBoolean
 
+  static member ConvertDateTimeOffset(cultureStr, json) = 
+    json |> Option.bind (JsonConversions.AsDateTimeOffset (TextRuntime.GetCulture cultureStr))
+  
   static member ConvertDateTime(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
 
@@ -192,8 +195,9 @@ type JsonRuntime =
         JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.DateTime -> 
-        JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)
-        >> Option.isSome
+        let cultureInfo = TextRuntime.GetCulture cultureStr
+        fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome ||
+                    (JsonConversions.AsDateTime cultureInfo json).IsSome
     | InferedTypeTag.Guid -> 
         JsonConversions.AsGuid >> Option.isSome
     | InferedTypeTag.Collection -> 
@@ -244,6 +248,7 @@ type JsonRuntime =
 
     | :? string                  as v -> JsonValue.String v
     | :? DateTime                as v -> v.ToString("O", cultureInfo) |> JsonValue.String
+    | :? DateTimeOffset          as v -> v.ToString("O", cultureInfo) |> JsonValue.String
     | :? int                     as v -> JsonValue.Number(decimal v)
     | :? int64                   as v -> JsonValue.Number(decimal v)
     | :? float                   as v -> JsonValue.Number(decimal v)
@@ -255,6 +260,7 @@ type JsonRuntime =
 
     | :? option<string>          as v -> optionToJson JsonValue.String v
     | :? option<DateTime>        as v -> optionToJson (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<DateTimeOffset>  as v -> optionToJson (fun (dt:DateTimeOffset) -> dt.ToString(cultureInfo) |> JsonValue.String) v
     | :? option<int>             as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<int64>           as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<float>           as v -> optionToJson (decimal >> JsonValue.Number) v

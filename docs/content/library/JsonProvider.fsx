@@ -236,7 +236,7 @@ type GitHub = JsonProvider<"../data/GitHub.json">
 let topRecentlyUpdatedIssues = 
     GitHub.GetSamples()
     |> Seq.filter (fun issue -> issue.State = "open")
-    |> Seq.sortBy (fun issue -> System.DateTime.Now - issue.UpdatedAt)
+    |> Seq.sortBy (fun issue -> System.DateTimeOffset.Now - issue.UpdatedAt)
     |> Seq.truncate 5
 
 for issue in topRecentlyUpdatedIssues do

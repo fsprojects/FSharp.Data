@@ -81,7 +81,7 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Item : FDR.BaseTypes.XmlElement
-    new : title:string -> link:string -> pubDate:System.DateTime -> description:string -> summary:string option -> creator:string option -> XmlProvider+Item
+    new : title:string -> link:string -> pubDate:System.DateTimeOffset -> description:string -> summary:string option -> creator:string option -> XmlProvider+Item
     XmlRuntime.CreateRecord("item", 
                             [| |], 
                             [| ("title",
@@ -113,9 +113,9 @@ class XmlProvider+Item : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "link"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member PubDate: System.DateTime with get
+    member PubDate: System.DateTimeOffset with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "pubDate"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTimeOffset("", value), value)
 
     member Summary: string option with get
     XmlRuntime.ConvertOptional(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(fun (t:XmlElement) -> 

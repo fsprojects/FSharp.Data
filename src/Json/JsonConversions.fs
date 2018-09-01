@@ -12,7 +12,7 @@ module private Helpers =
   let inline inRange lo hi v = (v >= decimal lo) && (v <= decimal hi)
   let inline isInteger v = Math.Round(v:decimal) = v
 
-/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
+/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/datetimeoffset/guid options
 type JsonConversions =
 
   static member AsString useNoneForNullOrEmpty (cultureInfo:IFormatProvider) = function
@@ -51,6 +51,10 @@ type JsonConversions =
     | JsonValue.String s -> TextConversions.AsBoolean s
     | _ -> None
 
+  static member AsDateTimeOffset cultureInfo = function
+    | JsonValue.String s -> TextConversions.AsDateTimeOffset cultureInfo s
+    | _ -> None
+  
   static member AsDateTime cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTime cultureInfo s
     | _ -> None

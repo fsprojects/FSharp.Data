@@ -344,3 +344,38 @@ let ``Count columns correctly in the presence of colspans (Bug 989)``() =
     match table.Headers with
     | None -> failwith "No headers found"
     | Some headers -> headers |> should equal [| "Double"; "Double"; "Single" |]
+
+[<Test>]
+let ``Can infer DateTime and DateTimeOffset types correctly`` () =
+    let html = HtmlProvider<"""
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>DateOnly</th>
+                            <th>MixedDate</th>
+                            <th>DateWithOffset</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>2018-04-21</td>
+                            <td>2018-04-22</td>
+                            <td>2018-04-23+10:00</td>
+                        </tr>
+                        <tr>
+                            <td>2018-04-24</td>
+                            <td>2018-04-25+00:00</td>
+                            <td>2018-04-26+06:00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+            </html>""">.GetSample()
+    let table = html.Tables.Table1
+    table.Rows.[0].DateOnly.GetType() |> should equal typeof<DateTime>
+    table.Rows.[0].MixedDate.GetType() |> should equal typeof<DateTime>
+    table.Rows.[0].DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
