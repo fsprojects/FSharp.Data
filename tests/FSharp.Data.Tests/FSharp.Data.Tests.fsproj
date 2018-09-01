@@ -12,6 +12,7 @@
     <DefineConstants Condition="'$(USE_MSBUILD)' == '1'">USE_MSBUILD;$(DefineConstants)</DefineConstants>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Data/**/*.*">
