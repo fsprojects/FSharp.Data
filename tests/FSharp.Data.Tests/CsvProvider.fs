@@ -98,6 +98,20 @@ let ``Inference of numbers with empty values`` () =
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
+let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate
+2018-04-21,2018-04-20+10:00,2018-04-19+11:00
+2018-04-18,2018-04-17-06:00,2018-04-16"""
+
+[<Test>]
+let ``Can infer DateTime and DateTimeOffset types correctly`` () =
+  let csv = CsvProvider<csvData, ",", InferRows = 0>.GetSample()
+  let firstRow = csv.Rows |> Seq.head
+
+  firstRow.DateOnly.GetType() |> should equal typeof<DateTime>
+  firstRow.DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
+  firstRow.MixedDate.GetType() |> should equal typeof<DateTime>
+  
+
 [<Test>] 
 let ``Can create type for small document``() =
   let csv = CsvProvider<"Data/SmallTest.csv">.GetSample()

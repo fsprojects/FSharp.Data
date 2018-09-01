@@ -120,6 +120,15 @@ type JsonExtensions =
     | Some d -> d
     | _ -> failwithf "Not a datetime: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
+   /// Get the datetime offset value of an element (assuming that the value is a string
+  /// containing well-formed ISO date time with offset or MSFT JSON datetime with offset)
+  [<Extension>]
+  static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsDateTimeOffset cultureInfo x with
+    | Some d -> d
+    | _ -> failwithf "Not a datetime offset: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
+
   /// Get the timespan value of an element (assuming that the value is a string
   /// containing well-formed time span)
   [<Extension>]
@@ -235,6 +244,12 @@ module Options =
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       JsonConversions.AsDateTime cultureInfo x
 
+    /// Get the datetime offset value of an element (assuming that the value is a string
+    /// containing well-formed ISO date time with offset)
+    member x.AsDateTimeOffset(?cultureInfo) = 
+      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      JsonConversions.AsDateTimeOffset cultureInfo x
+  
     /// Get the timespan value of an element (assuming that the value is a string
     /// containing well-formed time span)
     member x.AsTimeSpan(?cultureInfo) = 
@@ -335,6 +350,13 @@ module Options =
     static member AsDateTime(x, [<Optional>] ?cultureInfo) = 
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsDateTime cultureInfo)
+
+    /// Get the datetime offset value of an element (assuming that the value is a string
+    /// containing well-formed ISO date time with offset)
+    [<Extension>] 
+    static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
+      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      x |> Option.bind (JsonConversions.AsDateTimeOffset cultureInfo)
   
     /// Get the guid value of an element (assuming that the value is a guid)
     [<Extension>] 

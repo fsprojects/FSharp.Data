@@ -54,5 +54,5 @@ group fs40
 group fs41
     frameworks: netcoreapp2.0, net461
     source https://api.nuget.org/v3/index.json
-    nuget FSharp.Core ~> 4.2
+    nuget FSharp.Core ~> 4.2.0
 
