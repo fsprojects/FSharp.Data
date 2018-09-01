@@ -31,10 +31,10 @@
     </Reference>
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
   <!-- for some reason f#.formatting is having a hard time finding the sigdata/optdata in the fsharp.core dll location.... -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="..\..\packages\FSharp.Core\lib\$(FSharpCoreTargetFramework)\FSharp.Core.sigdata" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="..\..\packages\FSharp.Core\lib\$(FSharpCoreTargetFramework)\FSharp.Core.optdata" DestinationFolder="$(OutputPath)" />
   </Target>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
