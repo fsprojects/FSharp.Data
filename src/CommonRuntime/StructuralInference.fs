@@ -1,4 +1,4 @@
-﻿/// Implements type inference for unstructured documents like XML or JSON
+/// Implements type inference for unstructured documents like XML or JSON
 module FSharp.Data.Runtime.StructuralInference
 
 open System
@@ -265,9 +265,9 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
+  | Parse TextConversions.AsTimeSpan _ -> typeof<TimeSpan>
   | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) -> typeof<DateTimeOffset>
   | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
-  | Parse TextConversions.AsTimeSpan _ -> typeof<TimeSpan>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>
   | Parse asGuid _ -> typeof<Guid>
