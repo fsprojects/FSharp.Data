@@ -1,0 +1,7 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:sql="http://schemas.microsoft.com/sqlserver/2004/sqltypes"
+    targetNamespace="http://schemas.microsoft.com/sqlserver/2004/sqltypes"
+    attributeFormDefault="qualified">
+    <xs:include schemaLocation="http://schemas.microsoft.com/sqlserver/2004/sqltypes/sqltypes.xsd" />
+    <xs:element name="foo" type="sql:xml" />
+ </xs:schema>

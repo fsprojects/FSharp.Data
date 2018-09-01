@@ -1,0 +1,16 @@
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="X">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="E1" type="xs:string"/>
+        <xs:element name="X" type="T"/>
+      </xs:sequence>
+    </xs:complexType>
+   </xs:element>
+  <xs:complexType name="T">
+    <xs:sequence>
+      <xs:element name="E2" type="xs:string"/>
+      <xs:element name="X" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

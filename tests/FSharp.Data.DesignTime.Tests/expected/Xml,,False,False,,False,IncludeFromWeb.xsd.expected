@@ -1,0 +1,28 @@
+class XmlProvider : obj
+    static member AsyncLoad: uri:string -> XmlProvider+Foo async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+Foo
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Foo
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+Foo
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+Foo
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+Foo : FDR.BaseTypes.XmlElement
+    new : () -> XmlProvider+Foo
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/sqlserver/2004/sqltypes}foo", 
+                            [| |], 
+                            [| |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Foo
+    XmlElement.Create(xElement)
+
+

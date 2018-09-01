@@ -1,4 +1,4 @@
-#### 3.0.0-beta4 - Unreleased
+#### 3.0.0-beta4 - July 8 2018
 * (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
 * Fixed handling of empty cookie headers.
 * (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
@@ -7,6 +7,7 @@
 * Recognise media type application/json-rpc as text.
 * Fix parsing of escaped charaters in string literals within HTML script tags.
 * Added constants for HTTP status codes.
+* Added support for schemas (XSD) in the XmlProvider.
 
 #### 3.0.0-beta3 - April 9 2018
 * Increased type caches TTL from 10 seconds to 5 minutes.
