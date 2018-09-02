@@ -22,10 +22,6 @@
     <None Include="SignatureTestCases.config" />
     <Compile Include="SignatureTests.fs" />
     <Compile Include="DocumentationTests.fs" />
-    <Compile Include="Program.fs" Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-      <Link>Program.fs</Link>
-    </Compile>
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Data.DesignTime">

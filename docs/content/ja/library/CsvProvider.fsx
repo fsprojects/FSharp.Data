@@ -1,4 +1,4 @@
-(** 
+(**
 # F# Data: CSV 型プロバイダー
 
 この記事ではCSV 型プロバイダーを使って
@@ -56,7 +56,7 @@ type Stocks = CsvProvider<"../../data/MSFT.csv">
 以下の例ではYahoo FinanceのWebサイトで実際に公開されているCSVファイルの
 URLを使って `Load` メソッドを呼び出しています：
 *)
- 
+
 // 株価データをダウンロード
 let msft = Stocks.Load("http://www.google.com/finance/historical?q=MSFT&output=csv")
 
@@ -92,7 +92,7 @@ for row in msft.Rows do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
@@ -110,7 +110,7 @@ open FSharp.Charting
 *)
 
 // 先月の株価を四本値形式で取得
-let recent = 
+let recent =
   [ for row in msft.Rows do
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
@@ -157,7 +157,7 @@ open FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
   let speed = row.Distance / row.Time
-  if speed > 15.0M<metre/second> then 
+  if speed > 15.0M<metre/second> then
     printfn "%s (%A m/s)" row.Name speed
 
 (**
@@ -184,7 +184,7 @@ CSVの列区切り文字には代わりにセミコロン( `;` )が使われま�
 let airQuality = CsvProvider<"../../data/AirQuality.csv", ";">.GetSample()
 
 for row in airQuality.Rows do
-  if row.Month > 6 then 
+  if row.Month > 6 then
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
@@ -208,13 +208,13 @@ let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true>.G
 
 // 原因名をコードで検索
 // (事故で負傷した自転車走者)
-let cause = mortalityNy.Rows |> Seq.find (fun r -> 
+let cause = mortalityNy.Rows |> Seq.find (fun r ->
   r.``Cause of death Code`` = "V13.4")
 
 // 負傷した走者数を出力
 printfn "原因: %s" cause.``Cause of death``
 for r in mortalityNy.Rows do
-  if r.``Cause of death Code`` = "V13.4" then 
+  if r.``Cause of death Code`` = "V13.4" then
     printfn "%s (%d 件)" r.County r.Count
 
 (**
@@ -242,11 +242,11 @@ for r in mortalityNy.Rows do
 標準の `Seq.average` 関数を使って平均を計算しています：
 *)
 
-let mean = 
-  airQuality.Rows 
-  |> Seq.map (fun row -> row.Ozone) 
-  |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
-  |> Seq.average 
+let mean =
+  airQuality.Rows
+  |> Seq.map (fun row -> row.Ozone)
+  |> Seq.filter (fun elem -> not (Double.IsNaN elem))
+  |> Seq.average
 
 (**
 
@@ -386,7 +386,7 @@ for row in titanic2.Rows do
 *)
 
 // 値無しのデータを含まない先頭10行を新しいCSVファイルに保存する
-airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) && 
+airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
                              not (Double.IsNaN row.``Solar.R``))
           .Truncate(10)
           .SaveToString()
@@ -405,7 +405,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 データセットを小さなサイズに変形した後に限定すべきです：
 *)
 
-let [<Literal>] ``Sacremento Real Estate`` = 
+let [<Literal>] ``Sacremento Real Estate`` =
   "http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv"
 
 let realEstate = CsvProvider<``Sacremento Real Estate``, CacheRows=false>.GetSample()

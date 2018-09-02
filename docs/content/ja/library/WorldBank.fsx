@@ -1,4 +1,4 @@
-﻿(** 
+﻿(**
 # F# Data: WorldBank プロバイダー
 
 [世界銀行](http://www.worldbank.org) (World Bank)は世界中の発展途上国に対して、
@@ -52,7 +52,7 @@ data
 
 *)
 
-#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)
@@ -106,7 +106,7 @@ WorldBank.GetDataContext()
 let wb = WorldBank.GetDataContext()
 
 // 対象とする国のリストを作成
-let countries = 
+let countries =
  [| wb.Countries.``Arab World``
     wb.Countries.``European Union``
     wb.Countries.Australia

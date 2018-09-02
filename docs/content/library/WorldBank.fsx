@@ -1,4 +1,4 @@
-﻿(** 
+﻿(**
 # F# Data: WorldBank Provider
 
 The [World Bank](http://www.worldbank.org) is an international organization that provides
@@ -14,7 +14,7 @@ so you can find more examples there.
 
 ## Introducing the provider
 
-The following example loads the `FSharp.Data.dll` library (in F# Interactive), 
+The following example loads the `FSharp.Data.dll` library (in F# Interactive),
 initializes a connection to the WorldBank using the `GetDataContext` method and then
 retrieves the percentage of population who attend universities in the UK:
 *)
@@ -36,7 +36,7 @@ dimensions are provided as properties, so you can use autocomplete to easily dis
 various data sources. Most of the indicators use longer names, so we need to wrap the name
 in `\`\``.
 
-The result of the `Gross capital formation (% of GDP)` property is a sequence with 
+The result of the `Gross capital formation (% of GDP)` property is a sequence with
 values for different years. Using `Seq.maxBy fst` we get the most recent available value.
 
 ### Charting World Bank data
@@ -46,7 +46,7 @@ We can easily see how the university enrollment changes over time by using the
 
 *)
 
-#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)
@@ -78,9 +78,9 @@ type WorldBank = WorldBankDataProvider<"World Development Indicators", Asynchron
 WorldBank.GetDataContext()
 
 (**
-The above snippet specified "World Development Indicators" as the name of the data 
+The above snippet specified "World Development Indicators" as the name of the data
 source (a collection of commonly available indicators) and it set the optional argument
-`Asynchronous` to `true`. As a result, properties such as 
+`Asynchronous` to `true`. As a result, properties such as
 `Gross capital formation (% of GDP)` will now have a type `Async<(int * int)[]>` meaning
 that they represent an asynchronous computation that can be started and will eventually
 produce the data.
@@ -89,14 +89,14 @@ produce the data.
 
 To demonstrate the asynchronous version of the type provider, let's write code that
 downloads the university enrollment data about a number of countries in parallel.
-We first create a data context and then define an array with some countries we want to 
+We first create a data context and then define an array with some countries we want to
 process:
 *)
 
 let wb = WorldBank.GetDataContext()
 
 // Create a list of countries to process
-let countries = 
+let countries =
  [| wb.Countries.``Arab World``
     wb.Countries.``European Union``
     wb.Countries.Australia
@@ -113,8 +113,8 @@ let countries =
     wb.Countries.``United States`` |]
 
 (**
-To download the information in parallel, we can create a list of asynchronous 
-computations, compose them using `Async.Parallel` and then run the (single) obtained 
+To download the information in parallel, we can create a list of asynchronous
+computations, compose them using `Async.Parallel` and then run the (single) obtained
 computation to perform all the downloads:
 *)
 
@@ -129,7 +129,7 @@ computation to perform all the downloads:
 
 (**
 The above snippet does not just download the data using `Async.RunSynchronously`, but
-it also turns every single downloaded data set into a line chart (using `Chart.Line`) 
+it also turns every single downloaded data set into a line chart (using `Chart.Line`)
 and then creates a single composed chart using `Chart.Combine`.
 
 *)

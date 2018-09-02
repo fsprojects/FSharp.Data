@@ -1,12 +1,12 @@
 ﻿#r "bin/lib/net45/FSharp.Data.dll"
-#load "packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "packages/test/FSharp.Charting/FSharp.Charting.fsx"
 
 open FSharp.Data
 open FSharp.Charting
 
 type Times = CsvProvider<"log.csv",Separators="|",IgnoreErrors=true,Schema="category,instance,time",HasHeaders=false>
 
-let byCategory = 
+let byCategory =
     Times.GetSample().Rows
     |> Seq.groupBy (fun x -> x.category)
     |> Seq.map (fun (cat, values) -> cat, values |> Seq.sumBy (fun x -> x.time))
@@ -14,7 +14,7 @@ let byCategory =
 
 Chart.Column byCategory
 
-let byInstance = 
+let byInstance =
     Times.GetSample().Rows
     |> Seq.groupBy (fun x -> x.instance)
     |> Seq.map (fun (cat, values) -> cat, values |> Seq.sumBy (fun x -> x.time))
