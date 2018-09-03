@@ -12,8 +12,6 @@ open System.Collections.Generic
 open System.IO
 open System.Runtime.InteropServices
 open System.Text
-open FSharp.Data.Runtime
-open FSharp.Data.Runtime.IO
 
 // --------------------------------------------------------------------------------------
 
