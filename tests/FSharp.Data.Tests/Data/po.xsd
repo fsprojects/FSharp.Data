@@ -18,7 +18,7 @@ xmlns="http://tempuri.org/po.xsd" elementFormDefault="qualified">
    <xs:element ref="comment" minOccurs="0"/>
    <xs:element name="items"  type="Items"/>
   </xs:sequence>
-  <xs:attribute name="orderDate" type="xs:date"/>
+  <xs:attribute name="orderDate" type="xs:dateTime"/>
  </xs:complexType>
 
  <xs:complexType name="USAddress">

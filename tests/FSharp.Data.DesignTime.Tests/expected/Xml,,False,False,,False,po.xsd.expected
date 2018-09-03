@@ -17,7 +17,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
-    new : orderDate:System.DateTime option -> shipTo:XmlProvider+ShipTo -> billTo:XmlProvider+BillTo -> comment:string option -> items:XmlProvider+Item[] -> XmlProvider+PurchaseOrder
+    new : orderDate:System.DateTimeOffset option -> shipTo:XmlProvider+ShipTo -> billTo:XmlProvider+BillTo -> comment:string option -> items:XmlProvider+Item[] -> XmlProvider+PurchaseOrder
     XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}purchaseOrder", 
                             [| ("orderDate",
                                 (orderDate :> obj)) |], 
@@ -44,8 +44,8 @@ class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
     member Items: XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "{http://tempuri.org/po.xsd}items|{http://tempuri.org/po.xsd}item", new Func<_,_>(id)))
 
-    member OrderDate: System.DateTime option with get
-    TextRuntime.ConvertDateTime("", XmlRuntime.TryGetAttribute(this, "orderDate"))
+    member OrderDate: System.DateTimeOffset option with get
+    TextRuntime.ConvertDateTimeOffset("", XmlRuntime.TryGetAttribute(this, "orderDate"))
 
     member ShipTo: XmlProvider+ShipTo with get
     XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}shipTo")
