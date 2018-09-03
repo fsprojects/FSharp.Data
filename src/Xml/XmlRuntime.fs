@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // XML type provider - methods & types used by the generated erased code
 // --------------------------------------------------------------------------------------
 namespace FSharp.Data
@@ -208,7 +208,7 @@ type XmlRuntime =
             | _ ->
                 match v with
                 | :? string         as v -> v
-                | :? DateTime       as v -> v.ToString("O", cultureInfo)
+                | :? DateTime       as v -> v.ToString("yyyy-MM-dd")
                 | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
                 | :? int            as v -> strWithCulture v
                 | :? int64          as v -> strWithCulture v
