@@ -208,7 +208,10 @@ type XmlRuntime =
             | _ ->
                 match v with
                 | :? string         as v -> v
-                | :? DateTime       as v -> v.ToString("yyyy-MM-dd")
+                | :? DateTime       as v ->
+                    if v.TimeOfDay = TimeSpan.Zero
+                    then v.ToString("yyyy-MM-dd")
+                    else v.ToString("O", cultureInfo)
                 | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
                 | :? int            as v -> strWithCulture v
                 | :? int64          as v -> strWithCulture v

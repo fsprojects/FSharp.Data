@@ -1176,7 +1176,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = 0,
         long = 0L,
-        date = System.DateTime.Now,
+        date = System.DateTime.Today,
         dateTime = System.DateTimeOffset.Now,
         boolean = false,
         decimal = 0M,
@@ -1187,7 +1187,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MinValue,
         long = System.Int64.MinValue,
-        date = System.DateTime.MinValue,
+        date = System.DateTime.MinValue.Date,
         dateTime = System.DateTimeOffset.MinValue,
         boolean = false,
         decimal = System.Decimal.MinValue,
@@ -1198,7 +1198,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MaxValue,
         long = System.Int64.MaxValue,
-        date = System.DateTime.MaxValue,
+        date = System.DateTime.MaxValue.Date,
         dateTime = System.DateTimeOffset.MaxValue,
         boolean = true,
         decimal = System.Decimal.MaxValue,
@@ -1209,3 +1209,18 @@ let ``simple types are formatted properly``() =
     isValid simpleValues |> should equal true
     isValid minValues |> should equal true
     isValid maxValues |> should equal true
+
+[<Test>]
+let ``time is invalid for xs:date``() =
+    let simpleValues =
+      SimpleTypes.A(
+        int = 0,
+        long = 0L,
+        date = System.DateTime.Today.AddHours(1.),
+        dateTime = System.DateTimeOffset.Now,
+        boolean = false,
+        decimal = 0M,
+        double = System.Double.NaN)
+        .ToString()
+    let isValid = isValid SimpleTypesXsd
+    isValid simpleValues |> should equal false
