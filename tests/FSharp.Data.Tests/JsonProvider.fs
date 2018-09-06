@@ -733,4 +733,4 @@ let ``Getting a large decimal at runtime when an integer was inferred should thr
 let ``Getting a large float at runtime when an integer was inferred should throw``() =
     let f = 1234567890123456789012345678901234567890.
     let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 1234567890123456789012345678901234567890 }""")
-    (fun () -> json.Y) |> shouldThrow (sprintf "Expecting an Int32 at '/y', got %s" (f.ToString("E14").Replace("+0", "+")))
+    (fun () -> json.Y) |> shouldThrow (sprintf "Expecting an Int32 at '/y', got %s" (f.ToString("E14").Replace("+0", "+").Replace(",", ".")))

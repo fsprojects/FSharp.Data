@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Implements XML type inference from XSD
 // --------------------------------------------------------------------------------------
 
@@ -264,12 +264,12 @@ module XsdInference =
     open XsdModel
     open FSharp.Data.Runtime.StructuralTypes
 
-    // for now we map only the types supported in F# Data
+    // for now we map only the types supported
     let getType = function
         | XmlTypeCode.Int -> typeof<int>
         | XmlTypeCode.Long -> typeof<int64>
         | XmlTypeCode.Date -> typeof<System.DateTime>
-        | XmlTypeCode.DateTime -> typeof<System.DateTime>
+        | XmlTypeCode.DateTime -> typeof<System.DateTimeOffset>
         | XmlTypeCode.Boolean -> typeof<bool>
         | XmlTypeCode.Decimal -> typeof<decimal>
         | XmlTypeCode.Double -> typeof<double>

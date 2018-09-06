@@ -33,7 +33,7 @@ let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
-let desiredSdkVersion = "2.1.100"
+let desiredSdkVersion = "2.1.401"
 let mutable sdkPath = None
 let getSdkPath() = (defaultArg sdkPath "dotnet")
 

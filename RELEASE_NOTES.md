@@ -1,6 +1,7 @@
 #### 3.0.0-beta5 - Unreleased
 * (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
 * (Breaking Change) Added support for TimeSpan to JSON, XML, CSV, and HTML providers.
+* Map XSD date to System.DateTime and XSD dateTime to System.DateTimeOffset.
 * Fixed large float values being silently converted to int.MinValue when parsing JSON.
 * Improved handling of invalid cookies.
 

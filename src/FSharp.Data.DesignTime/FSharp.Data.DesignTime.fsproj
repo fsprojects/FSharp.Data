@@ -6,6 +6,7 @@
     <DefineConstants>NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />

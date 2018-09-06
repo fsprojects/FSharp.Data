@@ -1137,6 +1137,7 @@ let SimpleTypesXsd = """
             <xs:complexType>
                 <xs:attribute name='int'      type='xs:int'      use="required" />
                 <xs:attribute name='long'     type='xs:long'     use="required" />
+                <xs:attribute name='date'     type='xs:date'     use="required" />
                 <xs:attribute name='dateTime' type='xs:dateTime' use="required" />
                 <xs:attribute name='boolean'  type='xs:boolean'  use="required" />
                 <xs:attribute name='decimal'  type='xs:decimal'  use="required" />
@@ -1160,12 +1161,9 @@ let parseSchema xsdText =
 
 let isValid xsd =
     let xmlSchemaSet = parseSchema xsd
-    fun xml -> 
-        let settings = XmlReaderSettings(ValidationType = ValidationType.Schema)
-        settings.Schemas <- xmlSchemaSet
-        use reader = XmlReader.Create(new System.IO.StringReader(xml), settings)
+    fun xml ->
         try
-            while reader.Read() do ()
+            (XDocument.Parse xml).Validate(xmlSchemaSet, validationEventHandler = null)
             true
         with :? XmlSchemaException as e -> 
             printfn "%s/n%s" e.Message xml
@@ -1178,7 +1176,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = 0,
         long = 0L,
-        dateTime = System.DateTime.Now,
+        date = System.DateTime.Today,
+        dateTime = System.DateTimeOffset.Now,
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
@@ -1188,7 +1187,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MinValue,
         long = System.Int64.MinValue,
-        dateTime = System.DateTime.MinValue,
+        date = System.DateTime.MinValue.Date,
+        dateTime = System.DateTimeOffset.MinValue,
         boolean = false,
         decimal = System.Decimal.MinValue,
         double = System.Double.NegativeInfinity)
@@ -1198,7 +1198,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MaxValue,
         long = System.Int64.MaxValue,
-        dateTime = System.DateTime.MaxValue,
+        date = System.DateTime.MaxValue.Date,
+        dateTime = System.DateTimeOffset.MaxValue,
         boolean = true,
         decimal = System.Decimal.MaxValue,
         double = System.Double.PositiveInfinity)
@@ -1208,6 +1209,30 @@ let ``simple types are formatted properly``() =
     isValid simpleValues |> should equal true
     isValid minValues |> should equal true
     isValid maxValues |> should equal true
+
+[<Test>]
+let ``time is omitted when zero``() =
+    let simpleValues date = 
+      SimpleTypes.A(
+        int = 0,
+        long = 0L,
+        date = date,
+        dateTime = System.DateTimeOffset.Now,
+        boolean = false,
+        decimal = 0M,
+        double = System.Double.NaN)
+        .ToString()
+    let isValid = isValid SimpleTypesXsd
+
+    let validXml = System.DateTime(2018, 8, 29) |> simpleValues
+    isValid validXml |> should equal true
+    (XElement.Parse validXml).Attribute(XName.Get "date").Value
+    |> should equal "2018-08-29"
+
+    let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
+    isValid invalidXml |> should equal false
+    (XElement.Parse invalidXml).Attribute(XName.Get "date").Value
+    |> should equal "2018-08-29T05:30:56.0000000"
 
 type TimeSpanXML = XmlProvider<"Data/TimeSpans.xml">
 
