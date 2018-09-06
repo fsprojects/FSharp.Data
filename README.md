@@ -12,7 +12,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Install .NET SDK 2.1.100 or higher
+- Install .NET SDK 2.1.401 or higher
 - Build FSharp.Data.sln and FSharp.Data.Tests.sln in Visual Studio 2017, Visual Studio 2017 for Mac (previously Xamarin Studio), or MonoDevelop. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
