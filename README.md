@@ -38,7 +38,7 @@ When targeting .NET Standard 2.0 or .NET Core App 2.x:
 
 ## Supported Design-time Environments
 
-- .NET SDK 2.1.100 or higher (runs tools using .NET Core)
+- .NET SDK 2.1.401 or higher (runs tools using .NET Core)
 - Visual F# Tools 3.1 or higher (runs tools using .NET Framework)
 - Mono 5.0.0 or higher (runs tools using Mono)
 - Other F# tooling based on FSharp.Compiler.Service must have FSharp.Compiler.Service 21.0+ and FSharp.Core nuget 4.2.x+.
