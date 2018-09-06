@@ -1,4 +1,4 @@
-﻿#r "System.Xml.Linq"
+#r "System.Xml.Linq"
 
 open System
 open System.IO
@@ -6,7 +6,7 @@ open System.Xml.Linq
 
 let generateSetupScript dir proj = 
 
-    let getElemName name = XName.Get(name, "http://schemas.microsoft.com/developer/msbuild/2003")
+    let getElemName name = XName.Get name
 
     let getElemValue name (parent:XElement) =
         let elem = parent.Element(getElemName name)

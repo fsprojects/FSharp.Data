@@ -1,4 +1,4 @@
-﻿namespace ProviderImplementation
+namespace ProviderImplementation
 
 open System
 open System.IO
@@ -184,6 +184,7 @@ type TypeProviderInstantiation =
         output
 
     static member Parse (line:string) =
+        printfn "Parsing %s" line
         let args = line.Split [|','|]
         args.[0],
         match args.[0] with

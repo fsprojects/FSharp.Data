@@ -6,6 +6,7 @@
     <TargetFrameworks>netstandard2.0; net462</TargetFrameworks>
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // XML type provider - methods & types used by the generated erased code
 // --------------------------------------------------------------------------------------
 namespace FSharp.Data
@@ -207,30 +207,35 @@ type XmlRuntime =
                 box xElement
             | _ ->
                 match v with
-                | :? string        as v -> v
-                | :? DateTime      as v -> v.ToString("O", cultureInfo)
-                | :? int           as v -> strWithCulture v
-                | :? int64         as v -> strWithCulture v
-                | :? float         as v -> strWithCulture v
-                | :? decimal       as v -> strWithCulture v
-                | :? bool          as v -> if v then "true" else "false"
-                | :? Guid          as v -> v.ToString()
-                | :? IJsonDocument as v -> v.JsonValue.ToString()
+                | :? string         as v -> v
+                | :? DateTime       as v ->
+                    if v.TimeOfDay = TimeSpan.Zero
+                    then v.ToString("yyyy-MM-dd")
+                    else v.ToString("O", cultureInfo)
+                | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
+                | :? int            as v -> strWithCulture v
+                | :? int64          as v -> strWithCulture v
+                | :? float          as v -> strWithCulture v
+                | :? decimal        as v -> strWithCulture v
+                | :? bool           as v -> if v then "true" else "false"
+                | :? Guid           as v -> v.ToString()
+                | :? IJsonDocument  as v -> v.JsonValue.ToString()
                 | _ -> failwithf "Unexpected value: %A" v
                 |> box
         let inline optionToArray f = function Some x -> [| f x |] | None -> [| |]
         match v with
         | :? Array as v -> [| for elem in v -> serialize elem |]
-        | :? option<XmlElement>    as v -> optionToArray serialize v
-        | :? option<string>        as v -> optionToArray serialize v
-        | :? option<DateTime>      as v -> optionToArray serialize v
-        | :? option<int>           as v -> optionToArray serialize v
-        | :? option<int64>         as v -> optionToArray serialize v
-        | :? option<float>         as v -> optionToArray serialize v
-        | :? option<decimal>       as v -> optionToArray serialize v
-        | :? option<bool>          as v -> optionToArray serialize v
-        | :? option<Guid>          as v -> optionToArray serialize v
-        | :? option<IJsonDocument> as v -> optionToArray serialize v
+        | :? option<XmlElement>     as v -> optionToArray serialize v
+        | :? option<string>         as v -> optionToArray serialize v
+        | :? option<DateTime>       as v -> optionToArray serialize v
+        | :? option<DateTimeOffset> as v -> optionToArray serialize v
+        | :? option<int>            as v -> optionToArray serialize v
+        | :? option<int64>          as v -> optionToArray serialize v
+        | :? option<float>          as v -> optionToArray serialize v
+        | :? option<decimal>        as v -> optionToArray serialize v
+        | :? option<bool>           as v -> optionToArray serialize v
+        | :? option<Guid>           as v -> optionToArray serialize v
+        | :? option<IJsonDocument>  as v -> optionToArray serialize v
         | v -> [| box (serialize v) |]
     let createElement (parent:XElement) (nameWithNS:string) =
         let namesWithNS = nameWithNS.Split '|'

@@ -14,6 +14,7 @@
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Data/**/*.*">

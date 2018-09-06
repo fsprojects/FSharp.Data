@@ -2,7 +2,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : rows:CsvProvider+Row seq -> CsvProvider
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -14,7 +14,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -24,7 +24,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -37,7 +37,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[0])
                                                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                                                        let value = TextConversions.AsString(row.[1])
-                                                                       TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                                                        TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                                                        let value = TextConversions.AsString(row.[3])
                                                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -47,7 +47,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                                                      [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                                                        TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                                                        TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                                         TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -61,7 +61,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[0])
                                                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                                                        let value = TextConversions.AsString(row.[1])
-                                                                       TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                                                        TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                                                        let value = TextConversions.AsString(row.[3])
                                                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -71,7 +71,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                                                      [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                                                        TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                                                        TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                                         TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -84,7 +84,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -94,7 +94,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -106,7 +106,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -116,7 +116,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -128,7 +128,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -138,7 +138,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -150,7 +150,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -160,7 +160,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -172,7 +172,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -182,7 +182,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDateTimeOffsetBack("", Some (let _,t2,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
@@ -194,7 +194,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                              TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTimeOffset("", value), value),
                                               TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
                                               let value = TextConversions.AsString(row.[3])
                                               TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
@@ -205,8 +205,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     CsvFile<_>.ParseRows(text, stringArrayToRow, "	", '"', false)
 
 
-class CsvProvider+Row : string * System.DateTime * System.Guid option * string * string * string
-    new : column1:string -> column2:System.DateTime -> column3:System.Guid option -> column4:string -> column5:string -> column6:string -> CsvProvider+Row
+class CsvProvider+Row : string * System.DateTimeOffset * System.Guid option * string * string * string
+    new : column1:string -> column2:System.DateTimeOffset -> column3:System.Guid option -> column4:string -> column5:string -> column6:string -> CsvProvider+Row
     column1,
     column2,
     column3,
@@ -217,7 +217,7 @@ class CsvProvider+Row : string * System.DateTime * System.Guid option * string *
     member Column1: string with get
     (let t1,_,_,_,_,_ = this in t1)
 
-    member Column2: System.DateTime with get
+    member Column2: System.DateTimeOffset with get
     (let _,t2,_,_,_,_ = this in t2)
 
     member Column3: System.Guid option with get

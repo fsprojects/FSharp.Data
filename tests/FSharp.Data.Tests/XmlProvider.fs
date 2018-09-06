@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
@@ -455,28 +455,28 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   </channel>
 </rss>""")
 
-    let atom =
+    let atom = 
         AnyFeed.Choice(
-            AnyFeed.Feed("title",
-                         "subtitle",
-                         [| |],
-                         "id",
-                         DateTime(2014, 04, 27),
-                         AnyFeed.Entry("title2",
+            AnyFeed.Feed("title", 
+                         "subtitle", 
+                         [| |], 
+                         "id", 
+                         DateTimeOffset(2014, 04, 27, 0, 0, 0, TimeSpan.Zero), 
+                         AnyFeed.Entry("title2", 
                                        [| |],
                                        "id2",
-                                       DateTime(2014, 04, 28),
+                                       DateTimeOffset(2014, 04, 28, 0, 0, 0,TimeSpan.Zero),
                                        "summary",
                                        AnyFeed.Author("name", "email"))))
     atom.ToString() |> normalize |> should equal (normalize """<feed xmlns="http://www.w3.org/2005/Atom">
   <title>title</title>
   <subtitle>subtitle</subtitle>
   <id>id</id>
-  <updated>2014-04-27T00:00:00.0000000</updated>
+  <updated>2014-04-27T00:00:00.0000000+00:00</updated>
   <entry>
     <title>title2</title>
     <id>id2</id>
-    <updated>2014-04-28T00:00:00.0000000</updated>
+    <updated>2014-04-28T00:00:00.0000000+00:00</updated>
     <summary>summary</summary>
     <author>
       <name>name</name>
@@ -495,16 +495,16 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     link.XElement.ToString() |> should equal """<link type="type" href="href" rel="rel" xmlns="http://www.w3.org/2005/Atom" />"""
     let title = AtomSearch.Choice(title = "title")
     title.XElement.ToString() |> should equal """<title xmlns="http://www.w3.org/2005/Atom">title</title>"""
-    let updated = AtomSearch.Choice(updated = DateTime(2000, 1, 1))
-    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000</updated>"""
+    let updated = AtomSearch.Choice(updated = DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero))
+    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000+00:00</updated>"""
     let itemsPerPage = AtomSearch.Choice(2)
     itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
-    let entry = AtomSearch.Entry("id",
-                                 DateTime(2000, 2, 2),
-                                 [| |],
-                                 "title",
+    let entry = AtomSearch.Entry("id", 
+                                 DateTimeOffset(2000, 2, 2, 0, 0, 0, TimeSpan.Zero), 
+                                 [| |], 
+                                 "title", 
                                  AtomSearch.Content("type", "value"),
-                                 DateTime(2000, 3, 3),
+                                 DateTimeOffset(2000, 3, 3, 0, 0, 0, TimeSpan.Zero),
                                  Unchecked.defaultof<_>,
                                  AtomSearch.Metadata("resultType"),
                                  "source",
@@ -512,10 +512,10 @@ let ``Can construct elements with heterogeneous records with primitives``() =
                                  AtomSearch.Author("name", "uri"))
     entry.XElement.ToString() |> normalize |> should equal (normalize """<entry xmlns="http://www.w3.org/2005/Atom">
   <id>id</id>
-  <published>2000-02-02T00:00:00.0000000</published>
+  <published>2000-02-02T00:00:00.0000000+00:00</published>
   <title>title</title>
   <content type="type">value</content>
-  <updated>2000-03-03T00:00:00.0000000</updated>
+  <updated>2000-03-03T00:00:00.0000000+00:00</updated>
   <metadata xmlns="http://api.twitter.com/">
     <result_type>resultType</result_type>
   </metadata>
@@ -1137,6 +1137,7 @@ let SimpleTypesXsd = """
             <xs:complexType>
                 <xs:attribute name='int'      type='xs:int'      use="required" />
                 <xs:attribute name='long'     type='xs:long'     use="required" />
+                <xs:attribute name='date'     type='xs:date'     use="required" />
                 <xs:attribute name='dateTime' type='xs:dateTime' use="required" />
                 <xs:attribute name='boolean'  type='xs:boolean'  use="required" />
                 <xs:attribute name='decimal'  type='xs:decimal'  use="required" />
@@ -1160,12 +1161,9 @@ let parseSchema xsdText =
 
 let isValid xsd =
     let xmlSchemaSet = parseSchema xsd
-    fun xml -> 
-        let settings = XmlReaderSettings(ValidationType = ValidationType.Schema)
-        settings.Schemas <- xmlSchemaSet
-        use reader = XmlReader.Create(new System.IO.StringReader(xml), settings)
+    fun xml ->
         try
-            while reader.Read() do ()
+            (XDocument.Parse xml).Validate(xmlSchemaSet, validationEventHandler = null)
             true
         with :? XmlSchemaException as e -> 
             printfn "%s/n%s" e.Message xml
@@ -1178,7 +1176,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = 0,
         long = 0L,
-        dateTime = System.DateTime.Now,
+        date = System.DateTime.Today,
+        dateTime = System.DateTimeOffset.Now,
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
@@ -1188,7 +1187,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MinValue,
         long = System.Int64.MinValue,
-        dateTime = System.DateTime.MinValue,
+        date = System.DateTime.MinValue.Date,
+        dateTime = System.DateTimeOffset.MinValue,
         boolean = false,
         decimal = System.Decimal.MinValue,
         double = System.Double.NegativeInfinity)
@@ -1198,7 +1198,8 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MaxValue,
         long = System.Int64.MaxValue,
-        dateTime = System.DateTime.MaxValue,
+        date = System.DateTime.MaxValue.Date,
+        dateTime = System.DateTimeOffset.MaxValue,
         boolean = true,
         decimal = System.Decimal.MaxValue,
         double = System.Double.PositiveInfinity)
@@ -1208,3 +1209,28 @@ let ``simple types are formatted properly``() =
     isValid simpleValues |> should equal true
     isValid minValues |> should equal true
     isValid maxValues |> should equal true
+
+
+[<Test>]
+let ``time is omitted when zero``() =
+    let simpleValues date = 
+      SimpleTypes.A(
+        int = 0,
+        long = 0L,
+        date = date,
+        dateTime = System.DateTimeOffset.Now,
+        boolean = false,
+        decimal = 0M,
+        double = System.Double.NaN)
+        .ToString()
+    let isValid = isValid SimpleTypesXsd
+
+    let validXml = System.DateTime(2018, 8, 29) |> simpleValues
+    isValid validXml |> should equal true
+    (XElement.Parse validXml).Attribute(XName.Get "date").Value
+    |> should equal "2018-08-29"
+
+    let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
+    isValid invalidXml |> should equal false
+    (XElement.Parse invalidXml).Attribute(XName.Get "date").Value
+    |> should equal "2018-08-29T05:30:56.0000000"
