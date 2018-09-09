@@ -24,7 +24,7 @@ class JsonProvider : obj
 
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
-    new : url:string -> labelsUrl:string -> commentsUrl:string -> eventsUrl:string -> htmlUrl:string -> id:int -> number:int -> title:string -> user:JsonProvider+User -> labels:JsonProvider+Label[] -> state:string -> assignee:JsonValue -> milestone:JsonValue -> comments:int -> createdAt:System.DateTime -> updatedAt:System.DateTime -> closedAt:JsonValue -> pullRequest:JsonProvider+PullRequest -> body:string option -> JsonProvider+Root
+    new : url:string -> labelsUrl:string -> commentsUrl:string -> eventsUrl:string -> htmlUrl:string -> id:int -> number:int -> title:string -> user:JsonProvider+User -> labels:JsonProvider+Label[] -> state:string -> assignee:JsonValue -> milestone:JsonValue -> comments:int -> createdAt:System.DateTimeOffset -> updatedAt:System.DateTimeOffset -> closedAt:JsonValue -> pullRequest:JsonProvider+PullRequest -> body:string option -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("url",
                                  (url :> obj))
                                 ("labels_url",
@@ -84,9 +84,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "comments_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member CreatedAt: System.DateTime with get
+    member CreatedAt: System.DateTimeOffset with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTime("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTimeOffset("", value.JsonOpt), value.JsonOpt)
 
     member EventsUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "events_url")
@@ -125,9 +125,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "title")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member UpdatedAt: System.DateTime with get
+    member UpdatedAt: System.DateTimeOffset with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTime("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTimeOffset("", value.JsonOpt), value.JsonOpt)
 
     member Url: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")

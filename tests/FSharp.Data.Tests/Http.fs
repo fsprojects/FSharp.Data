@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -75,6 +75,61 @@ let ``An empty cookie header is parsed correctly`` () =
     let cookieHeader = ""
     let cookies = CookieHandling.getAllCookiesFromHeader cookieHeader uri
     cookies |> should equal [| |]
+
+[<Test>]
+let ``Cookies in CookieContainer are returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key", "value"))
+    let header = Map.empty
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookies |> should haveCount cookieContainer.Count
+
+[<Test>]
+let ``Cookies in header are added to CookieContainer and returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key1", "value1"))
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key2=value2"))]
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookieContainer.Count |> should equal 2
+    cookies |> should haveCount cookieContainer.Count
+
+[<Test>]
+let ``Cookies in header already existing in CookieContainer are added twice, and only new value is returned`` () =
+    let cookieContainer = System.Net.CookieContainer()
+    let someUri = Uri "http://nevermind.com"
+    cookieContainer.Add(someUri, System.Net.Cookie("key", "value1"))
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key=value2"))]
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
+    cookieContainer.Count |> should equal 2
+    cookies |> should haveCount 1
+    cookies.["key"] |> should equal "value2"
+
+[<Test>]
+let ``Cookies with unescaped JSON raise a CookieException (need to avoid cookieContainer parameter or ignoreCookieErrors`` () =
+    let uri = Uri "http://nevermind.com"
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
+    let cookieContainer = System.Net.CookieContainer()
+    (fun () -> CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true false |> ignore) |> should throw typeof<System.Net.CookieException>
+
+[<Test>]
+let ``Cookies with unescaped JSON is not added in cookieContainer but is still returned when ignoreCookieErrors parameter is true`` () =
+    let uri = Uri "http://nevermind.com"
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
+    let cookieContainer = System.Net.CookieContainer()
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true true
+    cookieContainer.Count |> should equal 0
+    cookies |> should haveCount 1
+
+[<Test>]
+let ``Cookies is not added in cookieContainer but is still returned when addCookieInCookieContainer parameter is false (deducted from option cookieContainer passed in InnerRequest method)`` () =
+    let uri = Uri "http://nevermind.com"
+    let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
+    let cookieContainer = System.Net.CookieContainer()
+    let cookies = CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer false false
+    cookieContainer.Count |> should equal 0
+    cookies |> should haveCount 1
 
 [<Test>]
 let ``Web request's timeout is used`` () =

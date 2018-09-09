@@ -1,4 +1,4 @@
-﻿namespace ProviderImplementation
+namespace ProviderImplementation
 
 open System
 open System.IO
@@ -32,8 +32,9 @@ type XmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string
-      InferTypesFromValues : bool }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool
+      Schema : string }
 
 type JsonProviderArgs =
     { Sample : string
@@ -98,8 +99,9 @@ type TypeProviderInstantiation =
                    box x.Encoding
                    box x.ResolutionFolder
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |]
-            | Json x ->
+                   box x.InferTypesFromValues
+                   box x.Schema |] 
+            | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
@@ -145,7 +147,8 @@ type TypeProviderInstantiation =
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture
-             x.InferTypesFromValues.ToString() ]
+             x.InferTypesFromValues.ToString()
+             x.Schema ]
         | Json x ->
             ["Json"
              x.Sample
@@ -171,8 +174,8 @@ type TypeProviderInstantiation =
     member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)
         let output =
-            let tp = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
-            Testing.FormatProvidedType(tp, signatureOnly, ignoreOutput, 10, 100)
+            let tp, t = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
+            Testing.FormatProvidedType(tp, t, signatureOnly, ignoreOutput, 10, 100)
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
             |> replace "@\"<RESOLUTION_FOLDER>\"" "\"<RESOLUTION_FOLDER>\""
@@ -181,6 +184,7 @@ type TypeProviderInstantiation =
         output
 
     static member Parse (line:string) =
+        printfn "Parsing %s" line
         let args = line.Split [|','|]
         args.[0],
         match args.[0] with
@@ -208,8 +212,9 @@ type TypeProviderInstantiation =
                   Culture = args.[4]
                   Encoding = ""
                   ResolutionFolder = ""
-                  EmbeddedResource = ""
-                  InferTypesFromValues = args.[5] |> bool.Parse }
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse
+                  Schema = args.[6] }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -238,7 +243,3 @@ type TypeProviderInstantiation =
         | Net45 -> Targets.DotNet45FSharp41Refs()
         | NetStandard20 -> Targets.DotNetStandard20FSharp41Refs()
 
-open System.Runtime.CompilerServices
-
-[<assembly:InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
-do()

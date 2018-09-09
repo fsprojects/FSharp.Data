@@ -6,6 +6,7 @@
     <DefineConstants>NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />
@@ -17,14 +18,11 @@
     <Compile Include="..\CommonRuntime\NameUtils.fs" />
     <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
     <Compile Include="..\CommonRuntime\StructuralInference.fs" />
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
       <Link>ProvidedTypes.fsi</Link>
     </Compile>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fs">
       <Link>ProvidedTypes.fs</Link>
-    </Compile>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypesTesting.fs">
-      <Link>ProvidedTypesTesting.fs</Link>
     </Compile>
     <Compile Include="..\CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="..\CommonProviderImplementation\AssemblyResolver.fs" />
@@ -40,6 +38,7 @@
     <Compile Include="..\Json\JsonProvider.fs" />
     <Compile Include="..\Xml\XmlRuntime.fs" />
     <Compile Include="..\Xml\XmlInference.fs" />
+    <Compile Include="..\Xml\XsdInference.fs" />
     <Compile Include="..\Xml\XmlGenerator.fs" />
     <Compile Include="..\Xml\XmlProvider.fs" />
     <Compile Include="..\Csv\CsvRuntime.fs" />
@@ -58,7 +57,6 @@
     <Compile Include="..\Html\HtmlRuntime.fs" />
     <Compile Include="..\Html\HtmlGenerator.fs" />
     <Compile Include="..\Html\HtmlProvider.fs" />
-    <Compile Include="..\TypeProviderInstantiation.fs" />
     <Compile Include="..\AssemblyInfo.DesignTime.fs" />
     <None Include="..\Test.fsx" />
   </ItemGroup>

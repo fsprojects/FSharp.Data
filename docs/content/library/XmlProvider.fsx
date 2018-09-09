@@ -356,6 +356,229 @@ let orderLines =
                     line.Quantity ) |]
 
 (**
+
+## Using a schema (XSD)
+
+The `Schema` parameter can be used (instead of `Sample`) to specify an XML schema.
+The value of the parameter can be either the name of a schema file or plain text
+like in the following example:
+*)
+
+type Person = XmlProvider<Schema = """
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="person">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="surname" type="xs:string"/>
+          <xs:element name="birthDate" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>""">
+
+let turing = Person.Parse """
+  <person>
+    <surname>Turing</surname>
+    <birthDate>1912-06-23</birthDate>
+  </person>
+  """
+
+printfn "%s was born in %d" turing.Surname turing.BirthDate.Year
+
+
+(**
+The properties of the provided type are derived from the schema instead of being inferred from samples.
+
+Usually a schema is not specified as plain text but stored in a file like
+[`data/po.xsd`](../data/po.xsd) and the uri is set in the `Schema` parameter:
+*)
+
+type PurchaseOrder = XmlProvider<Schema="../data/po.xsd">
+
+(**
+When the file includes other schema files, the `ResolutionFolder` parameter can help locating them.
+The uri may also refer to online resources:
+*)
+
+type RssXsd = XmlProvider<Schema = "http://europa.eu/rapid/conf/RSS20.xsd">
+
+(**
+
+The schema is expected to define a root element (a global element with complex type).
+In case of multiple root elements:
+*)
+
+type TwoRoots = XmlProvider<Schema = """
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="root1">
+      <xs:complexType>
+        <xs:attribute name="foo" type="xs:string" use="required" />
+        <xs:attribute name="fow" type="xs:int" />
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="root2">
+      <xs:complexType>
+        <xs:attribute name="bar" type="xs:string" use="required" />
+        <xs:attribute name="baz" type="xs:date" use="required" />
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+""">
+
+(**
+the provided type has an optional property for each alternative:
+*)
+
+let e1 = TwoRoots.Parse "<root1 foo='aa' fow='2' />"
+match e1.Root1, e1.Root2 with
+| Some x, None ->
+    printfn "Foo = %s and Fow = %A" x.Foo x.Fow
+| _ -> failwith "Unexpected"
+
+let e2 = TwoRoots.Parse "<root2 bar='aa' baz='2017-12-22' />"
+match e2.Root1, e2.Root2 with
+| None, Some x ->
+    printfn "Bar = %s and Baz = %O" x.Bar x.Baz
+| _ -> failwith "Unexpected"
+
+(**
+
+
+### Common XSD constructs: sequence and choice
+
+A `sequence` is the most common way of structuring elements in a schema.
+The following xsd defines `foo` as a sequence made of an arbitrary number
+of `bar` elements followed by a single `baz` element.
+*)
+
+type FooSequence = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+
+(**
+here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar`and `baz` elements, where the former is an array in order to hold multiple elements:
+*)
+
+let fooSequence = FooSequence.Parse """
+<foo>
+    <bar>42</bar>
+    <bar>43</bar>
+    <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d" fooSequence.Bars.[0] // 42
+printfn "%d" fooSequence.Bars.[1] // 43
+printfn "%d" fooSequence.Baz.Year // 1957
+
+(**
+Instead of a sequence we may have a `choice`:
+*)
+type FooChoice = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+(**
+although a choice is akin to a union type in F#, the provided type still has
+properties for `bar` and `baz` directly available on the `foo` object; in fact
+the properties representing alternatives in a choice are simply made optional
+(notice that for arrays this is not even necessary because an array can be empty).
+This decision is due to technical limitations (discriminated unions are not supported
+in type providers) but also preferred because it improves discoverability:
+intellisense can show both alternatives. There is a lack of precision but this is not the main goal.
+*)
+
+let fooChoice = FooChoice.Parse """
+<foo>
+  <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d items" fooChoice.Bars.Length // 0 items
+match fooChoice.Baz with
+| Some date -> printfn "%d" date.Year // 1957
+| None -> ()
+
+(**
+Another xsd construct to model the content of an element is `all`, which is used less often and
+it's like a sequence where the order of elements does not matter. The corresponding provided type
+in fact is essentially the same as for a sequence.
+
+### Advanced schema constructs
+
+XML Schema provides various extensibility mechanisms. The following example
+is a terse summary mixing substitution groups with abstract recursive definitions.
+*)
+
+type Prop = XmlProvider<Schema = """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="Formula" abstract="true"/>
+        <xs:element name="Prop" type="xs:string" substitutionGroup="Formula"/>
+        <xs:element name="And" substitutionGroup="Formula">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Formula" minOccurs="2" maxOccurs="2"/>
+              </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>""">
+
+let formula = Prop.Parse """
+    <And>
+        <Prop>p1</Prop>
+        <And>
+            <Prop>p2</Prop>
+            <Prop>p3</Prop>
+        </And>
+    </And>
+    """
+
+printfn "%s" formula.Props.[0] // p1
+printfn "%s" formula.Ands.[0].Props.[0] // p2
+printfn "%s" formula.Ands.[0].Props.[1] // p3
+
+(**
+Substitution groups are like choices, and the type provider produces an optional
+property for each alternative.
+
+### Remarks on using a schema
+The XML Type Provider supports most XSD features.
+Anyway the [XML Schema](https://www.w3.org/XML/Schema) specification is rich and complex and also provides a
+fair degree of [openness](http://docstore.mik.ua/orelly/xml/schema/ch13_02.htm)
+which may be [difficult to handle](https://link.springer.com/chapter/10.1007/978-3-540-76786-2_6) in
+data binding tools; but in F# Data, when providing typed views on elements becomes too challenging
+(take for example [wildcards](https://www.w3.org/TR/xmlschema11-1/#Wildcards)) the underlying `XElement`
+is still available.
+
+An important design decision is to focus on elements and not on complex types; while the latter
+may be valuable in schema design, our goal is simply to obtain an easy and safe way to access xml data.
+In other words the provided types are not intended for domain modeling (it's one of the very few cases
+where optional properties are preferred to sum types).
+Hence, we do not provide types corresponding to complex types in a schema but only corresponding
+to elements (of course the underlying complex types still affect the shape of the provided types
+but this happens only implicitly).
+Focusing on element shapes let us generate a type that should be essentially the same as one
+inferred from a significant set of valid samples. This allows a smooth transition (replacing `Sample` with `Schema`)
+when a schema becomes available.
+
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to XML type provider
