@@ -106,7 +106,7 @@ let stats =
       k, xs |> Seq.sumBy (fun x -> x.Downloads))
 
 // Load the FSharp.Charting library
-#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 // Visualize the package stats
