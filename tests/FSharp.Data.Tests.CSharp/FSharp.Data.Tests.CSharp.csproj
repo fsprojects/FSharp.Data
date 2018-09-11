@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="FSharp.Core" Version="4.5.*" />
+    <PackageReference Include="FSharp.Core" Version="4.3.*" />
     <Reference Include="FSharp.Data">
         <HintPath>..\..\bin\lib\$(TargetLibraryFramework)\FSharp.Data.dll</HintPath>
     </Reference>
