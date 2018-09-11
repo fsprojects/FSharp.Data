@@ -329,7 +329,7 @@ module internal HtmlParser =
 
         member x.IsScriptTag 
             with get() = 
-               match x.CurrentTagName() with
+               match x.CurrentTagName().Trim().ToLower() with
                | "script" | "style" -> true
                | _ -> false
 
@@ -445,7 +445,7 @@ module internal HtmlParser =
             match state.Peek() with
             | '/' -> state.Cons(); scriptSingleLineComment state
             | '*' -> state.Cons(); scriptMultiLineComment state
-            | _ -> scriptRegex state
+            | _ -> script state
         and scriptMultiLineComment state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
@@ -461,15 +461,6 @@ module internal HtmlParser =
             | TextParser.EndOfFile _ -> data state
             | '\n' -> state.Cons(); script state
             | _ -> state.Cons(); scriptSingleLineComment state
-        and scriptRegex state =
-            match state.Peek() with
-            | TextParser.EndOfFile _ -> data state
-            | '/' -> state.Cons(); script state
-            | '\\' -> state.Cons(); scriptRegexBackslash state
-            | _ -> state.Cons(); scriptRegex state
-        and scriptRegexBackslash state =
-            match state.Peek() with
-            | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
@@ -565,13 +556,12 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
             | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
             | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
-            | '>' -> 
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | _ ->
                 state.Cons([|'<'; '/'|]); 
                 state.Cons(state.CurrentTagName()); 
                 (!state.CurrentTag).Clear()
                 script state
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
-            | _ -> state.Cons('<'); state.Cons('/'); script state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
