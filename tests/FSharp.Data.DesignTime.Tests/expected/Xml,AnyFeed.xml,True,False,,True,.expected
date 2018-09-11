@@ -41,7 +41,7 @@ class XmlProvider+Choice : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Feed : FDR.BaseTypes.XmlElement
-    new : title:string -> subtitle:string -> links:XmlProvider+Link[] -> id:string -> updated:System.DateTime -> entry:XmlProvider+Entry -> XmlProvider+Feed
+    new : title:string -> subtitle:string -> links:XmlProvider+Link[] -> id:string -> updated:System.DateTimeOffset -> entry:XmlProvider+Entry -> XmlProvider+Feed
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}title",
@@ -78,9 +78,9 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Updated: System.DateTime with get
+    member Updated: System.DateTimeOffset with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}updated"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTimeOffset("", value), value)
 
 
 class XmlProvider+Rss : FDR.BaseTypes.XmlElement
@@ -135,7 +135,7 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Entry : FDR.BaseTypes.XmlElement
-    new : title:string -> links:XmlProvider+Link2[] -> id:string -> updated:System.DateTime -> summary:string -> author:XmlProvider+Author -> XmlProvider+Entry
+    new : title:string -> links:XmlProvider+Link2[] -> id:string -> updated:System.DateTimeOffset -> summary:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}title",
@@ -172,9 +172,9 @@ class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Updated: System.DateTime with get
+    member Updated: System.DateTimeOffset with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}updated"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTimeOffset("", value), value)
 
 
 class XmlProvider+Link : FDR.BaseTypes.XmlElement

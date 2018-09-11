@@ -47,6 +47,10 @@ namespace. Once opened, we can write:
  * `value.AsDateTime()` parses the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
+ * `value.AsDateTimeOffset()` parses the string as a `DateTimeOffset` value using either the
+    [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
+    `\/Date(...[+/-]offset)\/` JSON format containing number of milliseconds since 1/1/1970, 
+    [+/-] the 4 digit offset. Example- `\/Date(1231456+1000)\/`.
  * `value.AsGuid()` parses the string as a `Guid` value.
  * `value?child` uses the dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
@@ -143,7 +147,10 @@ The `value` property of a data point is not always available - as demonstrated
 above, the value may be `null`. In that case, we want to skip the data point.
 To check whether the property is `null` we simply compare it with `JsonValue.Null`.
 
-Also note that the `date` and `value` properties are formatted as strings 
+The `date` values will be parsed as `DateTimeOffset` if there is an offset present. 
+However, for a mixed collection of `DateTime` (that is, without the offset) and 
+`DateTimeOffset` values, the type of the collection will be collection of `DateTime` 
+after parsing. Also note that the `date` and `value` properties are formatted as strings 
 in the source file (e.g. `"1990"`) instead of numbers (e.g. `1990`). When you try
 accessing the value as an integer or float, the `JsonValue` automatically parses
 the string into the desired format. In general, the API attempts to be as tolerant

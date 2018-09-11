@@ -31,7 +31,7 @@ module List =
 let private numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int64>; typeof<decimal>; typeof<float>]
 
 /// List of primitive types that can be returned as a result of the inference
-let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
+let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<DateTimeOffset>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
@@ -48,7 +48,7 @@ let typeTag = function
       if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
-      elif typ = typeof<DateTime> then InferedTypeTag.DateTime
+      elif typ = typeof<DateTime> || typ = typeof<DateTimeOffset> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
@@ -70,7 +70,8 @@ let private conversionTable =
       typeof<int>,     [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
       typeof<int64>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
       typeof<decimal>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
-      typeof<float>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>] ]
+      typeof<float>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>]
+      typeof<DateTime>,   [ typeof<DateTimeOffset> ] ]
 
 let private subtypePrimitives typ1 typ2 = 
   Debug.Assert(List.exists ((=) typ1) primitiveTypes)
@@ -263,6 +264,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
+  | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) -> typeof<DateTimeOffset>
   | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>

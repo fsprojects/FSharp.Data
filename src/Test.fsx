@@ -1,10 +1,10 @@
-﻿#if INTERACTIVE
 #load "SetupTesting.fsx"
-SetupTesting.generateSetupScript __SOURCE_DIRECTORY__ "FSharp.Data.DesignTime"
-#load "__setup__FSharp.Data.DesignTime__.fsx"
-#else
-module internal Test
-#endif
+let dir = __SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime"
+let proj = "FSharp.Data.DesignTime"
+SetupTesting.generateSetupScript (__SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime") "FSharp.Data.DesignTime"
+#load "FSharp.Data.DesignTime/__setup__FSharp.Data.DesignTime__.fsx"
+#load "../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypesTesting.fs"
+#load "../tests/FSharp.Data.DesignTime.Tests/TypeProviderInstantiation.fs"
 
 open System
 open System.Globalization
@@ -70,14 +70,15 @@ Json { Sample = "optionals.json"
        InferTypesFromValues = true }
 |> dumpAll
 
-Xml { Sample = "JsonInXml.xml"
+Xml { Sample = "JsonInXml.xml"      
       SampleIsList = true
       Global = false
       Culture = ""
       Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = ""
-      InferTypesFromValues = true }
+      InferTypesFromValues = true
+      Schema = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"

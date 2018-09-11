@@ -152,12 +152,23 @@ module internal ProviderHelpers =
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
     let private webUrisCache = createInternetFileCache "DesignTimeURIs" cacheDuration
     
-    type private ParseTextResult<'T> =
-        { TypedSamples : 'T []
-          SampleIsUri : bool
-          SampleIsResource : bool }
+    // part of the information needed by generateType
+    type TypeProviderSpec = 
+        { //the generated type
+          GeneratedType : ProvidedTypeDefinition 
+          //the representation type (what's returned from the constructors, may or may not be the same as Type)
+          RepresentationType : Type
+          // the constructor from a text reader to the representation
+          CreateFromTextReader : Expr<TextReader> -> Expr
+          // the constructor from a text reader to an array of the representation
+          CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 
-    let ReadResource(tp: DisposableTypeProviderForNamespaces, resourceName:string) =
+    type private ParseTextResult =
+        { Spec : TypeProviderSpec
+          IsUri : bool
+          IsResource : bool }
+
+    let readResource(tp: DisposableTypeProviderForNamespaces, resourceName:string) =
         match resourceName.Split(',') with
         | [| asmName; name |] -> 
             let bindingCtxt = tp.TargetContext
@@ -173,23 +184,21 @@ module internal ProviderHelpers =
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
     /// 
     /// Parameters:
-    /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
+    /// * valueToBeParsedOrItsUri - the text which can be a sample or an uri for a sample
     /// * parseFunc - receives the file/url extension (or ""  if not applicable) and the text value 
     /// * formatName - the description of what is being parsed (for the error message)
     /// * tp - the type provider
     /// * cfg - the type provider config
-    /// * optResource - when specified, we first try to treat read the sample from an embedded resource
+    /// * resource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
-    let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:DisposableTypeProviderForNamespaces) 
-                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
+    let private parseTextAtDesignTime valueToBeParsedOrItsUri parseFunc formatName (tp:DisposableTypeProviderForNamespaces) 
+                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder resource fullTypeName maxNumberOfRows =
     
-        using (logTime "LoadingSample" sampleOrSampleUri) <| fun _ ->
+        using (logTime "LoadingTextToBeParsed" valueToBeParsedOrItsUri) <| fun _ ->
     
         let tryGetResource() = 
-            if String.IsNullOrWhiteSpace(optResource)
-            then None 
-            else ReadResource(tp, optResource)
+            if resource = "" then None else readResource(tp, resource)
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -199,18 +208,18 @@ module internal ProviderHelpers =
                 then None else Some uri
     
         match tryGetResource() with
-        | Some res -> { TypedSamples = parseFunc "" res
-                        SampleIsUri = false
-                        SampleIsResource = true }
+        | Some res -> { Spec = parseFunc "" res
+                        IsUri = false
+                        IsResource = true }
         | _ -> 
 
-        match tryGetUri sampleOrSampleUri with
+        match tryGetUri valueToBeParsedOrItsUri with
         | None -> 
     
             try
-                { TypedSamples = parseFunc "" sampleOrSampleUri
-                  SampleIsUri = false
-                  SampleIsResource = false }
+                { Spec = parseFunc "" valueToBeParsedOrItsUri
+                  IsUri = false
+                  IsResource = false }
             with e -> 
                 failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
     
@@ -256,34 +265,23 @@ module internal ProviderHelpers =
                     else 
                         readText()
                     
-                { TypedSamples = parseFunc (Path.GetExtension uri.OriginalString) sample
-                  SampleIsUri = true
-                  SampleIsResource = false }
+                { Spec = parseFunc (Path.GetExtension uri.OriginalString) sample
+                  IsUri = true
+                  IsResource = false }
     
             with e ->
     
                 if not uri.IsAbsoluteUri then
                     // even if it's a valid uri, it could be sample text
                     try 
-                        { TypedSamples = parseFunc "" sampleOrSampleUri
-                          SampleIsUri = false
-                          SampleIsResource = false }
+                        { Spec = parseFunc "" valueToBeParsedOrItsUri
+                          IsUri = false
+                          IsResource = false }
                     with _ -> 
                         // if not, return the first exception
-                        failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
+                        failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
                 else
-                    failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
-    
-    // carries part of the information needed by generateType
-    type TypeProviderSpec = 
-        { //the generated type
-          GeneratedType : ProvidedTypeDefinition 
-          //the representation type (what's returned from the constructors, may or may not be the same as Type)
-          RepresentationType : Type
-          // the constructor from a text reader to the representation
-          CreateFromTextReader : Expr<TextReader> -> Expr
-          // the constructor from a text reader to an array of the representation
-          CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
+                    failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
     
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
     let private activeDisposeActions = HashSet<_>()
@@ -345,45 +343,48 @@ module internal ProviderHelpers =
             let fileToWatch = tp.GetFileToWath(fullTypeName)
             providedTypesCache.Set(fullTypeName, (providedType, fullKey, fileToWatch))
             setupDisposeAction providedType fileToWatch
-            providedType
-    
+            providedType    
+
+    type Source = 
+    | Sample of string
+    | SampleList of string
+    | Schema of string
+
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
-    /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
-    /// * sampleIsList - true if the sample consists of several samples put together
-    /// * parseSingle - receives the file/url extension (or ""  if not applicable) and the text value 
-    /// * parseList - receives the file/url extension (or ""  if not applicable) and the text value 
-    /// * getSpecFromSamples - receives a seq of parsed samples and returns a TypeProviderSpec
-    /// * tp -> the type provider
-    /// * cfg -> the type provider config
+    /// * source - the sample/sample list/schema from which the types will be generated
+    /// * getSpec - receives the file/url extension (or ""  if not applicable) and the text value of the sample or schema
+    /// * tp - the type provider
+    /// * cfg - the type provider config
+    /// * encodingStr - the encoding to be used when reading the sample or schema
     /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
-    /// * optResource - when specified, we first try to treat read the sample from an embedded resource
-    ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
-    /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples
+    /// * resource - when specified, we first try to treat read the sample from an embedded resource
+    ///     (the value specifies assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
+    /// * fullTypeName - the full name of the type provider, this will be used as the caching key
+    /// * maxNumberOfRows - the max number of rows to read from the sample or schema
+    let generateType formatName source getSpec
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
-                     encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
+                     encodingStr resolutionFolder resource fullTypeName maxNumberOfRows  =
     
         getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
-        
-        let parse extension (value:string) = using (logTime "Parsing" sampleOrSampleUri) <| fun _ ->
-            if sampleIsList then
-                parseList extension value
-            else
-                [| parseSingle extension value |]
-        
 
-        // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
+        let valueToBeParsedOrItsUri = 
+            match source with 
+            | Sample value -> value
+            | SampleList value -> value
+            | Schema value -> value
         
-        let spec = getSpecFromSamples parseResult.TypedSamples
+        let parseResult = 
+            parseTextAtDesignTime valueToBeParsedOrItsUri getSpec formatName tp cfg encodingStr resolutionFolder resource fullTypeName maxNumberOfRows
         
+        let spec = parseResult.Spec
+
         let resultType = spec.RepresentationType
         let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) 
 
-        using (logTime "CommonTypeGeneration" sampleOrSampleUri) <| fun _ ->
+        using (logTime "CommonTypeGeneration" valueToBeParsedOrItsUri) <| fun _ ->
         
         [ // Generate static Parse method
           let args = [ ProvidedParameter("text", typeof<string>) ]
@@ -430,9 +431,10 @@ module internal ProviderHelpers =
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
           
-          if sampleOrSampleUri <> "" && not parseResult.SampleIsResource then
-        
-              if sampleIsList then
+          if not parseResult.IsResource then
+
+              match source with
+              | SampleList _ -> 
               
                   // the [][] case needs more work, and it's a weird scenario anyway, so we won't support it
                   if not resultType.IsArray then
@@ -443,45 +445,52 @@ module internal ProviderHelpers =
                       // Generate static GetSamples method
                       let m = ProvidedMethod("GetSamples", [], resultTypeArray, isStatic = true,
                                                 invokeCode = fun _ -> 
-                                                  if parseResult.SampleIsUri 
-                                                  then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
-                                                  else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
+                                                  if parseResult.IsUri 
+                                                  then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr valueToBeParsedOrItsUri) @>
+                                                  else <@ new StringReader(valueToBeParsedOrItsUri) :> TextReader @>
                                                   |> spec.CreateFromTextReaderForSampleList)
                       yield m :> _
                               
-                      if parseResult.SampleIsUri then
+                      if parseResult.IsUri  then
                           // Generate static AsyncGetSamples method
                           let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, isStatic = true,
                                                     invokeCode = fun _ -> 
-                                                      let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
+                                                      let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr valueToBeParsedOrItsUri @>
                                                       spec.CreateFromTextReaderForSampleList 
                                                       |> asyncMap resultTypeArray readerAsync)
                           yield m :> _
               
-              else 
+              | Sample _ ->
               
-                let name = if resultType.IsArray then "GetSamples" else "GetSample"
-                let getSampleCode _ =
-                    if parseResult.SampleIsUri  
-                    then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
-                    else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
-                    |> spec.CreateFromTextReader
+                  let name = if resultType.IsArray then "GetSamples" else "GetSample"
+                  let getSampleCode _ =
+                      if parseResult.IsUri  
+                      then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr valueToBeParsedOrItsUri) @>
+                      else <@ new StringReader(valueToBeParsedOrItsUri) :> TextReader @>
+                      |> spec.CreateFromTextReader
 
-                // Generate static GetSample method
-                yield ProvidedMethod(name, [], resultType, isStatic = true, invokeCode = getSampleCode) :> _
-
-                if not sampleIsList && spec.GeneratedType :> Type = spec.RepresentationType then
-                    // Generate default constructor
-                    yield ProvidedConstructor([], invokeCode = getSampleCode) :> _
+                  // Generate static GetSample method
+                  yield ProvidedMethod(name, [], resultType, isStatic = true, invokeCode = getSampleCode) :> _
               
-                if parseResult.SampleIsUri then
-                    // Generate static AsyncGetSample method
-                    let m = ProvidedMethod("Async" + name, [], resultTypeAsync, isStatic = true, 
-                                              invokeCode = fun _ -> 
-                                                let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
-                                                asyncMap resultType readerAsync spec.CreateFromTextReader)
-                    yield m :> _
+                  if spec.GeneratedType :> Type = spec.RepresentationType then
+                      // Generate default constructor
+                      yield ProvidedConstructor([], invokeCode = getSampleCode) :> _
+                
+                  if parseResult.IsUri then
+                      // Generate static AsyncGetSample method
+                      let m = ProvidedMethod("Async" + name, [], resultTypeAsync, isStatic = true, 
+                                                invokeCode = fun _ -> 
+                                                  let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr valueToBeParsedOrItsUri @>
+                                                  asyncMap resultType readerAsync spec.CreateFromTextReader)
+                      yield m :> _
         
+              | Schema _ -> ()
+
         ] |> spec.GeneratedType.AddMembers
         
         spec.GeneratedType
+
+open System.Runtime.CompilerServices
+
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
+do()

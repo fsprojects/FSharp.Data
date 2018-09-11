@@ -1,0 +1,185 @@
+class XmlProvider : obj
+    static member AsyncLoad: uri:string -> XmlProvider+PurchaseOrder async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+PurchaseOrder
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+PurchaseOrder
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+PurchaseOrder
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+PurchaseOrder
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
+    new : orderDate:System.DateTimeOffset option -> shipTo:XmlProvider+ShipTo -> billTo:XmlProvider+BillTo -> comment:string option -> items:XmlProvider+Item[] -> XmlProvider+PurchaseOrder
+    XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}purchaseOrder", 
+                            [| ("orderDate",
+                                (orderDate :> obj)) |], 
+                            [| ("{http://tempuri.org/po.xsd}shipTo",
+                                (shipTo :> obj))
+                               ("{http://tempuri.org/po.xsd}billTo",
+                                (billTo :> obj))
+                               ("{http://tempuri.org/po.xsd}comment",
+                                (comment :> obj))
+                               ("{http://tempuri.org/po.xsd}items|{http://tempuri.org/po.xsd}item",
+                                (items :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+PurchaseOrder
+    XmlElement.Create(xElement)
+
+    member BillTo: XmlProvider+BillTo with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}billTo")
+
+    member Comment: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://tempuri.org/po.xsd}comment", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                            let value = XmlRuntime.TryGetValue(t)
+                                                                                            TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Items: XmlProvider+Item[] with get
+    XmlRuntime.ConvertArray(this, "{http://tempuri.org/po.xsd}items|{http://tempuri.org/po.xsd}item", new Func<_,_>(id)))
+
+    member OrderDate: System.DateTimeOffset option with get
+    TextRuntime.ConvertDateTimeOffset("", XmlRuntime.TryGetAttribute(this, "orderDate"))
+
+    member ShipTo: XmlProvider+ShipTo with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}shipTo")
+
+
+class XmlProvider+BillTo : FDR.BaseTypes.XmlElement
+    new : country:string option -> name:string -> street:string -> city:string -> state:string -> zip:decimal -> XmlProvider+BillTo
+    XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}billTo", 
+                            [| ("country",
+                                (country :> obj)) |], 
+                            [| ("{http://tempuri.org/po.xsd}name",
+                                (name :> obj))
+                               ("{http://tempuri.org/po.xsd}street",
+                                (street :> obj))
+                               ("{http://tempuri.org/po.xsd}city",
+                                (city :> obj))
+                               ("{http://tempuri.org/po.xsd}state",
+                                (state :> obj))
+                               ("{http://tempuri.org/po.xsd}zip",
+                                (zip :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BillTo
+    XmlElement.Create(xElement)
+
+    member City: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}city"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Country: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "country"))
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member State: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}state"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Street: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}street"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Zip: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}zip"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value)
+
+
+class XmlProvider+Item : FDR.BaseTypes.XmlElement
+    new : partNum:string -> productName:string -> quantity:string -> usPrice:decimal -> comment:string option -> shipDate:System.DateTime option -> XmlProvider+Item
+    XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}item", 
+                            [| ("partNum",
+                                (partNum :> obj)) |], 
+                            [| ("{http://tempuri.org/po.xsd}productName",
+                                (productName :> obj))
+                               ("{http://tempuri.org/po.xsd}quantity",
+                                (quantity :> obj))
+                               ("{http://tempuri.org/po.xsd}USPrice",
+                                (usPrice :> obj))
+                               ("{http://tempuri.org/po.xsd}comment",
+                                (comment :> obj))
+                               ("{http://tempuri.org/po.xsd}shipDate",
+                                (shipDate :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
+    member Comment: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://tempuri.org/po.xsd}comment", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                            let value = XmlRuntime.TryGetValue(t)
+                                                                                            TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member PartNum: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "partNum")
+    TextRuntime.GetNonOptionalValue("Attribute partNum", TextRuntime.ConvertString(value), value)
+
+    member ProductName: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}productName"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Quantity: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}quantity"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member ShipDate: System.DateTime option with get
+    XmlRuntime.ConvertOptional(this, "{http://tempuri.org/po.xsd}shipDate", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                             let value = XmlRuntime.TryGetValue(t)
+                                                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)))
+
+    member UsPrice: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}USPrice"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value)
+
+
+class XmlProvider+ShipTo : FDR.BaseTypes.XmlElement
+    new : country:string option -> name:string -> street:string -> city:string -> state:string -> zip:decimal -> XmlProvider+ShipTo
+    XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}shipTo", 
+                            [| ("country",
+                                (country :> obj)) |], 
+                            [| ("{http://tempuri.org/po.xsd}name",
+                                (name :> obj))
+                               ("{http://tempuri.org/po.xsd}street",
+                                (street :> obj))
+                               ("{http://tempuri.org/po.xsd}city",
+                                (city :> obj))
+                               ("{http://tempuri.org/po.xsd}state",
+                                (state :> obj))
+                               ("{http://tempuri.org/po.xsd}zip",
+                                (zip :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+ShipTo
+    XmlElement.Create(xElement)
+
+    member City: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}city"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Country: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "country"))
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member State: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}state"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Street: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}street"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Zip: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}zip"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value)
+
+
