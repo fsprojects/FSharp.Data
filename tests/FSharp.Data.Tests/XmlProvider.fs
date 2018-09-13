@@ -1149,26 +1149,17 @@ let SimpleTypesXsd = """
 
 type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd>
 
-open System.Xml
+
 open System.Xml.Schema
 
-let parseSchema xsdText =    
-    let schemaSet = XmlSchemaSet() 
-    use reader = XmlReader.Create(new System.IO.StringReader(xsdText))
-    schemaSet.Add(null, reader) |> ignore
-    schemaSet.Compile()
-    schemaSet
-
-let isValid xsd =
-    let xmlSchemaSet = parseSchema xsd
-    fun xml ->
+let isValid xmlSchemaSet =
+    fun (xml: XElement) ->
         try
-            (XDocument.Parse xml).Validate(xmlSchemaSet, validationEventHandler = null)
+            XDocument(xml).Validate(xmlSchemaSet, validationEventHandler = null)
             true
         with :? XmlSchemaException as e -> 
-            printfn "%s/n%s" e.Message xml
+            printfn "%s/n%O" e.Message xml
             false
-
 
 [<Test>]
 let ``simple types are formatted properly``() =
@@ -1181,7 +1172,6 @@ let ``simple types are formatted properly``() =
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
-        .ToString()
     
     let minValues =
       SimpleTypes.A(
@@ -1192,7 +1182,6 @@ let ``simple types are formatted properly``() =
         boolean = false,
         decimal = System.Decimal.MinValue,
         double = System.Double.NegativeInfinity)
-        .ToString()
 
     let maxValues = 
       SimpleTypes.A(
@@ -1203,16 +1192,17 @@ let ``simple types are formatted properly``() =
         boolean = true,
         decimal = System.Decimal.MaxValue,
         double = System.Double.PositiveInfinity)
-        .ToString()
 
-    let isValid = isValid SimpleTypesXsd
-    isValid simpleValues |> should equal true
-    isValid minValues |> should equal true
-    isValid maxValues |> should equal true
+    let schema = SimpleTypes.GetSchema()
+    let isValid = isValid schema
+    isValid simpleValues.XElement |> should equal true
+    isValid minValues.XElement |> should equal true
+    isValid maxValues.XElement |> should equal true
 
 
 [<Test>]
 let ``time is omitted when zero``() =
+    let schema = SimpleTypes.GetSchema()
     let simpleValues date = 
       SimpleTypes.A(
         int = 0,
@@ -1222,15 +1212,15 @@ let ``time is omitted when zero``() =
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
-        .ToString()
-    let isValid = isValid SimpleTypesXsd
+
+    let isValid = isValid schema
 
     let validXml = System.DateTime(2018, 8, 29) |> simpleValues
-    isValid validXml |> should equal true
-    (XElement.Parse validXml).Attribute(XName.Get "date").Value
+    isValid validXml.XElement |> should equal true
+    validXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29"
 
     let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
-    isValid invalidXml |> should equal false
-    (XElement.Parse invalidXml).Attribute(XName.Get "date").Value
+    isValid invalidXml.XElement |> should equal false
+    invalidXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29T05:30:56.0000000"
