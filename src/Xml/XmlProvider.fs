@@ -1,4 +1,4 @@
-﻿namespace ProviderImplementation
+namespace ProviderImplementation
 
 open System.IO
 open System.Xml.Linq
@@ -52,7 +52,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                 if schema <> "" then
        
                      let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
-                          XsdParsing.parseSchema resolutionFolder value
+                          XmlSchema.parseSchema resolutionFolder value
        
                      using (IO.logTime "Inference" sample) <| fun _ ->
                         schemaSet
@@ -129,4 +129,3 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ xmlProvTy ])
-  
