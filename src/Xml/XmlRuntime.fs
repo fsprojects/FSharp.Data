@@ -346,7 +346,7 @@ module XmlSchema =
                 match cache.TryRetrieve(uri) with
                 | Some value -> value
                 | None ->
-                    let value = FSharp.Data.Http.RequestString uri //TODO async?
+                    let value = FSharp.Data.Http.RequestString uri
                     cache.Set(uri, value)
                     value
                 |> fun value ->
@@ -357,13 +357,14 @@ module XmlSchema =
             else base.GetEntity(absoluteUri, role, ofObjectToReturn)
 
 
-    let parseSchema resolutionFolder xsdText =
-        let schemaSet = XmlSchemaSet()
-        schemaSet.XmlResolver <- ResolutionFolderResolver resolutionFolder
-        let readerSettings = XmlReaderSettings()
-        readerSettings.CloseInput <- true
-        readerSettings.DtdProcessing <- DtdProcessing.Ignore
-        use reader = XmlReader.Create(new System.IO.StringReader(xsdText), readerSettings)
+    let parseSchemaFromTextReader resolutionFolder (textReader:TextReader) =
+        let schemaSet = XmlSchemaSet(XmlResolver = ResolutionFolderResolver resolutionFolder)
+        let readerSettings = XmlReaderSettings(CloseInput = true, DtdProcessing = DtdProcessing.Ignore)
+        use reader = XmlReader.Create(textReader, readerSettings)
         schemaSet.Add(null, reader) |> ignore
         schemaSet.Compile()
         schemaSet
+
+    let parseSchema resolutionFolder xsdText =
+        new System.IO.StringReader(xsdText)
+        |> parseSchemaFromTextReader resolutionFolder

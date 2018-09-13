@@ -47,18 +47,30 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpec _ value =
        
-            let inferedType = 
+            if schema <> "" then
        
-                if schema <> "" then
-       
-                     let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
-                          XmlSchema.parseSchema resolutionFolder value
-       
+                let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
+                    XmlSchema.parseSchema resolutionFolder value
+
+                let inferedType = 
                      using (IO.logTime "Inference" sample) <| fun _ ->
                         schemaSet
                         |> XsdParsing.getElements 
                         |> List.ofSeq
                         |> XsdInference.inferElements
+
+                using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+              
+                    let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+                    let result = XmlTypeBuilder.generateXmlType ctx inferedType
+                  
+                    { GeneratedType = tpType
+                      RepresentationType = result.ConvertedType
+                      CreateFromTextReader = fun reader -> 
+                              result.Converter <@@ XmlElement.Create(%reader) @@>
+                      CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
+                          <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@> }
+
 
                 else
        
@@ -69,23 +81,24 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                                 |> Array.map (fun doc -> doc.XElement)
                             else
                                 [| XDocument.Parse(value).Root |]
-       
-                    using (IO.logTime "Inference" sample) <| fun _ ->
-                        samples
-                        |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) (*allowEmptyValues*)false globalInference
-                        |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
+
+                    let inferedType = 
+                        using (IO.logTime "Inference" sample) <| fun _ ->
+                            samples
+                            |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) (*allowEmptyValues*)false globalInference
+                            |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
         
-            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+                    using (IO.logTime "TypeGeneration" sample) <| fun _ ->
           
-                let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
-                let result = XmlTypeBuilder.generateXmlType ctx inferedType
+                        let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+                        let result = XmlTypeBuilder.generateXmlType ctx inferedType
               
-                { GeneratedType = tpType
-                  RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> 
-                      result.Converter <@@ XmlElement.Create(%reader) @@>
-                  CreateFromTextReaderForSampleList = fun reader -> 
-                      result.Converter <@@ XmlElement.CreateList(%reader) @@> }
+                        { GeneratedType = tpType
+                          RepresentationType = result.ConvertedType
+                          CreateFromTextReader = fun reader -> 
+                              result.Converter <@@ XmlElement.Create(%reader) @@>
+                          CreateFromTextReaderForSampleList = fun reader -> 
+                              result.Converter <@@ XmlElement.CreateList(%reader) @@> }
        
         let source = 
             if schema <> "" then

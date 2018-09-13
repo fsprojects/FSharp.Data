@@ -3,6 +3,9 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
 
+    static member GetSchema: () -> System.Xml.Schema.XmlSchemaSet
+    (XmlSchema.parseSchemaFromTextReader "" FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XSD" "" "http://europa.eu/rapid/conf/RSS20.xsd")))
+
     static member Load: stream:System.IO.Stream -> XmlProvider+Rss
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
