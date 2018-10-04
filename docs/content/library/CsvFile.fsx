@@ -57,6 +57,7 @@ opening the `FSharp.Data.CsvExtensions` namespace. Once opened, we can write:
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...[+/-]offset)\/` JSON format containing number of milliseconds since 1/1/1970, 
     [+/-] the 4 digit offset. Example- `\/Date(1231456+1000)\/`.
+ * `value.AsTimeSpan()` parses the string as a `TimeSpan` value.
  * `value.AsGuid()` returns the value as a `Guid` value.
 
 Methods that may need to parse a numeric value or date (such as `AsFloat` and
