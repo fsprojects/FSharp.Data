@@ -357,6 +357,11 @@ module Options =
     static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsDateTimeOffset cultureInfo)
+
+    /// Get the timespan value of an element (assuming that the value is a timespan)
+    [<Extension>] 
+    static member AsTimeSpan(x) =
+      x |> Option.bind JsonConversions.AsTimeSpan    
   
     /// Get the guid value of an element (assuming that the value is a guid)
     [<Extension>] 
