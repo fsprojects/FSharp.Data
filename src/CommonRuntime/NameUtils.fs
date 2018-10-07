@@ -72,10 +72,11 @@ let niceCamelName (s:string) =
 ///     let n1 = makeUnique "sample-name"
 ///     let n2 = makeUnique "sample-name"
 ///
-let uniqueGenerator niceName =
+let uniqueGenerator (niceName:string->string) =
   let set = new HashSet<_>()
   fun name ->
     let mutable name = niceName name
+    if name.Length = 0 then name <- "Unnamed"
     while set.Contains name do 
       let mutable lastLetterPos = String.length name - 1
       while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
