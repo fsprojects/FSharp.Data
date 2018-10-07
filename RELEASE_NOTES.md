@@ -1,4 +1,4 @@
-#### 3.0.0-beta5 - Unreleased
+#### 3.0.0-rc - October 7 2018
 * (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
 * (Breaking Change) Added support for TimeSpan to JSON, XML, CSV, and HTML providers.
 * Map XSD date to System.DateTime and XSD dateTime to System.DateTimeOffset.
