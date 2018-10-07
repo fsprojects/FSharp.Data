@@ -113,6 +113,27 @@ let ``Can parse completely invalid, but close, date as string``() =
     j?anniversary.AsString() |> should equal "2010-02-18T16.5:23.35:4"
 
 [<Test>]
+let ``Can parse positive time span with days and fraction``() =
+    let j = JsonValue.Parse "{\"duration\": \"1:3:16:50.5\"}"
+    j?duration.AsTimeSpan() |> should equal (TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
+let ``Can parse positive time span without days and without fraction``() =
+    let j = JsonValue.Parse "{\"duration\": \"00:30:00\"}"
+    j?duration.AsTimeSpan() |> should equal (TimeSpan(0, 30, 0))
+
+[<Test>]
+let ``Can parse negative time span with days and fraction``() =
+    let j = JsonValue.Parse "{\"duration\": \"-1:3:16:50.5\"}"
+    j?duration.AsTimeSpan() |> should equal (TimeSpan(-1, -3, -16, -50, -500))
+
+[<Test>]
+let ``Can parse time span in different culture``() =
+    withCulture "fr" <| fun () ->
+        let j = JsonValue.Parse("{\"duration\": \"1:3:16:50,5\"}")
+        j?duration.AsTimeSpan CultureInfo.CurrentCulture |> should equal (TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
 let ``Can parse UTF-32 unicode characters`` () = 
   let j = JsonValue.Parse """{ "value": "\U00010343\U00010330\U0001033F\U00010339\U0001033B" }"""
   j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"

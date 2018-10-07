@@ -22,6 +22,7 @@ let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<string op
   elif typ = typeof<bool> || typ = typeof<Bit> then <@@ TextRuntime.ConvertBoolean(%value) @@>
   elif typ = typeof<DateTime> then <@@ TextRuntime.ConvertDateTime(cultureStr, %value) @@>
   elif typ = typeof<DateTimeOffset> then <@@ TextRuntime.ConvertDateTimeOffset(cultureStr, %value) @@>
+  elif typ = typeof<TimeSpan> then <@@ TextRuntime.ConvertTimeSpan(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ TextRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"
 
@@ -35,6 +36,7 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
   elif typ = typeof<Guid> then <@ TextRuntime.ConvertGuidBack(%%value) @>
   elif typ = typeof<DateTime> then <@ TextRuntime.ConvertDateTimeBack(cultureStr, %%value) @>
   elif typ = typeof<DateTimeOffset> then <@ TextRuntime.ConvertDateTimeOffsetBack(cultureStr, %%value) @>
+  elif typ = typeof<TimeSpan> then <@ TextRuntime.ConvertTimeSpanBack(cultureStr, %%value) @>
   else failwith "getBackConversionQuotation: Unsupported primitive type"
 
 /// Creates a function that takes Expr<string option> and converts it to 

@@ -216,6 +216,7 @@ type XmlRuntime =
                     then v.ToString("yyyy-MM-dd")
                     else v.ToString("O", cultureInfo)
                 | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
+                | :? TimeSpan       as v -> v.ToString("g", cultureInfo)
                 | :? int            as v -> strWithCulture v
                 | :? int64          as v -> strWithCulture v
                 | :? float          as v -> strWithCulture v
@@ -232,6 +233,7 @@ type XmlRuntime =
         | :? option<string>         as v -> optionToArray serialize v
         | :? option<DateTime>       as v -> optionToArray serialize v
         | :? option<DateTimeOffset> as v -> optionToArray serialize v
+        | :? option<TimeSpan>       as v -> optionToArray serialize v
         | :? option<int>            as v -> optionToArray serialize v
         | :? option<int64>          as v -> optionToArray serialize v
         | :? option<float>          as v -> optionToArray serialize v

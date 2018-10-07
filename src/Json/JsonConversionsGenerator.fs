@@ -24,6 +24,7 @@ let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<JsonValue
   elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(%value) @@>
   elif typ = typeof<DateTimeOffset> then <@@ JsonRuntime.ConvertDateTimeOffset(cultureStr, %value) @@>
   elif typ = typeof<DateTime> then <@@ JsonRuntime.ConvertDateTime(cultureStr, %value) @@>
+  elif typ = typeof<TimeSpan> then <@@ JsonRuntime.ConvertTimeSpan(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ JsonRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"
 

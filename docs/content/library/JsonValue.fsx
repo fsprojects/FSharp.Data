@@ -51,6 +51,7 @@ namespace. Once opened, we can write:
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...[+/-]offset)\/` JSON format containing number of milliseconds since 1/1/1970, 
     [+/-] the 4 digit offset. Example- `\/Date(1231456+1000)\/`.
+ * `value.AsTimeSpan()` parses the string as a `TimeSpan` value.
  * `value.AsGuid()` parses the string as a `Guid` value.
  * `value?child` uses the dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
