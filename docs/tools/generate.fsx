@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Builds the documentation from `.fsx` and `.md` files in the 'docs/content' directory
 // (the generated documentation is stored in the 'docs/output' directory)
 // --------------------------------------------------------------------------------------
@@ -29,6 +29,8 @@ let info =
 
 open System.IO
 open Fake
+open Fake.IO
+open Fake.IO.FileSystemOperators
 open FSharp.Charting
 open System.Drawing.Imaging
 open System.Windows.Forms
@@ -68,16 +70,16 @@ let layoutRootsJa =
 
 // Copy static files and CSS + JS from F# Formatting
 let copyFiles () =
-  ensureDirectory (output @@ "data")
-  CopyRecursive data (output @@ "data") true |> Log "Copying data files: "
-  CopyRecursive files output true |> Log "Copying files: "
-  ensureDirectory (output @@ "content")
-  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
+  Directory.ensure (output @@ "data")
+  Shell.copyRecursive data (output @@ "data") true |> Log "Copying data files: "
+  Shell.copyRecursive files output true |> Log "Copying files: "
+  Directory.ensure (output @@ "content")
+  Shell.copyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
 
 // Build API reference from XML comments
 let buildReference () =
-  CleanDir (output @@ "reference")
+  Shell.cleanDir (output @@ "reference")
   RazorMetadataFormat.Generate
     ( referenceBinaries |> List.map ((@@) bin),
       output @@ "reference",
@@ -100,7 +102,7 @@ let createFsiEvaluator root output =
         // and return a DirectImage reference to the appropriate location
         let id = imageCounter().ToString()
         let file = "chart" + id + ".png"
-        ensureDirectory (output @@ "images")
+        Directory.ensure (output @@ "images")
         // We need to reate host control, but it does not have to be visible
         ( use ctl = new ChartTypes.ChartControl(ch, Dock = DockStyle.Fill, Width=800, Height=300)
           ch.CopyAsBitmap().Save(output @@ "images" @@ file, ImageFormat.Png) )

@@ -52,7 +52,7 @@ data
 
 *)
 
-#load "../../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)

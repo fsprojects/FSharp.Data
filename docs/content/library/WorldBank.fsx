@@ -46,7 +46,7 @@ We can easily see how the university enrollment changes over time by using the
 
 *)
 
-#load "../../../packages/test/FSharp.Charting/lib/net45/FSharp.Charting.fsx"
+#load "../../../packages/test/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)

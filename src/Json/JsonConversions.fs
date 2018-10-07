@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------
 // Helper operations for converting converting json values to other types
 // --------------------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ module private Helpers =
   let inline isIntegerDecimal (v:decimal) : bool = Math.Round v = v
   let inline isIntegerFloat (v:float) : bool = Math.Round v = v
 
-/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/datetimeoffset/guid options
+/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/datetimeoffset/timespan/guid options
 type JsonConversions =
 
   static member AsString useNoneForNullOrEmpty (cultureInfo:IFormatProvider) = function
@@ -61,6 +61,10 @@ type JsonConversions =
   
   static member AsDateTime cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTime cultureInfo s
+    | _ -> None
+
+  static member AsTimeSpan cultureInfo = function
+    | JsonValue.String s -> TextConversions.AsTimeSpan cultureInfo s
     | _ -> None
 
   static member AsGuid = function
