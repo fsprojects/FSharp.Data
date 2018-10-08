@@ -559,6 +559,20 @@ printfn "%s" formula.Ands.[0].Props.[1] // p3
 Substitution groups are like choices, and the type provider produces an optional
 property for each alternative.
 
+### Validation
+The `GetSchema` method on the generated type returns an instance
+of `System.Xml.Schema.XmlSchemaSet` that can be used to validate documents:
+*)
+open System.Xml.Schema
+let schema = Person.GetSchema()
+turing.XElement.Document.Validate(schema, validationEventHandler = null)
+(**
+The `Validate` method accepts a callback to handle validation issues;
+passing `null` will turn validation errors into exceptions.
+There are overloads to allow other effects (for example setting default values
+by enabling the population of the XML tree with the post-schema-validation infoset;
+for details see the [documentation](https://docs.microsoft.com/en-us/dotnet/api/system.xml.schema.extensions.validate?view=netframework-4.7.2)).
+
 ### Remarks on using a schema
 The XML Type Provider supports most XSD features.
 Anyway the [XML Schema](https://www.w3.org/XML/Schema) specification is rich and complex and also provides a
