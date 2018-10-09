@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -12,6 +12,7 @@ open System
 open System.IO
 open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
+open FSharp.Data.Runtime.CsvInference
 
 let [<Literal>] simpleCsv = """
   Column1,Column2,Column3
@@ -122,7 +123,7 @@ let ``Can create type for small document``() =
 
 [<Test>]
 let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
-  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))  
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 
@@ -592,3 +593,11 @@ let ``CsvFile.TryGetColumnIndex returns None if no match``() =
   let csv = CsvFile.Parse simpleCsv
   let nameColumnIndex = csv.TryGetColumnIndex "FirstName"
   nameColumnIndex |> should equal None
+
+[<Test>]
+let ``InferColumnTypes shall infer empty string as Double``() =
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/emptyMissingValue.csv"))
+  let types = csv.InferColumnTypes(2,[|""|],System.Globalization.CultureInfo.GetCultureInfo(""), null, false, false)
+  let expected = "Double"
+  let actual = types.[3].InferedType.Name
+  actual |> should equal expected
