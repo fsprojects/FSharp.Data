@@ -594,6 +594,33 @@ let ``CsvFile.TryGetColumnIndex returns None if no match``() =
   let nameColumnIndex = csv.TryGetColumnIndex "FirstName"
   nameColumnIndex |> should equal None
 
+type TimeSpanCSV = CsvProvider<"Data/TimeSpans.csv">
+let row = TimeSpanCSV.GetSample().Rows |> Seq.head
+[<Test>]
+let ``Can parse positive time span with day and fraction``() =
+    let span = row.PositiveWithDayWithFraction
+    span |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
+let ``Can parse positive time span without day and without fraction``() =
+    let span = row.PositiveWithoutDayWithoutFraction
+    span |> should equal (new TimeSpan(0, 30, 0))
+
+[<Test>]
+let ``Can parse negative time span with day and fraction``() =
+    let span = row.NegativeWithDayWithFraction
+    span |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
+
+[<Test>]
+let ``Parses timespan greater than max as string`` () = 
+    let span = row.TimespanOneTickGreaterThanMaxValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Parses timespan less than min as string`` () = 
+    let span = row.TimespanOneTickLessThanMinValue
+    span.GetType() |> should equal (typeof<string>)
+
 [<Test>]
 let ``InferColumnTypes shall infer empty string as Double``() =
   let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/emptyMissingValue.csv"))

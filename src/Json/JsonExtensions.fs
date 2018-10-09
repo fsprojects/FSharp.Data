@@ -129,6 +129,15 @@ type JsonExtensions =
     | Some d -> d
     | _ -> failwithf "Not a datetime offset: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
+  /// Get the timespan value of an element (assuming that the value is a string
+  /// containing well-formed time span)
+  [<Extension>]
+  static member AsTimeSpan(x, [<Optional>] ?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsTimeSpan cultureInfo x with
+    | Some t -> t
+    | _ -> failwithf "Not a time span: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
+
   /// Get the guid value of an element (assuming that the value is a guid)
   [<Extension>]
   static member AsGuid(x) =
@@ -241,6 +250,12 @@ module Options =
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
       JsonConversions.AsDateTimeOffset cultureInfo x
   
+    /// Get the timespan value of an element (assuming that the value is a string
+    /// containing well-formed time span)
+    member x.AsTimeSpan(?cultureInfo) = 
+      let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+      JsonConversions.AsTimeSpan cultureInfo x
+  
     /// Get the guid value of an element (assuming that the value is a guid)
     member x.AsGuid() =
       JsonConversions.AsGuid x
@@ -342,6 +357,11 @@ module Options =
     static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
       x |> Option.bind (JsonConversions.AsDateTimeOffset cultureInfo)
+
+    /// Get the timespan value of an element (assuming that the value is a timespan)
+    [<Extension>] 
+    static member AsTimeSpan(x) =
+      x |> Option.bind JsonConversions.AsTimeSpan    
   
     /// Get the guid value of an element (assuming that the value is a guid)
     [<Extension>] 

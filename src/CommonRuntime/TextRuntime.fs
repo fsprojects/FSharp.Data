@@ -62,6 +62,9 @@ type TextRuntime =
   static member ConvertDateTimeOffset(cultureStr, text) = 
     text |> Option.bind (TextConversions.AsDateTimeOffset (TextRuntime.GetCulture cultureStr))
 
+  static member ConvertTimeSpan(cultureStr, text) = 
+    text |> Option.bind (TextConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr))
+
   static member ConvertGuid(text) = 
     text |> Option.bind TextConversions.AsGuid
 
@@ -111,6 +114,11 @@ type TextRuntime =
   static member ConvertDateTimeOffsetBack(cultureStr, value:DateTimeOffset option) = 
     match value with
     | Some value -> value.ToString("O", TextRuntime.GetCulture cultureStr)
+    | None -> ""
+
+  static member ConvertTimeSpanBack(cultureStr, value:TimeSpan option) = 
+    match value with
+    | Some value -> value.ToString("g", TextRuntime.GetCulture cultureStr)
     | None -> ""
 
   static member ConvertGuidBack(value:Guid option) = 

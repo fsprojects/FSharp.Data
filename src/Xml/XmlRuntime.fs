@@ -67,12 +67,15 @@ type XmlElement =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  member x._Print = x.XElement.ToString()
+  member x._Print =
+    let str = x.ToString()
+    if str.Length > 512 then str.Substring(0, 509) + "..."
+    else str
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  override x.ToString() = x._Print
+  override x.ToString() = x.XElement.ToString()
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -213,6 +216,7 @@ type XmlRuntime =
                     then v.ToString("yyyy-MM-dd")
                     else v.ToString("O", cultureInfo)
                 | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
+                | :? TimeSpan       as v -> v.ToString("g", cultureInfo)
                 | :? int            as v -> strWithCulture v
                 | :? int64          as v -> strWithCulture v
                 | :? float          as v -> strWithCulture v
@@ -229,6 +233,7 @@ type XmlRuntime =
         | :? option<string>         as v -> optionToArray serialize v
         | :? option<DateTime>       as v -> optionToArray serialize v
         | :? option<DateTimeOffset> as v -> optionToArray serialize v
+        | :? option<TimeSpan>       as v -> optionToArray serialize v
         | :? option<int>            as v -> optionToArray serialize v
         | :? option<int64>          as v -> optionToArray serialize v
         | :? option<float>          as v -> optionToArray serialize v
