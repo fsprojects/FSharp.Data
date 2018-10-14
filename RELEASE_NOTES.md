@@ -1,3 +1,6 @@
+#### 3.0.0 - October 14 2018
+* Add GetSchema method in XML type provider.
+
 #### 3.0.0-rc - October 7 2018
 * (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
 * (Breaking Change) Added support for TimeSpan to JSON, XML, CSV, and HTML providers.
