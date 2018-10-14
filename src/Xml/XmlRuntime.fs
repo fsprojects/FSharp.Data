@@ -304,3 +304,72 @@ type XmlRuntime =
                     child.Value <- v
                 | _ -> failwithf "Unexpected content for child %s: %A" nameWithNS value
     XmlElement.Create element
+
+module XmlSchema =
+    open System.Xml
+    open System.Xml.Schema
+    /// A custom XmlResolver is needed for included files because we get the contents of the main file
+    /// directly as a string from the FSharp.Data infrastructure. Hence the default XmlResolver is not
+    /// able to find the location of included schema files.
+    type ResolutionFolderResolver(resolutionFolder: string) =
+        inherit XmlUrlResolver()
+
+        let cache = Caching.createInternetFileCache "XmlSchema" (System.TimeSpan.FromMinutes 30.0)
+
+        let uri = // Uri must end with separator (maybe there's a better way)
+            if resolutionFolder = "" then ""
+            elif resolutionFolder.EndsWith "/" || resolutionFolder.EndsWith "\\"
+            then resolutionFolder
+            else resolutionFolder + "/"
+
+        let useResolutionFolder (baseUri: System.Uri) =
+            resolutionFolder <> "" && (baseUri = null || baseUri.OriginalString = "")
+
+        let getEncoding xmlText = // peek encoding definition
+            let settings = XmlReaderSettings(ConformanceLevel = ConformanceLevel.Fragment)
+            use reader = XmlReader.Create(new System.IO.StringReader(xmlText), settings)
+            if reader.Read() && reader.NodeType = XmlNodeType.XmlDeclaration
+            then
+                match reader.GetAttribute "encoding" with
+                | null -> System.Text.Encoding.UTF8
+                | attr -> System.Text.Encoding.GetEncoding attr
+            else System.Text.Encoding.UTF8
+
+        override _this.ResolveUri(baseUri, relativeUri) =
+            let u = System.Uri(relativeUri, System.UriKind.RelativeOrAbsolute)
+            if u.IsAbsoluteUri && (not <| u.IsFile)
+            then base.ResolveUri(baseUri, relativeUri)
+            elif useResolutionFolder baseUri
+            then base.ResolveUri(System.Uri uri, relativeUri)
+            else base.ResolveUri(baseUri, relativeUri)
+
+
+        override _this.GetEntity(absoluteUri, role, ofObjectToReturn) =
+            if IO.isWeb absoluteUri
+            then
+                let uri = absoluteUri.OriginalString
+                match cache.TryRetrieve(uri) with
+                | Some value -> value
+                | None ->
+                    let value = FSharp.Data.Http.RequestString uri
+                    cache.Set(uri, value)
+                    value
+                |> fun value ->
+                    // the best solution would be to have the cache store the raw bytes
+                    // instead of going back and forth from bytes to text
+                    let bytes = getEncoding(value).GetBytes value
+                    new System.IO.MemoryStream(bytes) :> obj
+            else base.GetEntity(absoluteUri, role, ofObjectToReturn)
+
+
+    let parseSchemaFromTextReader resolutionFolder (textReader:TextReader) =
+        let schemaSet = XmlSchemaSet(XmlResolver = ResolutionFolderResolver resolutionFolder)
+        let readerSettings = XmlReaderSettings(CloseInput = true, DtdProcessing = DtdProcessing.Ignore)
+        use reader = XmlReader.Create(textReader, readerSettings)
+        schemaSet.Add(null, reader) |> ignore
+        schemaSet.Compile()
+        schemaSet
+
+    let parseSchema resolutionFolder xsdText =
+        new System.IO.StringReader(xsdText)
+        |> parseSchemaFromTextReader resolutionFolder

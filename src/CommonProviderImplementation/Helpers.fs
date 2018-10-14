@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
 // Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
 //
 // Helpers for writing type providers
@@ -484,7 +484,17 @@ module internal ProviderHelpers =
                                                   asyncMap resultType readerAsync spec.CreateFromTextReader)
                       yield m :> _
         
-              | Schema _ -> ()
+              | Schema _ ->
+                  let getSchemaCode _ =
+                      if parseResult.IsUri  
+                      then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr valueToBeParsedOrItsUri) @>
+                      else <@ new StringReader(valueToBeParsedOrItsUri) :> TextReader @>
+                      |> spec.CreateFromTextReaderForSampleList // hack: this will actually parse the schema
+
+                  // Generate static GetSchema method
+                  yield ProvidedMethod("GetSchema", [], typeof<System.Xml.Schema.XmlSchemaSet>, isStatic = true, 
+                    invokeCode = getSchemaCode) :> _
+
 
         ] |> spec.GeneratedType.AddMembers
         

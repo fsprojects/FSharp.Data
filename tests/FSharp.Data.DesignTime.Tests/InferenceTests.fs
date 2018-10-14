@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.DesignTime.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -414,13 +414,13 @@ let getInferedTypeFromSamples samples =
 
 let getInferedTypeFromSchema xsd =
     xsd
-    |> XsdParsing.parseSchema ""
+    |> XmlSchema.parseSchema ""
     |> XsdParsing.getElements
     |> List.ofSeq
     |> XsdInference.inferElements
 
 let isValid xsd =
-    let xmlSchemaSet = XsdParsing.parseSchema "" xsd
+    let xmlSchemaSet = XmlSchema.parseSchema "" xsd
     fun xml ->
         let settings = XmlReaderSettings(ValidationType = ValidationType.Schema)
         settings.Schemas <- xmlSchemaSet
@@ -880,7 +880,7 @@ let ``abstract elements can be recursive``() =
     </xs:schema>
     """
 
-    let xsd = XsdParsing.parseSchema "" formulaXsd
+    let xsd = XmlSchema.parseSchema "" formulaXsd
     let elms = xsd.GlobalElements.Values |> XsdParsing.ofType<XmlSchemaElement>
     let andElm = elms |> Seq.filter (fun x -> x.Name = "And") |> Seq.exactlyOne
     let formElm = elms |> Seq.filter (fun x -> x.Name = "Formula") |> Seq.exactlyOne
