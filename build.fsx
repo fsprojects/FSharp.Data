@@ -159,7 +159,7 @@ Target.create "Build" <| fun _ ->
         MSBuild.runRelease (fun opts -> { opts with Properties = ["SourceLinkCreate", "true"] }) null "Build" [projName]
         |> logResults (sprintf "%s-Output:" projName))
  else
-    // Both flavours of FSharp.Data.DesignTime.dll (net462 and netstandard2.0) must be built _before_ building FSharp.Data
+    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
     buildProjs |> Seq.iter (fun proj ->
       DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
                                                                         CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
@@ -179,7 +179,7 @@ Target.create "BuildTests" <| fun _ ->
 Target.create "RunTests" <| fun _ ->
  if useMsBuildToolchain then
        for testName in testNames do
-           !! (sprintf "tests/*/bin/Release/net462/%s.dll" testName)
+           !! (sprintf "tests/*/bin/Release/net461/%s.dll" testName)
            |> NUnit3.run (fun p ->
                { p with
                    TimeOut = TimeSpan.FromMinutes 20.
@@ -274,7 +274,7 @@ Target.create "TestSourcelink" <| fun _ ->
         DotNet.exec (setSdkPathAndVerbose >> DotNet.Options.withWorkingDirectory(Path.GetDirectoryName proj)) "sourcelink" (sprintf "test %s" pdb)
         |> ignore
 
-    ["net462"; "netstandard2.0"]
+    ["net45"; "netstandard2.0"]
     |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
     |> Seq.iter id
 
@@ -318,12 +318,7 @@ Target.create "All" ignore
 
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
-"BuildTests" ==> "All"
-"RunTests" ==> "All"
-
-Target.create "BuildAndRunTests" ignore
-
-"BuildTests" ==> "BuildAndRunTests"
-"RunTests" ==> "BuildAndRunTests"
+"Build" ==> "BuildTests" ==> "All"
+"BuildTests" ==> "RunTests" ==> "All"
 
 Target.runOrDefaultWithArguments "Help"
