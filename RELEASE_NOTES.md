@@ -1,3 +1,6 @@
+#### 3.3.5 - Unreleased
+* Move `cssSelect` to `HtmlNode`.
+
 #### 3.3.4 - January 7 2020
 * Rebuild using "Release" target
 
