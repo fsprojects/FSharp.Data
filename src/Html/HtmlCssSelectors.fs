@@ -201,35 +201,35 @@ module internal HtmlCssSelectors =
         | Children
         | Descendants
 
-    let getTargets level (matched:HtmlNode list) = 
+    let getTargets level matched = 
         match level with
-        | FilterLevel.Children      -> matched |> Seq.collect(fun m -> m.Elements())
-        | FilterLevel.Descendants   -> matched |> Seq.collect(fun m -> m.Descendants())
-        | _                         -> matched |> Seq.ofList
+        | FilterLevel.Children    -> matched |> Seq.collect (HtmlNode.elements)
+        | FilterLevel.Descendants -> matched |> Seq.collect (HtmlNode.descendants true (fun _ -> true))
+        | _                       -> matched |> Seq.ofList
 
-    let searchTag level (matched:HtmlNode list) (tag:string) =
+    let searchTag level matched tag =
         match level with
-        | Children -> matched |> List.collect(fun m -> m.Elements tag)
-        | _ -> matched |> Seq.collect(fun m -> m.DescendantsAndSelf tag) |> Seq.toList
+        | Children -> matched |> List.collect (HtmlNode.elementsNamed [tag])
+        | _ -> matched |> Seq.collect (HtmlNode.descendantsAndSelfNamed true [tag]) |> Seq.toList
 
-    let filterByAttr level (matched:HtmlNode list) (attr:string) (f:string -> bool) = 
+    let filterByAttr level matched attr f = 
         matched 
         |> getTargets level
-        |> Seq.filter (fun x -> x.AttributeValue attr |> f)
+        |> Seq.filter (HtmlNode.attributeValue attr >> f)
         |> Seq.toList
 
-    let attrExists level (matched:HtmlNode list) (attr:string) =
+    let attrExists level matched attr =
         matched
         |> getTargets level
-        |> Seq.filter (fun x -> x.Attributes() |> Seq.exists(fun a -> a.Name() = attr))
+        |> Seq.filter (HtmlNode.attributes >> Seq.exists(HtmlAttribute.name >> (=) attr))
         |> Seq.toList
 
-    let selectCssElements (tokens:SelectorToken list) (nodes:HtmlNode list) = 
-        let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]            
-        let rec selectElements' level (acc:HtmlNode list) source =
+    let selectCssElements tokens nodes = 
+        let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]
+        let rec selectElements' level acc source =
 
             // if we already have an empty list, terminate early
-            if acc.Length = 0 then [] else 
+            if acc = [] then [] else
 
             let selectDescendantOfType ty t = 
                 let selectedNodes = filterByAttr level acc "type" (fun v -> v = ty)
@@ -289,14 +289,14 @@ module internal HtmlCssSelectors =
                 selectElements' FilterLevel.Root selectedNodes t
 
             | OpenAttribute _ :: AttributeName(_, name) :: AttributeNotEqual _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
-                let selectedNodes = filterByAttr level acc name (fun v -> v <> value)
+                let selectedNodes = filterByAttr level acc name ((<>) value)
                 selectElements' FilterLevel.Root selectedNodes t
 
             | OpenAttribute _ ::  AttributeName(_, name) :: CloseAttribute _ :: t ->
                 let selectedNodes = 
-                    acc |> List.filter(fun n -> 
-                            n.Attributes()
-                            |> List.exists(fun a -> a.Name() = name) )
+                    acc |> List.filter(
+                            HtmlNode.attributes
+                            >> List.exists (HtmlAttribute.name >> (=) name) )
                 selectElements' FilterLevel.Root selectedNodes t
                 
             | Checkbox _ :: t -> selectDescendantOfType "checkbox" t
@@ -318,8 +318,8 @@ module internal HtmlCssSelectors =
 
             | Button _ :: t ->
                 let selectedNodes = 
-                    filterByAttr level acc "type" (fun v -> v = "button")
-                    |> Seq.append (acc |> Seq.collect (fun n -> n.DescendantsAndSelf "button"))
+                    filterByAttr level acc "type" ((=) "button")
+                    |> Seq.append (acc |> Seq.collect (HtmlNode.descendantsAndSelfNamed true ["button"]))
                     |> Seq.toList
                 selectElements' FilterLevel.Root selectedNodes t
 
@@ -330,10 +330,10 @@ module internal HtmlCssSelectors =
             | EmptyNode _ :: t ->
                 let selectedNodes = 
                     acc 
-                    |> Seq.collect(fun n -> 
-                        n.DescendantsAndSelf() 
-                        |> Seq.filter(fun d ->
-                            String.IsNullOrWhiteSpace (d.DirectInnerText()) && d.Descendants() |> Seq.isEmpty))
+                    |> Seq.collect(
+                        HtmlNode.descendantsAndSelf true (fun _ -> true)
+                        >> Seq.filter(fun d ->
+                            String.IsNullOrWhiteSpace (d |> HtmlNode.directInnerText) && (d |> HtmlNode.descendants true (fun _ -> true)) |> Seq.isEmpty))
                     |> Seq.toList
                 selectElements' FilterLevel.Root selectedNodes t
 
@@ -349,7 +349,7 @@ module internal HtmlCssSelectors =
                 let selectedNodes = 
                     acc
                     |> getTargets level 
-                    |> Seq.filter (fun x -> x.Attributes() |> Seq.exists(fun a -> a.Name() = "disabled") |> not)
+                    |> Seq.filter (HtmlNode.attributes >> Seq.exists (HtmlAttribute.name >> (=) "disabled") >> not)
                     |> Seq.toList
                 selectElements' FilterLevel.Root selectedNodes t
 
