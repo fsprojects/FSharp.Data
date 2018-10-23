@@ -18,18 +18,18 @@ type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """
 type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 
 [<Test>]
-let ``Decimal required field is read correctly`` () = 
+let ``Decimal required field is read correctly`` () =
   let prov = NumericFields.Parse(""" {"a":123} """)
   prov.A |> should equal 123M
 
 [<Test>]
-let ``Decimal optional field is read as None`` () = 
+let ``Decimal optional field is read as None`` () =
   let prov = NumericFields.Parse(""" {"a":123} """)
   prov.B |> should equal None
 
 let shouldThrow message func =
-    let succeeded = 
-        try 
+    let succeeded =
+        try
             func() |> ignore
             true
         with e ->
@@ -39,22 +39,22 @@ let shouldThrow message func =
         Assert.Fail("Exception expected")
 
 [<Test>]
-let ``Reading a required field that is null throws an exception`` () = 
+let ``Reading a required field that is null throws an exception`` () =
   let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
   (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
-let ``Reading a required field that is missing throws an exception`` () = 
+let ``Reading a required field that is missing throws an exception`` () =
   let prov = NumericFields.Parse(""" {"b":123} """)
   (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
-let ``Reading a required decimal that is not a valid decimal throws an exception`` () = 
+let ``Reading a required decimal that is not a valid decimal throws an exception`` () =
   let prov = NumericFields.Parse(""" {"a":"hello", "b":123} """)
   (fun () -> prov.A) |> shouldThrow "Expecting a Decimal at '/a', got \"hello\""
 
 [<Test>]
-let ``Reading a required float that is not a valid float returns NaN`` () = 
+let ``Reading a required float that is not a valid float returns NaN`` () =
   let prov = DecimalFields.Parse(""" {"a":"hello", "b":123} """)
   prov.A |> should equal Double.NaN
 
@@ -81,13 +81,13 @@ let ``Can control type inference`` () =
   boolLike2 |> should equal "1"
 
 [<Test>]
-let ``Optional int correctly inferred`` () = 
+let ``Optional int correctly inferred`` () =
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
   let i = prov.[0].A
   i |> should equal (Some 123)
 
 [<Test>]
-let ``Optional strings correctly handled when missing or null``() = 
+let ``Optional strings correctly handled when missing or null``() =
   let withoutText, withText =
     JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
     |> Seq.map (fun tweet -> tweet.Text)
@@ -97,14 +97,14 @@ let ``Optional strings correctly handled when missing or null``() =
   withText.Length |> should equal 17
 
 [<Test>]
-let ``Optional records correctly handled when missing``() = 
+let ``Optional records correctly handled when missing``() =
   let tweets = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
   tweets.[0].Place |> should equal None
   tweets.[13].Place |> should not' (equal None)
   tweets.[13].Place.Value.Id |> should equal "741e21eeea82f00a"
 
 [<Test>]
-let ``Optional records correctly handled when null``() = 
+let ``Optional records correctly handled when null``() =
   let json = JsonProvider<"""[{"milestone":null},{"milestone":{"url":"https://api.github.com/repos/twitter/bootstrap/milestones/19","labels_url":"https://api.github.com/repos/twitter/bootstrap/milestones/19/labels","id":230651}}]""">.GetSamples()
   json.[0].Milestone.IsNone |> should equal true
   json.[0].Milestone.IsSome |> should equal false
@@ -138,8 +138,8 @@ let ``Optional records correctly handled when empty string``() =
     j.[1].Address |> should equal None
 
 [<Test>]
-let ``Optional collections correctly handled when null``() = 
-  let withCoords, withoutCoords =         
+let ``Optional collections correctly handled when null``() =
+  let withCoords, withoutCoords =
     JsonProvider<"Data/TwitterStream.json", SampleIsList=true>.GetSamples()
     |> Seq.map (fun tweet -> tweet.Coordinates)
     |> Seq.toList
@@ -148,8 +148,8 @@ let ``Optional collections correctly handled when null``() =
   withoutCoords.Length |> should equal 95
 
 [<Test>]
-let ``Optional collections correctly handled when missing``() = 
-  let withoutMedia, withMedia = 
+let ``Optional collections correctly handled when missing``() =
+  let withoutMedia, withMedia =
     JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
     |> Seq.choose (fun tweet -> tweet.RetweetedStatus)
     |> Seq.map (fun retweetedStatus -> retweetedStatus.Entities.Media)
@@ -159,8 +159,8 @@ let ``Optional collections correctly handled when missing``() =
   withoutMedia.Length |> should equal 9
 
 [<Test>]
-let ``Allways null properties correctly handled both when present and missing``() = 
-  let contributors = 
+let ``Allways null properties correctly handled both when present and missing``() =
+  let contributors =
     JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
     |> Seq.map (fun tweet -> tweet.Contributors : IJsonDocument)
   for c in contributors do
@@ -189,7 +189,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[0].C.Boolean  |> should equal None
     j.[0].C.Number   |> should equal None
     j.[0].C.Record   |> should equal None
-    
+
     j.[1].A.Boolean  |> should equal None
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
@@ -227,7 +227,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[4].B.TimeSpan |> should equal (Some (TimeSpan(0, 30, 0)))
 
 [<Test>]
-let ``SampleIsList for json correctly handled``() = 
+let ``SampleIsList for json correctly handled``() =
     JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
     |> Seq.sumBy (fun tweet ->
         match tweet.Text with
@@ -236,14 +236,14 @@ let ``SampleIsList for json correctly handled``() =
     |> should equal 5
 
 [<Test>]
-let ``Null values correctly handled``() = 
+let ``Null values correctly handled``() =
     let tweet = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples() |> Seq.head
     tweet.Place |> should equal None
 
 type InlinedJSON = JsonProvider<"""{ "firstName": "Max", "lastName": "Mustermann", "age": 26, "isCool": true }""">
 
 [<Test>]
-let ``Can parse inlined properties``() = 
+let ``Can parse inlined properties``() =
     let person = InlinedJSON.GetSample()
 
     person.FirstName
@@ -259,7 +259,7 @@ let ``Can parse inlined properties``() =
     |> should equal true
 
 [<Test>]
-let ``Can parse inlined properties but read from file``() = 
+let ``Can parse inlined properties but read from file``() =
     let person = InlinedJSON.Load("Data/Simple.json")
 
     person.FirstName
@@ -280,7 +280,7 @@ type SimpleJSON = JsonProvider<"Data/Simple.json">
 let simple = SimpleJSON.GetSample()
 
 [<Test>]
-let ``Can parse properties``() = 
+let ``Can parse properties``() =
     simple.FirstName
     |> should equal "John"
 
@@ -298,7 +298,7 @@ type NestedJSON = JsonProvider<"Data/Nested.json">
 let nested = NestedJSON.GetSample()
 
 [<Test>]
-let ``Can parse nested properties``() = 
+let ``Can parse nested properties``() =
     nested.Main.FirstName
     |> should equal "John"
 
@@ -316,7 +316,7 @@ type DoubleNestedJSON = JsonProvider<"Data/DoubleNested.json">
 let doubleNested = DoubleNestedJSON.GetSample()
 
 [<Test>]
-let ``Can parse double nested properties``() = 
+let ``Can parse double nested properties``() =
     doubleNested.Main.Title
     |> should equal "example"
 
@@ -328,7 +328,7 @@ type SimpleArrayJSON = JsonProvider<"Data/SimpleArray.json">
 let simpleArray = SimpleArrayJSON.GetSample()
 
 [<Test>]
-let ``Can parse simple arrays``() = 
+let ``Can parse simple arrays``() =
     let items = simpleArray.Items
     items.[0].Id
     |> should equal "Open"
@@ -337,7 +337,7 @@ let ``Can parse simple arrays``() =
     |> should equal "Pause"
 
 [<Test>]
-let ``Can parse optional values in arrays``() = 
+let ``Can parse optional values in arrays``() =
     let authors = JsonProvider<"Data/OptionValues.json">.GetSample().Authors
     authors.[0].Name
     |> should equal "Steffen"
@@ -352,7 +352,7 @@ let ``Can parse optional values in arrays``() =
     |> should equal None
 
 [<Test>]
-let ``Can compare typed JSON documents``() = 
+let ``Can compare typed JSON documents``() =
     let simple1 = SimpleJSON.GetSample()
     let simple2 = SimpleJSON.GetSample()
     let nested = NestedJSON.GetSample()
@@ -363,7 +363,7 @@ let ``Can compare typed JSON documents``() =
 type JsonArray = JsonProvider<"""["Adam","Eve","Bonnie","Clyde","Donald","Daisy","Han","Leia"]""">
 
 [<Test>]
-let ``Can parse simple array``() = 
+let ``Can parse simple array``() =
     let inlined = JsonArray.GetSamples()
     inlined
       |> should equal [|"Adam";"Eve";"Bonnie";"Clyde";"Donald";"Daisy";"Han";"Leia"|]
@@ -371,7 +371,7 @@ let ``Can parse simple array``() =
 type MultipleJsonArray = JsonProvider<"""[["Adam","Eve"],["Bonnie","Clyde"],["Donald","Daisy"],["Han","Leia"]]""">
 
 [<Test>]
-let ``Can parse multidimensional arrays``() = 
+let ``Can parse multidimensional arrays``() =
     let inlined = MultipleJsonArray.GetSamples()
     inlined
       |> should equal [| [|"Adam";"Eve"|]
@@ -381,7 +381,7 @@ let ``Can parse multidimensional arrays``() =
 
 type WikiSample =
     JsonProvider<
-        """{  
+        """{
                  "firstName": "John",
                  "lastName" : "Smith",
                  "age"      : 25,
@@ -406,7 +406,7 @@ type WikiSample =
              }""">
 
 [<Test>]
-let ``Can parse wiki sample``() = 
+let ``Can parse wiki sample``() =
     let document = WikiSample.GetSample()
     document.FirstName |> should equal "John"
 
@@ -414,7 +414,7 @@ let ``Can parse wiki sample``() =
     phone.Number |> should equal "212 555-1234"
 
 [<Test>]
-let ``Can load empty json file and fails on property access``() = 
+let ``Can load empty json file and fails on property access``() =
     let document = WikiSample.Load("Data/Empty.json")
     let failed = ref false
     try
@@ -423,15 +423,15 @@ let ``Can load empty json file and fails on property access``() =
     | _ -> failed := true
     !failed |> should be True
 
-let newJson = 
-    """{  
+let newJson =
+    """{
             "firstName": "Jane",
             "lastName" : "Doe",
             "age"      : 23
     }"""
 
-let newJson2 = 
-    """{  
+let newJson2 =
+    """{
             "firstName": "Jim",
             "lastName" : "Smith",
             "age"      : 24
@@ -441,27 +441,27 @@ let document = WikiSample.Parse(newJson)
 let document2 = WikiSample.Parse(newJson2)
 
 [<Test>]
-let ``Jane should have first name of Jane``() = 
+let ``Jane should have first name of Jane``() =
     document.FirstName |> should equal "Jane"
 
 [<Test>]
-let ``Jane should have a last name of Doe``() = 
+let ``Jane should have a last name of Doe``() =
     document.LastName |> should equal "Doe"
 
 [<Test>]
-let ``Jane should have an age of 23``() = 
+let ``Jane should have an age of 23``() =
     document.Age |> should equal 23
 
 [<Test>]
-let ``Jim should have a first name of Jim``() = 
+let ``Jim should have a first name of Jim``() =
     document2.FirstName |> should equal "Jim"
 
 [<Test>]
-let ``Jim should have a last name of Smith``() = 
+let ``Jim should have a last name of Smith``() =
     document2.LastName |> should equal "Smith"
 
 [<Test>]
-let ``Jim should have an age of 24``() = 
+let ``Jim should have an age of 24``() =
     document2.Age |> should equal 24
 
 type Project = JsonProvider<"Data/projects.json">
@@ -483,21 +483,21 @@ let ``Can access the project title``() =
 type DateJSON = JsonProvider<"Data/Dates.json">
 
 [<Test>]
-let ``Can parse microsoft format dates``() = 
+let ``Can parse microsoft format dates``() =
     let dates = DateJSON.GetSample()
     dates.Birthdate |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 450)) // 1997-07-16T19:20:30.45+01:00
 
 [<Test>]
 let ``Can parse ISO 8601 dates``() =
     let dates = DateJSON.GetSample()
-    dates.Anniversary |> should equal (new DateTimeOffset(1997, 7, 16, 19, 20, 30, 450, TimeSpan.FromHours 1.)) 
+    dates.Anniversary |> should equal (new DateTimeOffset(1997, 7, 16, 19, 20, 30, 450, TimeSpan.FromHours 1.))
 
 [<Test>]
 let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
-    dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero)) 
+    dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero))
 
-let withCulture (cultureName: string) test = 
+let withCulture (cultureName: string) test =
     let originalCulture = CultureInfo.CurrentCulture;
     try
         CultureInfo.CurrentCulture <- CultureInfo cultureName
@@ -509,7 +509,7 @@ let withCulture (cultureName: string) test =
 let ``Can parse ISO 8601 dates in the correct culture``() =
     withCulture "zh-CN" <| fun () ->
         let dates = DateJSON.GetSample()
-        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local))
 
 [<Test>]
 let ``Can parse ISO 8601 dates in the specified culture``() =
@@ -537,12 +537,12 @@ let ``Can parse negative time span with day and fraction``() =
     timeSpans.NegativeWithDayWithFraction |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
 
 [<Test>]
-let ``Parses timespan greater than max as string`` () = 
+let ``Parses timespan greater than max as string`` () =
     let span = TimeSpanJSON.GetSample().TimespanOneTickGreaterThanMaxValue
     span.GetType() |> should equal (typeof<string>)
 
 [<Test>]
-let ``Parses timespan less than min as string`` () = 
+let ``Parses timespan less than min as string`` () =
     let span = TimeSpanJSON.GetSample().TimespanOneTickLessThanMinValue
     span.GetType() |> should equal (typeof<string>)
 
@@ -576,9 +576,9 @@ let jsonSample = """[{"Facts": [{"Description": "sdfsdfsdfsdfs",
                             "Value": {"b":100}}]}]"""
 
 [<Test>]
-let ``Test error messages``() =    
+let ``Test error messages``() =
     let j = JsonProvider<jsonSample>.Parse """[{"Facts": [{"Name": "foo"}]}]"""
-    let errorMessage = 
+    let errorMessage =
         try
             j.[0].Facts.[0].Value |> ignore
             ""
@@ -734,3 +734,18 @@ let ``Getting a large float at runtime when an integer was inferred should throw
     let f = 1234567890123456789012345678901234567890.
     let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 1234567890123456789012345678901234567890 }""")
     (fun () -> json.Y) |> shouldThrow (sprintf "Expecting an Int32 at '/y', got %s" (f.ToString("E14").Replace("+0", "+").Replace(",", ".")))
+
+[<Test>]
+let ``Getting field with numeric values should infer decimal``() =
+    let json = JsonProvider<""" { "a":[1.0, 1.0] } """>.GetSample()
+    json.A |> should equal [|0.1m;0.1m|]
+
+[<Test>]
+let ``Getting field with numeric array should infer double from exponential``() =
+    let json = JsonProvider<""" { "a":[1e0, 1e0] } """>.GetSample()
+    json.A |> should equal [|0.1;0.1|]
+
+[<Test>]
+let ``Getting field with numeric array should infer double from exponential with decimal``() =
+    let json = JsonProvider<""" { "a":[1.0e0, 1.0e0] } """>.GetSample()
+    json.A |> should equal [|0.1;0.1|]
