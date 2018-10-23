@@ -738,14 +738,14 @@ let ``Getting a large float at runtime when an integer was inferred should throw
 [<Test>]
 let ``Getting field with numeric values should infer decimal``() =
     let json = JsonProvider<""" { "a":[1.0, 1.0] } """>.GetSample()
-    json.A |> should equal [|0.1m;0.1m|]
+    json.A |> should equal [|1.0m;1.0m|]
 
 [<Test>]
 let ``Getting field with numeric array should infer double from exponential``() =
     let json = JsonProvider<""" { "a":[1e0, 1e0] } """>.GetSample()
-    json.A |> should equal [|0.1;0.1|]
+    json.A |> should equal [|1.0;1.0|]
 
 [<Test>]
 let ``Getting field with numeric array should infer double from exponential with decimal``() =
     let json = JsonProvider<""" { "a":[1.0e0, 1.0e0] } """>.GetSample()
-    json.A |> should equal [|0.1;0.1|]
+    json.A |> should equal [|1.0;1.0|]
