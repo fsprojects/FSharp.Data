@@ -760,10 +760,9 @@ let ``Can parse nested lists correctly when continues closing tags are missing``
     result |> should equal [ "12"; "1"; "2"; "3 "; "4 " ]
 
 
-[<Test>]
-let ``Can parse pre blocks``() = 
-    let html = "<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>"
-    
+[<TestCase("<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>")>]
+[<TestCase("<pre>\r\n        This <span>code</span> should be indented and\r\n        have line feeds in it</pre>")>]
+let ``Can parse pre blocks`` html = 
     let result = 
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "pre" ]
