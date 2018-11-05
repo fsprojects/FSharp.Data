@@ -154,6 +154,7 @@ let private tables = lazy(
          "pro",              "pros",             ""
          "rabies",           "",                 ""
          "radius",           "radiuses",         "radii"
+         "release",          "releases",         ""
          "rhino",            "rhinos",           ""
          "salmon",           "",                 ""
          "scissors",         "",                 ""
