@@ -72,7 +72,7 @@ be parsed as dates) while HLOC prices are inferred as `decimal`.
 
 ### Charting stock prices
 
-We can use the [FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) library to draw a simple line chart showing how the price
+We can use the [FSharp.Charting](https://fslab.org/FSharp.Charting/) library to draw a simple line chart showing how the price
 of MSFT stocks changes since the company was founded:
 *)
 
