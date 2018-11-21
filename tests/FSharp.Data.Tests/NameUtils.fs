@@ -123,6 +123,7 @@ let ``Can pluralize names``() =
    check "index" "indices"
    check "status" "statuses"
    check "release" "releases"
+   check "choice" "choices"
 
 [<Test>]
 let ``Can singularize names``() =
@@ -148,3 +149,4 @@ let ``Can singularize names``() =
    check "indexes" "index"
    check "statuses" "status"
    check "releases" "release"
+   check "choices" "choice"

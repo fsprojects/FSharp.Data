@@ -98,6 +98,7 @@ let private tables = lazy(
          "child",            "children",         ""
          "chassis",          "",                 ""
          "chinese",          "",                 ""
+         "choice",           "choices",          ""
          "clippers",         "",                 ""
          "cod",              "",                 ""
          "codex",            "codices",          ""
