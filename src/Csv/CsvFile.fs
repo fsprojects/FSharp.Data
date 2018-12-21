@@ -95,7 +95,7 @@ and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Op
 
   /// Loads CSV from the specified uri
   static member Load(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding, [<Optional>] ?ignoreLinePattern, [<Optional>] ?trimColumnValue) =
-    CsvFile.AsyncLoad(uri, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows, ?encoding=encoding, ?ignoreLinePattern = ignoreLinePattern, ?trimColumnValue = trimColumnValue)) |> Async.RunSynchronously
+    CsvFile.AsyncLoad(uri, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows, ?encoding=encoding, ?ignoreLinePattern = ignoreLinePattern, ?trimColumnValue = trimColumnValue) |> Async.RunSynchronously
 
   /// Loads CSV from the specified uri asynchronously
   static member AsyncLoad(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding, [<Optional>] ?ignoreLinePattern, [<Optional>] ?trimColumnValue) = async {

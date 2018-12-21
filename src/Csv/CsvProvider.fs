@@ -62,7 +62,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                 if sample = "" then
                     // synthetize sample from the schema
                     use reader = new StringReader(value)
-                    let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+                    let schemaStr = CsvReader.readCsvFile reader "," '"' trimColumnValue |> Seq.exactlyOne |> fst
                     Array.zeroCreate schemaStr.Length
                     |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
                 else
