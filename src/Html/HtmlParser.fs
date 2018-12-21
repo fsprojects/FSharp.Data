@@ -1,4 +1,4 @@
-﻿#nowarn "10001"
+#nowarn "10001"
 namespace FSharp.Data
 
 open System
@@ -8,6 +8,7 @@ open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
+open System.Runtime.InteropServices
 
 // --------------------------------------------------------------------------------------
 
@@ -145,7 +146,10 @@ type HtmlNode =
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
+    member x._Print =
+        let str = x.ToString()
+        if str.Length > 512 then str.Substring(0, 509) + "..."
+        else str
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
@@ -177,7 +181,11 @@ type HtmlDocument =
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
+    member x._Print =
+        let str = x.ToString()
+        if str.Length > 512 then str.Substring(0, 509) + "..."
+        else str
+
 
 // --------------------------------------------------------------------------------------
 
@@ -197,15 +205,9 @@ module private TextParser =
 
 module internal HtmlParser =
 
-    let private regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-        RegexOptions.None
-#else
-        RegexOptions.Compiled
-#endif
-    let wsRegex = lazy Regex("\\s+", regexOptions)
-    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
-    let headingRegex = lazy Regex("""h\d""", regexOptions)
+    let wsRegex = lazy Regex("\\s+", RegexOptions.Compiled)
+    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", RegexOptions.Compiled)
+    let headingRegex = lazy Regex("""h\d""", RegexOptions.Compiled)
 
     type HtmlToken =
         | DocType of string
@@ -334,7 +336,7 @@ module internal HtmlParser =
 
         member x.IsScriptTag 
             with get() = 
-               match x.CurrentTagName() with
+               match x.CurrentTagName().Trim().ToLower() with
                | "script" | "style" -> true
                | _ -> false
 
@@ -432,17 +434,25 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | ''' -> state.Cons(); script state
+            | '\\' -> state.Cons(); scriptSingleQuoteStringBackslash state
             | _ -> state.Cons(); scriptSingleQuoteString state
         and scriptDoubleQuoteString state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
             | '"' -> state.Cons(); script state
+            | '\\' -> state.Cons(); scriptDoubleQuoteStringBackslash state
+            | _ -> state.Cons(); scriptDoubleQuoteString state
+        and scriptSingleQuoteStringBackslash state =
+            match state.Peek() with
+            | _ -> state.Cons(); scriptSingleQuoteString state
+        and scriptDoubleQuoteStringBackslash state =
+            match state.Peek() with
             | _ -> state.Cons(); scriptDoubleQuoteString state
         and scriptSlash state =
             match state.Peek() with
             | '/' -> state.Cons(); scriptSingleLineComment state
             | '*' -> state.Cons(); scriptMultiLineComment state
-            | _ -> scriptRegex state
+            | _ -> script state
         and scriptMultiLineComment state =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
@@ -458,15 +468,6 @@ module internal HtmlParser =
             | TextParser.EndOfFile _ -> data state
             | '\n' -> state.Cons(); script state
             | _ -> state.Cons(); scriptSingleLineComment state
-        and scriptRegex state =
-            match state.Peek() with
-            | TextParser.EndOfFile _ -> data state
-            | '/' -> state.Cons(); script state
-            | '\\' -> state.Cons(); scriptRegexBackslash state
-            | _ -> state.Cons(); scriptRegex state
-        and scriptRegexBackslash state =
-            match state.Peek() with
-            | _ -> state.Cons(); scriptRegex state
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
@@ -562,13 +563,12 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
             | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
             | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
-            | '>' -> 
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | _ ->
                 state.Cons([|'<'; '/'|]); 
                 state.Cons(state.CurrentTagName()); 
                 (!state.CurrentTag).Clear()
                 script state
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
-            | _ -> state.Cons('<'); state.Cons('/'); script state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
@@ -872,14 +872,15 @@ type HtmlDocument with
         HtmlParser.parseDocument reader
         
     /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri:string) = async {
-        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+    static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {
+        let encoding = defaultArg encoding Encoding.UTF8
+        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
         return HtmlParser.parseDocument reader
     }
     
     /// Loads HTML from the specified uri
-    static member Load(uri:string) =
-        HtmlDocument.AsyncLoad(uri)
+    static member Load(uri:string, [<Optional>] ?encoding) =
+        HtmlDocument.AsyncLoad(uri, ?encoding=encoding)
         |> Async.RunSynchronously
 
 type HtmlNode with

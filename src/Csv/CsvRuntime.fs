@@ -12,8 +12,6 @@ open System.Collections.Generic
 open System.IO
 open System.Runtime.InteropServices
 open System.Text
-open FSharp.Data.Runtime
-open FSharp.Data.Runtime.IO
 
 // --------------------------------------------------------------------------------------
 
@@ -377,13 +375,10 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let writer = new StreamWriter(stream)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
   /// Saves CSV to the specified file
   member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
-#endif
 
   /// Saves CSV to a string
   member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 

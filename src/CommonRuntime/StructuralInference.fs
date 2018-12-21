@@ -1,4 +1,4 @@
-﻿/// Implements type inference for unstructured documents like XML or JSON
+/// Implements type inference for unstructured documents like XML or JSON
 module FSharp.Data.Runtime.StructuralInference
 
 open System
@@ -31,7 +31,7 @@ module List =
 let private numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int64>; typeof<decimal>; typeof<float>]
 
 /// List of primitive types that can be returned as a result of the inference
-let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
+let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<DateTimeOffset>; typeof<TimeSpan>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
@@ -48,7 +48,8 @@ let typeTag = function
       if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
-      elif typ = typeof<DateTime> then InferedTypeTag.DateTime
+      elif typ = typeof<DateTime> || typ = typeof<DateTimeOffset> then InferedTypeTag.DateTime
+      elif typ = typeof<TimeSpan> then InferedTypeTag.TimeSpan
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
@@ -70,7 +71,8 @@ let private conversionTable =
       typeof<int>,     [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
       typeof<int64>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
       typeof<decimal>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
-      typeof<float>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>] ]
+      typeof<float>,            [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>]
+      typeof<DateTime>,   [ typeof<DateTimeOffset> ] ]
 
 let private subtypePrimitives typ1 typ2 = 
   Debug.Assert(List.exists ((=) typ1) primitiveTypes)
@@ -223,13 +225,7 @@ module private Helpers =
 
   open System.Text.RegularExpressions
 
-  let regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-    RegexOptions.None
-#else
-    RegexOptions.Compiled
-#endif
-  let wordRegex = lazy Regex("\\w+", regexOptions)
+  let wordRegex = lazy Regex("\\w+", RegexOptions.Compiled)
 
   let numberOfNumberGroups value = 
     wordRegex.Value.Matches value
@@ -238,7 +234,7 @@ module private Helpers =
     |> Seq.length
 
 /// Infers the type of a simple string value
-/// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<string>
+/// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<TimeSpan>|typeof<string>
 let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
@@ -248,23 +244,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   let asGuid _ value = TextConversions.AsGuid value
 
   let getAbbreviatedEraName era =
-#if FX_NET_CORE_REFLECTION
     cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
-#else
-    try
-      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
-    with :? ArgumentOutOfRangeException when Type.GetType("Mono.Runtime") <> null ->
-      // In Mono before 4.0, the above call was throwing ArgumentOutOfRange exception (see #426)
-      // Since Mono 4.0, the above method works, but the following workaround stopps working.
-      // So, we try the workaround *only* on Mono and *only* when we get out of range exception.
-      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
-      let eraIndex =
-        match era with
-        | 0 -> (abbreviatedEraNames |> Array.length) // 0 mean current, last of array
-        | x when x > 0 && x <= abbreviatedEraNames.Length -> era
-        | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
-      abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
-#endif
 
   let isFakeDate (date:DateTime) value =
       // If this can be considered a decimal under the invariant culture, 
@@ -285,6 +265,8 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
+  | Parse TextConversions.AsTimeSpan _ -> typeof<TimeSpan>
+  | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) -> typeof<DateTimeOffset>
   | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>

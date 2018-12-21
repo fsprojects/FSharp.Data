@@ -14,6 +14,7 @@ TestResult.xml
 log.csv
 log.txt
 .paket/paket.exe
+.paket/load
 paket-files
 *.ide
 *.bak
@@ -21,3 +22,5 @@ paket-files
 .fake
 TestResults
 *.log
+.vscode
+.idea

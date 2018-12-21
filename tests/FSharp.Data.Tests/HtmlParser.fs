@@ -1,8 +1,7 @@
-﻿
-#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+﻿#if INTERACTIVE
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
@@ -143,6 +142,7 @@ let ``Can handle attributes with no value``() =
 </script>
 Test comment
 */""")>]
+[<TestCase("function(sel) {return sel.replace(/([/.])/g, '\\$1');};")>]
 let ``Can handle special characters in scripts`` content =
     let html = sprintf "<script>%s</script>" content
     let node = HtmlNode.Parse html |> List.head
@@ -838,3 +838,14 @@ let ``Can create new CData element``() =
     HtmlNode.NewCData("some element content")
     |> string
     |> should equal "<![CDATA[some element content]]>"
+
+[<TestCase("""var ns="xmlns=\"http:\/\/test.com\"";""")>]
+[<TestCase("""var ns='xmlns=\'http:\/\/test.com\'';""")>]
+let ``Can handle escaped characters in a string inside script tag`` content =
+    let result = HtmlDocument.Parse (sprintf "<script>%s</script>" content)
+    let expected =
+        HtmlDocument.New
+            [ HtmlNode.NewElement("script",
+                [],
+                [ HtmlNode.NewText content ]) ]
+    result |> should equal expected

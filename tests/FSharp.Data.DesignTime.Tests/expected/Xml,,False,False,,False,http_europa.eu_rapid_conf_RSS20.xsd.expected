@@ -1,0 +1,399 @@
+class XmlProvider : obj
+    static member AsyncLoad: uri:string -> XmlProvider+Rss async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
+
+    static member GetSchema: () -> System.Xml.Schema.XmlSchemaSet
+    (XmlSchema.parseSchemaFromTextReader "" FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XSD" "" "http://europa.eu/rapid/conf/RSS20.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+Rss
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Rss
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+Rss
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+Rss
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+Rss : FDR.BaseTypes.XmlElement
+    new : version:decimal -> channels:XmlProvider+Channel[] -> XmlProvider+Rss
+    XmlRuntime.CreateRecord("rss", 
+                            [| ("version",
+                                (version :> obj)) |], 
+                            [| ("channel",
+                                (channels :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
+    XmlElement.Create(xElement)
+
+    member Channels: XmlProvider+Channel[] with get
+    XmlRuntime.ConvertArray(this, "channel", new Func<_,_>(id)))
+
+    member Version: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "version")
+    TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertDecimal("", value), value)
+
+
+class XmlProvider+Channel : FDR.BaseTypes.XmlElement
+    new : title:string -> link:string -> description:string -> language:string option -> copyright:string option -> pubDate:string option -> lastBuildDate:string option -> category:XmlProvider+Category option -> generator:string option -> docs:string option -> cloud:XmlProvider+Cloud option -> ttl:string option -> image:XmlProvider+Image option -> textInput:XmlProvider+TextInput option -> skipHours:string option -> skipDays:string option -> items:XmlProvider+Item[] -> XmlProvider+Channel
+    XmlRuntime.CreateRecord("channel", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("language",
+                                (language :> obj))
+                               ("copyright",
+                                (copyright :> obj))
+                               ("pubDate",
+                                (pubDate :> obj))
+                               ("lastBuildDate",
+                                (lastBuildDate :> obj))
+                               ("category",
+                                (category :> obj))
+                               ("generator",
+                                (generator :> obj))
+                               ("docs",
+                                (docs :> obj))
+                               ("cloud",
+                                (cloud :> obj))
+                               ("ttl",
+                                (ttl :> obj))
+                               ("image",
+                                (image :> obj))
+                               ("textInput",
+                                (textInput :> obj))
+                               ("skipHours",
+                                (skipHours :> obj))
+                               ("skipDays",
+                                (skipDays :> obj))
+                               ("item",
+                                (items :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
+    XmlElement.Create(xElement)
+
+    member Category: XmlProvider+Category option with get
+    XmlRuntime.ConvertOptional(this, "category", new Func<_,_>(id)))
+
+    member Cloud: XmlProvider+Cloud option with get
+    XmlRuntime.ConvertOptional(this, "cloud", new Func<_,_>(id)))
+
+    member Copyright: string option with get
+    XmlRuntime.ConvertOptional(this, "copyright", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Description: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Docs: string option with get
+    XmlRuntime.ConvertOptional(this, "docs", new Func<_,_>(fun (t:XmlElement) -> 
+                                                              let value = XmlRuntime.TryGetValue(t)
+                                                              TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Generator: string option with get
+    XmlRuntime.ConvertOptional(this, "generator", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Image: XmlProvider+Image option with get
+    XmlRuntime.ConvertOptional(this, "image", new Func<_,_>(id)))
+
+    member Items: XmlProvider+Item[] with get
+    XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
+
+    member Language: string option with get
+    XmlRuntime.ConvertOptional(this, "language", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                  let value = XmlRuntime.TryGetValue(t)
+                                                                  TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member LastBuildDate: string option with get
+    XmlRuntime.ConvertOptional(this, "lastBuildDate", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                       let value = XmlRuntime.TryGetValue(t)
+                                                                       TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Link: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "link"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member PubDate: string option with get
+    XmlRuntime.ConvertOptional(this, "pubDate", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member SkipDays: string option with get
+    XmlRuntime.ConvertOptional(this, "skipDays", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                  let value = XmlRuntime.TryGetValue(t)
+                                                                  TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member SkipHours: string option with get
+    XmlRuntime.ConvertOptional(this, "skipHours", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TextInput: XmlProvider+TextInput option with get
+    XmlRuntime.ConvertOptional(this, "textInput", new Func<_,_>(id)))
+
+    member Title: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Ttl: string option with get
+    XmlRuntime.ConvertOptional(this, "ttl", new Func<_,_>(fun (t:XmlElement) -> 
+                                                             let value = XmlRuntime.TryGetValue(t)
+                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
+class XmlProvider+Category : FDR.BaseTypes.XmlElement
+    new : domain:string option -> value:string -> XmlProvider+Category
+    XmlRuntime.CreateRecord("category", 
+                            [| ("domain",
+                                (domain :> obj)) |], 
+                            [| ("",
+                                (value :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Category
+    XmlElement.Create(xElement)
+
+    member Domain: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "domain"))
+
+    member Value: string with get
+    let value = XmlRuntime.TryGetValue(this)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XmlProvider+Cloud : FDR.BaseTypes.XmlElement
+    new : () -> XmlProvider+Cloud
+    XmlRuntime.CreateRecord("cloud", 
+                            [| |], 
+                            [| |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Cloud
+    XmlElement.Create(xElement)
+
+
+class XmlProvider+Image : FDR.BaseTypes.XmlElement
+    new : url:string -> title:string -> link:string -> width:string option -> height:string option -> description:string option -> XmlProvider+Image
+    XmlRuntime.CreateRecord("image", 
+                            [| |], 
+                            [| ("url",
+                                (url :> obj))
+                               ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("width",
+                                (width :> obj))
+                               ("height",
+                                (height :> obj))
+                               ("description",
+                                (description :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Image
+    XmlElement.Create(xElement)
+
+    member Description: string option with get
+    XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                     let value = XmlRuntime.TryGetValue(t)
+                                                                     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Height: string option with get
+    XmlRuntime.ConvertOptional(this, "height", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Link: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "link"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Title: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Url: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "url"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Width: string option with get
+    XmlRuntime.ConvertOptional(this, "width", new Func<_,_>(fun (t:XmlElement) -> 
+                                                               let value = XmlRuntime.TryGetValue(t)
+                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
+class XmlProvider+Item : FDR.BaseTypes.XmlElement
+    new : title:string option -> description:string option -> link:string option -> category:XmlProvider+Category option -> comments:string option -> enclosure:XmlProvider+Enclosure option -> guid:XmlProvider+Guid option -> pubDate:string option -> source:XmlProvider+Source option -> XmlProvider+Item
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("category",
+                                (category :> obj))
+                               ("comments",
+                                (comments :> obj))
+                               ("enclosure",
+                                (enclosure :> obj))
+                               ("guid",
+                                (guid :> obj))
+                               ("pubDate",
+                                (pubDate :> obj))
+                               ("source",
+                                (source :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
+    member Category: XmlProvider+Category option with get
+    XmlRuntime.ConvertOptional(this, "category", new Func<_,_>(id)))
+
+    member Comments: string option with get
+    XmlRuntime.ConvertOptional(this, "comments", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                  let value = XmlRuntime.TryGetValue(t)
+                                                                  TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Description: string option with get
+    XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                     let value = XmlRuntime.TryGetValue(t)
+                                                                     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Enclosure: XmlProvider+Enclosure option with get
+    XmlRuntime.ConvertOptional(this, "enclosure", new Func<_,_>(id)))
+
+    member Guid: XmlProvider+Guid option with get
+    XmlRuntime.ConvertOptional(this, "guid", new Func<_,_>(id)))
+
+    member Link: string option with get
+    XmlRuntime.ConvertOptional(this, "link", new Func<_,_>(fun (t:XmlElement) -> 
+                                                              let value = XmlRuntime.TryGetValue(t)
+                                                              TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member PubDate: string option with get
+    XmlRuntime.ConvertOptional(this, "pubDate", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Source: XmlProvider+Source option with get
+    XmlRuntime.ConvertOptional(this, "source", new Func<_,_>(id)))
+
+    member Title: string option with get
+    XmlRuntime.ConvertOptional(this, "title", new Func<_,_>(fun (t:XmlElement) -> 
+                                                               let value = XmlRuntime.TryGetValue(t)
+                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
+class XmlProvider+TextInput : FDR.BaseTypes.XmlElement
+    new : title:string -> description:string -> name:string -> link:string -> XmlProvider+TextInput
+    XmlRuntime.CreateRecord("textInput", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("name",
+                                (name :> obj))
+                               ("link",
+                                (link :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+TextInput
+    XmlElement.Create(xElement)
+
+    member Description: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Link: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "link"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Title: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XmlProvider+Enclosure : FDR.BaseTypes.XmlElement
+    new : url:string -> length:string -> type:string -> value:string -> XmlProvider+Enclosure
+    XmlRuntime.CreateRecord("enclosure", 
+                            [| ("url",
+                                (url :> obj))
+                               ("length",
+                                (length :> obj))
+                               ("type",
+                                (type :> obj)) |], 
+                            [| ("",
+                                (value :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Enclosure
+    XmlElement.Create(xElement)
+
+    member Length: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "length")
+    TextRuntime.GetNonOptionalValue("Attribute length", TextRuntime.ConvertString(value), value)
+
+    member Type: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "type")
+    TextRuntime.GetNonOptionalValue("Attribute type", TextRuntime.ConvertString(value), value)
+
+    member Url: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "url")
+    TextRuntime.GetNonOptionalValue("Attribute url", TextRuntime.ConvertString(value), value)
+
+    member Value: string with get
+    let value = XmlRuntime.TryGetValue(this)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XmlProvider+Guid : FDR.BaseTypes.XmlElement
+    new : isPermaLink:bool option -> value:string -> XmlProvider+Guid
+    XmlRuntime.CreateRecord("guid", 
+                            [| ("isPermaLink",
+                                (isPermaLink :> obj)) |], 
+                            [| ("",
+                                (value :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Guid
+    XmlElement.Create(xElement)
+
+    member IsPermaLink: bool option with get
+    TextRuntime.ConvertBoolean(XmlRuntime.TryGetAttribute(this, "isPermaLink"))
+
+    member Value: string with get
+    let value = XmlRuntime.TryGetValue(this)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XmlProvider+Source : FDR.BaseTypes.XmlElement
+    new : url:string option -> value:string -> XmlProvider+Source
+    XmlRuntime.CreateRecord("source", 
+                            [| ("url",
+                                (url :> obj)) |], 
+                            [| ("",
+                                (value :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Source
+    XmlElement.Create(xElement)
+
+    member Url: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "url"))
+
+    member Value: string with get
+    let value = XmlRuntime.TryGetValue(this)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+

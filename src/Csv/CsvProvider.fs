@@ -5,8 +5,8 @@ namespace ProviderImplementation
 
 open System
 open System.IO
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data
@@ -22,7 +22,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+  let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
   let ns = "FSharp.Data"
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
 
@@ -46,86 +46,88 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let resource = args.[15] :?> string
     let ignoreLinePattern = args.[16] :?> string
     let trimColumnValue = args.[17] :?> bool
-    
+
     if sample = "" then
       if schema = "" then
         failwith "When the Sample parameter is not specified, the Schema parameter must be provided"
       if hasHeaders then
         failwith "When the Sample parameter is not specified, the HasHeaders parameter must be set to false"
 
-    let parse (extension:string) value =
-      let separators = 
-        if String.IsNullOrEmpty separators && extension.ToLowerInvariant() = ".tsv"
-        then "\t" else separators
-      let value = 
-        if value = "" then 
-          use reader = new StringReader(schema)
-          let schemaStr = CsvReader.readCsvFile reader "," '"' false |> Seq.exactlyOne |> fst
-          Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
-        else
-          value
-      CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern, trimColumnValue)
+    let getSpec (extension:string) value =
+        use sampleCsv = using (IO.logTime "Parsing" sample) <| fun _ ->
+            let separators =
+                if String.IsNullOrEmpty separators && extension.ToLowerInvariant() = ".tsv"
+                then "\t" else separators
+            let value =
+                if sample = "" then
+                    // synthetize sample from the schema
+                    use reader = new StringReader(value)
+                    let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+                    Array.zeroCreate schemaStr.Length
+                    |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
+                else
+                    value
 
-    let getSpecFromSamples samples = 
-      
-      use sampleCsv : CsvFile = Seq.exactlyOne samples
-      let separators = sampleCsv.Separators
-  
-      let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
-        sampleCsv.InferColumnTypes(inferRows, TextRuntime.GetMissingValues missingValuesStr, TextRuntime.GetCulture cultureStr, schema,
-                                   assumeMissingValues, preferOptionals, ProviderHelpers.unitsOfMeasureProvider)
+            CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, ignoreLinePattern, trimColumnValue)
 
-      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+        let separators = sampleCsv.Separators
 
-      let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
-        inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) 
+        let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
+            sampleCsv.InferColumnTypes(inferRows, TextRuntime.GetMissingValues missingValuesStr, TextRuntime.GetCulture cultureStr, schema,
+                                       assumeMissingValues, preferOptionals, ProviderHelpers.unitsOfMeasureProvider)
 
-      let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
-      let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
-      
-      let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
-      let headers = 
-        match sampleCsv.Headers with 
-        | None -> <@@ None: string[] option @@> 
-        | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
+        using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let ctor = 
-          ProvidedConstructor(
-              [ ProvidedParameter("rows", paramType) ], 
+        let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray =
+            inferredFields
+            |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr)
+
+        let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
+        let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
+
+        let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
+        let headers =
+            match sampleCsv.Headers with
+            | None -> <@@ None: string[] option @@>
+            | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
+
+        let ctor =
+            ProvidedConstructor(
+              [ ProvidedParameter("rows", paramType) ],
               invokeCode = (fun (Singleton paramValue) ->
                 let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
                 Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
-      csvType.AddMember(ctor) 
+        csvType.AddMember(ctor)
 
-      let parseRows = 
-          ProvidedMethod("ParseRows", 
-              [ProvidedParameter("text", typeof<string>)], 
-              rowType.MakeArrayType(), 
-              isStatic = true,
-              invokeCode = fun (Singleton text) ->         
-                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors, ignoreLinePattern, trimColumnValue)
-                Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
-      csvType.AddMember parseRows
+        let parseRows =
+              ProvidedMethod("ParseRows",
+                  [ProvidedParameter("text", typeof<string>)],
+                  rowType.MakeArrayType(),
+                  isStatic = true,
+                  invokeCode = fun (Singleton text) ->
+                    let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors, ignoreLinePattern, trimColumnValue)
+                    Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
+        csvType.AddMember parseRows
 
-      { GeneratedType = csvType
-        RepresentationType = csvType
-        CreateFromTextReader = fun reader ->
-          let body = 
-            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, 
-                                     separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows, ignoreLinePattern, trimColumnValue)
-          Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
-        CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
+        { GeneratedType = csvType
+          RepresentationType = csvType
+          CreateFromTextReader = fun reader ->
+              let body =
+                csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader,
+                                         separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows, ignoreLinePattern, trimColumnValue)
+              Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
+          CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
     let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
 
-    generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
+    // On the CsvProvider the schema might be partial and we will still infer from the sample
+    // So we handle it in a custom way
+    generateType "CSV" (if sample <> "" then Sample sample else Schema schema) getSpec this cfg  encodingStr resolutionFolder resource typeName maxNumberOfRows
 
-  // Add static parameter that specifies the API we want to get (compile-time) 
-  let parameters = 
-    [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
-      ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
+  // Add static parameter that specifies the API we want to get (compile-time)
+  let parameters =
+    [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
       ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
@@ -137,13 +139,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("IgnoreLinePattern", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("TrimColumnValue", typeof<bool>, parameterDefaultValue = false)]
 
-  let helpText = 
+  let helpText =
     """<summary>Typed representation of a CSV file.</summary>
        <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document.</param>
        <param name='Separators'>Column delimiter(s). Defaults to `,`.</param>
@@ -161,7 +163,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
        <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>
-       <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource 
+       <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource
           (e.g. 'MyCompany.MyAssembly, resource_name.csv'). This is useful when exposing types generated by the type provider.</param>
        <param name='IgnoreLinePattern'>A regular expression for lines to ignore.</param>
        <param name='TrimColumnValue'>Whether the values in a column should be trimmed.</param>"""

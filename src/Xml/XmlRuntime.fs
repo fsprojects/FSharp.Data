@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // XML type provider - methods & types used by the generated erased code
 // --------------------------------------------------------------------------------------
 namespace FSharp.Data
@@ -67,12 +67,15 @@ type XmlElement =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  member x._Print = x.XElement.ToString()
+  member x._Print =
+    let str = x.ToString()
+    if str.Length > 512 then str.Substring(0, 509) + "..."
+    else str
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  override x.ToString() = x._Print
+  override x.ToString() = x.XElement.ToString()
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -86,7 +89,7 @@ type XmlElement =
   static member Create(reader:TextReader) =    
     use reader = reader
     let text = reader.ReadToEnd()
-    let element = XDocument.Parse(text).Root 
+    let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
   
   /// [omit]
@@ -96,11 +99,11 @@ type XmlElement =
     use reader = reader
     let text = reader.ReadToEnd()
     try
-      XDocument.Parse(text).Root.Elements()
+      XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ when text.TrimStart().StartsWith "<" ->
-      XDocument.Parse("<root>" + text + "</root>").Root.Elements()
+      XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
 
@@ -171,17 +174,17 @@ type XmlRuntime =
     else None
 
   /// Returns the contents of the element as a JsonValue
-  static member GetJsonValue(xml, cultureStr) = 
+  static member GetJsonValue(xml) = 
     match XmlRuntime.TryGetValue(xml) with
-    | Some jsonStr -> JsonDocument.Create(new StringReader(jsonStr), cultureStr)
+    | Some jsonStr -> JsonDocument.Create(new StringReader(jsonStr))
     | None -> failwithf "XML mismatch: Element doesn't contain value: %A" xml
 
   /// Tries to return the contents of the element as a JsonValue
-  static member TryGetJsonValue(xml, cultureStr) = 
+  static member TryGetJsonValue(xml) = 
     match XmlRuntime.TryGetValue(xml) with
     | Some jsonStr -> 
         try
-            JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
+            JsonDocument.Create(new StringReader(jsonStr)) |> Some
         with _ -> None
     | None -> None
 
@@ -207,30 +210,37 @@ type XmlRuntime =
                 box xElement
             | _ ->
                 match v with
-                | :? string        as v -> v
-                | :? DateTime      as v -> v.ToString("O", cultureInfo)
-                | :? int           as v -> strWithCulture v
-                | :? int64         as v -> strWithCulture v
-                | :? float         as v -> strWithCulture v
-                | :? decimal       as v -> strWithCulture v
-                | :? bool          as v -> if v then "true" else "false"
-                | :? Guid          as v -> v.ToString()
-                | :? IJsonDocument as v -> v.JsonValue.ToString()
+                | :? string         as v -> v
+                | :? DateTime       as v ->
+                    if v.TimeOfDay = TimeSpan.Zero
+                    then v.ToString("yyyy-MM-dd")
+                    else v.ToString("O", cultureInfo)
+                | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
+                | :? TimeSpan       as v -> v.ToString("g", cultureInfo)
+                | :? int            as v -> strWithCulture v
+                | :? int64          as v -> strWithCulture v
+                | :? float          as v -> strWithCulture v
+                | :? decimal        as v -> strWithCulture v
+                | :? bool           as v -> if v then "true" else "false"
+                | :? Guid           as v -> v.ToString()
+                | :? IJsonDocument  as v -> v.JsonValue.ToString()
                 | _ -> failwithf "Unexpected value: %A" v
                 |> box
         let inline optionToArray f = function Some x -> [| f x |] | None -> [| |]
         match v with
         | :? Array as v -> [| for elem in v -> serialize elem |]
-        | :? option<XmlElement>    as v -> optionToArray serialize v
-        | :? option<string>        as v -> optionToArray serialize v
-        | :? option<DateTime>      as v -> optionToArray serialize v
-        | :? option<int>           as v -> optionToArray serialize v
-        | :? option<int64>         as v -> optionToArray serialize v
-        | :? option<float>         as v -> optionToArray serialize v
-        | :? option<decimal>       as v -> optionToArray serialize v
-        | :? option<bool>          as v -> optionToArray serialize v
-        | :? option<Guid>          as v -> optionToArray serialize v
-        | :? option<IJsonDocument> as v -> optionToArray serialize v
+        | :? option<XmlElement>     as v -> optionToArray serialize v
+        | :? option<string>         as v -> optionToArray serialize v
+        | :? option<DateTime>       as v -> optionToArray serialize v
+        | :? option<DateTimeOffset> as v -> optionToArray serialize v
+        | :? option<TimeSpan>       as v -> optionToArray serialize v
+        | :? option<int>            as v -> optionToArray serialize v
+        | :? option<int64>          as v -> optionToArray serialize v
+        | :? option<float>          as v -> optionToArray serialize v
+        | :? option<decimal>        as v -> optionToArray serialize v
+        | :? option<bool>           as v -> optionToArray serialize v
+        | :? option<Guid>           as v -> optionToArray serialize v
+        | :? option<IJsonDocument>  as v -> optionToArray serialize v
         | v -> [| box (serialize v) |]
     let createElement (parent:XElement) (nameWithNS:string) =
         let namesWithNS = nameWithNS.Split '|'
@@ -294,3 +304,72 @@ type XmlRuntime =
                     child.Value <- v
                 | _ -> failwithf "Unexpected content for child %s: %A" nameWithNS value
     XmlElement.Create element
+
+module XmlSchema =
+    open System.Xml
+    open System.Xml.Schema
+    /// A custom XmlResolver is needed for included files because we get the contents of the main file
+    /// directly as a string from the FSharp.Data infrastructure. Hence the default XmlResolver is not
+    /// able to find the location of included schema files.
+    type ResolutionFolderResolver(resolutionFolder: string) =
+        inherit XmlUrlResolver()
+
+        let cache = Caching.createInternetFileCache "XmlSchema" (System.TimeSpan.FromMinutes 30.0)
+
+        let uri = // Uri must end with separator (maybe there's a better way)
+            if resolutionFolder = "" then ""
+            elif resolutionFolder.EndsWith "/" || resolutionFolder.EndsWith "\\"
+            then resolutionFolder
+            else resolutionFolder + "/"
+
+        let useResolutionFolder (baseUri: System.Uri) =
+            resolutionFolder <> "" && (baseUri = null || baseUri.OriginalString = "")
+
+        let getEncoding xmlText = // peek encoding definition
+            let settings = XmlReaderSettings(ConformanceLevel = ConformanceLevel.Fragment)
+            use reader = XmlReader.Create(new System.IO.StringReader(xmlText), settings)
+            if reader.Read() && reader.NodeType = XmlNodeType.XmlDeclaration
+            then
+                match reader.GetAttribute "encoding" with
+                | null -> System.Text.Encoding.UTF8
+                | attr -> System.Text.Encoding.GetEncoding attr
+            else System.Text.Encoding.UTF8
+
+        override _this.ResolveUri(baseUri, relativeUri) =
+            let u = System.Uri(relativeUri, System.UriKind.RelativeOrAbsolute)
+            if u.IsAbsoluteUri && (not <| u.IsFile)
+            then base.ResolveUri(baseUri, relativeUri)
+            elif useResolutionFolder baseUri
+            then base.ResolveUri(System.Uri uri, relativeUri)
+            else base.ResolveUri(baseUri, relativeUri)
+
+
+        override _this.GetEntity(absoluteUri, role, ofObjectToReturn) =
+            if IO.isWeb absoluteUri
+            then
+                let uri = absoluteUri.OriginalString
+                match cache.TryRetrieve(uri) with
+                | Some value -> value
+                | None ->
+                    let value = FSharp.Data.Http.RequestString uri
+                    cache.Set(uri, value)
+                    value
+                |> fun value ->
+                    // the best solution would be to have the cache store the raw bytes
+                    // instead of going back and forth from bytes to text
+                    let bytes = getEncoding(value).GetBytes value
+                    new System.IO.MemoryStream(bytes) :> obj
+            else base.GetEntity(absoluteUri, role, ofObjectToReturn)
+
+
+    let parseSchemaFromTextReader resolutionFolder (textReader:TextReader) =
+        let schemaSet = XmlSchemaSet(XmlResolver = ResolutionFolderResolver resolutionFolder)
+        let readerSettings = XmlReaderSettings(CloseInput = true, DtdProcessing = DtdProcessing.Ignore)
+        use reader = XmlReader.Create(textReader, readerSettings)
+        schemaSet.Add(null, reader) |> ignore
+        schemaSet.Compile()
+        schemaSet
+
+    let parseSchema resolutionFolder xsdText =
+        new System.IO.StringReader(xsdText)
+        |> parseSchemaFromTextReader resolutionFolder

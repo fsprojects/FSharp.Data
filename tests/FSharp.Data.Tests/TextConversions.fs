@@ -1,9 +1,9 @@
 ﻿module FSharp.Data.Tests.Conversions
 
 #if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #endif
 
 open NUnit.Framework
@@ -41,3 +41,19 @@ let ``DateTime conversions`` () =
   case "2016-11-21T10:29:05Z"      <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc)
   case "2016-11-21T10:29:05"       <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Local)
   case "2016-11-21T13:29:05+03:00" <| System.DateTime(2016,11,21,10,29,05, System.DateTimeKind.Utc).ToLocalTime()
+
+[<Test>]
+let ``DateTimeOffset conversions`` () =
+  let shouldBe expected actual =
+    TextConversions.AsDateTimeOffset CultureInfo.InvariantCulture actual
+    |> should equal (Some expected)
+
+  let shouldFail sample =
+    TextConversions.AsDateTimeOffset CultureInfo.InvariantCulture sample
+    |> should equal None
+  
+  "2018-04-25+10:00"            |> shouldBe (System.DateTimeOffset(2018, 4, 25, 0, 0, 0, System.TimeSpan.FromHours(10.)))
+  "2018-04-25 23:04:00-06:30"   |> shouldBe (System.DateTimeOffset(2018, 4, 25, 23, 4, 0, System.TimeSpan.FromHours(-6.5)))
+  "2018-04-25T00:00:00Z"        |> shouldBe (System.DateTimeOffset(2018, 4, 25, 0, 0, 0, System.TimeSpan.FromHours(0.)))
+  "garbage"                     |> shouldFail
+

@@ -7,8 +7,8 @@ namespace ProviderImplementation
 open System
 open System.Net
 open System.Xml.Linq
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Runtime.Caching
@@ -20,12 +20,12 @@ open FSharp.Data.Runtime.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
-    let asm, _version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
     let cacheDuration = TimeSpan.FromDays 30.0
-    let restCache, _ = createInternetFileCache "WorldBankSchema" cacheDuration
+    let restCache = createInternetFileCache "WorldBankSchema" cacheDuration
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
 

@@ -13,46 +13,44 @@
     <summary>@summary@</summary>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2018</copyright>
     <tags>@tags@</tags>
     <dependencies>
-      <group>
+      <group targetFramework="net45">
         <dependency id="FSharp.Core" version="4.0.0.1"/>
       </group>
-      <group targetFramework="portable-net45+netcore45">
-        <dependency id="Zlib.Portable" version="1.11.0" />
+      <group targetFramework="netstandard2.0">
+        <dependency id="FSharp.Core" version="4.3.4" />
       </group>
-      <group targetFramework="portable-net45+netcore45+wpa81+wp8">
-        <dependency id="Zlib.Portable" version="1.11.0" />
-      </group>
-      <group targetFramework="net40" />
     </dependencies>
     <references>
       <reference file="FSharp.Data.dll" />
     </references>
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework="net40" />
+      <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework="net45" />
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="..\bin\FSharp.Data.dll" target="lib/net45" />
-    <file src="..\bin\FSharp.Data.pdb" target="lib/net45" />
-    <file src="..\bin\FSharp.Data.xml" target="lib/net45" />
-    <file src="..\bin\FSharp.Data.DesignTime.dll" target="lib/net45" />
-    <file src="..\bin\FSharp.Data.DesignTime.pdb" target="lib/net45" />
-    <file src="..\bin\FSharp.Data.DesignTime.xml" target="lib/net45" />
-    <file src="..\bin\portable7\FSharp.Data.dll" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable7\FSharp.Data.pdb" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable7\FSharp.Data.xml" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable7\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45" />
-    <file src="..\bin\portable259\FSharp.Data.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.DesignTime.dll" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.DesignTime.pdb" target="lib/portable-net45+netcore45+wpa81+wp8" />
-    <file src="..\bin\portable259\FSharp.Data.DesignTime.xml" target="lib/portable-net45+netcore45+wpa81+wp8" />
+    <!-- Place the TPRTCs in the usual locations --> 
+    <file src="..\bin\lib\net45\FSharp.Data.dll" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.pdb" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.xml" target="lib/net45" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.pdb" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.xml" target="lib/netstandard2.0" />
+
+    <!-- Place the TPDTC in the legacy location alongside FSharp.Data --> 
+    <file src="..\bin\lib\net45\FSharp.Data.DesignTime.dll" target="lib/net45" />
+    <file src="..\bin\lib\net45\FSharp.Data.DesignTime.pdb" target="lib/net45" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.DesignTime.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.DesignTime.pdb" target="lib/netstandard2.0" />
+
+    <!-- Place the TPDTC in the future-proof location --> 
+    <file src="..\bin\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/net45" />
+    <file src="..\bin\typeproviders\fsharp41\net45\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/net45" />
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/netstandard2.0" />
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/netstandard2.0" />
+
     <file src="linqpad-samples\*.*" target="linqpad-samples" />
   </files>
 </package>

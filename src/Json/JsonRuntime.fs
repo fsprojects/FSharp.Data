@@ -53,21 +53,19 @@ type JsonDocument =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create(reader:TextReader, cultureStr) = 
+  static member Create(reader:TextReader) = 
     use reader = reader
     let text = reader.ReadToEnd()
-    let cultureInfo = TextRuntime.GetCulture cultureStr
-    let value = JsonValue.Parse(text, cultureInfo)
+    let value = JsonValue.Parse(text)
     JsonDocument.Create(value, "")
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member CreateList(reader:TextReader, cultureStr) = 
+  static member CreateList(reader:TextReader) = 
     use reader = reader
     let text = reader.ReadToEnd()
-    let cultureInfo = TextRuntime.GetCulture cultureStr    
-    match JsonValue.ParseMultiple(text, cultureInfo) |> Seq.toArray with
+    match JsonValue.ParseMultiple(text) |> Seq.toArray with
     | [| JsonValue.Array array |] -> array
     | array -> array
     |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
@@ -115,8 +113,14 @@ type JsonRuntime =
   static member ConvertBoolean(json) = 
     json |> Option.bind JsonConversions.AsBoolean
 
+  static member ConvertDateTimeOffset(cultureStr, json) = 
+    json |> Option.bind (JsonConversions.AsDateTimeOffset (TextRuntime.GetCulture cultureStr))
+  
   static member ConvertDateTime(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
+
+  static member ConvertTimeSpan(cultureStr, json) = 
+    json |> Option.bind (JsonConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr))
 
   static member ConvertGuid(json) = 
     json |> Option.bind JsonConversions.AsGuid
@@ -127,7 +131,7 @@ type JsonRuntime =
   static member GetNonOptionalValue<'T>(path:string, opt:option<'T>, originalValue) : 'T = 
     let getTypeName() = 
         let name = typeof<'T>.Name
-        if name.StartsWith "int" 
+        if name.StartsWith("i", StringComparison.OrdinalIgnoreCase)
         then "an " + name
         else "a " + name
     match opt, originalValue with 
@@ -194,7 +198,11 @@ type JsonRuntime =
         JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.DateTime -> 
-        JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)
+        let cultureInfo = TextRuntime.GetCulture cultureStr
+        fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome ||
+                    (JsonConversions.AsDateTime cultureInfo json).IsSome
+    | InferedTypeTag.TimeSpan -> 
+        JsonConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.Guid -> 
         JsonConversions.AsGuid >> Option.isSome
@@ -246,6 +254,8 @@ type JsonRuntime =
 
     | :? string                  as v -> JsonValue.String v
     | :? DateTime                as v -> v.ToString("O", cultureInfo) |> JsonValue.String
+    | :? DateTimeOffset          as v -> v.ToString("O", cultureInfo) |> JsonValue.String
+    | :? TimeSpan                as v -> v.ToString("g", cultureInfo) |> JsonValue.String
     | :? int                     as v -> JsonValue.Number(decimal v)
     | :? int64                   as v -> JsonValue.Number(decimal v)
     | :? float                   as v -> JsonValue.Number(decimal v)
@@ -257,6 +267,8 @@ type JsonRuntime =
 
     | :? option<string>          as v -> optionToJson JsonValue.String v
     | :? option<DateTime>        as v -> optionToJson (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<DateTimeOffset>  as v -> optionToJson (fun (dt:DateTimeOffset) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<TimeSpan>        as v -> optionToJson (fun (ts:TimeSpan) -> ts.ToString("g", cultureInfo) |> JsonValue.String) v
     | :? option<int>             as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<int64>           as v -> optionToJson (decimal >> JsonValue.Number) v
     | :? option<float>           as v -> optionToJson (decimal >> JsonValue.Number) v

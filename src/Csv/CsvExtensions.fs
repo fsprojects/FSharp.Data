@@ -56,6 +56,20 @@ type StringExtensions =
     | _ -> failwithf "Not a datetime: %s" x
 
   [<Extension>]
+  static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match TextConversions.AsDateTimeOffset cultureInfo x with
+    | Some d -> d
+    | _ -> failwithf "Not a datetime offset: %s" <| x
+
+  [<Extension>]
+  static member AsTimeSpan(x:String, [<Optional>] ?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsTimeSpan cultureInfo x with 
+    | Some t -> t
+    | _ -> failwithf "Not a time span: %s" x
+
+  [<Extension>]
   static member AsGuid(x:String) =
     match x |> TextConversions.AsGuid with
     | Some g -> g

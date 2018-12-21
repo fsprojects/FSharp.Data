@@ -1,10 +1,10 @@
-﻿#if INTERACTIVE
 #load "SetupTesting.fsx"
-SetupTesting.generateSetupScript __SOURCE_DIRECTORY__ "FSharp.Data.DesignTime"
-#load "__setup__FSharp.Data.DesignTime__.fsx"
-#else
-module internal Test
-#endif
+let dir = __SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime"
+let proj = "FSharp.Data.DesignTime"
+SetupTesting.generateSetupScript (__SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime") "FSharp.Data.DesignTime"
+#load "FSharp.Data.DesignTime/__setup__FSharp.Data.DesignTime__.fsx"
+#load "../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypesTesting.fs"
+#load "../tests/FSharp.Data.DesignTime.Tests/TypeProviderInstantiation.fs"
 
 open System
 open System.Globalization
@@ -22,17 +22,16 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
     let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
     let runtimeAssembly =
         match platform with
-        | Net45 -> root ++ assemblyName
-        | Portable7 -> root ++ "portable7" ++ assemblyName
-        | Portable259 -> root ++ "portable259" ++ assemblyName
+        | Net45 -> root ++ "net45" ++ assemblyName
+        | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
     let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
 let dumpAll inst =
     dump false false Net45 false inst
-//    dump false false Portable7 false inst
-//    dump false false Portable259 false inst
+//    dump false false NetStandard16 false inst
+//    dump false false NetStandard20 false inst
 
 let parameters : HtmlInference.Parameters = 
     { MissingValues = TextConversions.DefaultMissingValues
@@ -71,14 +70,15 @@ Json { Sample = "optionals.json"
        InferTypesFromValues = true }
 |> dumpAll
 
-Xml { Sample = "JsonInXml.xml"
+Xml { Sample = "JsonInXml.xml"      
       SampleIsList = true
       Global = false
       Culture = ""
       Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = ""
-      InferTypesFromValues = true }
+      InferTypesFromValues = true
+      Schema = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"

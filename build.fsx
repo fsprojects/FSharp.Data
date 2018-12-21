@@ -1,21 +1,20 @@
 // --------------------------------------------------------------------------------------
-// FAKE build script 
+// FAKE build script
 // --------------------------------------------------------------------------------------
 
 #I "packages/FAKE/tools/"
 #r "FakeLib.dll"
 
-#if MONO
-#else
-#load "packages/SourceLink.Fake/tools/SourceLink.fsx"
-#endif
-
 open System
 open System.IO
-open Fake 
-open Fake.AssemblyInfoFile
-open Fake.Git
-open Fake.Testing.NUnit3
+open Fake.Core
+open Fake.DotNet
+open Fake.DotNet.NuGet
+open Fake.DotNet.Testing
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+open Fake.Tools.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
@@ -37,124 +36,167 @@ let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP lin
 let gitOwner = "fsharp"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
-let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
+
+let desiredSdkVersion = (DotNet.getSDKVersionFromGlobalJson ())
+let mutable sdkPath = None
+let getSdkPath() = (defaultArg sdkPath "dotnet")
+let installed =
+  try
+    DotNet.getVersion id <> null
+  with _ -> false
+
+printfn "Desired .NET SDK version = %s" desiredSdkVersion
+printfn "DotNetCli.isInstalled() = %b" installed
+let useMsBuildToolchain = Environment.environVar "USE_MSBUILD" <> null
+
+let installDesiredVersion () =
+  DotNet.install (fun v -> { v with Version = DotNet.Version desiredSdkVersion }) (DotNet.Options.Create ())
+  |> fun o -> o.DotNetCliPath
+
+if installed then
+    let installedSdkVersion = DotNet.getVersion id
+    printfn "The installed default .NET SDK version reported by FAKE's 'DotNetCli.getVersion()' is %s" installedSdkVersion
+    if installedSdkVersion <> desiredSdkVersion then
+        match Environment.environVar "CI" with
+        | null ->
+            if installedSdkVersion > desiredSdkVersion then
+                printfn "*** You have .NET SDK version '%s' installed, assuming it is compatible with version '%s'" installedSdkVersion desiredSdkVersion
+            else
+                printfn "*** You have .NET SDK version '%s' installed, we expect at least version '%s'" installedSdkVersion desiredSdkVersion
+        | _ ->
+            printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
+            sdkPath <- Some (installDesiredVersion ())
+else
+    printfn "*** The .NET SDK version '%s' will be installed (no other version was found by FAKE helpers)" desiredSdkVersion
+    sdkPath <- Some (installDesiredVersion ())
 
 // Read release notes & version info from RELEASE_NOTES.md
-let release = 
-    File.ReadLines "RELEASE_NOTES.md" 
-    |> ReleaseNotesHelper.parseReleaseNotes
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
-let isAppVeyorBuild = environVar "APPVEYOR" <> null
-let nugetVersion = 
+let bindir = "./bin"
+
+let isAppVeyorBuild = Environment.environVar "APPVEYOR" <> null
+let nugetVersion =
     if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
     else release.NugetVersion
 
-Target "AppVeyorBuildVersion" (fun _ ->
+Target.create "AppVeyorBuildVersion" (fun _ ->
     Shell.Exec("appveyor", sprintf "UpdateBuild -Version \"%s\"" nugetVersion) |> ignore
 )
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
 
-Target "AssemblyInfo" <| fun () ->
+Target.create "AssemblyInfo" <| fun _ ->
     for file in !! "src/AssemblyInfo*.fs" do
         let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
-        let title = 
+        let title =
             Path.GetFileNameWithoutExtension file
-            |> replace ".Portable259" ""
-            |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
-        let versionSuffix =
-            if file.Contains ".Portable259" then ".259"
-            elif file.Contains ".Portable7" then ".7"
-            else ".0"
+        let versionSuffix =".0"
         let version = release.AssemblyVersion + versionSuffix
-        CreateFSharpAssemblyInfo file
-           [ Attribute.Title title
-             Attribute.Product project
-             Attribute.Description summary
-             Attribute.Version version
-             Attribute.FileVersion version]
+        AssemblyInfoFile.createFSharp file
+           [ AssemblyInfo.Title title
+             AssemblyInfo.Product project
+             AssemblyInfo.Description summary
+             AssemblyInfo.Version version
+             AssemblyInfo.FileVersion version]
 
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" <| fun () ->
-    CleanDirs ["bin"]
+Target.create "Clean" <| fun _ ->
+    // have to clean netcore output directories because they corrupt the full-framework outputs
+    seq {
+        yield bindir
+        yield! !!"**/bin"
+        yield! !!"**/obj"
+    } |> Shell.cleanDirs
 
-Target "CleanDocs" <| fun () ->
-    CleanDirs ["docs/output"]
+Target.create "CleanDocs" <| fun _ ->
+    Shell.cleanDirs ["docs/output"]
 
 let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
-Target "CleanInternetCaches" <| fun () ->
-    CleanDirs [internetCacheFolder @@ "DesignTimeURIs"
-               internetCacheFolder @@ "WorldBankSchema"
-               internetCacheFolder @@ "WorldBankRuntime"]
+Target.create "CleanInternetCaches" <| fun _ ->
+    Shell.cleanDirs [ internetCacheFolder @@ "DesignTimeURIs"
+                      internetCacheFolder @@ "WorldBankSchema"
+                      internetCacheFolder @@ "WorldBankRuntime"]
 
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
-Target "Build" <| fun () ->
-    !! "FSharp.Data.sln"
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+let testNames =
+    [ "FSharp.Data.DesignTime.Tests"
+      "FSharp.Data.Tests.CSharp"
+      "FSharp.Data.Tests"  ]
+let testProjs =
+    [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj"
+      "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj"
+      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
 
-Target "BuildTests" <| fun () ->
-    !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" (if isLocalBuild then [] else ["DefineConstants","BUILD_SERVER"]) "Rebuild"
-    |> ignore
+let buildProjs =
+    [ "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+      "src/FSharp.Data/FSharp.Data.fsproj" ]
 
-// --------------------------------------------------------------------------------------
-// Run the unit tests using test runner
-Target "RunTests" <| ignore
+let setSdkPathAndVerbose (c: DotNet.Options) =
+  { c with
+      DotNetCliPath = getSdkPath ()
+      CustomParams = Some "/v:n" }
 
-let runTestTask name =
-    let taskName = sprintf "RunTest_%s" name
-    Target taskName <| fun () ->
-        !! (sprintf "tests/*/bin/Release/%s.dll" name)
-        |> NUnit3 (fun p ->
-            { p with
-                TimeOut = TimeSpan.FromMinutes 20. 
-                TraceLevel = NUnit3TraceLevel.Info})
-    taskName ==> "RunTests" |> ignore
+let logResults label lines =
+  lines
+  |> String.concat "\n\t"
+  |> Trace.tracefn "%s:\n\t%s" label
 
-["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
-|> List.iter runTestTask
+Target.create "Build" <| fun _ ->
+ if useMsBuildToolchain then
+    buildProjs |> Seq.iter (fun proj ->
+        DotNet.restore ( fun o -> { o with Common = setSdkPathAndVerbose o.Common }) proj)
 
-// --------------------------------------------------------------------------------------
-// Source link the pdb files
+    buildProjs |> Seq.iter (fun proj ->
+        let projName = System.IO.Path.GetFileNameWithoutExtension proj
+        MSBuild.runRelease (fun opts -> { opts with Properties = ["SourceLinkCreate", "true"] }) null "Build" [projName]
+        |> logResults (sprintf "%s-Output:" projName))
+ else
+    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
+    buildProjs |> Seq.iter (fun proj ->
+      DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
+                                                                        CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
+                                            Configuration = DotNet.BuildConfiguration.Release }) proj
+    )
 
-#if MONO
+Target.create "BuildTests" <| fun _ ->
+  for testProj in testProjs do
+    if useMsBuildToolchain then
+        DotNet.restore ( fun o -> { o with Common = setSdkPathAndVerbose o.Common }) testProj
+        MSBuild.runRelease id null "Build" [testProj]
+        |> logResults "BuildTests.DesignTime-Output"
+    else
+        DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
+                                        Configuration = DotNet.BuildConfiguration.Release }) testProj
 
-Target "SourceLink" <| id
-
-#else
-
-open SourceLink
-
-Target "SourceLink" <| fun () ->
-    for file in !! "src/*.fsproj" do
-        let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
-        let files = SetBaseDir __SOURCE_DIRECTORY__ proj.Compiles -- "**/paket-files/**"
-        let url = sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName
-        SourceLink.Index files proj.OutputFilePdb __SOURCE_DIRECTORY__ url
-    CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
-    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
-
-#endif
+Target.create "RunTests" <| fun _ ->
+ if useMsBuildToolchain then
+       for testName in testNames do
+           !! (sprintf "tests/*/bin/Release/net461/%s.dll" testName)
+           |> NUnit3.run (fun p ->
+               { p with
+                   TimeOut = TimeSpan.FromMinutes 20.
+                   TraceLevel = NUnit3.NUnit3TraceLevel.Info })
+ else
+    for testProj in testProjs do
+        DotNet.test (fun p -> { p with Configuration = DotNet.BuildConfiguration.Release
+                                       Common = setSdkPathAndVerbose p.Common }) testProj
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" <| fun () ->
+Target.create "NuGet" <| fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
-    NuGet (fun p -> 
-        { p with   
+    NuGet.NuGetPack (fun p ->
+        { p with
             Authors = authors
             Project = project
             Summary = summary
@@ -163,28 +205,26 @@ Target "NuGet" <| fun () ->
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
-            AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
+            AccessKey = Environment.environVarOrDefault "nugetkey" ""
+            Publish = Environment.hasEnvironVar "nugetkey"
             Dependencies = [] })
         "nuget/FSharp.Data.nuspec"
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
-
-Target "GenerateDocs" <| fun () ->
-    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
+Target.create "GenerateDocs" <| fun _ ->
+    Fake.FSIHelper.executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
-
 let publishFiles what branch fromFolder toFolder =
     let tempFolder = "temp/" + branch
-    CleanDir tempFolder
+    Shell.cleanDir tempFolder
     Repository.cloneSingleBranch "" (gitHome + "/" + gitName + ".git") branch tempFolder
-    fullclean tempFolder
-    CopyRecursive fromFolder (tempFolder + "/" + toFolder) true |> tracefn "%A"
-    StageAll tempFolder
-    Commit tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
+    Repository.fullclean tempFolder
+    Shell.copyRecursive fromFolder (tempFolder + "/" + toFolder) true |> Trace.tracefn "%A"
+    Staging.stageAll tempFolder
+    Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
 
 #load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
@@ -193,13 +233,13 @@ open Octokit
 let createRelease() =
 
     // Set release date in release notes
-    let releaseNotes = File.ReadAllText "RELEASE_NOTES.md" 
+    let releaseNotes = File.ReadAllText "RELEASE_NOTES.md"
     let releaseNotes = releaseNotes.Replace("#### " + release.NugetVersion + " - Unreleased", "#### " + release.NugetVersion + " - " + DateTime.Now.ToString("MMMM d yyyy"))
     File.WriteAllText("RELEASE_NOTES.md", releaseNotes)
 
     // Commit assembly info and RELEASE_NOTES.md
-    StageAll ""
-    Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
+    Staging.stageAll ""
+    Commit.exec "" (sprintf "Bump version to %s" release.NugetVersion)
     Branches.pushBranch "" "upstream" "master"
 
     // Create tag
@@ -207,48 +247,51 @@ let createRelease() =
     Branches.pushTag "" "upstream" release.NugetVersion
 
     // Create github release
-    let user = getBuildParamOrDefault "github-user" ""
-    let pw = getBuildParamOrDefault "github-pw" ""
-
-    let user = 
-        if user = "" then 
-            printf "username: "
-            Console.ReadLine()
-        else 
-            user
-    let pw = 
-        if pw = "" then 
-            printf "password: "
-            Console.ReadLine()
-        else 
-            pw
+    let token =
+        match Environment.environVarOrDefault "github_token" "" with
+        | s when not (System.String.IsNullOrWhiteSpace s) -> s
+        | _ -> failwith "please set the github_token environment variable to a github personal access token with repro access."
 
     let draft =
-        createClient user pw
-        |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
-   
+        createClientWithToken token
+        |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes
+
     draft
     |> releaseDraft
     |> Async.RunSynchronously
 
-Target "ReleaseDocs" <| fun () ->
-    publishFiles "generated documentation" "gh-pages" "docs/output" "" 
+Target.create "ReleaseDocs" <| fun _ ->
+    publishFiles "generated documentation" "gh-pages" "docs/output" ""
 
-Target "ReleaseBinaries" <| fun () ->
-    createRelease() 
-    publishFiles "binaries" "release" "bin" "bin" 
+Target.create "ReleaseBinaries" <| fun _ ->
+    createRelease()
+    publishFiles "binaries" "release" "bin" "bin"
 
-Target "Release" DoNothing
+Target.create "TestSourcelink" <| fun _ ->
+    let testSourcelink framework proj =
+        let basePath = Path.GetFileNameWithoutExtension proj
+        let pdb = sprintf "bin/Release/%s/%s.pdb" framework basePath
+        DotNet.exec (setSdkPathAndVerbose >> DotNet.Options.withWorkingDirectory(Path.GetDirectoryName proj)) "sourcelink" (sprintf "test %s" pdb)
+        |> ignore
+
+    ["net45"; "netstandard2.0"]
+    |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
+    |> Seq.iter id
+
+Target.create "Release" ignore
+
+open Fake.Core.TargetOperators
 
 "CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
 "NuGet" ==> "Release"
+"TestSourcelink" ==> "Release"
 
 // --------------------------------------------------------------------------------------
 // Help
 
-Target "Help" <| fun () ->
+Target.create "Help" <| fun _ ->
     printfn ""
     printfn "  Please specify the target by calling 'build <Target>'"
     printfn ""
@@ -256,33 +299,26 @@ Target "Help" <| fun () ->
     printfn "  * Build"
     printfn "  * BuildTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 5)"
+    printfn "  * All (calls previous 3)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
     printfn "  * ReleaseDocs (calls previous)"
     printfn "  * ReleaseBinaries"
     printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * Release (calls previous 4)"
+    printfn "  * TestSourceLink (validates the SourceLink embedded data)"
+    printfn "  * Release (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
-#if MONO
-#else
-    printfn "  * SourceLink (requires autocrlf=input)"
-#endif
     printfn ""
+    printfn "  Set USE_MSBUILD=1 in environment to use MSBuild toolchain and .NET Framework/Mono compiler."
 
-Target "All" DoNothing
+Target.create "All" ignore
 
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
-"BuildTests" ==> "All"
-"RunTests" ==> "All"
+"Build" ==> "BuildTests" ==> "All"
+"BuildTests" ==> "RunTests" ==> "All"
 
-Target "BuildAndRunTests" DoNothing
-
-"BuildTests" ==> "BuildAndRunTests"
-"RunTests" ==> "BuildAndRunTests"
-
-RunTargetOrDefault "Help"
+Target.runOrDefaultWithArguments "Help"

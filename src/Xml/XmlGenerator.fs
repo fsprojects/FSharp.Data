@@ -5,16 +5,12 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
-open System.IO
-open System.Reflection
 open System.Xml.Linq
-open Microsoft.FSharp.Quotations
-open FSharp.Data
+open FSharp.Quotations
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
-open ProviderImplementation.JsonInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
@@ -29,7 +25,7 @@ type internal XmlGenerationContext =
       // to nameclash type names
       UniqueNiceName : string -> string 
       UnifyGlobally : bool
-      XmlTypeCache : Dictionary<string, XmlGenerationResult>
+      XmlTypeCache : Dictionary<InferedType, XmlGenerationResult>
       JsonTypeCache : Dictionary<InferedType, ProvidedTypeDefinition> }
     static member Create(cultureStr, tpType, unifyGlobally) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
@@ -137,8 +133,8 @@ module internal XmlTypeBuilder =
 
                 let conv = fun xml ->
                     if optional
-                    then <@@ XmlRuntime.TryGetJsonValue(%%xml, cultureStr) @@>
-                    else <@@ XmlRuntime.GetJsonValue(%%xml, cultureStr) @@>
+                    then <@@ XmlRuntime.TryGetJsonValue(%%xml) @@>
+                    else <@@ XmlRuntime.GetJsonValue(%%xml) @@>
                     |> result.Convert
 
                 typ, name, conv, optionalJustBecauseThereAreMultiple
@@ -153,8 +149,8 @@ module internal XmlTypeBuilder =
         match inferedType with
        
         // If we already generated object for this type, return it
-        | InferedType.Record(Some nameWithNs, _, false) when ctx.XmlTypeCache.ContainsKey nameWithNs -> 
-            ctx.XmlTypeCache.[nameWithNs]
+        | InferedType.Record(Some _, _, false) when ctx.XmlTypeCache.ContainsKey inferedType -> 
+            ctx.XmlTypeCache.[inferedType]
         
         // If the element does not have any children and always contains only primitive type
         // then we turn it into a primitive value of type such as int/string/etc.
@@ -230,8 +226,8 @@ module internal XmlTypeBuilder =
        
             // If we unify types globally, then save type for this record
             if ctx.UnifyGlobally then
-                ctx.XmlTypeCache.Add(nameWithNS, { ConvertedType = objectTy 
-                                                   Converter = id })
+                ctx.XmlTypeCache.Add(inferedType, { ConvertedType = objectTy 
+                                                    Converter = id })
                 
             // Split the properties into attributes and a 
             // special property representing the content

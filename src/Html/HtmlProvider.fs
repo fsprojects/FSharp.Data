@@ -4,7 +4,7 @@
 namespace ProviderImplementation
 
 open System
-open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Core.CompilerServices
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data
@@ -18,7 +18,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm, version = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
     let ns = "FSharp.Data"
     let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
     
@@ -33,9 +33,10 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let resolutionFolder = args.[6] :?> string
         let resource = args.[7] :?> string
 
-        let getSpecFromSamples samples = 
+        let getSpec _ value = 
 
-            let doc : FSharp.Data.HtmlDocument = Seq.exactlyOne samples
+            let doc = using (IO.logTime "Parsing" sample) <| fun _ ->
+                HtmlDocument.Parse value
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
                 let inferenceParameters : HtmlInference.Parameters = 
@@ -54,8 +55,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg encodingStr resolutionFolder resource typeName None
+        generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

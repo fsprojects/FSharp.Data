@@ -1,7 +1,7 @@
-﻿#if INTERACTIVE
-#r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsUnit/lib/net45/FsUnit.NUnit.dll"
+#if INTERACTIVE
+#r "../../bin/lib/net45/FSharp.Data.dll"
+#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
+#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
 #else
 module FSharp.Data.Tests.JsonProvider
 #endif
@@ -9,6 +9,7 @@ module FSharp.Data.Tests.JsonProvider
 open NUnit.Framework
 open FsUnit
 open System
+open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
@@ -26,20 +27,31 @@ let ``Decimal optional field is read as None`` () =
   let prov = NumericFields.Parse(""" {"a":123} """)
   prov.B |> should equal None
 
+let shouldThrow message func =
+    let succeeded = 
+        try 
+            func() |> ignore
+            true
+        with e ->
+            e.Message |> should equal message
+            false
+    if succeeded then
+        Assert.Fail("Exception expected")
+
 [<Test>]
 let ``Reading a required field that is null throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required field that is missing throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"b":123} """)
-  (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "'/a' is missing"
 
 [<Test>]
 let ``Reading a required decimal that is not a valid decimal throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"a":"hello", "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  (fun () -> prov.A) |> shouldThrow "Expecting a Decimal at '/a', got \"hello\""
 
 [<Test>]
 let ``Reading a required float that is not a valid float returns NaN`` () = 
@@ -166,11 +178,12 @@ let ``Nulls, Missing, and "" should make the type optional``() =
 
 [<Test>]
 let ``Heterogeneous types with Nulls, Missing, and "" should return None on all choices``() =
-    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}}]""">.GetSamples()
+    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}},{"b":"00:30:00"}]""">.GetSamples()
     j.[0].A.Boolean  |> should equal None
     j.[0].A.Number   |> should equal None
     j.[0].A.Array    |> should equal None
     j.[0].B.DateTime |> should equal None
+    j.[0].B.TimeSpan |> should equal None
     j.[0].B.Number   |> should equal None
     j.[0].B.Array    |> should equal None
     j.[0].C.Boolean  |> should equal None
@@ -181,6 +194,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
     j.[1].B.DateTime |> should equal (Some (DateTime(DateTime.Today.Year,3,4)))
+    j.[1].B.TimeSpan |> should equal None
     j.[1].B.Number   |> should equal (Some 3.4m)
     j.[1].B.Array    |> should equal None
     j.[1].C.Boolean  |> should equal (Some true)
@@ -191,6 +205,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[2].A.Number   |> should equal None
     j.[2].A.Array    |> should equal None
     j.[2].B.DateTime |> should equal (Some (DateTime(2002,10,10)))
+    j.[2].B.TimeSpan |> should equal None
     j.[2].B.Number   |> should equal None
     j.[2].B.Array    |> should equal None
     j.[2].C.Boolean  |> should equal None
@@ -201,12 +216,15 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[3].A.Number   |> should equal None
     j.[3].A.Array    |> should equal (Some (Array.zeroCreate<IJsonDocument> 0))
     j.[3].B.DateTime |> should equal None
+    j.[3].B.TimeSpan |> should equal None
     j.[3].B.Number   |> should equal None
     j.[3].B.Array    |> should equal (Some [|1|])
     j.[3].C.Boolean  |> should equal None
     j.[3].C.Number   |> should equal None
     j.[3].C.Record   |> should not' (equal None)
     j.[3].C.Record.Value.Z |> should equal 1
+
+    j.[4].B.TimeSpan |> should equal (Some (TimeSpan(0, 30, 0)))
 
 [<Test>]
 let ``SampleIsList for json correctly handled``() = 
@@ -472,26 +490,66 @@ let ``Can parse microsoft format dates``() =
 [<Test>]
 let ``Can parse ISO 8601 dates``() =
     let dates = DateJSON.GetSample()
-    dates.Anniversary.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 18, 20, 30, 450)) 
+    dates.Anniversary |> should equal (new DateTimeOffset(1997, 7, 16, 19, 20, 30, 450, TimeSpan.FromHours 1.)) 
 
 [<Test>]
 let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
-    dates.UtcTime.ToUniversalTime() |> should equal (new DateTime(1997, 7, 16, 19, 50, 30, 0)) 
+    dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero)) 
+
+let withCulture (cultureName: string) test = 
+    let originalCulture = CultureInfo.CurrentCulture;
+    try
+        CultureInfo.CurrentCulture <- CultureInfo cultureName
+        test()
+    finally
+        CultureInfo.CurrentCulture <- originalCulture
 
 [<Test>]
-[<SetCulture("zh-CN")>]
 let ``Can parse ISO 8601 dates in the correct culture``() =
-    let dates = DateJSON.GetSample()
-    dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+    withCulture "zh-CN" <| fun () ->
+        let dates = DateJSON.GetSample()
+        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
 
 [<Test>]
-[<SetCulture("pt-PT")>]
 let ``Can parse ISO 8601 dates in the specified culture``() =
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
-    dates.Birthdate.Month |> should equal 1
-    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
-    dates.Birthdate.Month |> should equal 2
+    withCulture "pt-PT" <| fun () ->
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
+        dates.Birthdate.Month |> should equal 1
+        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
+        dates.Birthdate.Month |> should equal 2
+
+type TimeSpanJSON = JsonProvider<"Data/TimeSpans.json">
+
+[<Test>]
+let ``Can parse positive time span with day and fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.PositiveWithDayWithFraction |> should equal (new TimeSpan(1, 3, 16, 50, 500))
+
+[<Test>]
+let ``Can parse positive time span without day and without fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.PositiveWithoutDayWithoutFraction |> should equal (new TimeSpan(0, 30, 0))
+
+[<Test>]
+let ``Can parse negative time span with day and fraction``() =
+    let timeSpans = TimeSpanJSON.GetSample()
+    timeSpans.NegativeWithDayWithFraction |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
+
+[<Test>]
+let ``Parses timespan greater than max as string`` () = 
+    let span = TimeSpanJSON.GetSample().TimespanOneTickGreaterThanMaxValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Parses timespan less than min as string`` () = 
+    let span = TimeSpanJSON.GetSample().TimespanOneTickLessThanMinValue
+    span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Can parse time span in different culture``() =
+    let timeSpans = JsonProvider<"""{"frTimeSpan": "1:3:16:50,5"}""", Culture="fr">.GetSample()
+    timeSpans.FrTimeSpan |> should equal (new TimeSpan(1, 3, 16, 50, 500))
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
@@ -560,7 +618,7 @@ let ``Can construct complex objects``() =
     let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
     let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
     let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
-                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
+                            JsonValue.Null, JsonValue.Null, 2, DateTimeOffset(2013,03,15,0,0,0,TimeSpan.Zero), DateTimeOffset(2013,03,16,0,0,0,TimeSpan.Zero), JsonValue.Null, pullRequest, None)
     json.JsonValue.ToString() |> normalize |> should equal (normalize """{
   "url": "url",
   "labels_url": "labelsUrl",
@@ -604,8 +662,8 @@ let ``Can construct complex objects``() =
   "assignee": null,
   "milestone": null,
   "comments": 2,
-  "created_at": "2013-03-15T00:00:00.0000000",
-  "updated_at": "2013-03-16T00:00:00.0000000",
+  "created_at": "2013-03-15T00:00:00.0000000+00:00",
+  "updated_at": "2013-03-16T00:00:00.0000000+00:00",
   "closed_at": null,
   "pull_request": {
     "html_url": null,
@@ -651,3 +709,28 @@ let ``Whitespace is preserved``() =
     let j = JsonProvider<"""{ "s": " "}""">.GetSample()
     j.S |> should equal " "
 
+[<Test>]
+let ``Getting a decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 0.800 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting an Int32 at '/y', got 0.800"
+
+[<Test>]
+let ``DateTime and DateTimeOffset mix results in DateTime`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "2016-10-05T04:05:03", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTime>) |> should equal true
+
+[<Test>]
+let ``Collection of DateTimeOffset should have the type DateTimeOffset`` () =
+    let j = JsonProvider<"""{"dates" : ["2016-08-01T04:50:13.619+10:00", "/Date(123123+0600)/", "2016-07-01T00:00:00.000-05:00"]}""">.GetSample()
+    Array.TrueForAll(j.Dates, fun x -> x.GetType() = typeof<DateTimeOffset>) |> should equal true
+
+[<Test>]
+let ``Getting a large decimal at runtime when an integer was inferred should throw``() =
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 12345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow "Expecting an Int32 at '/y', got 12345678901234567890"
+
+[<Test>]
+let ``Getting a large float at runtime when an integer was inferred should throw``() =
+    let f = 1234567890123456789012345678901234567890.
+    let json = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">.Parse("""{ "x" : -0.250, "y" : 1234567890123456789012345678901234567890 }""")
+    (fun () -> json.Y) |> shouldThrow (sprintf "Expecting an Int32 at '/y', got %s" (f.ToString("E14").Replace("+0", "+").Replace(",", ".")))

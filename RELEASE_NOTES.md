@@ -1,4 +1,49 @@
-#### 2.4.4 - Unreleased
+#### 3.0.0 - October 14 2018
+* Add GetSchema method in XML type provider.
+
+#### 3.0.0-rc - October 7 2018
+* (Breaking Change) Added support for DateTimeOffset to JSON, XML, CSV, and HTML providers.
+* (Breaking Change) Added support for TimeSpan to JSON, XML, CSV, and HTML providers.
+* Map XSD date to System.DateTime and XSD dateTime to System.DateTimeOffset.
+* Fixed large float values being silently converted to int.MinValue when parsing JSON.
+* Improved handling of invalid cookies.
+* Fixes for #1091 - tidying up regex handling in script tags.
+
+#### 3.0.0-beta4 - July 8 2018
+* (Breaking Change) Ignore culture when parsing JSON to better match the JSON spec.
+* Fixed handling of empty cookie headers.
+* (Breaking Change) Don't silently convert decimals and floats to integers in JsonProvider.
+* Improved the performance of the type provider design time components.
+* Preserve white-space when parsing XML.
+* Recognise media type application/json-rpc as text.
+* Fix parsing of escaped charaters in string literals within HTML script tags.
+* Added constants for HTTP status codes.
+* Added support for schemas (XSD) in the XmlProvider.
+
+#### 3.0.0-beta3 - April 9 2018
+* Increased type caches TTL from 10 seconds to 5 minutes.
+
+#### 3.0.0-beta2 - April 09 2018
+* Fixed memory leaks inside the the type provider design time components.
+* Improved the performance of the type provider design time components.
+
+#### 3.0.0-beta - April 04 2018
+* Drop PCL Profile 259, 7, 78 support in favour of netstandard2.0.
+* Support [F# RFC FST-1003 loading into .NET Core-based F# tooling](https://github.com/fsharp/fslang-design/blob/master/tooling/FST-1003-loading-type-provider-design-time-components.md).
+* Integer values for optional parameter for the `System.Text.Encoding` are only supported when the F# compiler
+  is run using .NET Framework. By default, new-style .NET SDK project files run the F# compiler with .NET Core.
+  To force the use of an F# compiler running with .NET Framework see [this guide](https://github.com/Microsoft/visualfsharp/issues/3303).
+
+#### 2.4.6 - March 25 2018
+* Added `ContentTypeWithEncoding` helper to `HttpRequestHeaders`.
+* `JsonValue` will explicitly set content type charset to UTF-8 when making requests.
+* Prevent superfluous encoding of URL parameters.
+
+#### 2.4.5 - February 19 2018
+* Add an optional parameter for the `System.Text.Encoding` to use when reading data to the CSV, HTML, and Json providers. This parameter is called `encoding` and should be present on all Load and AsyncLoad methods.
+* Fix handling of multipart form data payloads whose size exceeded ~80k bytes.
+
+#### 2.4.4 - January 20 2018
 * Fix parsing of unquoted HTML attributes containing URLs.
 * Fixed HTTP form body url encoding.
 

@@ -1,0 +1,62 @@
+class XmlProvider : obj
+    static member AsyncLoad: uri:string -> XmlProvider+X async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
+
+    static member GetSchema: () -> System.Xml.Schema.XmlSchemaSet
+    (XmlSchema.parseSchemaFromTextReader "" FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XSD" "" "homonim.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+X
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+X
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+X
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+X
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+X : FDR.BaseTypes.XmlElement
+    new : e1:string -> x:XmlProvider+X2 -> XmlProvider+X
+    XmlRuntime.CreateRecord("X", 
+                            [| |], 
+                            [| ("E1",
+                                (e1 :> obj))
+                               ("X",
+                                (x :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+X
+    XmlElement.Create(xElement)
+
+    member E1: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "E1"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member X: XmlProvider+X2 with get
+    XmlRuntime.GetChild(this, "X")
+
+
+class XmlProvider+X2 : FDR.BaseTypes.XmlElement
+    new : e2:string -> x:string -> XmlProvider+X2
+    XmlRuntime.CreateRecord("X", 
+                            [| |], 
+                            [| ("E2",
+                                (e2 :> obj))
+                               ("X",
+                                (x :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+X2
+    XmlElement.Create(xElement)
+
+    member E2: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "E2"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member X: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "X"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+

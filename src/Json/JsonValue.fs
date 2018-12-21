@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind.
 // We disclaim all warranties, either express or implied, including the
@@ -15,7 +15,6 @@ open System.ComponentModel
 open System.Globalization
 open System.Runtime.InteropServices
 open System.Text
-open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Specifies the formatting behaviour of JSON values
@@ -43,7 +42,10 @@ type JsonValue =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  member x._Print = x.ToString()
+  member x._Print =
+    let str = x.ToString()
+    if str.Length > 512 then str.Substring(0, 509) + "..."
+    else str
 
   /// Serializes the JsonValue to the specified System.IO.TextWriter.
   member x.WriteTo (w:TextWriter, saveOptions) =
@@ -142,13 +144,10 @@ module JsonValue =
 // JSON parser
 // --------------------------------------------------------------------------------------
 
-type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
-
-    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+type private JsonParser(jsonText:string) =
 
     let mutable i = 0
     let s = jsonText
-
     
     let buf = StringBuilder() // pre-allocate buffers for strings
 
@@ -156,9 +155,8 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     let skipWhitespace() =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
-    let decimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
     let isNumChar c =
-      Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
+      Char.IsDigit c || c = '.' || c='e' || c='E' || c='+' || c='-'
     let throw() =
       let msg =
         sprintf
@@ -242,14 +240,14 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
 
     and parseNum() =
         let start = i
-        while i < s.Length && isNumChar(s.[i]) do
+        while i < s.Length && (isNumChar s.[i]) do
             i <- i + 1
         let len = i - start
         let sub = s.Substring(start,len)
-        match TextConversions.AsDecimal cultureInfo sub with
+        match TextConversions.AsDecimal CultureInfo.InvariantCulture sub with
         | Some x -> JsonValue.Number x
         | _ ->
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo sub with
+            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false CultureInfo.InvariantCulture sub with
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
@@ -260,19 +258,6 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         i <- i + 1
         skipWhitespace()
         key, parseValue()
-
-    and parseEllipsis() =
-        let mutable openingBrace = false
-        if i < s.Length && s.[i] = '{' then
-            openingBrace <- true
-            i <- i + 1
-            skipWhitespace()
-        while i < s.Length && s.[i] = '.' do
-            i <- i + 1
-            skipWhitespace()
-        if openingBrace && i < s.Length && s.[i] = '}' then
-            i <- i + 1
-            skipWhitespace()
 
     and parseObject() =
         ensure(i < s.Length && s.[i] = '{')
@@ -285,13 +270,8 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             while i < s.Length && s.[i] = ',' do
                 i <- i + 1
                 skipWhitespace()
-                if tolerateErrors && s.[i] = '}' then
-                    () // tolerate a trailing comma, even though is not valid json
-                else
-                    pairs.Add(parsePair())
-                    skipWhitespace()
-        if tolerateErrors && i < s.Length && s.[i] <> '}' then
-            parseEllipsis() // tolerate ... or {...}
+                pairs.Add(parsePair())
+                skipWhitespace()
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
         JsonValue.Record(pairs.ToArray())
@@ -309,8 +289,6 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                 skipWhitespace()
                 vals.Add(parseValue())
                 skipWhitespace()
-        if tolerateErrors && i < s.Length && s.[i] <> ']' then
-            parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = ']')
         i <- i + 1
         JsonValue.Array(vals.ToArray())
@@ -340,74 +318,71 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
 type JsonValue with
 
   /// Parses the specified JSON string
-  static member Parse(text, [<Optional>] ?cultureInfo) =
-    JsonParser(text, cultureInfo, false).Parse()
+  static member Parse(text) =
+    JsonParser(text).Parse()
 
   /// Attempts to parse the specified JSON string
-  static member TryParse(text, [<Optional>] ?cultureInfo) =
+  static member TryParse(text) =
     try
-      Some <| JsonParser(text, cultureInfo, false).Parse()
+      Some <| JsonParser(text).Parse()
     with
       | _ -> None
 
   /// Loads JSON from the specified stream
-  static member Load(stream:Stream, [<Optional>] ?cultureInfo) =
+  static member Load(stream:Stream) =
     use reader = new StreamReader(stream)
     let text = reader.ReadToEnd()
-    JsonParser(text, cultureInfo, false).Parse()
+    JsonParser(text).Parse()
 
   /// Loads JSON from the specified reader
-  static member Load(reader:TextReader, [<Optional>] ?cultureInfo) =
+  static member Load(reader:TextReader) =
     let text = reader.ReadToEnd()
-    JsonParser(text, cultureInfo, false).Parse()
+    JsonParser(text).Parse()
 
   /// Loads JSON from the specified uri asynchronously
-  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
+  static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {
+    let encoding = defaultArg encoding Encoding.UTF8
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" encoding.WebName uri
     let text = reader.ReadToEnd()
-    return JsonParser(text, cultureInfo, false).Parse()
+    return JsonParser(text).Parse()
   }
 
   /// Loads JSON from the specified uri
-  static member Load(uri:string, [<Optional>] ?cultureInfo) =
-    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
+  static member Load(uri:string, [<Optional>] ?encoding)=
+    JsonValue.AsyncLoad(uri, ?encoding=encoding)
     |> Async.RunSynchronously
-
-  /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
-  static member ParseSample(text, [<Optional>] ?cultureInfo) =
-    JsonParser(text, cultureInfo, true).Parse()
-
+  
   /// Parses the specified string into multiple JSON values
-  static member ParseMultiple(text, [<Optional>] ?cultureInfo) =
-    JsonParser(text, cultureInfo, false).ParseMultiple()
+  static member ParseMultiple(text) =
+    JsonParser(text).ParseMultiple()
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+  member private x.PrepareRequest (httpMethod, headers) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
         if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
         else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    let headers = HttpRequestHeaders.ContentTypeWithEncoding (HttpContentTypes.Json, Encoding.UTF8) :: headers
+    TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers,
+      httpMethod
+ 
+  /// Sends the JSON to the specified URL synchronously. Defaults to a POST request.
+  member x.Request(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 
-  /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
-    let httpMethod = defaultArg httpMethod HttpMethod.Post
-    let headers = defaultArg (Option.map List.ofSeq headers) []
-    let headers =
-        if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+  /// Sends the JSON to the specified URL asynchronously. Defaults to a POST request.
+  member x.RequestAsync(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+    let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
     Http.AsyncRequest(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      url,
+      body = body,
       headers = headers,
       httpMethod = httpMethod)
 

@@ -19,6 +19,7 @@ let private nameToType =
    "float",          (typeof<float>   , TypeWrapper.None    )
    "decimal",        (typeof<decimal> , TypeWrapper.None    )
    "date",           (typeof<DateTime>, TypeWrapper.None    )
+   "timespan",       (typeof<TimeSpan>, TypeWrapper.None    )
    "guid",           (typeof<Guid>    , TypeWrapper.None    )
    "string",         (typeof<String>  , TypeWrapper.None    )
    "int?",           (typeof<int>     , TypeWrapper.Nullable)
@@ -27,6 +28,7 @@ let private nameToType =
    "float?",         (typeof<float>   , TypeWrapper.Nullable)
    "decimal?",       (typeof<decimal> , TypeWrapper.Nullable)
    "date?",          (typeof<DateTime>, TypeWrapper.Nullable)
+   "timespan?",      (typeof<TimeSpan>, TypeWrapper.Nullable)
    "guid?",          (typeof<Guid>    , TypeWrapper.Nullable)
    "int option",     (typeof<int>     , TypeWrapper.Option  )
    "int64 option",   (typeof<int64>   , TypeWrapper.Option  )
@@ -34,20 +36,14 @@ let private nameToType =
    "float option",   (typeof<float>   , TypeWrapper.Option  )
    "decimal option", (typeof<decimal> , TypeWrapper.Option  )
    "date option",    (typeof<DateTime>, TypeWrapper.Option  )
+   "timespan option",(typeof<TimeSpan>, TypeWrapper.Option  )
    "guid option",    (typeof<Guid>    , TypeWrapper.Option  )
    "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
-// Compiled regex is not supported in Portable profile
-let private regexOptions = 
-#if FX_NO_REGEX_COMPILATION
-  RegexOptions.RightToLeft
-#else
-  RegexOptions.Compiled ||| RegexOptions.RightToLeft
-#endif
-let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
-let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
-let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
+let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
@@ -274,7 +270,7 @@ let internal inferType (headerNamesAndUnits:_[]) schema (rows:seq<_>) inferRows 
 ///  - Optional fields of type 'int64' are generated as Nullable<int64>
 ///  - Optional fields of type 'float' are just floats (and null becomes NaN)
 ///  - Optional fields of type 'decimal' are generated as floats too
-///  - Optional fields of any other non-nullable T (bool/date/guid) become option<T>
+///  - Optional fields of any other non-nullable T (bool/date/timespan/guid) become option<T>
 ///  - All other types are simply strings.
 ///
 /// When preferOptionals is true:
@@ -329,7 +325,7 @@ type CsvFile with
     /// * inferRows - Number of rows to use for inference. If this is zero, all rows are used
     /// * missingValues - The set of strings recogized as missing values
     /// * cultureInfo - The culture used for parsing numbers and dates
-    /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
+    /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "timespan", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
     /// * assumeMissingValues - Assumes all columns can have missing values
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
     /// * unitsOfMeasureProvider - optional function to resolve Units of Measure
