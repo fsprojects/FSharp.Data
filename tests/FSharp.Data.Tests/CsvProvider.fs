@@ -641,7 +641,7 @@ let ``IgnoreLinePatten with Regex skips matching rows`` () =
     actual |> should equal expected
 
 [<Literal>]
-let csvWithWhitespace = "Val1, Val2,Val3 , 888\t"
+let csvWithWhitespace = "Val1, Val2,Val3 , 888\t,"
 
 [<Test>]
 let ``TrimColumnValues performs correct infereance and trims at runtime`` () =
@@ -649,8 +649,8 @@ let ``TrimColumnValues performs correct infereance and trims at runtime`` () =
 
     let row = csv.Rows |> Seq.head
 
-    let expected = ("Val1", "Val2", "Val3", 888)
-    let actual = (row.Column1, row.Column2, row.Column3, row.Column4)
+    let expected = ("Val1", "Val2", "Val3", 888, "")
+    let actual = (row.Column1, row.Column2, row.Column3, row.Column4, row.Column5)
 
     actual |> should equal expected
 
