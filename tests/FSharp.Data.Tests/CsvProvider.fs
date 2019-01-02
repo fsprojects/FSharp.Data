@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -621,6 +621,40 @@ let ``Parses timespan less than min as string`` () =
     span.GetType() |> should equal (typeof<string>)
 
 [<Literal>]
+let csvWithBadRowToIgnore = """Title,Value
+One,1
+--BAD1--
+Two,2
+--BAD2--
+Three,3"""
+
+[<Test>]
+let ``IgnoreLinePatten with Regex skips matching rows`` () =
+    let csv = CsvProvider<csvWithBadRowToIgnore, IgnoreLinePattern = @"^--.*--$">.GetSample()
+
+    let expected = [("One", 1); ("Two", 2); ("Three", 3)]
+    let actual =
+        csv.Rows
+        |> Seq.map (fun row -> row.Title, row.Value)
+        |> Seq.toList
+
+    actual |> should equal expected
+
+[<Literal>]
+let csvWithWhitespace = "Val1, Val2,Val3 , 888\t"
+
+[<Test>]
+let ``TrimColumnValues performs correct infereance and trims at runtime`` () =
+    let csv = CsvProvider<csvWithWhitespace, HasHeaders = false, TrimColumnValue = true>.GetSample()
+
+    let row = csv.Rows |> Seq.head
+
+    let expected = ("Val1", "Val2", "Val3", 888)
+    let actual = (row.Column1, row.Column2, row.Column3, row.Column4)
+
+    actual |> should equal expected
+
+[<Literal>]
 let markdownTable =
   """| Tables        | Are           | Cool  |
 | ------------- |:-------------:| -----:|
@@ -628,14 +662,11 @@ let markdownTable =
 
 type MarkdownType = CsvProvider<markdownTable, Separators="|", IgnoreLinePattern = "---", TrimColumnValue = true>
 
-//TODO: Write 2 additional tests. One for each option. Not Markdown Related
 [<Test>]
 let ``Markdown Test``() =
     let csv = MarkdownType.Parse markdownTable
 
-    let row =
-      csv.Rows
-      |> Seq.exactlyOne
+    let row = csv.Rows |> Seq.exactlyOne
 
     let actual = (row.Tables, row.Are, row.Cool)
     let expected = ("col 3 is", "right-aligned", 1600)
