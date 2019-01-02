@@ -23,7 +23,9 @@ type CsvProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string
+      IgnoreLinePattern : string
+      TrimColumnValue : bool }
 
 type XmlProviderArgs =
     { Sample : string
@@ -89,7 +91,9 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder
-                   box x.EmbeddedResource |]
+                   box x.EmbeddedResource
+                   box x.IgnoreLinePattern
+                   box x.TrimColumnValue |]
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -204,7 +208,9 @@ type TypeProviderInstantiation =
                   Encoding = args.[9]
                   CacheRows = false
                   ResolutionFolder = ""
-                  EmbeddedResource = "" }
+                  EmbeddedResource = ""
+                  IgnoreLinePattern = ""
+                  TrimColumnValue = false }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse

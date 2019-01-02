@@ -60,7 +60,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, 0, false, "", false)
 
     static member AsyncGetSample: () -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -99,7 +99,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false))
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false, "", false))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "DnbHistoriskeKurser.csv"), f)
 
     static member AsyncLoad: uri:string -> CsvProvider async
@@ -139,7 +139,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false))
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false, "", false))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "CSV" "" uri), f)
 
     static member GetSample: () -> CsvProvider
@@ -178,7 +178,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, 0, false, "", false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -216,7 +216,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, 0, false, "", false)
 
     static member Load: reader:System.IO.TextReader -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -254,7 +254,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, reader, ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, reader, ",", '"', true, false, 0, false, "", false)
 
     static member Load: uri:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -292,7 +292,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false, "", false)
 
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -330,7 +330,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false, "", false)
 
     static member ParseRows: text:string -> CsvProvider+Row[]
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -356,7 +356,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.GetNonOptionalValue("ISK", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
-    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false, "", false)
 
 
 class CsvProvider+Row : System.DateTime * string * string * string * string * string * string * string * string * string * string
