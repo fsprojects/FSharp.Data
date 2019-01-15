@@ -26,7 +26,7 @@ open System
 open System.Globalization
 open FSharp.Data
 
-type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) = 
+type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
     let propertiesToSkip = Set.ofList (defaultArg propertiesToSkip [])
     let valuesToSkip = Set.ofList (defaultArg valuesToSkip [])
@@ -56,31 +56,31 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
             if typ = typeof<Guid> then Guid.NewGuid().ToString()
             elif typ = typeof<Runtime.StructuralTypes.Bit0> || typ = typeof<Runtime.StructuralTypes.Bit1> then s
             elif typ = typeof<DateTime> then s
-            else 
+            else
                 let prefix, s =
                     if s.StartsWith "http://" then "http://", s.Substring("http://".Length)
                     elif s.StartsWith "https://" then "https://", s.Substring("https://".Length)
                     else "", s
                 prefix + randomize s
             |> JsonValue.String
-        | JsonValue.Number d -> 
+        | JsonValue.Number d ->
             let typ = Runtime.StructuralInference.inferPrimitiveType CultureInfo.InvariantCulture (d.ToString())
             if typ = typeof<Runtime.StructuralTypes.Bit0> || typ = typeof<Runtime.StructuralTypes.Bit1>
             then json
             else d.ToString() |> randomize |> Decimal.Parse |> JsonValue.Number
-        | JsonValue.Float f -> 
+        | JsonValue.Float (f, isExponential) ->
             f.ToString()
-            |> randomize 
-            |> Double.Parse 
-            |> JsonValue.Float
+            |> randomize
+            |> Double.Parse
+            |> fun f -> JsonValue.Float(f, isExponential)
         | JsonValue.Boolean _  | JsonValue.Null -> json
-        | JsonValue.Record props -> 
-            props 
+        | JsonValue.Record props ->
+            props
             |> Array.map (fun (key, value) -> key, if propertiesToSkip.Contains key then value else anonymize value)
             |> JsonValue.Record
-        | JsonValue.Array array -> 
-            array 
-            |> Array.map anonymize 
+        | JsonValue.Array array ->
+            array
+            |> Array.map anonymize
             |> JsonValue.Array
 
     member __.Anonymize json = anonymize json

@@ -738,7 +738,7 @@ let ``Getting a large float at runtime when an integer was inferred should throw
 [<Test>]
 let ``Getting field with numeric values should infer decimal``() =
     let json = JsonProvider<""" { "a":[1.0, 1.0] } """>.GetSample()
-    Assert.IsTrue(json.A = [|1.0m; 1.0m|])
+    Assert.IsTrue(json.A = [|1; 1|])
 
 [<Test>]
 let ``Getting field with numeric array should infer double from exponential``() =

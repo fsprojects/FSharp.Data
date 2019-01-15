@@ -12,7 +12,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Test>]
-let ``Boolean conversions``() = 
+let ``Boolean conversions``() =
   let asBoolean = JsonConversions.AsBoolean
 
   JsonValue.Boolean true  |> asBoolean |> should equal (Some true)

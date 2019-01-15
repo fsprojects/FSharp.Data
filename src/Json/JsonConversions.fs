@@ -21,19 +21,19 @@ type JsonConversions =
     | JsonValue.String s -> if useNoneForNullOrEmpty && String.IsNullOrEmpty s then None else Some s
     | JsonValue.Boolean b -> Some (if b then "true" else "false")
     | JsonValue.Number n -> n.ToString(cultureInfo) |> Some
-    | JsonValue.Float f -> f.ToString(cultureInfo) |> Some
+    | JsonValue.Float (f, _) -> f.ToString(cultureInfo) |> Some
     | JsonValue.Null when not useNoneForNullOrEmpty -> Some ""
     | _ -> None
 
   static member AsInteger cultureInfo = function
     | JsonValue.Number n when inRangeDecimal Int32.MinValue Int32.MaxValue n && isIntegerDecimal n -> Some (int n)
-    | JsonValue.Float f when inRangeFloat Int32.MinValue Int32.MaxValue f && isIntegerFloat f -> Some (int f)
+    | JsonValue.Float (f, false) when inRangeFloat Int32.MinValue Int32.MaxValue f && isIntegerFloat f -> Some (int f)
     | JsonValue.String s -> TextConversions.AsInteger cultureInfo s
     | _ -> None
 
   static member AsInteger64 cultureInfo = function
     | JsonValue.Number n when inRangeDecimal Int64.MinValue Int64.MaxValue n && isIntegerDecimal n -> Some (int64 n)
-    | JsonValue.Float f when inRangeFloat Int64.MinValue Int64.MaxValue f && isIntegerFloat f -> Some (int64 f)
+    | JsonValue.Float (f, false) when inRangeFloat Int64.MinValue Int64.MaxValue f && isIntegerFloat f -> Some (int64 f)
     | JsonValue.String s -> TextConversions.AsInteger64 cultureInfo s
     | _ -> None
 
@@ -44,7 +44,7 @@ type JsonConversions =
 
   static member AsFloat missingValues useNoneForMissingValues cultureInfo = function
     | JsonValue.Number n -> Some (float n)
-    | JsonValue.Float n -> Some n
+    | JsonValue.Float (n, _) -> Some n
     | JsonValue.String s -> TextConversions.AsFloat missingValues useNoneForMissingValues cultureInfo s
     | _ -> None
 
@@ -58,7 +58,7 @@ type JsonConversions =
   static member AsDateTimeOffset cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTimeOffset cultureInfo s
     | _ -> None
-  
+
   static member AsDateTime cultureInfo = function
     | JsonValue.String s -> TextConversions.AsDateTime cultureInfo s
     | _ -> None

@@ -62,7 +62,7 @@ JSONの配列やレコードは無名です(ただしレコードには
     [lang=js]
     { "version": "1.0",
       "title": { "text": "Sample input" },
-      "items": [ { "value": "First" }, 
+      "items": [ { "value": "First" },
                  { "value": "Second" } ]  }
 
 このように、 `item` 要素は自動的に `items` という複数形に変換されて、
@@ -80,7 +80,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 let rec fromXml (xml:XElement) =
 
   // すべての属性に対してキー値ペアのコレクションを作成する
-  let attrs = 
+  let attrs =
     [ for attr in xml.Attributes() ->
         (attr.Name.LocalName, JsonValue.String attr.Value) ]
 
@@ -94,13 +94,13 @@ let rec fromXml (xml:XElement) =
   // 単一要素のグループを(再帰的に)レコードへと変換し、
   // 複数要素のグループをcreateArrayでJSON配列に変換する
   let children =
-    xml.Elements() 
+    xml.Elements()
     |> Seq.groupBy (fun x -> x.Name.LocalName)
     |> Seq.map (fun (key, childs) ->
         match Seq.toList childs with
         | [child] -> key, fromXml child
         | children -> key + "s", createArray children )
-        
+
   // 子要素および属性用に生成された要素を連結する
   Array.append (Array.ofList attrs) (Array.ofSeq children)
   |> JsonValue.Record
@@ -145,9 +145,9 @@ JSONからXMLへ変換する場合、同じようなミスマッチが起こり�
 /// (ただしトップレベルの値がオブジェクトまたは配列の場合のみ機能する)
 let toXml(x:JsonValue) =
   // XML属性やXML要素を作成するためのヘルパ関数
-  let attr name value = 
+  let attr name value =
     XAttribute(XName.Get name, value) :> XObject
-  let elem name (value:obj) = 
+  let elem name (value:obj) =
     XElement(XName.Get name, value) :> XObject
 
   // 変換機能を実装している内部用再帰関数
@@ -156,25 +156,25 @@ let toXml(x:JsonValue) =
     | JsonValue.Null -> null
     | JsonValue.Boolean b -> b :> obj
     | JsonValue.Number number -> number :> obj
-    | JsonValue.Float number -> number :> obj
+    | JsonValue.Float(number, _) -> number :> obj
     | JsonValue.String s -> s :> obj
 
     // JSONオブジェクトは(プリミティブであれば)XML属性か、
     // あるいは子要素になる
     // attributes (for primitives) or child elements
-    | JsonValue.Record properties -> 
-      properties 
+    | JsonValue.Record properties ->
+      properties
       |> Array.map (fun (key, value) ->
           match value with
           | JsonValue.String s -> attr key s
           | JsonValue.Boolean b -> attr key b
           | JsonValue.Number n -> attr key n
-          | JsonValue.Float n -> attr key n
+          | JsonValue.Float(n, _) -> attr key n
           | _ -> elem key (toXml value)) :> obj
 
     // JSON配列は <item> 要素のシーケンスになる
-    | JsonValue.Array elements -> 
-        elements |> Array.map (fun item -> 
+    | JsonValue.Array elements ->
+        elements |> Array.map (fun item ->
           elem "item" (toXml item)) :> obj
 
   // 変換を実行して、結果をオブジェクトのシーケンスにキャストする

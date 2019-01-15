@@ -1,12 +1,12 @@
 (**
-# F# Data: Anonymizing JSON 
+# F# Data: Anonymizing JSON
 
 This tutorial shows how to implement an anonymizer for a JSON document (represented using
 the `JsonValue` type discussed in [JSON parser article](JsonValue.html))
 This functionality is not directly available in the F# Data library, but it can
 be very easily implemented by recursively walking over the JSON document.
 
-If you want to use the JSON anonymizer in your code, you can copy the 
+If you want to use the JSON anonymizer in your code, you can copy the
 [source from GitHub][jsonanonymizer] and just include it in your project. If you use these
 functions often and would like to see them in the F# Data library, please submit
 a [feature request][issues].
@@ -23,7 +23,7 @@ open System
 open System.Globalization
 open FSharp.Data
 
-type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) = 
+type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
   let propertiesToSkip = Set.ofList (defaultArg propertiesToSkip [])
   let valuesToSkip = Set.ofList (defaultArg valuesToSkip [])
@@ -49,45 +49,45 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
       match json with
       | JsonValue.String s when valuesToSkip.Contains s -> json
       | JsonValue.String s ->
-          let typ = 
-            Runtime.StructuralInference.inferPrimitiveType 
+          let typ =
+            Runtime.StructuralInference.inferPrimitiveType
               CultureInfo.InvariantCulture s
 
           ( if typ = typeof<Guid> then Guid.NewGuid().ToString()
-            elif typ = typeof<Runtime.StructuralTypes.Bit0> || 
+            elif typ = typeof<Runtime.StructuralTypes.Bit0> ||
               typ = typeof<Runtime.StructuralTypes.Bit1> then s
             elif typ = typeof<DateTime> then s
-            else 
+            else
               let prefix, s =
-                if s.StartsWith "http://" then 
+                if s.StartsWith "http://" then
                   "http://", s.Substring("http://".Length)
-                elif s.StartsWith "https://" then 
+                elif s.StartsWith "https://" then
                   "https://", s.Substring("https://".Length)
                 else "", s
               prefix + randomize s )
           |> JsonValue.String
-      | JsonValue.Number d -> 
-          let typ = 
-            Runtime.StructuralInference.inferPrimitiveType 
+      | JsonValue.Number d ->
+          let typ =
+            Runtime.StructuralInference.inferPrimitiveType
               CultureInfo.InvariantCulture (d.ToString())
-          if typ = typeof<Runtime.StructuralTypes.Bit0> || 
+          if typ = typeof<Runtime.StructuralTypes.Bit0> ||
             typ = typeof<Runtime.StructuralTypes.Bit1> then json
           else d.ToString() |> randomize |> Decimal.Parse |> JsonValue.Number
-      | JsonValue.Float f -> 
+      | JsonValue.Float (f, isExponential) ->
           f.ToString()
-          |> randomize 
-          |> Double.Parse 
-          |> JsonValue.Float
+          |> randomize
+          |> Double.Parse
+          |> fun f -> JsonValue.Float(f, isExponential)
       | JsonValue.Boolean _  | JsonValue.Null -> json
-      | JsonValue.Record props -> 
-          props 
-          |> Array.map (fun (key, value) -> key, 
-              if propertiesToSkip.Contains key then value 
+      | JsonValue.Record props ->
+          props
+          |> Array.map (fun (key, value) -> key,
+              if propertiesToSkip.Contains key then value
               else anonymize value)
           |> JsonValue.Record
-      | JsonValue.Array array -> 
-          array 
-          |> Array.map anonymize 
+      | JsonValue.Array array ->
+          array
+          |> Array.map anonymize
           |> JsonValue.Array
 
   member __.Anonymize json = anonymize json

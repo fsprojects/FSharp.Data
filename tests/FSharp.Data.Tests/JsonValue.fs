@@ -48,7 +48,7 @@ let ``Can parse document with iso date``() =
     j?anniversary.AsDateTime() |> should equal (new DateTime(2009, 05, 19, 14, 39, 22, 500, DateTimeKind.Local))
     j?anniversary.AsDateTime().Kind |> should equal DateTimeKind.Local
 
-let withCulture (cultureName: string) test = 
+let withCulture (cultureName: string) test =
     let originalCulture = CultureInfo.CurrentCulture;
     try
         CultureInfo.CurrentCulture <- CultureInfo cultureName
@@ -134,7 +134,7 @@ let ``Can parse time span in different culture``() =
         j?duration.AsTimeSpan CultureInfo.CurrentCulture |> should equal (TimeSpan(1, 3, 16, 50, 500))
 
 [<Test>]
-let ``Can parse UTF-32 unicode characters`` () = 
+let ``Can parse UTF-32 unicode characters`` () =
   let j = JsonValue.Parse """{ "value": "\U00010343\U00010330\U0001033F\U00010339\U0001033B" }"""
   j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"
 
@@ -317,14 +317,14 @@ let ``Can parse various JSON documents``() =
 
     let rec IsJsonEqual (l : JsonValue) (r : JsonValue) =
         match l,r with
-        | JsonValue.Null        , JsonValue.Null                                        -> true
-        | JsonValue.Boolean lb  , JsonValue.Boolean rb when lb = rb                     -> true
-        | JsonValue.String  ls  , JsonValue.String  rs when ls = rs                     -> true
-        | JsonValue.Float   lf  , JsonValue.Float   rf when IsFloatNear lf rf           -> true // The reasons we do a custom isEqual
-        | JsonValue.Float   lf  , JsonValue.Number  rd when IsFloatNear lf (float rd)   -> true // The reasons we do a custom isEqual
-        | JsonValue.Number  ld  , JsonValue.Float   rf when IsFloatNear (float ld) rf   -> true // The reasons we do a custom isEqual
-        | JsonValue.Number  ld  , JsonValue.Number  rd when ld = rd                     -> true // The reasons we do a custom isEqual
-        | JsonValue.Array   lvs , JsonValue.Array   rvs ->
+        | JsonValue.Null        , JsonValue.Null                                         -> true
+        | JsonValue.Boolean lb  , JsonValue.Boolean rb  when lb = rb                    -> true
+        | JsonValue.String  ls  , JsonValue.String  rs  when ls = rs                    -> true
+        | JsonValue.Float(lf,_) , JsonValue.Float(rf,_) when IsFloatNear lf rf          -> true // The reasons we do a custom isEqual
+        | JsonValue.Float(lf,_) , JsonValue.Number rd   when IsFloatNear lf (float rd)  -> true // The reasons we do a custom isEqual
+        | JsonValue.Number ld   , JsonValue.Float(rf,_) when IsFloatNear (float ld) rf  -> true // The reasons we do a custom isEqual
+        | JsonValue.Number ld   , JsonValue.Number rd   when ld = rd                    -> true // The reasons we do a custom isEqual
+        | JsonValue.Array  lvs  , JsonValue.Array   rvs ->
             if lvs.Length <> rvs.Length then false
             else
                 let mutable res = true
@@ -370,18 +370,18 @@ let ``Can parse various JSON documents``() =
             """["\""]"""                            , Some <| Array [|String "\""|]
             """["\"\\\//\b\f\n\r\t\u2665"]"""       , Some <| Array [|String "\"\\//\b\f\n\r\t\u2665"|]
             """["\ud83d\udc36"]"""                  , Some <| Array [|String "\ud83d\udc36"|]
-            """[0]"""                               , Some <| Array [|Float 0.|]
-            """[0.5]"""                             , Some <| Array [|Float 0.5|]
-            """[1234]"""                            , Some <| Array [|Float 1234.|]
-            """[-1234]"""                           , Some <| Array [|Float -1234.|]
-            """[1234.25]"""                         , Some <| Array [|Float 1234.25|]
-            """[-1234.25]"""                        , Some <| Array [|Float -1234.25|]
-            """[1234.50E2]"""                       , Some <| Array [|Float 123450.|]
-            """[-1234.5E+2]"""                      , Some <| Array [|Float -123450.|]
-            """[123450E-2]"""                       , Some <| Array [|Float 1234.50|]
-            """[-123450e-2]"""                      , Some <| Array [|Float -1234.50|]
-            """[4.26353146520608E+18]"""            , Some <| Array [|Float 4.26353146520608E+18|]
-            """[1.2345]"""                          , Some <| Array [|Float 1.2345|]
+            """[0]"""                               , Some <| Array [|Float(0., false)|]
+            """[0.5]"""                             , Some <| Array [|Float(0.5, false)|]
+            """[1234]"""                            , Some <| Array [|Float(1234., false)|]
+            """[-1234]"""                           , Some <| Array [|Float(-1234., false)|]
+            """[1234.25]"""                         , Some <| Array [|Float(1234.25, false)|]
+            """[-1234.25]"""                        , Some <| Array [|Float(-1234.25, false)|]
+            """[1234.50E2]"""                       , Some <| Array [|Float(123450., true)|]
+            """[-1234.5E+2]"""                      , Some <| Array [|Float(-123450., true)|]
+            """[123450E-2]"""                       , Some <| Array [|Float(1234.50, true)|]
+            """[-123450e-2]"""                      , Some <| Array [|Float(-1234.50, true)|]
+            """[4.26353146520608E+18]"""            , Some <| Array [|Float(4.26353146520608E+18, true)|]
+            """[1.2345]"""                          , Some <| Array [|Float(1.2345, false)|]
             """[null,false]"""                      , Some <| Array [|Null;Boolean false|]
             """[{}]"""                              , Some <| Array [|Record [||]|]
             """{}"""                                , Some <| Record [||]
@@ -454,7 +454,7 @@ let ``Can parse various JSON documents``() =
         Assert.Fail <| failures.ToString ()
 
 [<Test>]
-let ``Basic special characters encoded correctly`` () = 
+let ``Basic special characters encoded correctly`` () =
   let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
   let w = new IO.StringWriter()
   JsonValue.JsonStringEncodeTo w input
@@ -462,7 +462,7 @@ let ``Basic special characters encoded correctly`` () =
   (w.GetStringBuilder().ToString()) |> should equal expected
 
 [<Test>]
-let ``Encoding of simple string is valid JSON`` () = 
+let ``Encoding of simple string is valid JSON`` () =
   let input = "sample \"json\" with \t\r\n \' quotes etc."
   let w = new IO.StringWriter()
   JsonValue.JsonStringEncodeTo w input
