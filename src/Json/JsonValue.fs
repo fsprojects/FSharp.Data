@@ -33,11 +33,11 @@ type JsonSaveOptions =
 type JsonValue =
   | String of string
   | Number of decimal
-  | Float of float
+  | Float of float * isExponential: bool
   | Record of properties:(string * JsonValue)[]
   | Array of elements:JsonValue[]
   | Boolean of bool
-  | Null  
+  | Null
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -65,18 +65,18 @@ type JsonValue =
     let rec serialize indentation = function
       | Null -> w.Write "null"
       | Boolean b -> w.Write(if b then "true" else "false")
-      | Number number -> w.Write number
-      | Float number -> w.Write number
+      | Number number  -> w.Write number
+      | Float(number, _exponential) -> w.Write number
       | String s ->
           w.Write "\""
           JsonValue.JsonStringEncodeTo w s
           w.Write "\""
       | Record properties ->
-          w.Write "{"                      
+          w.Write "{"
           for i = 0 to properties.Length - 1 do
             let k,v = properties.[i]
             if i > 0 then w.Write ","
-            newLine indentation 2            
+            newLine indentation 2
             w.Write "\""
             JsonValue.JsonStringEncodeTo w k
             w.Write propSep
@@ -92,20 +92,20 @@ type JsonValue =
           if elements.Length > 0 then
             newLine indentation 0
           w.Write "]"
-  
-    serialize 0 x 
+
+    serialize 0 x
 
   // Encode characters that are not valid in JS string. The implementation is based
   // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
   static member internal JsonStringEncodeTo (w:TextWriter) (value:string) =
     if String.IsNullOrEmpty value then ()
-    else 
+    else
       for i = 0 to value.Length - 1 do
         let c = value.[i]
         let ci = int c
         if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
           w.Write("\\u{0:x4}", ci) |> ignore
-        else 
+        else
           match c with
           | '\b' -> w.Write "\\b"
           | '\t' -> w.Write "\\t"
@@ -146,9 +146,13 @@ module JsonValue =
 
 type private JsonParser(jsonText:string) =
 
+    let isExponential =
+        let re = RegularExpressions.Regex("e", RegularExpressions.RegexOptions.IgnoreCase ||| RegularExpressions.RegexOptions.Compiled)
+        fun s -> re.IsMatch s
+
     let mutable i = 0
     let s = jsonText
-    
+
     let buf = StringBuilder() // pre-allocate buffers for strings
 
     // Helper functions
@@ -160,7 +164,7 @@ type private JsonParser(jsonText:string) =
     let throw() =
       let msg =
         sprintf
-          "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
+          "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------"
           i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) (if jsonText.Length > 1000 then jsonText.Substring(0, 1000) else jsonText)
       failwith msg
     let ensure cond =
@@ -222,7 +226,7 @@ type private JsonParser(jsonText:string) =
                     let unicodeChar (s:string) =
                         if s.Length <> 8 then failwith "unicodeChar";
                         if s.[0..1] <> "00" then failwith "unicodeChar";
-                        UnicodeHelper.getUnicodeSurrogatePair <| System.UInt32.Parse(s, NumberStyles.HexNumber) 
+                        UnicodeHelper.getUnicodeSurrogatePair <| System.UInt32.Parse(s, NumberStyles.HexNumber)
                     let lead, trail = unicodeChar (s.Substring(i+2, 8))
                     buf.Append(lead) |> ignore
                     buf.Append(trail) |> ignore
@@ -244,11 +248,14 @@ type private JsonParser(jsonText:string) =
             i <- i + 1
         let len = i - start
         let sub = s.Substring(start,len)
+
         match TextConversions.AsDecimal CultureInfo.InvariantCulture sub with
         | Some x -> JsonValue.Number x
         | _ ->
             match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false CultureInfo.InvariantCulture sub with
-            | Some x -> JsonValue.Float x
+            | Some x ->
+                let isExponential = isExponential sub
+                JsonValue.Float(x, isExponential)
             | _ -> throw()
 
     and parsePair() =
@@ -351,7 +358,7 @@ type JsonValue with
   static member Load(uri:string, [<Optional>] ?encoding)=
     JsonValue.AsyncLoad(uri, ?encoding=encoding)
     |> Async.RunSynchronously
-  
+
   /// Parses the specified string into multiple JSON values
   static member ParseMultiple(text) =
     JsonParser(text).ParseMultiple()
@@ -367,7 +374,7 @@ type JsonValue with
     TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
       headers,
       httpMethod
- 
+
   /// Sends the JSON to the specified URL synchronously. Defaults to a POST request.
   member x.Request(url:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
     let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)

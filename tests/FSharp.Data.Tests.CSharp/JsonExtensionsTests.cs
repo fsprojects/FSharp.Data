@@ -14,9 +14,9 @@ namespace FSharp.Data.Tests.CSharp
         public void Properties_with_valid_JSON()
         {
             JsonValue jsonValue = JsonValue.Parse(TestJson);
-            
+
             var properties = jsonValue.Properties();
-            
+
             Assert.AreEqual(1, properties.Length);
             Assert.AreEqual("PropertyOne", properties[0].Item1);
             Assert.AreEqual("string value", properties[0].Item2.AsString());

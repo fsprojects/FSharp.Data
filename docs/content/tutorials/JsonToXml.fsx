@@ -7,7 +7,7 @@ XML document (represented as `XElement`) and the other way round.
 This functionality is not directly available in the F# Data library, but it can
 be very easily implemented by recursively walking over the JSON (or XML) document.
 
-If you want to use the JSON to/from XML conversion in your code, you can copy the 
+If you want to use the JSON to/from XML conversion in your code, you can copy the
 [source from GitHub][jsontoxml] and just include it in your project. If you use these
 functions often and would like to see them in the F# Data library, please submit
 a [feature request][issues].
@@ -31,7 +31,7 @@ open FSharp.Data
 
 In this script, we create a conversion that returns an easy to process value, but the
 conversion is not reversible (e.g. converting JSON to XML and then back to JSON will
-produce a different value). 
+produce a different value).
 
 Converting XML to JSON
 ----------------------
@@ -55,24 +55,24 @@ If an element appears multiple times, it is turned into an array:
     [lang=js]
     { "version": "1.0",
       "title": { "text": "Sample input" },
-      "items": [ { "value": "First" }, 
+      "items": [ { "value": "First" },
                  { "value": "Second" } ]  }
 
 As you can see, the `item` element has been automatically pluralized to `items` and the
 array contains two record values that consist of the `value` attribute.
 
-The conversion function is a recursive function that takes a `XElement` and produces 
+The conversion function is a recursive function that takes a `XElement` and produces
 `JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
-`JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the 
-sample does not imlement more sophisticated conversion that would turn numeric 
+`JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the
+sample does not imlement more sophisticated conversion that would turn numeric
 attributes to a corresponding JSON type:
 *)
 
 /// Creates a JSON representation of a XML element
 let rec fromXml (xml:XElement) =
 
-  // Create a collection of key/value pairs for all attributes      
-  let attrs = 
+  // Create a collection of key/value pairs for all attributes
+  let attrs =
     [ for attr in xml.Attributes() ->
         (attr.Name.LocalName, JsonValue.String attr.Value) ]
 
@@ -86,13 +86,13 @@ let rec fromXml (xml:XElement) =
   // element groups into a record (recursively) and all multi-
   // element groups into a JSON array using createArray
   let children =
-    xml.Elements() 
+    xml.Elements()
     |> Seq.groupBy (fun x -> x.Name.LocalName)
     |> Seq.map (fun (key, childs) ->
         match Seq.toList childs with
         | [child] -> key, fromXml child
         | children -> key + "s", createArray children )
-        
+
   // Concatenate elements produced for child elements & attributes
   Array.append (Array.ofList attrs) (Array.ofSeq children)
   |> JsonValue.Record
@@ -111,7 +111,7 @@ When converting JSON value to XML, we fact the same mismatch. Consider the follo
 
 The top-level record does not have a name, so our conversion produces a list of `XObject`
 values that can be wrapped into an `XElement` by the user (who has to specify the root
-name). Record fields that are a primitive value are turned into attributes, while 
+name). Record fields that are a primitive value are turned into attributes, while
 complex values (array or record) become objects:
 
     [lang=xml]
@@ -123,21 +123,21 @@ complex values (array or record) become objects:
       <paging current="1" />
     </root>
 
-The conversion function is, again, implemented as a recursive function. This time, we use 
+The conversion function is, again, implemented as a recursive function. This time, we use
 pattern matching to distinguish between the different possible cases of `JsonValue`.
 The cases representing a primitive value simply return the value as `obj`, while array
 and record construct nested element(s) or attribute:
 
 *)
 
-/// Creates an XML representation of a JSON value (works 
+/// Creates an XML representation of a JSON value (works
 /// only when the top-level value is an object or an array)
 let toXml(x:JsonValue) =
-  // Helper functions for constructing XML 
+  // Helper functions for constructing XML
   // attributes and XML elements
-  let attr name value = 
+  let attr name value =
     XAttribute(XName.Get name, value) :> XObject
-  let elem name (value:obj) = 
+  let elem name (value:obj) =
     XElement(XName.Get name, value) :> XObject
 
   // Inner recursive function that implements the conversion
@@ -146,25 +146,25 @@ let toXml(x:JsonValue) =
     | JsonValue.Null -> null
     | JsonValue.Boolean b -> b :> obj
     | JsonValue.Number number -> number :> obj
-    | JsonValue.Float number -> number :> obj
+    | JsonValue.Float (number,_) -> number :> obj
     | JsonValue.String s -> s :> obj
 
     // JSON object becomes a collection of XML
     // attributes (for primitives) or child elements
-    | JsonValue.Record properties -> 
-      properties 
+    | JsonValue.Record properties ->
+      properties
       |> Array.map (fun (key, value) ->
           match value with
           | JsonValue.String s -> attr key s
           | JsonValue.Boolean b -> attr key b
           | JsonValue.Number n -> attr key n
-          | JsonValue.Float n -> attr key n
+          | JsonValue.Float (n, _) -> attr key n
           | _ -> elem key (toXml value)) :> obj
 
-    // JSON array is turned into a 
+    // JSON array is turned into a
     // sequence of <item> elements
-    | JsonValue.Array elements -> 
-        elements |> Array.map (fun item -> 
+    | JsonValue.Array elements ->
+        elements |> Array.map (fun item ->
           elem "item" (toXml item)) :> obj
 
   // Perform the conversion and cast the result to sequence
