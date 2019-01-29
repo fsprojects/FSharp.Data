@@ -353,6 +353,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
   /// Saves CSV to the specified file
   member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
+    if File.Exists(path) then File.Delete(path)
     let writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
 
