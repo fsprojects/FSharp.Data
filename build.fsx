@@ -47,7 +47,6 @@ let installed =
 
 printfn "Desired .NET SDK version = %s" desiredSdkVersion
 printfn "DotNetCli.isInstalled() = %b" installed
-let useMsBuildToolchain = Environment.environVar "USE_MSBUILD" <> null
 
 let installDesiredVersion () =
   DotNet.install (fun v -> { v with Version = DotNet.Version desiredSdkVersion }) (DotNet.Options.Create ())
@@ -150,15 +149,6 @@ let logResults label lines =
   |> Trace.tracefn "%s:\n\t%s" label
 
 Target.create "Build" <| fun _ ->
- if useMsBuildToolchain then
-    buildProjs |> Seq.iter (fun proj ->
-        DotNet.restore ( fun o -> { o with Common = setSdkPathAndVerbose o.Common }) proj)
-
-    buildProjs |> Seq.iter (fun proj ->
-        let projName = System.IO.Path.GetFileNameWithoutExtension proj
-        MSBuild.runRelease (fun opts -> { opts with Properties = ["SourceLinkCreate", "true"] }) null "Build" [projName]
-        |> logResults (sprintf "%s-Output:" projName))
- else
     // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
     buildProjs |> Seq.iter (fun proj ->
       DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
@@ -168,23 +158,10 @@ Target.create "Build" <| fun _ ->
 
 Target.create "BuildTests" <| fun _ ->
   for testProj in testProjs do
-    if useMsBuildToolchain then
-        DotNet.restore ( fun o -> { o with Common = setSdkPathAndVerbose o.Common }) testProj
-        MSBuild.runRelease id null "Build" [testProj]
-        |> logResults "BuildTests.DesignTime-Output"
-    else
         DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
                                         Configuration = DotNet.BuildConfiguration.Release }) testProj
 
 Target.create "RunTests" <| fun _ ->
- if useMsBuildToolchain then
-       for testName in testNames do
-           !! (sprintf "tests/*/bin/Release/net461/%s.dll" testName)
-           |> NUnit3.run (fun p ->
-               { p with
-                   TimeOut = TimeSpan.FromMinutes 20.
-                   TraceLevel = NUnit3.NUnit3TraceLevel.Info })
- else
     for testProj in testProjs do
         DotNet.test (fun p -> { p with Configuration = DotNet.BuildConfiguration.Release
                                        Common = setSdkPathAndVerbose p.Common }) testProj
