@@ -1,3 +1,6 @@
+#### 3.0.1 - March 03 2019
+* Fix for excessive memory usage (incorprating latest TPSDK)
+
 #### 3.0.0 - October 14 2018
 * Add GetSchema method in XML type provider.
 
