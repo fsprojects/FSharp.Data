@@ -1,4 +1,4 @@
-#### 3.0.1 - March 03 2019
+#### 3.0.1 - March 21 2019
 * Fix for excessive memory usage (incorprating latest TPSDK)
 
 #### 3.0.0 - October 14 2018
