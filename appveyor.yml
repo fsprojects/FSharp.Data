@@ -12,11 +12,6 @@ build_script:
 matrix:
   fast_finish: true
 
-environment:
-    matrix:
-      - USE_MSBUILD: 1
-      - USE_DOTNET: 1
-  
 test: off
 
 artifacts:
