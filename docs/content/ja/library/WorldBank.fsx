@@ -47,7 +47,7 @@ data
 
 ### 世界銀行のデータをチャート表示する
 
-[FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) ライブラリを使うと
+[FSharp.Charting](https://fslab.org/FSharp.Charting/) ライブラリを使うと
 大学進学率の変遷を簡単に図表にできます：
 
 *)

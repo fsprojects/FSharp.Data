@@ -1,4 +1,4 @@
-(** 
+﻿(** 
 # F# Data: CSV 型プロバイダー
 
 この記事ではCSV 型プロバイダーを使って
@@ -87,7 +87,7 @@ for row in msft.Rows do
 
 ### 株価のチャート表示
 
-[FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) ライブラリを使うと
+[FSharp.Charting](https://fslab.org/FSharp.Charting/) ライブラリを使うと
 上場からのMSFTの株価変化を単純な折れ線チャートとして描画できます：
 *)
 
