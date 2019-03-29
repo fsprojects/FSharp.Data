@@ -1,5 +1,9 @@
 #### 3.0.3 - March 28 2019
-* Fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)
+* [Fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
+* [NameUtils/Pluralizer: Fix unusual singularizations for some common words (choices; releases)](https://github.com/fsharp/FSharp.Data/pull/1226) 
+* [Reduced cache time to partially address possible excess memory usage](https://github.com/fsharp/FSharp.Data/pull/1254)  
+* [Update TPSDK and paket](https://github.com/fsharp/FSharp.Data/pull/1250)
+* [Fixed undisposed writers in CSV saving](https://github.com/fsharp/FSharp.Data/pull/1248)
 
 #### 3.0.1 - March 21 2019
 * Fix for excessive memory usage (incorprating latest TPSDK)
