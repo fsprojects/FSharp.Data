@@ -304,7 +304,13 @@ module internal ProviderHelpers =
                     match fileToWatch with
                     | Some file ->
                         let name = sprintf "%s [%d]" fullTypeName tp.Id
-                        let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                        // Hold a weak reference to the type provider instance.  If the TP instance is leaked
+                        // and not held strongly by anyone else, then don't hold it strongly here.
+                        let tpref = WeakReference<_>(tp)
+                        let invalidateAction() = 
+                            match tpref.TryGetTarget() with
+                            | true, tp -> tp.InvalidateOneType(fullTypeName)
+                            | _ -> ()
                         Some (watchForChanges file (name, invalidateAction))
                     | None -> None
                 
