@@ -283,7 +283,7 @@ module internal ProviderHelpers =
                 else
                     failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
     
-    let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 30.0)
     let private activeDisposeActions = HashSet<_>()
 
     // Cache generated types for a short time, since VS invokes the TP multiple tiems
