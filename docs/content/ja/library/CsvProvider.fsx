@@ -1,11 +1,8 @@
-(** 
+﻿(** 
 # F# Data: CSV 型プロバイダー
 
 この記事ではCSV 型プロバイダーを使って
 静的に型付けされた方法でCSVファイルを扱う方法を紹介します。
-この型プロバイダーは [Try F#](http://www.tryfsharp.org) のWebサイトにある
-"Financial Computing" のチュートリアルとよく似ています。
-したがってそちらを参考にするともう少し多くの例が見つけられるでしょう。
 
 CSV 型プロバイダーは入力としてサンプルとなるCSVを受け取り、
 このサンプル内の列データを元にした型を生成します。
@@ -87,7 +84,7 @@ for row in msft.Rows do
 
 ### 株価のチャート表示
 
-[FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) ライブラリを使うと
+[FSharp.Charting](https://fslab.org/FSharp.Charting/) ライブラリを使うと
 上場からのMSFTの株価変化を単純な折れ線チャートとして描画できます：
 *)
 

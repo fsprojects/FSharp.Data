@@ -2,8 +2,7 @@
 # F# Data: CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
-in a statically typed way. This type provider is similar to the one used on the [Try F#](http://www.tryfsharp.org)
-web site in the "Financial Computing" tutorial, so you can find additional examples there.
+in a statically typed way.
 
 The CSV type provider takes a sample CSV as input and generates a type based on the data
 present on the columns of that sample. The column names are obtained from the first
@@ -72,7 +71,7 @@ be parsed as dates) while HLOC prices are inferred as `decimal`.
 
 ### Charting stock prices
 
-We can use the [FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) library to draw a simple line chart showing how the price
+We can use the [FSharp.Charting](https://fslab.org/FSharp.Charting/) library to draw a simple line chart showing how the price
 of MSFT stocks changes since the company was founded:
 *)
 

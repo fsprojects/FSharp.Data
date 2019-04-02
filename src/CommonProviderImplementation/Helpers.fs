@@ -283,7 +283,7 @@ module internal ProviderHelpers =
                 else
                     failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
     
-    let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 30.0)
     let private activeDisposeActions = HashSet<_>()
 
     // Cache generated types for a short time, since VS invokes the TP multiple tiems
@@ -304,7 +304,13 @@ module internal ProviderHelpers =
                     match fileToWatch with
                     | Some file ->
                         let name = sprintf "%s [%d]" fullTypeName tp.Id
-                        let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                        // Hold a weak reference to the type provider instance.  If the TP instance is leaked
+                        // and not held strongly by anyone else, then don't hold it strongly here.
+                        let tpref = WeakReference<_>(tp)
+                        let invalidateAction() = 
+                            match tpref.TryGetTarget() with
+                            | true, tp -> tp.InvalidateOneType(fullTypeName)
+                            | _ -> ()
                         Some (watchForChanges file (name, invalidateAction))
                     | None -> None
                 

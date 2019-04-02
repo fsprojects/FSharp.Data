@@ -347,19 +347,19 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
           writer.Write item)
 
   /// Saves CSV to the specified stream
-  member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) = 
-    let writer = new StreamWriter(stream)
+  member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) =
+    use writer = new StreamWriter(stream, System.Text.UTF8Encoding(false, true), 1024, true)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
   /// Saves CSV to the specified file
   member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
     if File.Exists(path) then File.Delete(path)
-    let writer = new StreamWriter(File.OpenWrite(path))
+    use writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
 
   /// Saves CSV to a string
-  member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 
-     let writer = new StringWriter()
+  member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) =
+     use writer = new StringWriter()
      x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
 
