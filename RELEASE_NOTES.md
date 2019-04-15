@@ -1,5 +1,6 @@
-#### 3.0.4 - March 28 2019
+#### 3.1.1 - March 28 2019
 * [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
+* Require VS2017 or above [(due to TPSDK fix)](https://github.com/fsprojects/FSharp.TypeProviders.SDK/pull/305)
 
 #### 3.0.3 - March 28 2019
 * [Fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
