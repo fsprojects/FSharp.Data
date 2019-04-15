@@ -1,3 +1,6 @@
+#### 3.0.4 - March 28 2019
+* [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
+
 #### 3.0.3 - March 28 2019
 * [Fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
 * [NameUtils/Pluralizer: Fix unusual singularizations for some common words (choices; releases)](https://github.com/fsharp/FSharp.Data/pull/1226) 
