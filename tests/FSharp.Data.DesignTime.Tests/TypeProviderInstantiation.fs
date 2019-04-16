@@ -173,7 +173,6 @@ type TypeProviderInstantiation =
 
     member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)
-        let runtimeAssemblyRefs = (runtimeAssembly :: runtimeAssemblyRefs) |> List.distinct
         let output =
             let tp, t = x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs
             Testing.FormatProvidedType(tp, t, signatureOnly, ignoreOutput, 10, 100)
