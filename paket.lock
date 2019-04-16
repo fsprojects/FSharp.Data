@@ -16,9 +16,9 @@ GITHUB
     modules/Octokit/Octokit.fsx (d6d1408553b3702ddfb0de3e1f0ee8c2b83aa2dc)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (b08fe13625b2ffc08529cb9350db8f86c6b3c537)
-    src/ProvidedTypes.fsi (b08fe13625b2ffc08529cb9350db8f86c6b3c537)
-    src/ProvidedTypesTesting.fs (b08fe13625b2ffc08529cb9350db8f86c6b3c537)
+    src/ProvidedTypes.fs (c8fc89b0e8bac34e321372b004de76d600651cda)
+    src/ProvidedTypes.fsi (c8fc89b0e8bac34e321372b004de76d600651cda)
+    src/ProvidedTypesTesting.fs (c8fc89b0e8bac34e321372b004de76d600651cda)
 GROUP fs31
 RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
