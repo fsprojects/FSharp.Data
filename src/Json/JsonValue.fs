@@ -155,6 +155,23 @@ type private JsonParser(jsonText:string) =
     let skipWhitespace() =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
+    let skipLine() =
+        while i < s.Length && not (s.[i] = '\n') do
+            i <- i+1
+        i <- i+1
+        skipWhitespace()
+
+    let skipMultiLineComment()=
+        while i < s.Length && not (String.Equals(s.[i..i+1],"*/")) do
+            i <- i+1
+        i <- i+2
+        skipWhitespace()
+
+    let skipComments()=
+        if String.Equals(s.[i..i+1],"//") then
+            skipLine()
+        elif String.Equals(s.[i..i+1],"/*") then
+            skipMultiLineComment()
     let isNumChar c =
       Char.IsDigit c || c = '.' || c='e' || c='E' || c='+' || c='-'
     let throw() =
@@ -170,6 +187,7 @@ type private JsonParser(jsonText:string) =
     let rec parseValue() =
         skipWhitespace()
         ensure(i < s.Length)
+        skipComments()
         match s.[i] with
         | '"' -> JsonValue.String(parseString())
         | '-' -> parseNum()
@@ -184,6 +202,7 @@ type private JsonParser(jsonText:string) =
     and parseRootValue() =
         skipWhitespace()
         ensure(i < s.Length)
+        skipComments()
         match s.[i] with
         | '{' -> parseObject()
         | '[' -> parseArray()
@@ -263,13 +282,16 @@ type private JsonParser(jsonText:string) =
         ensure(i < s.Length && s.[i] = '{')
         i <- i + 1
         skipWhitespace()
+        skipComments()
         let pairs = ResizeArray<_>()
         if i < s.Length && s.[i] = '"' then
+
             pairs.Add(parsePair())
             skipWhitespace()
             while i < s.Length && s.[i] = ',' do
                 i <- i + 1
                 skipWhitespace()
+                skipComments()
                 pairs.Add(parsePair())
                 skipWhitespace()
         ensure(i < s.Length && s.[i] = '}')
@@ -280,6 +302,7 @@ type private JsonParser(jsonText:string) =
         ensure(i < s.Length && s.[i] = '[')
         i <- i + 1
         skipWhitespace()
+        skipComments()
         let vals = ResizeArray<_>()
         if i < s.Length && s.[i] <> ']' then
             vals.Add(parseValue())
@@ -289,6 +312,7 @@ type private JsonParser(jsonText:string) =
                 skipWhitespace()
                 vals.Add(parseValue())
                 skipWhitespace()
+                skipComments()
         ensure(i < s.Length && s.[i] = ']')
         i <- i + 1
         JsonValue.Array(vals.ToArray())
