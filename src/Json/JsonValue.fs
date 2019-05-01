@@ -286,7 +286,7 @@ type private JsonParser(jsonText:string) =
         JsonValue.Array(vals.ToArray())
 
     and parseLiteral(expected, r) =
-        ensure(i+expected.Length < s.Length)
+        ensure(i+expected.Length <= s.Length)
         for j in 0 .. expected.Length - 1 do
             ensure(s.[i+j] = expected.[j])
         i <- i + expected.Length
