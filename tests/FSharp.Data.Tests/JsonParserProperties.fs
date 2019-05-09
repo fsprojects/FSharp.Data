@@ -130,12 +130,31 @@ let unescape s =
     let r = new Text.RegularExpressions.Regex("(\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})")
     r.Replace(s, convert)
 
+let stringifyUsingAsync (jsonValue: JsonValue) =
+    async {
+        use w = new IO.StringWriter()
+        do! jsonValue.AsyncWriteTo(w, JsonSaveOptions.DisableFormatting)
+        return w.ToString()
+    }
+    |> Async.RunSynchronously
+
 [<Test>]
 let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
     Arb.register<Generators>() |> ignore
 
     let parseStringified (json: JsonValue) =
         json.ToString(JsonSaveOptions.DisableFormatting)
+        |> JsonValue.Parse = json
+
+    Check.One ({Config.QuickThrowOnFailure with MaxTest = 1000},
+               parseStringified)
+
+[<Test>]
+let  ``Parsing stringified JsonValue returns the same JsonValue (async)`` () =
+    Arb.register<Generators>() |> ignore
+
+    let parseStringified (json: JsonValue) =
+        stringifyUsingAsync json
         |> JsonValue.Parse = json
 
     Check.One ({Config.QuickThrowOnFailure with MaxTest = 1000},
@@ -157,6 +176,21 @@ let ``Stringifying parsed string returns the same string`` () =
               (Prop.forAll jsonStringArb stringifyParsed))
 
 [<Test>]
+let ``Stringifying parsed string returns the same string (async)`` () =
+    let stringifyParsed (s : string) =
+        let jsonValue = JsonValue.Parse s
+        let jsonConverted = stringifyUsingAsync jsonValue
+        if jsonConverted = s then
+            true
+        else
+            unescape s = jsonConverted
+
+    let jsonStringArb = Arb.fromGen (jsonStringGen)
+
+    Check.One ({Config.QuickThrowOnFailure with MaxTest = 10000},
+              (Prop.forAll jsonStringArb stringifyParsed))
+
+[<Test>]
 let ``Stringifing parsed string returns the same string (unicode)`` () =
     let input = "{\"=\\u21DB1's8\":27670116086083.0138369}"
     let jsonValue = JsonValue.Parse input
@@ -165,9 +199,25 @@ let ``Stringifing parsed string returns the same string (unicode)`` () =
     Assert.AreEqual(unescape input, jsonConverted)
 
 [<Test>]
+let ``Stringifing parsed string returns the same string (unicode async)`` () =
+    let input = "{\"=\\u21DB1's8\":27670116086083.0138369}"
+    let jsonValue = JsonValue.Parse input
+    let jsonConverted = stringifyUsingAsync jsonValue
+    Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
+    Assert.AreEqual(unescape input, jsonConverted)
+
+[<Test>]
 let ``Stringifing parsed string returns the same string (UNICODE)`` () =
     let input = "{\"=\\U001000111's8\":27670116086083.0138369}"
     let jsonValue = JsonValue.Parse input
     let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)
+    Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
+    Assert.AreEqual(unescape input, jsonConverted)
+
+[<Test>]
+let ``Stringifing parsed string returns the same string (UNICODE async)`` () =
+    let input = "{\"=\\U001000111's8\":27670116086083.0138369}"
+    let jsonValue = JsonValue.Parse input
+    let jsonConverted = stringifyUsingAsync jsonValue
     Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
     Assert.AreEqual(unescape input, jsonConverted)

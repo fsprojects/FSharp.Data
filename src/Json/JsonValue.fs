@@ -16,6 +16,7 @@ open System.Globalization
 open System.Runtime.InteropServices
 open System.Text
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
@@ -115,6 +116,83 @@ type JsonValue =
           | '"'  -> w.Write "\\\""
           | '\\' -> w.Write "\\\\"
           | _    -> w.Write c
+
+  /// Serializes the JsonValue to the specified System.IO.TextWriter asynchronously.
+  member x.AsyncWriteTo (w: TextWriter, saveOptions) =
+    let newLine =
+      if saveOptions = JsonSaveOptions.None then
+        fun indentation plus -> async {
+          do! w.AsyncWriteLine()
+          return! System.String(' ', indentation + plus) |> w.AsyncWrite
+        }
+      else
+        fun _ _ -> async.Return ()
+
+    let propSep =
+      if saveOptions = JsonSaveOptions.None then "\": "
+      else "\":"
+
+    let rec serialize indentation = function
+      | Null -> w.AsyncWrite "null"
+      | Boolean b -> w.AsyncWrite(if b then "true" else "false")
+      | Number number -> w.AsyncWrite(number.ToString())
+      | Float number -> w.AsyncWrite(number.ToString())
+      | String s ->
+        async {
+          do! w.AsyncWrite "\""
+          do! JsonValue.AsyncJsonStringEncodeTo w s
+          return! w.AsyncWrite "\""
+        }
+      | Record properties ->
+        async {
+          do! w.AsyncWrite "{"
+          for i = 0 to properties.Length - 1 do
+            let k,v = properties.[i]
+            if i > 0 then w.Write ","
+            do! newLine indentation 2
+            do! w.AsyncWrite "\""
+            do! JsonValue.AsyncJsonStringEncodeTo w k
+            do! w.AsyncWrite propSep
+            do! serialize (indentation + 2) v
+          do! newLine indentation 0
+          return! w.AsyncWrite "}"
+        }
+      | Array elements ->
+        async {
+          do! w.AsyncWrite "["
+          for i = 0 to elements.Length - 1 do
+            if i > 0 then do! w.AsyncWrite ","
+            do! newLine indentation 2
+            do! serialize (indentation + 2) elements.[i]
+          if elements.Length > 0 then
+            do! newLine indentation 0
+          return! w.AsyncWrite "]"
+        }
+
+    serialize 0 x
+
+  // Encode characters that are not valid in JS string. The implementation is based
+  // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+  static member internal AsyncJsonStringEncodeTo (w:TextWriter) (value:string) =
+    if String.IsNullOrEmpty value then async.Return ()
+    else async {
+      for i = 0 to value.Length - 1 do
+        let c = value.[i]
+        let ci = int c
+        do!
+          if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
+            w.AsyncWrite(ci.ToString("\\u{0:x4}"))
+          else
+            match c with
+            | '\b' -> w.AsyncWrite "\\b"
+            | '\t' -> w.AsyncWrite "\\t"
+            | '\n' -> w.AsyncWrite "\\n"
+            | '\f' -> w.AsyncWrite "\\f"
+            | '\r' -> w.AsyncWrite "\\r"
+            | '"'  -> w.AsyncWrite "\\\""
+            | '\\' -> w.AsyncWrite "\\\\"
+            | _    -> w.AsyncWrite c
+    }
 
   member x.ToString saveOptions =
     let w = new StringWriter(CultureInfo.InvariantCulture)
