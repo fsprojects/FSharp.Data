@@ -148,7 +148,7 @@ type JsonValue =
           do! w.AsyncWrite "{"
           for i = 0 to properties.Length - 1 do
             let k,v = properties.[i]
-            if i > 0 then w.Write ","
+            if i > 0 then do! w.AsyncWrite ","
             do! newLine indentation 2
             do! w.AsyncWrite "\""
             do! JsonValue.AsyncJsonStringEncodeTo w k
@@ -221,6 +221,7 @@ module JsonValue =
 // --------------------------------------------------------------------------------------
 // JSON parser
 // --------------------------------------------------------------------------------------
+
 
 type private JsonParser(jsonText:string) =
 
@@ -417,11 +418,17 @@ type JsonValue with
     let text = reader.ReadToEnd()
     JsonParser(text).Parse()
 
+  /// Loads JSON from the specified reader asynchronously
+  static member AsyncLoad(reader:TextReader) = async {
+    let! text = reader.ReadToEndAsync() |> Async.AwaitTask
+    return JsonParser(text).Parse()
+  }
+
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {
     let encoding = defaultArg encoding Encoding.UTF8
     let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" encoding.WebName uri
-    let text = reader.ReadToEnd()
+    let! text = reader.ReadToEndAsync() |> Async.AwaitTask
     return JsonParser(text).Parse()
   }
 

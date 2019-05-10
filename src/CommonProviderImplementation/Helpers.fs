@@ -143,6 +143,11 @@ module internal ProviderHelpers =
         let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) 
         Expr.Let(f, convFunc, body) 
 
+    let asyncReturn (resultType:Type) (valueAsync: Expr) =
+        let m = typeof<AsyncBuilder>.GetMethod("Return")
+        let m = ProvidedTypeBuilder.MakeGenericMethod(m, [resultType])
+        Expr.Call(<@@ async @@>, m, [valueAsync])
+
     let some (typ:Type) arg =
         let unionType = typedefof<option<_>>.MakeGenericType typ
         let meth = unionType.GetMethod("Some")
@@ -160,6 +165,8 @@ module internal ProviderHelpers =
           RepresentationType : Type
           // the constructor from a text reader to the representation
           CreateFromTextReader : Expr<TextReader> -> Expr
+          // the constructor from a text reader to the representation
+          CreateAsyncFromTextReader : Expr<TextReader> -> Expr
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 
@@ -426,6 +433,15 @@ module internal ProviderHelpers =
                                          <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @> 
                                          |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
+          yield m :> _
+
+          // Generate static AsyncLoad reader method
+          let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+          let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, isStatic = true, 
+                                    invokeCode = fun (Singleton reader) ->  
+                                        let reader = reader |> Expr.Cast 
+                                        reader |> spec.CreateAsyncFromTextReader)
+          m.AddXmlDoc <| sprintf "Loads %s from the specified reader" formatName
           yield m :> _
         
           // Generate static AsyncLoad uri method

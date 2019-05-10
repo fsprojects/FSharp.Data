@@ -11,6 +11,7 @@ open NUnit.Framework
 open System
 open FSharp.Data
 open FsCheck
+open FSharp.Data.Tests.MockStreams
 
 #if INTERACTIVE
 Runner.init.Force()
@@ -132,9 +133,10 @@ let unescape s =
 
 let stringifyUsingAsync (jsonValue: JsonValue) =
     async {
-        use w = new IO.StringWriter()
+        use u = new IO.StringWriter()
+        use w = new AsyncTextWriter(u)
         do! jsonValue.AsyncWriteTo(w, JsonSaveOptions.DisableFormatting)
-        return w.ToString()
+        return u.ToString()
     }
     |> Async.RunSynchronously
 

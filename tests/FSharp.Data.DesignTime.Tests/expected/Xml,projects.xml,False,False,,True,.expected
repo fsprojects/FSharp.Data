@@ -3,6 +3,10 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "projects.xml"), f)
 
+    static member AsyncLoad: reader:System.IO.TextReader -> XmlProvider+Ordercontainer async
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(XmlElement.AsyncCreate(reader), f)
+
     static member AsyncLoad: uri:string -> XmlProvider+Ordercontainer async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)

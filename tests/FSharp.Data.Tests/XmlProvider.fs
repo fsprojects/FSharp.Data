@@ -12,6 +12,7 @@ open System.Xml.Linq
 open NUnit.Framework
 open FsUnit
 open FSharp.Data
+open FSharp.Data.Tests.MockStreams
 
 [<Test>]
 let ``Can control type inference`` () =
@@ -66,6 +67,17 @@ let ``Jim should have a last name of Smith``() =
 [<Test>]
 let ``Jim should have an age of 24``() =
     nextPerson.Age |> should equal 24
+
+[<Test>]
+let ``Can load async``() =
+    let authors =
+        use reader = new IO.StringReader(newXml)
+        use reader = new AsyncTextReader(reader)
+        PersonXml.AsyncLoad(reader)
+        |> Async.RunSynchronously
+    authors.Author.Name |> should equal "Jane"
+    authors.Author.Surname |> should equal "Doe"
+    authors.Author.Age |> should equal 23
 
 [<Test>]
 let ``Type of attribute with empty value is string`` =

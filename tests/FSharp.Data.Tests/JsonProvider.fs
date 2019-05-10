@@ -13,6 +13,7 @@ open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
+open FSharp.Data.Tests.MockStreams
 
 type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
@@ -261,6 +262,25 @@ let ``Can parse inlined properties``() =
 [<Test>]
 let ``Can parse inlined properties but read from file``() = 
     let person = InlinedJSON.Load("Data/Simple.json")
+
+    person.FirstName
+    |> should equal "John"
+
+    person.LastName
+    |> should equal "Doe"
+
+    person.Age
+    |> should equal 25
+
+    person.IsCool
+    |> should equal true
+
+[<Test>]
+let ``Can load asynchronously from TextReader``() =
+    let person =
+        use reader = new IO.StreamReader("Data/Simple.json")
+        use reader = new AsyncTextReader(reader)
+        InlinedJSON.AsyncLoad(reader) |> Async.RunSynchronously
 
     person.FirstName
     |> should equal "John"

@@ -21,6 +21,7 @@
     </Content>
     <Compile Include="Http.fs" />
     <Compile Include="MockServer.fs" />
+    <Compile Include="MockStreams.fs" />
     <Compile Include="HttpIntegrationTests.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
