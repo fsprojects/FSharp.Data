@@ -408,6 +408,26 @@ let ``Can duplicate own rows``() =
   row.Column3 |> should equal 1.92
 
 [<Test>]
+let ``Can duplicate own rows (async)``() =
+  async {
+    let csv = SimpleWithStrCsv.GetSample()
+    let csv' = csv.Append csv.Rows
+    use s = new MemoryStream()
+    use writer = new MockStreams.AsyncTextWriter(s)
+    do! csv'.AsyncSave(writer)
+    do! writer.FlushAsync() |> Async.AwaitTask
+    s.Seek(0L, SeekOrigin.Begin) |> ignore
+    use reader = new StreamReader(s)
+    let! reParsed = SimpleWithStrCsv.AsyncLoad(reader)
+    reParsed.Rows |> Seq.length |> should equal 4
+    let row = reParsed.Rows |> Seq.item 3
+    row.Column1 |> should equal true
+    row.ColumnB |> should equal "Freddy"
+    row.Column3 |> should equal 1.92
+  }
+  |> Async.RunSynchronously
+
+[<Test>]
 let ``Create particular row``() = 
   let row = new SimpleWithStrCsv.Row(true, "Second col", 42.5M)
 

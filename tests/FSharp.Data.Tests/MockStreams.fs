@@ -13,6 +13,7 @@ type AsyncTextReader(underlying: TextReader) =
     override this.ReadBlockAsync(buf, start, len) = underlying.ReadBlockAsync(buf, start, len)
     override this.ReadLineAsync() = underlying.ReadLineAsync()
     override this.ReadToEndAsync() = underlying.ReadToEndAsync()
+    new(s: Stream) = new AsyncTextReader(new StreamReader(s))
 
 /// Checks that all writes are asynchronous.
 type AsyncTextWriter(underlying: TextWriter) =
@@ -24,3 +25,4 @@ type AsyncTextWriter(underlying: TextWriter) =
     override this.WriteLineAsync() = underlying.WriteLineAsync()
     override this.WriteLineAsync(s: string) = underlying.WriteLineAsync(s)
     override this.WriteLineAsync(c: char) = underlying.WriteLineAsync(c)
+    new(s: Stream) = new AsyncTextWriter(new StreamWriter(s, AutoFlush = true))
