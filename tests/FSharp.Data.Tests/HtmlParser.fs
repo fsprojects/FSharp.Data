@@ -22,9 +22,7 @@ let getTables includeLayoutTables =
           PreferOptionals = false }
     HtmlRuntime.getTables (Some parameters) includeLayoutTables
 
-[<Test>]
-let ``Can handle unclosed tags correctly``() = 
-    let simpleHtml = """<html>
+let simpleHtml = """<html>
                          <head>
                             <script language="JavaScript" src="/bwx_generic.js"></script>
                             <link rel="stylesheet" type="text/css" href="/bwx_style.css">
@@ -37,6 +35,9 @@ let ``Can handle unclosed tags correctly``() =
                             </table>
                         </body>
                     </html>"""
+
+[<Test>]
+let ``Can handle unclosed tags correctly``() = 
     let result = HtmlDocument.Parse simpleHtml
     
     let expected = 
@@ -65,6 +66,15 @@ let ``Can handle unclosed tags correctly``() =
                                                        [ HtmlNode.NewElement("td", [ HtmlNode.NewText "1" ])
                                                          HtmlNode.NewElement("td", [ HtmlNode.NewText "yes" ]) ]) ]) ]) ]) ]
     result |> should equal expected
+
+[<Test>]
+let ``Can write asynchronously``() =
+    let document = HtmlDocument.Parse simpleHtml
+    let str = document.ToString()
+    use sw = new System.IO.StringWriter()
+    use asw = new MockStreams.AsyncTextWriter(sw)
+    document.AsyncWriteTo(asw) |> Async.RunSynchronously
+    sw.ToString() |> should equal str
 
 [<Test>]
 let ``Can handle unclosed divs inside lis correctly``() = 

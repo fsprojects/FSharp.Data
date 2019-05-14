@@ -9,6 +9,7 @@ open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
 open System.Runtime.InteropServices
+open FSharp.Data.Runtime.IO
 
 // --------------------------------------------------------------------------------------
 
@@ -143,6 +144,62 @@ type HtmlNode =
         serialize sb 0 false x |> ignore
         sb.ToString()
 
+    member x.AsyncWriteTo(w: TextWriter) =
+        let rec serialize indentation canAddNewLine html = async {
+            let appendEndTag (name: string) = async {
+                do! w.AsyncWrite "</"
+                do! w.AsyncWrite name
+                return! w.AsyncWrite ">"
+            }
+            let shouldAppendEndTag name =
+                name = "textarea"
+            let newLine plus = async {
+                do! w.AsyncWriteLine()
+                return! w.AsyncWrite(String(' ', indentation + plus))
+            }
+            match html with
+            | HtmlElement(name, attributes, elements) ->
+                let onlyText = elements |> List.forall (function HtmlText _ -> true | _ -> false)
+                if canAddNewLine && not onlyText then
+                    do! newLine 0
+                do! w.AsyncWrite "<"
+                do! w.AsyncWrite name
+                for HtmlAttribute(name, value) in attributes do
+                    do! w.AsyncWrite " "
+                    do! w.AsyncWrite name
+                    do! w.AsyncWrite "=\""
+                    do! w.AsyncWrite value
+                    do! w.AsyncWrite "\""
+                if elements.IsEmpty then
+                    if shouldAppendEndTag name then
+                        do! w.AsyncWrite ">"
+                        return! appendEndTag name
+                    else
+                        return! w.AsyncWrite " />"
+                else
+                    do! w.AsyncWrite ">"
+                    if not onlyText then
+                        do! newLine 2
+                    let mutable canAddNewLine = false
+                    for element in elements do
+                        do! serialize (indentation + 2) canAddNewLine element
+                        canAddNewLine <- true
+                    if not onlyText then
+                        do! newLine 0
+                    return! appendEndTag name
+            | HtmlText str -> return! w.AsyncWrite str
+            | HtmlComment str -> 
+                do! w.AsyncWrite "<!--"
+                do! w.AsyncWrite str
+                return! w.AsyncWrite "-->"
+            | HtmlCData str -> 
+                do! w.AsyncWrite "<![CDATA["
+                do! w.AsyncWrite str
+                return! w.AsyncWrite "]]>"
+        }
+        
+        serialize 0 false x
+
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
@@ -171,12 +228,23 @@ type HtmlDocument =
     static member New(children:seq<_>) = 
         HtmlDocument("", List.ofSeq children)
 
+    static member private Doctype docType =
+        if String.IsNullOrEmpty docType then "" else "<!DOCTYPE " + docType + ">" + Environment.NewLine
+
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
-            (if String.IsNullOrEmpty docType then "" else "<!DOCTYPE " + docType + ">" + Environment.NewLine)
+            HtmlDocument.Doctype docType
             +
             (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
+
+    member this.AsyncWriteTo(w: TextWriter) =
+        let (HtmlDocument(docType, elements)) = this
+        async {
+            do! w.AsyncWrite(HtmlDocument.Doctype docType)
+            for e in elements do
+                do! e.AsyncWriteTo(w)
+        }
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
