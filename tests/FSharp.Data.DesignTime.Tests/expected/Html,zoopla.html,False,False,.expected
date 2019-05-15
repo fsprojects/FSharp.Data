@@ -7,7 +7,7 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "zoopla.html"), f)
 
     static member AsyncLoad: reader:System.IO.TextReader -> HtmlProvider async
-    ExtraTopLevelOperators.DefaultAsyncBuilder.Return(HtmlDocument.Create(false, reader))
+    HtmlDocument.AsyncCreate(false, reader)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
