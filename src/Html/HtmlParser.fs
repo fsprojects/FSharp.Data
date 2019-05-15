@@ -261,10 +261,11 @@ module private TextParser =
 
     let toPattern f c = if f c then Some c else None
 
-    let (|EndOfFile|_|) (c : char) =
+    let isEndOfFile c =
         let value = c |> int
-        if (value = -1 || value = 65535) then Some c else None
+        value = -1 || value = 65535
 
+    let (|EndOfFile|_|) = toPattern isEndOfFile
     let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
     let (|LetterDigit|_|) = toPattern Char.IsLetterOrDigit
     let (|Letter|_|) = toPattern Char.IsLetter
@@ -812,100 +813,748 @@ module internal HtmlParser =
         
         !state.Tokens |> List.rev
 
-    let private parse reader =
-        let canNotHaveChildren (name:string) = 
-            match name with
-            | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
-            | "source" | "track" | "wbr" -> true
-            | _ -> false
+    let private canNotHaveChildren (name:string) = 
+        match name with
+        | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
+        | "source" | "track" | "wbr" -> true
+        | _ -> false
 
-        let isImplicitlyClosedByStartTag expectedTagEnd startTag  =
-            match expectedTagEnd, startTag with
-            | ("td"|"th") , ("tr"|"td"|"th") -> true        
-            | "tr", "tr" -> true
-            | "li", "li" -> true
-            | _ -> false
+    let private isImplicitlyClosedByStartTag expectedTagEnd startTag  =
+        match expectedTagEnd, startTag with
+        | ("td"|"th") , ("tr"|"td"|"th") -> true        
+        | "tr", "tr" -> true
+        | "li", "li" -> true
+        | _ -> false
         
-        let implicitlyCloseByStartTag expectedTagEnd startTag tokens =
-            match expectedTagEnd, startTag with
-            | ("td"|"th"), "tr"  -> 
-                // the new tr is closing the cell and previous row
-                TagEnd expectedTagEnd :: TagEnd "tr" :: tokens
-            | ("td"|"th") , ("td"|"th")
-            | "tr", "tr" 
-            | "li", "li" -> 
-                // tags are on same level, just close
-                TagEnd expectedTagEnd :: tokens
-            | _ -> tokens
+    let private implicitlyCloseByStartTag expectedTagEnd startTag tokens =
+        match expectedTagEnd, startTag with
+        | ("td"|"th"), "tr"  -> 
+            // the new tr is closing the cell and previous row
+            TagEnd expectedTagEnd :: TagEnd "tr" :: tokens
+        | ("td"|"th") , ("td"|"th")
+        | "tr", "tr" 
+        | "li", "li" -> 
+            // tags are on same level, just close
+            TagEnd expectedTagEnd :: tokens
+        | _ -> tokens
 
-        let isImplicitlyClosedByEndTag expectedTagEnd startTag  =
-            match expectedTagEnd, startTag with
-            | ("td"|"th"|"tr") , ("thead"|"tbody"|"tfoot"|"table") -> true        
-            | "li" , "ul" -> true        
-            | _ -> false
+    let private isImplicitlyClosedByEndTag expectedTagEnd startTag  =
+        match expectedTagEnd, startTag with
+        | ("td"|"th"|"tr") , ("thead"|"tbody"|"tfoot"|"table") -> true        
+        | "li" , "ul" -> true        
+        | _ -> false
         
-        let implicitlyCloseByEndTag expectedTagEnd tokens =
-            match expectedTagEnd with
-            | "td" | "th" -> 
-                // the end tag closes the cell and the row
-                TagEnd expectedTagEnd :: TagEnd "tr" ::  tokens
-            | "tr"
-            | "li" -> 
-                // Only on level need to be closed
-                TagEnd expectedTagEnd :: tokens
-            | _ -> tokens
+    let private implicitlyCloseByEndTag expectedTagEnd tokens =
+        match expectedTagEnd with
+        | "td" | "th" -> 
+            // the end tag closes the cell and the row
+            TagEnd expectedTagEnd :: TagEnd "tr" ::  tokens
+        | "tr"
+        | "li" -> 
+            // Only on level need to be closed
+            TagEnd expectedTagEnd :: tokens
+        | _ -> tokens
 
-        let rec parse' docType elements expectedTagEnd parentTagName (tokens:HtmlToken list) =
-            match tokens with
-            | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
-            | Tag(_, "br", []) :: rest ->
-                let t = HtmlText Environment.NewLine
-                parse' docType (t :: elements) expectedTagEnd parentTagName rest
-            | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(name, attributes, [])
-               parse' docType (e :: elements) expectedTagEnd parentTagName rest
-            | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
-               let e = HtmlElement(name, attributes, [])
-               parse' docType (e :: elements) expectedTagEnd parentTagName rest
-            | Tag(_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
-                // insert missing </tr> </td> or </th> when starting new row/cell/header
-                parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByStartTag expectedTagEnd name tokens)
-            | TagEnd(name) :: _ when isImplicitlyClosedByEndTag expectedTagEnd name ->
-                // insert missing </tr> </td> or </th> when starting new row/cell/header
-                parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByEndTag expectedTagEnd tokens)
+    let rec private parse' docType elements expectedTagEnd parentTagName (tokens:HtmlToken list) =
+        match tokens with
+        | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
+        | Tag(_, "br", []) :: rest ->
+            let t = HtmlText Environment.NewLine
+            parse' docType (t :: elements) expectedTagEnd parentTagName rest
+        | Tag(true, name, attributes) :: rest ->
+            let e = HtmlElement(name, attributes, [])
+            parse' docType (e :: elements) expectedTagEnd parentTagName rest
+        | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
+            let e = HtmlElement(name, attributes, [])
+            parse' docType (e :: elements) expectedTagEnd parentTagName rest
+        | Tag(_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
+            // insert missing </tr> </td> or </th> when starting new row/cell/header
+            parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByStartTag expectedTagEnd name tokens)
+        | TagEnd(name) :: _ when isImplicitlyClosedByEndTag expectedTagEnd name ->
+            // insert missing </tr> </td> or </th> when starting new row/cell/header
+            parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByEndTag expectedTagEnd tokens)
 
-            | Tag(_, name, attributes) :: rest ->
-                let dt, tokens, content = parse' docType [] name expectedTagEnd rest
-                let e = HtmlElement(name, attributes, content)
-                parse' dt (e :: elements) expectedTagEnd parentTagName tokens
-            | TagEnd name :: _ when name <> expectedTagEnd && name = parentTagName ->
-                // insert missing closing tag
-                parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
-            | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
-                // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
+        | Tag(_, name, attributes) :: rest ->
+            let dt, tokens, content = parse' docType [] name expectedTagEnd rest
+            let e = HtmlElement(name, attributes, content)
+            parse' dt (e :: elements) expectedTagEnd parentTagName tokens
+        | TagEnd name :: _ when name <> expectedTagEnd && name = parentTagName ->
+            // insert missing closing tag
+            parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
+        | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
+            // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
+            parse' docType elements expectedTagEnd parentTagName rest
+        | TagEnd _ :: rest -> 
+            docType, rest, List.rev elements
+        | Text cont :: rest ->
+            if cont = "" then
+                // ignore this token
                 parse' docType elements expectedTagEnd parentTagName rest
-            | TagEnd _ :: rest -> 
-                docType, rest, List.rev elements
-            | Text cont :: rest ->
-                if cont = "" then
-                    // ignore this token
-                    parse' docType elements expectedTagEnd parentTagName rest
-                else
-                    let t = HtmlText cont
-                    parse' docType (t :: elements) expectedTagEnd parentTagName rest
-            | Comment cont :: rest -> 
-                let c = HtmlComment cont
-                parse' docType (c :: elements) expectedTagEnd parentTagName rest
-            | CData cont :: rest -> 
-                let c = HtmlCData cont
-                parse' docType (c :: elements) expectedTagEnd parentTagName rest
-            | EOF :: _ -> docType, [], List.rev elements
-            | [] -> docType, [], List.rev elements
+            else
+                let t = HtmlText cont
+                parse' docType (t :: elements) expectedTagEnd parentTagName rest
+        | Comment cont :: rest -> 
+            let c = HtmlComment cont
+            parse' docType (c :: elements) expectedTagEnd parentTagName rest
+        | CData cont :: rest -> 
+            let c = HtmlCData cont
+            parse' docType (c :: elements) expectedTagEnd parentTagName rest
+        | EOF :: _ -> docType, [], List.rev elements
+        | [] -> docType, [], List.rev elements
+
+    let private parse reader =
         let tokens = tokenise reader 
         let docType, _, elements = tokens |> parse' "" [] "" ""
         if List.isEmpty elements then
             failwith "Invalid HTML" 
         docType, elements
+
+    type HtmlAsyncState = 
+        { Attributes : (CharList * CharList) list ref
+          CurrentTag : CharList ref
+          Content : CharList ref
+          InsertionMode : InsertionMode ref
+          Tokens : HtmlToken list ref
+          Peeked : bool ref
+          Buffer : char[] ref
+          Reader : TextReader }
+        static member Create (reader:TextReader) = 
+            { Attributes = ref []
+              CurrentTag = ref CharList.Empty
+              Content = ref CharList.Empty
+              InsertionMode = ref DefaultMode
+              Tokens = ref []
+              Peeked = ref false
+              Buffer = ref (Array.zeroCreate 1)
+              Reader = reader }
+
+        member private x.ReadBuf(start, count) =
+            async {
+                if start + count > (!x.Buffer).Length then
+                    x.Buffer := Array.zeroCreate (start + count)
+                let! readCount = x.Reader.ReadAsync(!x.Buffer, start, count) |> Async.AwaitTask
+                if readCount <= 0 then
+                    (!x.Buffer).[start] <- char -1
+                elif readCount < count then
+                    return! x.ReadBuf(start + readCount, count - readCount)
+            }
+
+        member x.Pop() =
+            if !x.Peeked then
+                x.Peeked := false; async.Return()
+            else
+                x.ReadBuf(0, 1)
+        member x.PopPeeked() =
+            assert !x.Peeked
+            x.Peeked := false
+        member x.ReadPeeked() =
+            x.PopPeeked()
+            (!x.Buffer).[0]
+        member x.Peek() =
+            async {
+                if not !x.Peeked then
+                    do! x.ReadBuf(0, 1)
+                    x.Peeked := true
+                return (!x.Buffer).[0]
+            }
+        member x.ReadChar() =
+            async {
+                if !x.Peeked then
+                    x.Peeked := false
+                else
+                    do! x.ReadBuf(0, 1)
+                return (!x.Buffer).[0]
+            }
+
+        member x.Pop(count) =
+            async { do! if !x.Peeked
+                        then x.ReadBuf(1, count - 1)
+                        else x.ReadBuf(0, count)
+                    x.Peeked := false
+                    return (!x.Buffer).[..count-1] }
+        
+        member x.Contents = (!x.Content).ToString()  
+        member x.ContentLength = (!x.Content).Length
+    
+        member x.NewAttribute() = x.Attributes := (CharList.Empty, CharList.Empty) :: (!x.Attributes)
+
+        member x.ConsAttrName() =
+            match !x.Attributes with
+            | [] -> x.NewAttribute(); x.ConsAttrName()
+            | (h,_) :: _ ->
+                async { let! c = x.ReadChar()
+                        h.Cons(Char.ToLowerInvariant(c)) }
+
+        member x.ConsPeekedAttrName() =
+            match !x.Attributes with
+            | [] -> x.NewAttribute(); x.ConsPeekedAttrName()
+            | (h,_) :: _ -> h.Cons(Char.ToLowerInvariant(x.ReadPeeked()))
+    
+        member x.CurrentTagName() = 
+            (!x.CurrentTag).ToString().Trim()
+    
+        member x.CurrentAttrName() = 
+            match !x.Attributes with
+            | [] -> String.Empty
+            | (h,_) :: _ -> h.ToString() 
+
+        member x.ConsAttrValue(c) =
+            match !x.Attributes with
+            | [] -> x.NewAttribute(); x.ConsAttrValue(c)
+            | (_,h) :: _ -> h.Cons(c)
+
+        member x.ConsPeekedAttrValue() =
+            x.ConsAttrValue(x.ReadPeeked())
+
+        member x.ConsAttrValue() =
+            async { let! c = x.ReadChar()
+                    x.ConsAttrValue(c) }
+    
+        member x.GetAttributes() = 
+            !x.Attributes 
+            |> List.choose (fun (key, value) -> 
+                if key.Length > 0
+                then Some <| HtmlAttribute(key.ToString(), value.ToString())
+                else None)
+            |> List.rev
+    
+        member x.EmitSelfClosingTag() = 
+            let name = (!x.CurrentTag).ToString().Trim()
+            let result = Tag(true, name, x.GetAttributes()) 
+            x.CurrentTag := CharList.Empty
+            x.InsertionMode := DefaultMode
+            x.Attributes := []
+            x.Tokens := result :: !x.Tokens 
+
+        member x.IsFormattedTag 
+            with get() = 
+               match x.CurrentTagName() with
+               | "pre" | "code" -> true
+               | _ -> false
+
+        member x.IsScriptTag 
+            with get() = 
+               match x.CurrentTagName().Trim().ToLower() with
+               | "script" | "style" -> true
+               | _ -> false
+
+        member x.EmitTag(isEnd) =
+            let name = (!x.CurrentTag).ToString().Trim()
+            let result = 
+                if isEnd
+                then 
+                    if x.ContentLength > 0
+                    then x.Emit(); TagEnd(name)
+                    else TagEnd(name)
+                else Tag(false, name, x.GetAttributes())
+
+            x.InsertionMode :=
+                if x.IsFormattedTag && (not isEnd) then FormattedMode
+                elif x.IsScriptTag && (not isEnd) then ScriptMode
+                else DefaultMode
+
+            x.CurrentTag := CharList.Empty
+            x.Attributes := []
+            x.Tokens := result :: !x.Tokens 
+    
+        member x.EmitToAttributeValue() =
+            assert (!x.InsertionMode = InsertionMode.CharRefMode)
+            let content = (!x.Content).ToString() |> HtmlCharRefs.substitute
+            for c in content.ToCharArray() do
+                x.ConsAttrValue c
+            x.Content := CharList.Empty
+            x.InsertionMode := DefaultMode
+
+        member x.Emit() : unit =
+            let result = 
+                let content = (!x.Content).ToString()
+                match !x.InsertionMode with
+                | DefaultMode -> 
+                    let normalizedContent = wsRegex.Value.Replace(content, " ")
+                    if normalizedContent = " " then Text "" else Text normalizedContent
+                | FormattedMode -> content |> Text
+                | ScriptMode -> content |> Text
+                | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
+                | CommentMode -> Comment content
+                | DocTypeMode -> DocType content
+                | CDATAMode -> CData (content.Replace("<![CDATA[", "").Replace("]]>", ""))
+            x.Content := CharList.Empty
+            x.InsertionMode := DefaultMode
+            match result with
+            | Text t when String.IsNullOrEmpty(t) -> ()
+            | _ -> x.Tokens := result :: !x.Tokens 
+    
+        member x.Cons() =
+            async { let! c = x.ReadChar()
+                    (!x.Content).Cons(c) }
+        member x.Cons(char) = (!x.Content).Cons(char)
+        member x.Cons(char) = Array.iter ((!x.Content).Cons) char
+        member x.Cons(char : string) = x.Cons(char.ToCharArray())
+        member x.ConsPeeked() = x.Cons(x.ReadPeeked())
+        member x.ConsPeekedTag() = 
+            match x.ReadPeeked() with
+            | TextParser.Whitespace _ -> ()
+            | a -> (!x.CurrentTag).Cons(Char.ToLowerInvariant a)
+        member x.ClearContent() = 
+            (!x.Content).Clear()
+
+    // Tokenises a stream into a sequence of HTML tokens. 
+    let private asyncTokenise reader =
+        async {
+            let state = HtmlAsyncState.Create reader
+            let rec data (state:HtmlAsyncState) =
+                async {
+                    match! state.Peek() with
+                    | '<' -> 
+                        if state.ContentLength > 0
+                        then state.Emit();
+                        else do! state.Pop()
+                             return! tagOpen state
+                    | TextParser.EndOfFile _ -> state.Tokens := EOF :: !state.Tokens
+                    | '&' ->
+                        if state.ContentLength > 0
+                        then state.Emit();
+                        else
+                            state.InsertionMode := CharRefMode
+                            return! charRef state
+                    | _ ->
+                        match !state.InsertionMode with
+                        | DefaultMode -> state.ConsPeeked(); return! data state
+                        | ScriptMode -> return! script state;
+                        | FormattedMode -> state.ConsPeeked(); return! data state
+                        | CharRefMode -> return! charRef state
+                        | DocTypeMode -> return! docType state
+                        | CommentMode -> return! comment state
+                        | CDATAMode -> return! data state
+                }
+            and script state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | ''' -> state.ConsPeeked(); return! scriptSingleQuoteString state
+                    | '"' -> state.ConsPeeked(); return! scriptDoubleQuoteString state
+                    | '/' -> state.ConsPeeked(); return! scriptSlash state
+                    | '<' -> state.PopPeeked(); return! scriptLessThanSign state
+                    | _ -> state.ConsPeeked(); return! script state
+                }
+            and scriptSingleQuoteString state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | ''' -> state.ConsPeeked(); return! script state
+                    | '\\' -> state.ConsPeeked(); return! scriptSingleQuoteStringBackslash state
+                    | _ -> state.ConsPeeked(); return! scriptSingleQuoteString state
+                }
+            and scriptDoubleQuoteString state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '"' -> state.ConsPeeked(); return! script state
+                    | '\\' -> state.ConsPeeked(); return! scriptDoubleQuoteStringBackslash state
+                    | _ -> state.ConsPeeked(); return! scriptDoubleQuoteString state
+                }
+            and scriptSingleQuoteStringBackslash state =
+                async {
+                    match! state.Peek() with
+                    | _ -> state.ConsPeeked(); return! scriptSingleQuoteString state
+                }
+            and scriptDoubleQuoteStringBackslash state =
+                async {
+                    match! state.Peek() with
+                    | _ -> state.ConsPeeked(); return! scriptDoubleQuoteString state
+                }
+            and scriptSlash state =
+                async {
+                    match! state.Peek() with
+                    | '/' -> state.ConsPeeked(); return! scriptSingleLineComment state
+                    | '*' -> state.ConsPeeked(); return! scriptMultiLineComment state
+                    | _ -> return! script state
+                }
+            and scriptMultiLineComment state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '*' -> state.ConsPeeked(); return! scriptMultiLineCommentStar state
+                    | _ -> state.ConsPeeked(); return! scriptMultiLineComment state
+                }
+            and scriptMultiLineCommentStar state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '/' -> state.ConsPeeked(); return! script state
+                    | _ -> return! scriptMultiLineComment state
+                }
+            and scriptSingleLineComment state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '\n' -> state.ConsPeeked(); return! script state
+                    | _ -> state.ConsPeeked(); return! scriptSingleLineComment state
+                }
+            and scriptLessThanSign state =
+                async {
+                    match! state.Peek() with
+                    | '/' -> state.PopPeeked(); return! scriptEndTagOpen state
+                    | '!' -> state.Cons('<'); state.ConsPeeked(); return! scriptDataEscapeStart state
+                    | _ -> state.Cons('<'); state.ConsPeeked(); return! script state
+                }
+            and scriptDataEscapeStart state =
+                async {
+                    match! state.Peek() with
+                    | '-' -> state.ConsPeeked(); return! scriptDataEscapeStartDash state
+                    | _ -> return! script state
+                }
+            and scriptDataEscapeStartDash state =
+                async {
+                    match! state.Peek() with
+                    | '-' -> state.ConsPeeked(); return! scriptDataEscapedDashDash state
+                    | _ -> return! script state
+                }
+            and scriptDataEscapedDashDash state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataEscapedDashDash state
+                    | '<' -> state.PopPeeked(); return! scriptDataEscapedLessThanSign state
+                    | '>' -> state.ConsPeeked(); return! script state
+                    | _ -> state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataEscapedLessThanSign state =
+                async {
+                    match! state.Peek() with
+                    | '/' -> state.PopPeeked(); return! scriptDataEscapedEndTagOpen state
+                    | TextParser.Letter _ -> state.Cons('<'); state.ConsPeeked(); return! scriptDataDoubleEscapeStart state
+                    | _ -> state.Cons('<'); state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataDoubleEscapeStart state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                    | TextParser.Letter _ -> state.ConsPeeked(); return! scriptDataDoubleEscapeStart state
+                    | _ -> state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataDoubleEscaped state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataDoubleEscapedDash state
+                    | '<' -> state.ConsPeeked(); return! scriptDataDoubleEscapedLessThanSign state
+                    | _ -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                }
+            and scriptDataDoubleEscapedDash state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataDoubleEscapedDashDash state
+                    | '<' -> state.ConsPeeked(); return! scriptDataDoubleEscapedLessThanSign state
+                    | _ -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                }
+            and scriptDataDoubleEscapedLessThanSign state =
+                async {
+                    match! state.Peek() with
+                    | '/' -> state.ConsPeeked(); return! scriptDataDoubleEscapeEnd state
+                    | _ -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                }
+            and scriptDataDoubleEscapeEnd state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                    | TextParser.Letter _ -> state.ConsPeeked(); return! scriptDataDoubleEscapeEnd state
+                    | _ -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                }
+            and scriptDataDoubleEscapedDashDash state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataDoubleEscapedDashDash state
+                    | '<' -> state.ConsPeeked(); return! scriptDataDoubleEscapedLessThanSign state
+                    | '>' -> state.ConsPeeked(); return! script state
+                    | _ -> state.ConsPeeked(); return! scriptDataDoubleEscaped state
+                }
+            and scriptDataEscapedEndTagOpen state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Letter _ -> return! scriptDataEscapedEndTagName state
+                    | _ -> state.Cons([|'<';'/'|]); state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataEscapedEndTagName state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ when state.IsScriptTag -> state.PopPeeked(); return! beforeAttributeName state
+                    | '/' when state.IsScriptTag -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' when state.IsScriptTag -> state.PopPeeked(); state.EmitTag(true)
+                    | '>' -> 
+                        state.Cons([|'<'; '/'|])
+                        state.Cons(state.CurrentTagName())
+                        (!state.CurrentTag).Clear()
+                        return! script state
+                    | TextParser.Letter _ -> state.ConsPeekedTag(); return! scriptDataEscapedEndTagName state
+                    | _ -> state.Cons([|'<';'/'|]); state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataEscaped state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataEscapedDash state
+                    | '<' -> return! scriptDataEscapedLessThanSign state
+                    | _ -> state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptDataEscapedDash state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | '-' -> state.ConsPeeked(); return! scriptDataEscapedDashDash state
+                    | '<' -> return! scriptDataEscapedLessThanSign state
+                    | _ -> state.ConsPeeked(); return! scriptDataEscaped state
+                }
+            and scriptEndTagOpen state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Letter _ -> return! scriptEndTagName state
+                    | _ -> state.Cons('<'); state.Cons('/'); return! script state
+                }
+            and scriptEndTagName state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); return! beforeAttributeName state
+                    | '/' when state.IsScriptTag -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' when state.IsScriptTag -> state.PopPeeked(); state.EmitTag(true)
+                    | TextParser.Letter _ -> state.ConsPeekedTag(); return! scriptEndTagName state
+                    | _ ->
+                        state.Cons([|'<'; '/'|]); 
+                        state.Cons(state.CurrentTagName()); 
+                        (!state.CurrentTag).Clear()
+                        return! script state
+                }
+            and charRef state =
+                async {
+                    match! state.Peek() with
+                    | ';' -> state.ConsPeeked(); state.Emit()
+                    | '<' -> state.Emit()
+                    | _ -> state.ConsPeeked(); return! charRef state
+                }
+            and tagOpen state =
+                async {
+                    match! state.Peek() with
+                    | '!' -> state.PopPeeked(); return! markupDeclaration state
+                    | '/' -> state.PopPeeked(); return! endTagOpen state
+                    | '?' -> state.PopPeeked(); return! bogusComment state
+                    | TextParser.Letter _ -> state.ConsPeekedTag(); return! tagName false state
+                    | _ -> state.Cons('<'); return! data state
+                }
+            and bogusComment state =
+                let rec bogusComment' (state:HtmlAsyncState) =
+                    async {
+                        let exitBogusComment state = 
+                            state.InsertionMode := CommentMode
+                            state.Emit()
+                        match! state.Peek() with
+                        | '>' -> state.ConsPeeked(); exitBogusComment state 
+                        | TextParser.EndOfFile _ -> exitBogusComment state
+                        | _ -> state.ConsPeeked(); return! bogusComment' state
+                    }
+                bogusComment' state
+            and markupDeclaration state =
+                async {
+                    match! state.Pop(2) with
+                    | [|'-';'-'|] -> return! comment state
+                    | current ->
+                        let! next = state.Pop(5)
+                        match new String(Array.append current next) with
+                        | "DOCTYPE" -> return! docType state
+                        | "[CDATA[" -> state.Cons("<![CDATA[".ToCharArray()); return! cData 0 state
+                        | _ -> return! bogusComment state
+                }
+            and cData i (state:HtmlAsyncState) =
+                async {
+                    match! state.Peek() with
+                    | ']' when i = 0 || i = 1 ->
+                        state.ConsPeeked()
+                        return! cData (i + 1) state
+                    | '>' when i = 2 ->
+                        state.ConsPeeked()
+                        state.InsertionMode := CDATAMode
+                        state.Emit()
+                    | TextParser.EndOfFile _ ->
+                        state.InsertionMode := CDATAMode
+                        state.Emit()
+                    | _ ->
+                        state.ConsPeeked()
+                        return! cData 0 state
+                }
+            and docType state =
+                async {
+                    match! state.Peek() with
+                    | '>' -> 
+                        state.PopPeeked()
+                        state.InsertionMode := DocTypeMode
+                        state.Emit()
+                    | _ -> state.ConsPeeked(); return! docType state
+                }
+            and comment state =
+                async {
+                    match! state.Peek() with
+                    | '-' -> state.PopPeeked(); return! commentEndDash state;
+                    | TextParser.EndOfFile _ -> 
+                        state.InsertionMode := CommentMode 
+                        state.Emit();
+                    | _ -> state.ConsPeeked(); return! comment state
+                }
+            and commentEndDash state =
+                async {
+                    match! state.Peek() with
+                    | '-' -> state.PopPeeked(); return! commentEndState state
+                    | TextParser.EndOfFile _ -> 
+                        state.InsertionMode := CommentMode 
+                        state.Emit();
+                    | _ -> 
+                        state.ConsPeeked(); return! comment state;
+                }
+            and commentEndState state =
+                async {
+                    match! state.Peek() with
+                    | '>' -> 
+                        state.PopPeeked();
+                        state.InsertionMode := CommentMode 
+                        state.Emit();
+                    | TextParser.EndOfFile _ -> 
+                        state.InsertionMode := CommentMode 
+                        state.Emit();
+                    | _ -> state.ConsPeeked(); return! comment state
+                }
+            and tagName isEndTag state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); return! beforeAttributeName state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(isEndTag)
+                    | _ -> state.ConsPeekedTag(); return! tagName isEndTag state
+                }
+            and selfClosingStartTag state =
+                async {
+                    match! state.Peek() with
+                    | '>' -> state.PopPeeked(); state.EmitSelfClosingTag()
+                    | TextParser.EndOfFile _ -> return! data state
+                    | _ -> return! beforeAttributeName state
+                }
+            and endTagOpen state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | TextParser.Letter _ -> state.ConsPeekedTag(); return! tagName true state
+                    | '>' -> state.PopPeeked(); return! data state
+                    | _ -> return! comment state
+                }
+            and beforeAttributeName state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); return! beforeAttributeName state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | _ -> return! attributeName state
+                }
+            and attributeName state =
+                async {
+                    match! state.Peek() with
+                    | '=' -> state.PopPeeked(); return! beforeAttributeValue state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | TextParser.LetterDigit _ -> state.ConsPeekedAttrName(); return! attributeName state
+                    | TextParser.Whitespace _ -> return! afterAttributeName state
+                    | _ -> state.ConsPeekedAttrName(); return! attributeName state
+                }
+            and afterAttributeName state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); return! afterAttributeName state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | '=' -> state.PopPeeked(); return! beforeAttributeValue state
+                    | _ -> state.NewAttribute(); return! attributeName state
+                }
+            and beforeAttributeValue state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); return! beforeAttributeValue state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | '"' -> state.PopPeeked(); return! attributeValueQuoted '"' state
+                    | '\'' -> state.PopPeeked(); return! attributeValueQuoted '\'' state
+                    | _ -> return! attributeValueUnquoted state
+                }
+            and attributeValueUnquoted (state: HtmlAsyncState) =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); state.NewAttribute(); return! beforeAttributeName state
+                    | '/' -> state.PopPeeked(); return! attributeValueUnquotedSlash state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | '&' -> 
+                        assert (state.ContentLength = 0)
+                        state.InsertionMode := InsertionMode.CharRefMode
+                        return! attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
+                    | _ -> state.ConsPeekedAttrValue(); return! attributeValueUnquoted state
+                }
+            and attributeValueUnquotedSlash state =
+                async {
+                    match! state.Peek() with
+                    | '>' -> return! selfClosingStartTag state
+                    | _ -> state.ConsAttrValue('/'); state.ConsPeekedAttrValue(); return! attributeValueUnquoted state
+                }
+            and attributeValueQuoted quote state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.EndOfFile _ -> return! data state
+                    | c when c = quote -> state.PopPeeked(); return! afterAttributeValueQuoted state
+                    | '&' -> 
+                        assert (state.ContentLength = 0)
+                        state.InsertionMode := InsertionMode.CharRefMode
+                        return! attributeValueCharRef [quote] (attributeValueQuoted quote) state
+                    | _ -> state.ConsPeekedAttrValue(); return! attributeValueQuoted quote state
+                }
+            and attributeValueCharRef stop continuation (state:HtmlAsyncState) =
+                async {
+                    match! state.Peek() with
+                    | ';' ->
+                        state.ConsPeeked()
+                        state.EmitToAttributeValue()
+                        return! continuation state
+                    | TextParser.EndOfFile _ ->
+                        state.EmitToAttributeValue()
+                        return! continuation state
+                    | c when List.exists ((=) c) stop ->
+                        state.EmitToAttributeValue()
+                        return! continuation state
+                    | _ ->
+                        state.ConsPeeked()
+                        return! attributeValueCharRef stop continuation state
+                }
+            and afterAttributeValueQuoted state =
+                async {
+                    match! state.Peek() with
+                    | TextParser.Whitespace _ -> state.PopPeeked(); state.NewAttribute(); return! afterAttributeValueQuoted state
+                    | '/' -> state.PopPeeked(); return! selfClosingStartTag state
+                    | '>' -> state.PopPeeked(); state.EmitTag(false)
+                    | _ -> return! attributeName state
+                }
+
+            let! first = state.Peek()
+            let next = ref first
+            while not (TextParser.isEndOfFile !next) do
+                   do! data state
+                   let! n = state.Peek()
+                   next := n
+        
+            return !state.Tokens |> List.rev
+        }
+
+    let private asyncParse reader =
+        async {
+            let! tokens = asyncTokenise reader 
+            let docType, _, elements = tokens |> parse' "" [] "" ""
+            if List.isEmpty elements then
+                failwith "Invalid HTML" 
+            return docType, elements
+        }
 
     /// All attribute names and tag names will be normalized to lowercase
     /// All html entities will be replaced by the corresponding characters
@@ -918,8 +1567,26 @@ module internal HtmlParser =
     /// All html entities will be replaced by the corresponding characters
     /// All the consecutive whitespace (except for `&nbsp;`) will be collapsed to a single space
     /// All br tags will be replaced by newlines
+    let asyncParseDocument reader = async {
+        let! doc = asyncParse reader
+        return HtmlDocument(doc)
+    }
+
+    /// All attribute names and tag names will be normalized to lowercase
+    /// All html entities will be replaced by the corresponding characters
+    /// All the consecutive whitespace (except for `&nbsp;`) will be collapsed to a single space
+    /// All br tags will be replaced by newlines
     let parseFragment reader = 
         parse reader |> snd
+
+    /// All attribute names and tag names will be normalized to lowercase
+    /// All html entities will be replaced by the corresponding characters
+    /// All the consecutive whitespace (except for `&nbsp;`) will be collapsed to a single space
+    /// All br tags will be replaced by newlines
+    let asyncParseFragment reader = async {
+        let! doc = asyncParse reader
+        return snd doc
+    }
 
 // --------------------------------------------------------------------------------------
 
@@ -938,6 +1605,10 @@ type HtmlDocument with
     /// Loads HTML from the specified reader
     static member Load(reader:TextReader) = 
         HtmlParser.parseDocument reader
+    
+    /// Loads HTML from the specified reader
+    static member AsyncLoad(reader:TextReader) = 
+        HtmlParser.asyncParseDocument reader
         
     /// Loads HTML from the specified uri asynchronously
     static member AsyncLoad(uri:string, [<Optional>] ?encoding) = async {

@@ -68,6 +68,14 @@ let ``Can handle unclosed tags correctly``() =
     result |> should equal expected
 
 [<Test>]
+let ``Can read asynchronously``() =
+    let syncDoc = HtmlDocument.Parse simpleHtml
+    use sr = new System.IO.StringReader(simpleHtml)
+    use atr = new MockStreams.AsyncTextReader(sr)
+    let asyncDoc = HtmlDocument.AsyncLoad(atr) |> Async.RunSynchronously
+    asyncDoc |> should equal syncDoc
+
+[<Test>]
 let ``Can write asynchronously``() =
     let document = HtmlDocument.Parse simpleHtml
     let str = document.ToString()
