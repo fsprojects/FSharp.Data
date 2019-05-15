@@ -352,8 +352,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     x.Save(writer, ?separator=separator, ?quote=quote)
 
   /// Saves CSV to the specified file
-  member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) =
-    use writer = new StreamWriter(File.OpenWrite(path))
+  member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
+    use writer = new StreamWriter(path)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
   /// Saves CSV to a string
