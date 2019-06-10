@@ -59,6 +59,18 @@ type JsonDocument =
     let value = JsonValue.Parse(text)
     JsonDocument.Create(value, "")
 
+  // This uses the reader's async API, but still reads the whole contents before parsing. TODO: implement proper async parsing.
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreate(reader:TextReader) =
+    async {
+      use reader = reader
+      let! text = reader.ReadToEndAsync() |> Async.AwaitTask
+      let value = JsonValue.Parse(text)
+      return JsonDocument.Create(value, "")
+    }
+
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]

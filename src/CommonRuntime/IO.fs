@@ -4,6 +4,7 @@ module FSharp.Data.Runtime.IO
 open System
 open System.Collections.Generic
 open System.IO
+open System.Runtime.CompilerServices
 open System.Text
 open FSharp.Data
 
@@ -239,3 +240,32 @@ let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolution
     let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
     asyncRead resolver formatName encodingStr uri |> fst
 
+[<Extension>]
+type TextExtensions =
+
+  // --------------------------------------------------------------------------------------
+  // Async write to a TextWriter
+
+  [<Extension>]
+  static member AsyncWrite(w: TextWriter, s: string) =
+#if NETSTANDARD2_0
+    w.WriteAsync(s) |> Async.AwaitTask
+#else
+    w.WriteAsync(s) |> Async.AwaitIAsyncResult |> Async.Ignore
+#endif
+
+  [<Extension>]
+  static member AsyncWrite(w: TextWriter, c: char) =
+#if NETSTANDARD2_0
+    w.WriteAsync(c) |> Async.AwaitTask
+#else
+    w.WriteAsync(c) |> Async.AwaitIAsyncResult |> Async.Ignore
+#endif
+
+  [<Extension>]
+  static member AsyncWriteLine(w: TextWriter) =
+#if NETSTANDARD2_0
+    w.WriteLineAsync() |> Async.AwaitTask
+#else
+    w.WriteLineAsync() |> Async.AwaitIAsyncResult |> Async.Ignore
+#endif

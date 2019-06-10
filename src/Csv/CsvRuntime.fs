@@ -12,6 +12,7 @@ open System.Collections.Generic
 open System.IO
 open System.Runtime.InteropServices
 open System.Text
+open FSharp.Data.Runtime.IO
 
 // --------------------------------------------------------------------------------------
 
@@ -345,6 +346,46 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
           writer.Write quote
         else
           writer.Write item)
+
+  /// Saves CSV to the specified writer asynchronously
+  member x.AsyncSave(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =
+    async {
+      let separator = (defaultArg separator x.Separators.[0]).ToString()
+      let quote = (defaultArg quote x.Quote).ToString()
+      let doubleQuote = quote + quote
+  
+      use writer = writer
+  
+      let nullSafeguard str =
+          match str with
+          | null -> String.Empty
+          | _ -> str
+  
+      let writeLine writeItem (items:string[]) =
+        async {
+          for i = 0 to items.Length-2 do
+            do! writeItem items.[i]
+            do! writer.AsyncWrite separator
+          do! writeItem items.[items.Length-1]
+          do! writer.AsyncWriteLine()
+        }
+  
+      match x.Headers with
+      | Some headers -> do! headers |> writeLine writer.AsyncWrite
+      | None -> ()
+  
+      for row in x.Rows do
+          do! row |> rowToStringArray.Invoke |> writeLine (fun item -> 
+          let item = item |> nullSafeguard
+          if item.Contains separator || item.Contains quote || item.Contains "\n"  then
+            async {
+              do! writer.AsyncWrite quote
+              do! writer.AsyncWrite (item.Replace(quote, doubleQuote))
+              do! writer.AsyncWrite quote
+            }
+          else
+              writer.AsyncWrite item)
+    }
 
   /// Saves CSV to the specified stream
   member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) =

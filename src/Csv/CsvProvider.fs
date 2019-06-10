@@ -107,14 +107,18 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                       let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
                       Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
             csvType.AddMember parseRows
-            
-            { GeneratedType = csvType
-              RepresentationType = csvType
-              CreateFromTextReader = fun reader ->
+
+            let createFromTextReader = fun reader ->
                   let body = 
                       csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, 
                                                separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
                   Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
+
+            { GeneratedType = csvType
+              RepresentationType = csvType
+              CreateFromTextReader = createFromTextReader
+              CreateAsyncFromTextReader = fun reader -> // TODO: actually read asynchronously
+                asyncReturn csvErasedType (createFromTextReader reader)
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
         
         let maxNumberOfRows = if inferRows > 0 then Some inferRows else None

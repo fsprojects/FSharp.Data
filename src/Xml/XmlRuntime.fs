@@ -91,6 +91,17 @@ type XmlElement =
     let text = reader.ReadToEnd()
     let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreate(reader:TextReader) =
+    async {
+      use reader = reader
+      let! text = reader.ReadToEndAsync() |> Async.AwaitTask
+      let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
+      return { XElement = element }
+    }
   
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
