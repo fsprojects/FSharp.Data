@@ -101,6 +101,12 @@ let ``Can parse deep arrays``() =
     |> FSharp.Data.JsonValue.Parse
     |> ignore
 
+[<Test; Explicit>]
+let ``Can parse deep objects``() =
+    (String.replicate 50000 "{\"a\":") + "\"\"" + (String.replicate 50000 "}")
+    |> FSharp.Data.JsonValue.Parse
+    |> ignore
+
 // TODO: Due to limitations in the current ISO 8601 datetime parsing these fail, and should be made to pass
 //[<Test>]
 //let ``Cant Yet parse document with basic iso date``() =
