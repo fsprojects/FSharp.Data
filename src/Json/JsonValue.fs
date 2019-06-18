@@ -174,7 +174,7 @@ type private JsonParser(jsonText:string) =
         | '"' -> JsonValue.String(parseString()) |> cont
         | '-' -> parseNum() |> cont
         | c when Char.IsDigit(c) -> parseNum() |> cont
-        | '{' -> parseObject() |> cont
+        | '{' -> parseObject cont
         | '[' -> parseArray cont
         | 't' -> parseLiteral("true", JsonValue.Boolean true) |> cont
         | 'f' -> parseLiteral("false", JsonValue.Boolean false) |> cont
@@ -243,30 +243,40 @@ type private JsonParser(jsonText:string) =
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
-    and parsePair() =
+    and parsePair cont =
         let key = parseString()
         skipWhitespace()
         ensure(i < s.Length && s.[i] = ':')
         i <- i + 1
         skipWhitespace()
-        key, parseValue id
+        parseValue (fun v -> (key, v) |> cont)
 
-    and parseObject() =
+    and parseObject cont =
         ensure(i < s.Length && s.[i] = '{')
         i <- i + 1
         skipWhitespace()
         let pairs = ResizeArray<_>()
+        let parseObjectEnd() =
+            ensure(i < s.Length && s.[i] = '}')
+            i <- i + 1
+            pairs.ToArray() |> JsonValue.Record |> cont
         if i < s.Length && s.[i] = '"' then
-            pairs.Add(parsePair())
-            skipWhitespace()
-            while i < s.Length && s.[i] = ',' do
-                i <- i + 1
+            parsePair (fun p ->
+                pairs.Add(p)
                 skipWhitespace()
-                pairs.Add(parsePair())
-                skipWhitespace()
-        ensure(i < s.Length && s.[i] = '}')
-        i <- i + 1
-        JsonValue.Record(pairs.ToArray())
+                let rec parsePairItem() =
+                    if i < s.Length && s.[i] = ',' then
+                        i <- i + 1
+                        skipWhitespace()
+                        parsePair (fun p ->
+                            pairs.Add(p)
+                            skipWhitespace()
+                            parsePairItem())
+                    else
+                        parseObjectEnd()
+                parsePairItem())
+        else
+            parseObjectEnd()
 
     and parseArray cont =
         ensure(i < s.Length && s.[i] = '[')
