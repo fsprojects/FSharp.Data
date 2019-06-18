@@ -167,18 +167,18 @@ type private JsonParser(jsonText:string) =
       if not cond then throw()
 
     // Recursive descent parser for JSON that uses global mutable index
-    let rec parseValue() =
+    let rec parseValue cont =
         skipWhitespace()
         ensure(i < s.Length)
         match s.[i] with
-        | '"' -> JsonValue.String(parseString())
-        | '-' -> parseNum()
-        | c when Char.IsDigit(c) -> parseNum()
-        | '{' -> parseObject()
-        | '[' -> parseArray()
-        | 't' -> parseLiteral("true", JsonValue.Boolean true)
-        | 'f' -> parseLiteral("false", JsonValue.Boolean false)
-        | 'n' -> parseLiteral("null", JsonValue.Null)
+        | '"' -> JsonValue.String(parseString()) |> cont
+        | '-' -> parseNum() |> cont
+        | c when Char.IsDigit(c) -> parseNum() |> cont
+        | '{' -> parseObject() |> cont
+        | '[' -> parseArray cont
+        | 't' -> parseLiteral("true", JsonValue.Boolean true) |> cont
+        | 'f' -> parseLiteral("false", JsonValue.Boolean false) |> cont
+        | 'n' -> parseLiteral("null", JsonValue.Null) |> cont
         | _ -> throw()
 
     and parseString() =
@@ -249,7 +249,7 @@ type private JsonParser(jsonText:string) =
         ensure(i < s.Length && s.[i] = ':')
         i <- i + 1
         skipWhitespace()
-        key, parseValue()
+        key, parseValue id
 
     and parseObject() =
         ensure(i < s.Length && s.[i] = '{')
@@ -268,22 +268,32 @@ type private JsonParser(jsonText:string) =
         i <- i + 1
         JsonValue.Record(pairs.ToArray())
 
-    and parseArray() =
+    and parseArray cont =
         ensure(i < s.Length && s.[i] = '[')
         i <- i + 1
         skipWhitespace()
         let vals = ResizeArray<_>()
+        let parseArrayEnd() =
+            ensure(i < s.Length && s.[i] = ']')
+            i <- i + 1
+            vals.ToArray() |> JsonValue.Array |> cont
         if i < s.Length && s.[i] <> ']' then
-            vals.Add(parseValue())
-            skipWhitespace()
-            while i < s.Length && s.[i] = ',' do
-                i <- i + 1
+            parseValue (fun v ->
+                vals.Add(v)
                 skipWhitespace()
-                vals.Add(parseValue())
-                skipWhitespace()
-        ensure(i < s.Length && s.[i] = ']')
-        i <- i + 1
-        JsonValue.Array(vals.ToArray())
+                let rec parseArrayItem() =
+                    if i < s.Length && s.[i] = ',' then
+                        i <- i + 1
+                        skipWhitespace()
+                        parseValue (fun v ->
+                            vals.Add(v)
+                            skipWhitespace()
+                            parseArrayItem())
+                    else
+                        parseArrayEnd()
+                parseArrayItem())
+        else
+            parseArrayEnd()
 
     and parseLiteral(expected, r) =
         ensure(i+expected.Length <= s.Length)
@@ -294,7 +304,7 @@ type private JsonParser(jsonText:string) =
 
     // Start by parsing the top-level value
     member x.Parse() =
-        let value = parseValue()
+        let value = parseValue id
         skipWhitespace()
         if i <> s.Length then
             throw()
@@ -303,7 +313,7 @@ type private JsonParser(jsonText:string) =
     member x.ParseMultiple() =
         seq {
             while i <> s.Length do
-                yield parseValue()
+                yield parseValue id
                 skipWhitespace()
         }
 
