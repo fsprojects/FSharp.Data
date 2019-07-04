@@ -401,6 +401,18 @@ module internal ProviderHelpers =
                                         |> spec.CreateFromTextReader )
           m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
           yield m :> MemberInfo
+
+          match spec.CreateListFromTextReader with
+          | None -> ()
+          | Some listParser ->
+            let resultTypeList = resultType.MakeArrayType()
+            let args = [ ProvidedParameter("text", typeof<string>) ]
+            let m = ProvidedMethod("ParseList", args, resultTypeList, isStatic = true,
+                                      invokeCode  = fun (Singleton text) ->
+                                          <@ new StringReader(%%text) :> TextReader @>
+                                          |> listParser )
+            m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
+            yield m :> _
           
           // Generate static Load stream method
           let args = [ ProvidedParameter("stream", typeof<Stream>) ]
