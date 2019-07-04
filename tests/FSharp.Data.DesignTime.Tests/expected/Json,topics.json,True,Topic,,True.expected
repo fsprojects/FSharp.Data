@@ -15,6 +15,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
 
+    static member ParseList: text:string -> JsonProvider+Topic[][]
+    JsonRuntime.ConvertArray(JsonDocument.CreateList(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
+
 
 class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic

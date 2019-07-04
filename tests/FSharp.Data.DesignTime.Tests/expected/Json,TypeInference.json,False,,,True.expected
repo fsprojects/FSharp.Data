@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
 
+    static member ParseList: text:string -> JsonProvider+Root[][]
+    JsonRuntime.ConvertArray(JsonDocument.CreateList(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : intLike:int -> boolLike1:bool -> boolLike2:bool -> JsonProvider+Root
