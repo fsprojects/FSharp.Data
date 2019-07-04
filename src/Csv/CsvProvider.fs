@@ -115,6 +115,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                       csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, 
                                                separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
                   Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
+              CreateListFromTextReader = None
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
         
         let maxNumberOfRows = if inferRows > 0 then Some inferRows else None

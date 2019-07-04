@@ -160,6 +160,7 @@ module internal ProviderHelpers =
           RepresentationType : Type
           // the constructor from a text reader to the representation
           CreateFromTextReader : Expr<TextReader> -> Expr
+          CreateListFromTextReader : (Expr<TextReader> -> Expr) option
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 

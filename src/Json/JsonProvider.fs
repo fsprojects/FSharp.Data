@@ -64,6 +64,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
                   RepresentationType = result.ConvertedType
                   CreateFromTextReader = fun reader -> 
                       result.Convert <@@ JsonDocument.Create(%reader) @@>
+                  CreateListFromTextReader = None
                   CreateFromTextReaderForSampleList = fun reader -> 
                       result.Convert <@@ JsonDocument.CreateList(%reader) @@> }
             

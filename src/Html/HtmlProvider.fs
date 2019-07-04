@@ -53,6 +53,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             { GeneratedType = htmlType
               RepresentationType = htmlType
               CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateListFromTextReader = None
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
