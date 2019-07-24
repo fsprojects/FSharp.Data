@@ -63,7 +63,8 @@ type JsonValue =
       else "\":"
 
     let rec serialize indentation = function
-      | Null -> w.Write "null"
+      | Null
+      | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
       | Boolean b -> w.Write(if b then "true" else "false")
       | Number number -> w.Write number
       | Float number -> w.Write number
@@ -98,8 +99,7 @@ type JsonValue =
   // Encode characters that are not valid in JS string. The implementation is based
   // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
   static member internal JsonStringEncodeTo (w:TextWriter) (value:string) =
-    if String.IsNullOrEmpty value then ()
-    else 
+    if not (String.IsNullOrEmpty value) then
       for i = 0 to value.Length - 1 do
         let c = value.[i]
         let ci = int c
