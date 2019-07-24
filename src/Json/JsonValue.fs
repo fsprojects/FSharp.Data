@@ -63,10 +63,10 @@ type JsonValue =
       else "\":"
 
     let rec serialize indentation = function
-      | Null
-      | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
+      | Null -> w.Write "null"
       | Boolean b -> w.Write(if b then "true" else "false")
       | Number number -> w.Write number
+      | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
       | Float number -> w.Write number
       | String s ->
           w.Write "\""
