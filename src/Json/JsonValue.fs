@@ -121,7 +121,7 @@ type JsonValue =
     x.WriteTo(w, saveOptions)
     w.GetStringBuilder().ToString()
     
-  override x.ToString saveOptions cultureInfo=
+  member x.ToString saveOptions cultureInfo=
     let w = new StringWriter(cultureInfo)
     x.WriteTo(w, saveOptions)
     w.GetStringBuilder().ToString()
