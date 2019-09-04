@@ -120,6 +120,11 @@ type JsonValue =
     let w = new StringWriter(CultureInfo.InvariantCulture)
     x.WriteTo(w, saveOptions)
     w.GetStringBuilder().ToString()
+    
+  override x.ToString saveOptions cultureInfo=
+    let w = new StringWriter(cultureInfo)
+    x.WriteTo(w, saveOptions)
+    w.GetStringBuilder().ToString()
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 
