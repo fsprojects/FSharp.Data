@@ -122,7 +122,7 @@ type JsonValue =
     w.GetStringBuilder().ToString()
     
   member x.ToString (saveOptions,cultureInfo):( JsonSaveOptions * IFormatProvider )=
-    let w = new StringWriter(cultureInfo)
+    let w = new StringWriter(cultureInfo:IFormatProvider)
     x.WriteTo(w, saveOptions)
     w.GetStringBuilder().ToString()
 
