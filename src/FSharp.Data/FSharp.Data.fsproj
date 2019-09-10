@@ -9,6 +9,9 @@
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />
     <Compile Include="..\CommonRuntime\IO.fs" />
