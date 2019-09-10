@@ -2,23 +2,23 @@ RESTRICTION: >= net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FAKE (5.3)
-    Microsoft.NETCore.App (2.2.5)
-    Microsoft.NETCore.Platforms (2.2.1) - restriction: >= net461
+    Microsoft.NETCore.App (2.2.7)
+    Microsoft.NETCore.Platforms (2.2.3) - restriction: >= net461
     NETStandard.Library (2.0.3) - restriction: >= net461
       Microsoft.NETCore.Platforms (>= 1.1)
     NetStandard.Library.NetFramework (2.0.0-preview2-25405-01)
       Microsoft.NETCore.Platforms (>= 2.0.0-preview2-25405-01) - restriction: >= net461
       NETStandard.Library (>= 2.0.0-preview2-25401-01) - restriction: >= net461
-    Nuget.CommandLine (5.0.2)
+    Nuget.CommandLine (5.2)
     Octokit (0.32)
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (36b81bc99da42348451432dbfb2e25f18f1f93e2)
+    modules/Octokit/Octokit.fsx (b1c3ea3f910c325f99f0ca47402eb3afd0081431)
       Octokit (>= 0.20)
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (592d23a96db79b4248ed23a062db3a17433282ce)
-    src/ProvidedTypes.fsi (592d23a96db79b4248ed23a062db3a17433282ce)
-    src/ProvidedTypesTesting.fs (592d23a96db79b4248ed23a062db3a17433282ce)
+    src/ProvidedTypes.fs (322cbb6be787f6f849ba5d5ff483c8f3639cd15c)
+    src/ProvidedTypes.fsi (322cbb6be787f6f849ba5d5ff483c8f3639cd15c)
+    src/ProvidedTypesTesting.fs (322cbb6be787f6f849ba5d5ff483c8f3639cd15c)
 GROUP fs31
 RESTRICTION: || (== net461) (== netcoreapp2.0)
 NUGET
@@ -59,7 +59,7 @@ NUGET
       System.Threading.Thread (>= 4.0) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (== netcoreapp2.0)
       System.Threading.ThreadPool (>= 4.0.10) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (== netcoreapp2.0)
       System.Threading.Timer (>= 4.0.1) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (== netcoreapp2.0)
-    Microsoft.NETCore.Platforms (2.2.1) - restriction: || (&& (== net461) (>= netcoreapp2.0)) (== netcoreapp2.0)
+    Microsoft.NETCore.Platforms (2.2.3) - restriction: || (&& (== net461) (>= netcoreapp2.0)) (== netcoreapp2.0)
     Microsoft.NETCore.Targets (2.1) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (&& (== net461) (>= netcoreapp1.1)) (== netcoreapp2.0)
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (== netcoreapp2.0)
     runtime.debian.9-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (== net461) (< net45) (>= netstandard1.6)) (== netcoreapp2.0)
@@ -450,17 +450,17 @@ NUGET
       System.Runtime.Loader (>= 4.0) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
       System.Security.Cryptography.Algorithms (>= 4.3) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
       System.ValueTuple (>= 4.4) - restriction: || (== net461) (&& (== netcoreapp2.0) (>= net45))
-    FSharp.Core (4.6.2)
+    FSharp.Core (4.7)
     FSharp.Formatting (3.1)
       FSharp.Compiler.Service (>= 27.0.1 < 28.0)
       Microsoft.AspNet.Razor (>= 3.2.7 < 4.0)
       System.ValueTuple (>= 4.5 < 5.0)
-    FsUnit (3.4)
+    FsUnit (3.4.1)
       FSharp.Core (>= 4.2.3)
       NETStandard.Library (>= 2.0.3) - restriction: || (&& (== net461) (< net46) (>= netstandard2.0)) (== netcoreapp2.0)
-      NUnit (>= 3.11 < 4.0)
+      NUnit (>= 3.12 < 4.0)
     Microsoft.AspNet.Razor (3.2.7)
-    Microsoft.NETCore.Platforms (2.2.1) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= wp8)) (== netcoreapp2.0)
+    Microsoft.NETCore.Platforms (2.2.3) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (&& (== net461) (< net46) (>= netstandard2.0)) (&& (== net461) (>= netcoreapp2.0)) (&& (== net461) (< netstandard1.0) (>= netstandard2.0)) (&& (== net461) (< netstandard1.3) (>= netstandard2.0)) (&& (== net461) (>= netstandard2.0) (< portable-net45+win8+wpa81)) (&& (== net461) (>= netstandard2.0) (>= uap10.0)) (&& (== net461) (>= netstandard2.0) (>= wp8)) (== netcoreapp2.0)
     Microsoft.NETCore.Targets (2.1) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
     Microsoft.Win32.Primitives (4.3) - restriction: || (&& (== net461) (< net45) (>= netstandard2.0)) (== netcoreapp2.0)
       Microsoft.NETCore.Platforms (>= 1.1) - restriction: || (&& (== net461) (< net46)) (== netcoreapp2.0)
