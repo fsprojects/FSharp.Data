@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : () -> JsonProvider+Root

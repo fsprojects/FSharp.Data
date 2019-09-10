@@ -68,6 +68,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                       RepresentationType = result.ConvertedType
                       CreateFromTextReader = fun reader -> 
                               result.Converter <@@ XmlElement.Create(%reader) @@>
+                      CreateListFromTextReader = None
                       CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
                           <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@> }
 
@@ -97,6 +98,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                           RepresentationType = result.ConvertedType
                           CreateFromTextReader = fun reader -> 
                               result.Converter <@@ XmlElement.Create(%reader) @@>
+                          CreateListFromTextReader = None
                           CreateFromTextReaderForSampleList = fun reader -> 
                               result.Converter <@@ XmlElement.CreateList(%reader) @@> }
        
