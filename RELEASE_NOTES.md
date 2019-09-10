@@ -1,3 +1,8 @@
+#### 3.2.1 - March 28 2019
+* Fix for using on F# Interactive on .NET Core
+* [Add ParseList on JsonProvider](https://github.com/fsharp/FSharp.Data/pull/1272)
+* [Handle serialization of odd float values](https://github.com/fsharp/FSharp.Data/pull/1275)
+
 #### 3.1.1 - March 28 2019
 * [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
 * Require VS2017 or above [(due to TPSDK fix)](https://github.com/fsprojects/FSharp.TypeProviders.SDK/pull/305)
