@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : createdAt:string option -> id:int64 option -> idStr:int64 option -> text:string option -> source:string option -> truncated:bool option -> inReplyToStatusId:int64 option -> inReplyToStatusIdStr:int64 option -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User option -> geo:JsonValue -> coordinates:JsonValue -> place:JsonProvider+Place option -> contributors:JsonValue -> retweetedStatus:JsonProvider+RetweetedStatus option -> retweetCount:int option -> favoriteCount:int option -> entities:JsonProvider+Entities2 option -> favorited:bool option -> retweeted:bool option -> filterLevel:string option -> possiblySensitive:bool option -> lang:string option -> delete:JsonProvider+Delete option -> JsonProvider+Root
