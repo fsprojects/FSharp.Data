@@ -2,6 +2,7 @@
 * Fix for using on F# Interactive on .NET Core
 * [Add ParseList on JsonProvider](https://github.com/fsharp/FSharp.Data/pull/1272)
 * [Handle serialization of odd float values](https://github.com/fsharp/FSharp.Data/pull/1275)
+* [Adding HTML active patterns to expose internals of HtmlNode](https://github.com/fsharp/FSharp.Data/pull/1227)
 
 #### 3.1.1 - March 28 2019
 * [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
