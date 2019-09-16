@@ -1,3 +1,6 @@
+#### 3.2.2 - September 16 2019
+* Make appevyor build nuget package (though we still releas via '.\build Release')
+
 #### 3.2.1 - September 10 2019
 * Fix for using on F# Interactive on .NET Core
 * [Add ParseList on JsonProvider](https://github.com/fsharp/FSharp.Data/pull/1272)
