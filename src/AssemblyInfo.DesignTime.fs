@@ -5,13 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("FSharp.Data.DesignTime")>]
 [<assembly: AssemblyProductAttribute("FSharp.Data")>]
 [<assembly: AssemblyDescriptionAttribute("Library of F# type providers and data access tools")>]
-[<assembly: AssemblyVersionAttribute("3.1.1.0")>]
-[<assembly: AssemblyFileVersionAttribute("3.1.1.0")>]
+[<assembly: AssemblyVersionAttribute("3.2.1.0")>]
+[<assembly: AssemblyFileVersionAttribute("3.2.1.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "FSharp.Data.DesignTime"
     let [<Literal>] AssemblyProduct = "FSharp.Data"
     let [<Literal>] AssemblyDescription = "Library of F# type providers and data access tools"
-    let [<Literal>] AssemblyVersion = "3.1.1.0"
-    let [<Literal>] AssemblyFileVersion = "3.1.1.0"
+    let [<Literal>] AssemblyVersion = "3.2.1.0"
+    let [<Literal>] AssemblyFileVersion = "3.2.1.0"

@@ -77,8 +77,16 @@ let release = ReleaseNotes.load "RELEASE_NOTES.md"
 let bindir = "./bin"
 
 let isAppVeyorBuild = Environment.environVar "APPVEYOR" <> null
+let isAppVeyorBuildTag = Environment.environVar "APPVEYOR_REPO_TAG" <> null
+let appVeyorTagName = Environment.environVar "APPVEYOR_REPO_TAG_NAME"
 let nugetVersion =
-    if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
+    if isAppVeyorBuild then
+        if not isAppVeyorBuildTag then
+            sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
+        else
+            if appVeyorTagName  <> release.NugetVersion then
+                printfn "mismatch between tag '%s' and RELEASE_NOTES.md version '%s" appVeyorTagName release.NugetVersion
+            release.NugetVersion
     else release.NugetVersion
 
 Target.create "AppVeyorBuildVersion" (fun _ ->
