@@ -129,6 +129,19 @@ let ``Can handle attributes with no value``() =
         ]
     node.Attributes() |> should equal expected
 
+[<Test>]
+let ``Can handle long html encoded attributes without StackOverflow``() = 
+    let html =
+        HtmlNode.Parse (
+            let sb = new System.Text.StringBuilder()
+            sb.Append "<html><body><p attrib=\"" |> ignore
+            for i in 0 .. 50000 do sb.Append "&lt;br/&gt;" |> ignore
+            sb.Append "\">Test</p></html></body>" |> ignore
+            sb.ToString()
+        )
+    let result = html.Head.InnerText()
+    result |> should equal "Test"
+
 [<TestCase("var r = \"</script>\"")>]
 [<TestCase("var r = '</script>'")>]
 [<TestCase("var r = /</g")>]

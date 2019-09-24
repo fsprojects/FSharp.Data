@@ -700,7 +700,7 @@ module internal HtmlParser =
             | '&' ->
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
-                attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
+                attributeValueUnquotedCharRef  ['/'; '>'] state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueUnquotedSlash state =
             match state.Peek() with
@@ -713,23 +713,38 @@ module internal HtmlParser =
             | '&' ->
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
-                attributeValueCharRef [quote] (attributeValueQuoted quote) state
+                attributeValueQuotedCharRef quote state
             | _ -> state.ConsAttrValue(); attributeValueQuoted quote state
-        and attributeValueCharRef stop continuation (state:HtmlState) =
+        and attributeValueQuotedCharRef quote state =
             match state.Peek() with
             | ';' ->
                 state.Cons()
                 state.EmitToAttributeValue()
-                continuation state
+                attributeValueQuoted quote state
             | TextParser.EndOfFile _ ->
                 state.EmitToAttributeValue()
-                continuation state
-            | c when List.exists ((=) c) stop ->
+                attributeValueQuoted quote state
+            | c when c = quote ->
                 state.EmitToAttributeValue()
-                continuation state
+                attributeValueQuoted quote state
             | _ ->
                 state.Cons()
-                attributeValueCharRef stop continuation state
+                attributeValueQuotedCharRef quote state
+        and attributeValueUnquotedCharRef stop state =
+            match state.Peek() with
+            | ';' ->
+                state.Cons()
+                state.EmitToAttributeValue()
+                attributeValueUnquoted state
+            | TextParser.EndOfFile _ ->
+                state.EmitToAttributeValue()
+                attributeValueUnquoted state
+            | c when List.exists ((=) c) stop ->
+                state.EmitToAttributeValue()
+                attributeValueUnquoted state
+            | _ ->
+                state.Cons()
+                attributeValueUnquotedCharRef stop state
         and afterAttributeValueQuoted state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); afterAttributeValueQuoted state
