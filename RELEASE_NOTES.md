@@ -1,3 +1,6 @@
+#### 3.3.2 - September 24 2019
+* [Fix StackOverflow exception caused by many ampersand and semicolons](https://github.com/fsharp/FSharp.Data/pull/1281) 
+
 #### 3.3.1 - September 24 2019
 * Update latest TPSDK, fixing [Build with embedded resource broke](https://github.com/fsharp/FSharp.Data/issues/1255)
 
