@@ -1,4 +1,4 @@
-#### 3.3.0 - September 24 2019
+#### 3.3.1 - September 24 2019
 * Update latest TPSDK, fixing [Build with embedded resource broke](https://github.com/fsharp/FSharp.Data/issues/1255)
 
 #### 3.2.4 - September 16 2019
