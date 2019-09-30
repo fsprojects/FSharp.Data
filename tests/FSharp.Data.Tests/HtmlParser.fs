@@ -14,8 +14,8 @@ open FSharp.Data.Runtime
 open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
 
-let getTables includeLayoutTables = 
-    let parameters : HtmlInference.Parameters = 
+let getTables includeLayoutTables =
+    let parameters : HtmlInference.Parameters =
         { MissingValues = TextConversions.DefaultMissingValues
           CultureInfo = CultureInfo.InvariantCulture
           UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
@@ -23,7 +23,7 @@ let getTables includeLayoutTables =
     HtmlRuntime.getTables (Some parameters) includeLayoutTables
 
 [<Test>]
-let ``Can handle unclosed tags correctly``() = 
+let ``Can handle unclosed tags correctly``() =
     let simpleHtml = """<html>
                          <head>
                             <script language="JavaScript" src="/bwx_generic.js"></script>
@@ -38,42 +38,42 @@ let ``Can handle unclosed tags correctly``() =
                         </body>
                     </html>"""
     let result = HtmlDocument.Parse simpleHtml
-    
-    let expected = 
-        HtmlDocument.New 
+
+    let expected =
+        HtmlDocument.New
             [ HtmlNode.NewElement
-                  ("html", 
-                   [ HtmlNode.NewElement("head", 
-                                         [ HtmlNode.NewElement("script", 
+                  ("html",
+                   [ HtmlNode.NewElement("head",
+                                         [ HtmlNode.NewElement("script",
                                                                [ "language", "JavaScript"
                                                                  "src", "/bwx_generic.js" ])
-                                           HtmlNode.NewElement("link", 
+                                           HtmlNode.NewElement("link",
                                                                [ "rel", "stylesheet"
                                                                  "type", "text/css"
                                                                  "href", "/bwx_style.css" ]) ])
-                     
+
                      HtmlNode.NewElement
-                         ("body", 
+                         ("body",
                           [ HtmlNode.NewElement("img", [ "src", "myimg.jpg" ])
-                            
+
                             HtmlNode.NewElement
-                                ("table", [ "title", "table" ], 
-                                 [ HtmlNode.NewElement("tr", 
+                                ("table", [ "title", "table" ],
+                                 [ HtmlNode.NewElement("tr",
                                                        [ HtmlNode.NewElement("th", [ HtmlNode.NewText "Column 1" ])
                                                          HtmlNode.NewElement("th", [ HtmlNode.NewText "Column 2" ]) ])
-                                   HtmlNode.NewElement("tr", 
+                                   HtmlNode.NewElement("tr",
                                                        [ HtmlNode.NewElement("td", [ HtmlNode.NewText "1" ])
                                                          HtmlNode.NewElement("td", [ HtmlNode.NewText "yes" ]) ]) ]) ]) ]) ]
     result |> should equal expected
 
 [<Test>]
-let ``Can handle unclosed divs inside lis correctly``() = 
+let ``Can handle unclosed divs inside lis correctly``() =
     let simpleHtml = "<ul><li><div></li><li></li></ul>"
-    let result = HtmlDocument.Parse simpleHtml    
-    let expected = 
-        HtmlDocument.New 
+    let result = HtmlDocument.Parse simpleHtml
+    let expected =
+        HtmlDocument.New
             [ HtmlNode.NewElement
-                  ("ul", 
+                  ("ul",
                    [ HtmlNode.NewElement("li", [ HtmlNode.NewElement("div")])
                      HtmlNode.NewElement("li")]) ]
     result |> should equal expected
@@ -84,7 +84,7 @@ let ``Can handle unclosed divs inside lis correctly``() =
 [<TestCase(@"<a href= http://test.com/index>Test</a>")>]
 let ``Can handle slashes in unquoted attributes`` content =
     let result = HtmlDocument.Parse content
-    let expected = 
+    let expected =
         HtmlDocument.New
             [ HtmlNode.NewElement("a",
                 [ "href", @"http://test.com/index" ],
@@ -94,7 +94,7 @@ let ``Can handle slashes in unquoted attributes`` content =
 [<Test>]
 let ``Can handle char refs in unquoted attributes``() =
     let result = HtmlDocument.Parse "<a alt=&lt;>Test</a>"
-    let expected = 
+    let expected =
         HtmlDocument.New
             [ HtmlNode.NewElement("a",
                 [ "alt", "<" ],
@@ -104,7 +104,7 @@ let ``Can handle char refs in unquoted attributes``() =
 [<Test>]
 let ``Can handle multiple unquoted attributes``() =
     let result = HtmlDocument.Parse "<a src = target alt = logo>Test</a>"
-    let expected = 
+    let expected =
         HtmlDocument.New
             [ HtmlNode.NewElement("a",
                 [ "src", "target"
@@ -113,16 +113,16 @@ let ``Can handle multiple unquoted attributes``() =
     result |> should equal expected
 
 [<Test>]
-let ``Can handle multiple char refs in a text run``() = 
+let ``Can handle multiple char refs in a text run``() =
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
     let result = html.Head.InnerText()
     result |> should equal "\"Foo\""
 
 [<Test>]
-let ``Can handle attributes with no value``() = 
+let ``Can handle attributes with no value``() =
     let html = """<li itemscope itemtype="http://schema.org/Place"></li>"""
     let node = HtmlNode.Parse html |> List.head
-    let expected = 
+    let expected =
         [
             HtmlAttribute.New("itemscope", "")
             HtmlAttribute.New("itemtype", "http://schema.org/Place")
@@ -130,7 +130,7 @@ let ``Can handle attributes with no value``() =
     node.Attributes() |> should equal expected
 
 [<Test>]
-let ``Can handle long html encoded attributes without StackOverflow``() = 
+let ``Can handle long html encoded attributes without StackOverflow``() =
     let html =
         HtmlNode.Parse (
             let sb = new System.Text.StringBuilder()
@@ -170,7 +170,7 @@ let ``Can handle special characters in single line script comments`` () =
     node |> should equal expected
 
 [<Test>]
-let ``Can parse tables from a simple html``() = 
+let ``Can parse tables from a simple html``() =
     let html = """<html>
                     <body>
                         <table id="table">
@@ -179,8 +179,8 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -191,7 +191,7 @@ let ``Can parse tables from a simple html``() =
                                       [ "1" ] ]
 
 [<Test>]
-let ``Can parse tables from a simple html table but infer headers``() = 
+let ``Can parse tables from a simple html table but infer headers``() =
     let html = """<html>
                     <body>
                         <table id="table">
@@ -201,8 +201,8 @@ let ``Can parse tables from a simple html table but infer headers``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -214,22 +214,22 @@ let ``Can parse tables from a simple html table but infer headers``() =
                                       [ "2" ] ]
 
 [<Test>]
-let ``Ignores empty tables``() = 
+let ``Ignores empty tables``() =
     let html = """<html>
                     <body>
                         <table id="table">
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
     tables.Length |> should equal 0
 
 [<Test>]
-let ``Can parse tables with no headers``() = 
+let ``Can parse tables with no headers``() =
     let html = """<html>
                     <body>
                         <table id="table">
@@ -239,8 +239,8 @@ let ``Can parse tables with no headers``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -252,7 +252,7 @@ let ``Can parse tables with no headers``() =
                                       [ "3" ] ]
 
 [<Test>]
-let ``Can parse tables with no headers and only 2 rows``() = 
+let ``Can parse tables with no headers and only 2 rows``() =
     let html = """<html>
                     <body>
                         <table id="table">
@@ -261,8 +261,8 @@ let ``Can parse tables with no headers and only 2 rows``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -273,7 +273,7 @@ let ``Can parse tables with no headers and only 2 rows``() =
                                       [ "3" ] ]
 
 [<Test>]
-let ``Extracts table when title attribute is set``() = 
+let ``Extracts table when title attribute is set``() =
     let html = """<html>
                     <body>
                         <table title="table">
@@ -282,8 +282,8 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -291,7 +291,7 @@ let ``Extracts table when title attribute is set``() =
     tables.[0].Name |> should equal "table"
 
 [<Test>]
-let ``Extracts table when name attribute is set``() = 
+let ``Extracts table when name attribute is set``() =
     let html = """<html>
                     <body>
                         <table name="table">
@@ -300,8 +300,8 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -309,7 +309,7 @@ let ``Extracts table when name attribute is set``() =
     tables.[0].Name |> should equal "table"
 
 [<Test>]
-let ``When mutiple identifying attributes are set the id attribute is selected``() = 
+let ``When mutiple identifying attributes are set the id attribute is selected``() =
     let html = """<html>
                     <body>
                         <table id="table_id" name="table_name" title="table_title">
@@ -318,8 +318,8 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -327,7 +327,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
     tables.[0].Name |> should equal "table_id"
 
 [<Test>]
-let ``When mutiple identifying attributes are set but not the id attribute is then name attribute selected``() = 
+let ``When mutiple identifying attributes are set but not the id attribute is then name attribute selected``() =
     let html = """<html>
                     <body>
                         <table title="table_title" name="table_name">
@@ -336,8 +336,8 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -345,7 +345,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
     tables.[0].Name |> should equal "table_name"
 
 [<Test>]
-let ``Extracts tables without an id title or name attribute``() = 
+let ``Extracts tables without an id title or name attribute``() =
     let html = """<html>
                     <body>
                         <table>
@@ -354,15 +354,15 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
     tables.Length |> should equal 1
 
 [<Test>]
-let ``Extracts data and headers with thead and tbody``() = 
+let ``Extracts data and headers with thead and tbody``() =
     let html = """<table id="savings_table">
                     <thead>
                       <tr>
@@ -383,8 +383,8 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -397,7 +397,7 @@ let ``Extracts data and headers with thead and tbody``() =
                                       [ "February"; "$80" ] ]
 
 [<Test>]
-let ``Extracts data and headers with unclosed tr th and td``() = 
+let ``Extracts data and headers with unclosed tr th and td``() =
     let html = """<table id="savings_table">
                     <thead>
                       <tr>
@@ -418,8 +418,8 @@ let ``Extracts data and headers with unclosed tr th and td``() =
                         <td>$80
                     </tbody>
                   </table>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -432,7 +432,7 @@ let ``Extracts data and headers with unclosed tr th and td``() =
                                       [ "February"; "$80" ] ]
 
 [<Test>]
-let ``Extracts data and headers with unclosed tr``() = 
+let ``Extracts data and headers with unclosed tr``() =
     let html = """<table id="savings_table">
                     <thead>
                       <tr>
@@ -453,8 +453,8 @@ let ``Extracts data and headers with unclosed tr``() =
                         <td>$80</td>
                     </tbody>
                   </table>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -467,7 +467,7 @@ let ``Extracts data and headers with unclosed tr``() =
                                       [ "February"; "$80" ] ]
 
 [<Test>]
-let ``Extracts data and headers with unclosed tr th and td without tbody``() = 
+let ``Extracts data and headers with unclosed tr th and td without tbody``() =
     let html = """<table id="savings_table">
                       <tr>
                         <th>Month
@@ -482,8 +482,8 @@ let ``Extracts data and headers with unclosed tr th and td without tbody``() =
                         <td>February
                         <td>$80
                   </table>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -496,7 +496,7 @@ let ``Extracts data and headers with unclosed tr th and td without tbody``() =
                                       [ "February"; "$80" ] ]
 
 [<Test>]
-let ``Extracts data and headers with unclosed tr without tbody``() = 
+let ``Extracts data and headers with unclosed tr without tbody``() =
     let html = """<table id="savings_table">
                       <tr>
                         <th>Month</th>
@@ -511,8 +511,8 @@ let ``Extracts data and headers with unclosed tr without tbody``() =
                         <td>February</td>
                         <td>$80</td>
                   </table>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -526,7 +526,7 @@ let ``Extracts data and headers with unclosed tr without tbody``() =
 
 
 [<Test>]
-let ``Extracts tables in malformed html``() = 
+let ``Extracts tables in malformed html``() =
     let html = """<html>
                     <body> >>
                     <br><br>All Tables
@@ -536,8 +536,8 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    
-    let tables = 
+
+    let tables =
         html
         |> HtmlDocument.Parse
         |> getTables true
@@ -548,25 +548,25 @@ let ``Extracts tables in malformed html``() =
                                       [ "1" ] ]
 
 [<Test>]
-let ``Can handle html with doctype and xml namespaces``() = 
-    let html = 
+let ``Can handle html with doctype and xml namespaces``() =
+    let html =
         """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
     let htmlDoc = HtmlDocument.Parse html
-    
-    let expected = 
+
+    let expected =
         HtmlDocument.New
-            ("html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 
+            ("html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"",
              [ HtmlNode.NewElement
-                   ("html", 
+                   ("html",
                     [ "lang", "en"
                       "xml:lang", "en"
-                      "xmlns", "http://www.w3.org/1999/xhtml" ], 
+                      "xmlns", "http://www.w3.org/1999/xhtml" ],
                     [ HtmlNode.NewElement("body", [ HtmlNode.NewText "content" ]) ]) ])
     expected |> should equal htmlDoc
 
 [<Test>]
-let ``Can find header when nested in a div``() = 
-    let tables = 
+let ``Can find header when nested in a div``() =
+    let tables =
         HtmlDocument.Load "Data/wimbledon_wikipedia.html"
         |> getTables false
         |> List.map (fun t -> t.Name, t)
@@ -576,7 +576,7 @@ let ``Can find header when nested in a div``() =
     Map.containsKey "Current champions" tables |> should equal true
 
 [<Test>]
-let ``Can parse tables imdb chart``() = 
+let ``Can parse tables imdb chart``() =
     let imdb = HtmlDocument.Load "Data/imdb_chart.htm"
     let tables = imdb |> getTables false
     tables.Length |> should equal 2
@@ -585,25 +585,25 @@ let ``Can parse tables imdb chart``() =
     tables.[0].Rows.Length |> should equal 251
 
 [<Test>]
-let ``Can parse tables ebay cars``() = 
+let ``Can parse tables ebay cars``() =
     let ebay = HtmlDocument.Load "Data/ebay_cars.htm"
     true |> should equal true
 
 [<Test>]
-let ``Does not crash when parsing us presidents``() = 
+let ``Does not crash when parsing us presidents``() =
     let table = HtmlDocument.Load "Data/us_presidents_wikipedia.html" |> getTables false
     true |> should equal true
 
 [<Test>]
-let ``Can parse non-self-closing tags of elements that can't have children when followed by comments``() = 
+let ``Can parse non-self-closing tags of elements that can't have children when followed by comments``() =
     let html = """<hr class="hr4"><!--comment1--><!--comment2--><hr class="hr5" />"""
     let expected = """<hr class="hr4" /><!--comment1--><!--comment2--><hr class="hr5" />"""
     let result = (HtmlDocument.Parse html).ToString()
     result |> should equal expected
 
 [<Test>]
-let ``Ignores spurious closing tags``() = 
-    let html = 
+let ``Ignores spurious closing tags``() =
+    let html =
         """<li class="even"><a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep"><span class="time em">21:36<br /><small>On time</small></span></span><span class="station">Brighton (East Sussex)</span><span class="platform"><small>Platform</small><br />17</span></a></li>"""
     let expected = """<li class="even">
   <a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep">
@@ -628,7 +628,7 @@ let ``Renders textarea closing tag``() =
     result |> should equal """<textarea cols="40" rows="2"></textarea>"""
 
 [<Test>]
-let ``Can handle CDATA blocks``() = 
+let ``Can handle CDATA blocks``() =
     let cData = """
       Trying to provoke the CDATA parser with almost complete CDATA end tags
       ]
@@ -658,7 +658,7 @@ let ``Can handle CDATA blocks``() =
      </body>
     </html>
     """
-    
+
     let doc = HtmlDocument.Parse html
     let result =
         doc
@@ -711,7 +711,7 @@ let ``Can handle large CDATA blocks``() =
     elapsed |> should lessThan 1000L
 
 [<Test>]
-let ``Can parse nested lists correctly when stops on recurse``() = 
+let ``Can parse nested lists correctly when stops on recurse``() =
     let html = """
         <ul>
             <li>
@@ -724,8 +724,8 @@ let ``Can parse nested lists correctly when stops on recurse``() =
             <li>4</li>
        </ul>
     """
-    
-    let result = 
+
+    let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed false [ "li" ]
         |> Seq.map (HtmlNode.innerText)
@@ -733,7 +733,7 @@ let ``Can parse nested lists correctly when stops on recurse``() =
     result |> should equal [ "12"; "3"; "4" ]
 
 [<Test>]
-let ``Can parse nested lists correctly when continues on recurse``() = 
+let ``Can parse nested lists correctly when continues on recurse``() =
     let html = """
         <ul>
             <li>
@@ -746,8 +746,8 @@ let ``Can parse nested lists correctly when continues on recurse``() =
             <li>4</li>
        </ul>
     """
-    
-    let result = 
+
+    let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "li" ]
         |> Seq.map (HtmlNode.innerText)
@@ -755,7 +755,7 @@ let ``Can parse nested lists correctly when continues on recurse``() =
     result |> should equal [ "12"; "1"; "2"; "3"; "4" ]
 
 [<Test>]
-let ``Can parse nested lists correctly when continues closing tags are missing``() = 
+let ``Can parse nested lists correctly when continues closing tags are missing``() =
     let html = """
         <ul>
             <li>
@@ -764,8 +764,8 @@ let ``Can parse nested lists correctly when continues closing tags are missing``
             <li>4
        </ul>
     """
-    
-    let result = 
+
+    let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "li" ]
         |> Seq.map (HtmlNode.innerText)
@@ -774,10 +774,10 @@ let ``Can parse nested lists correctly when continues closing tags are missing``
 
 
 [<Test>]
-let ``Can parse pre blocks``() = 
+let ``Can parse pre blocks``() =
     let html = "<pre>\r\n        This code should be indented and\r\n        have line feeds in it</pre>"
-    
-    let result = 
+
+    let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "pre" ]
         |> Seq.map (HtmlNode.innerText)
@@ -785,10 +785,10 @@ let ``Can parse pre blocks``() =
     result |> should equal [ "\r\n        This code should be indented and\r\n        have line feeds in it" ]
 
 [<Test>]
-let ``Can parse code blocks``() = 
+let ``Can parse code blocks``() =
     let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
-    
-    let result = 
+
+    let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "code" ]
         |> Seq.map (HtmlNode.innerText)
@@ -796,7 +796,7 @@ let ``Can parse code blocks``() =
     result |> should equal [ "\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30" ]
 
 [<Test>]
-let ``Can parse national rail mobile site correctly``() = 
+let ``Can parse national rail mobile site correctly``() =
     HtmlDocument.Load "Data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
     |> Seq.length
@@ -815,39 +815,39 @@ let ``Can parse national rail mobile site correctly``() =
     |> should equal 17
 
 [<Test>]
-let ``Can parse old zoopla site correctly``() = 
+let ``Can parse old zoopla site correctly``() =
     HtmlDocument.Load "Data/zoopla.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Place" x)
-    |> Seq.length 
+    |> Seq.length
     |> should equal 100
 
 [<Test>]
-let ``Can parse new zoopla site correctly``() = 
+let ``Can parse new zoopla site correctly``() =
     HtmlDocument.Load "Data/zoopla2.html"
     |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Residence" x)
-    |> Seq.length 
+    |> Seq.length
     |> should equal 10
 
 [<Test>]
-let ``Doesn't insert whitespace on attribute name when there are two whitespace characters before an attribute``() = 
-    HtmlNode.Parse 
+let ``Doesn't insert whitespace on attribute name when there are two whitespace characters before an attribute``() =
+    HtmlNode.Parse
         "<a data-lecture-id=\"27\"\r\ndata-modal-iframe=\"https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27\"></a>"
     |> List.head
     |> HtmlNode.attributeValue "data-modal-iframe"
     |> should equal "https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27"
 
 [<Test>]
-let ``Includes DOCTYPE when transforming HtmlDocument to string``() = 
+let ``Includes DOCTYPE when transforming HtmlDocument to string``() =
     let html = """<!DOCTYPE html><html lang="en"><head><title>Test</title></head><body>I Just Love F#</body></html>"""
     let doc = HtmlDocument.Parse html
     let typ = doc |> HtmlDocument.docType
     let newDoc = HtmlDocument.New(typ, doc.Elements())
-    newDoc 
+    newDoc
     |> string
     |> should startWith "<!DOCTYPE html>"
 
 [<Test>]
-let ``Can create new CData element``() = 
+let ``Can create new CData element``() =
     HtmlNode.NewCData("some element content")
     |> string
     |> should equal "<![CDATA[some element content]]>"
@@ -861,4 +861,37 @@ let ``Can handle escaped characters in a string inside script tag`` content =
             [ HtmlNode.NewElement("script",
                 [],
                 [ HtmlNode.NewText content ]) ]
+    result |> should equal expected
+
+[<Test>]
+let ``Parsing non-html content doesn't cause an infinite loop - Github-1264``() =
+    let content =
+      """
+      Steve Jobs
+      steve@apple.com
+
+      Education:
+        - Master of Mathematics Honours Computer Science and Combinatorics &
+          Optimization. I
+          specialized in systems and real-time programming, programming language
+          implementation, and mathematical optimization.
+
+      Skills:
+        - Proficient in Rust, C++, Scheme, x86(_64) LaTeX,
+          (Postgre)SQL, Gurobi, AWS, Google Cloud Platform, .NET (Core), C#,
+          Python, low-level profiling and optimization on Linux and Windows.
+
+        - Can do things with Java, Haskell, Clojure,
+          Scala, AMPS, redis, OpenGL.
+
+        Instructional support assistant at the School,
+        September to January 2010.
+          - Started the Java project[3], a custom IDE for students in an
+            introductory computer science course.
+
+
+      """
+
+    let result = HtmlDocument.Parse content
+    let expected = HtmlNode.NewText content
     result |> should equal expected
