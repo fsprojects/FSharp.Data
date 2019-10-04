@@ -573,6 +573,9 @@ module internal HtmlParser =
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
             | '<' -> state.Emit()
+            // System.IO.TextReader.Read() returns -1
+            // at end of stream, and -1 cast to char is \uffff.
+            | '\uffff' -> state.Emit()
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with

@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -117,6 +117,18 @@ let ``Can handle multiple char refs in a text run``() =
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
     let result = html.Head.InnerText()
     result |> should equal "\"Foo\""
+
+[<Test>]
+let ``Can handle unaccompanied ampersand with following chars``() = 
+    let html = HtmlNode.Parse "<div>&quot;Foo&something"
+    let result = html.Head.InnerText()
+    result |> should equal "\"Foo&something"
+
+[<Test>]
+let ``Can handle unaccompanied terminal ampersand``() = 
+    let html = HtmlNode.Parse "<div>&quot;Foo&"
+    let result = html.Head.InnerText()
+    result |> should equal "\"Foo&"
 
 [<Test>]
 let ``Can handle attributes with no value``() = 
