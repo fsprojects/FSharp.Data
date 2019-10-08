@@ -334,8 +334,8 @@ module internal HtmlParser =
                | "pre" | "code" -> true
                | _ -> false
 
-        member x.IsScriptTag 
-            with get() = 
+        member x.IsScriptTag
+            with get() =
                match x.CurrentTagName().Trim().ToLower() with
                | "script" | "style" -> true
                | _ -> false
@@ -565,14 +565,17 @@ module internal HtmlParser =
             | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
             | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
             | _ ->
-                state.Cons([|'<'; '/'|]); 
-                state.Cons(state.CurrentTagName()); 
+                state.Cons([|'<'; '/'|]);
+                state.Cons(state.CurrentTagName());
                 (!state.CurrentTag).Clear()
                 script state
-        and charRef state = 
+        and charRef state =
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
             | '<' -> state.Emit()
+            // System.IO.TextReader.Read() returns -1
+            // at end of stream, and -1 cast to char is \uffff.
+            | '\uffff' -> state.Emit()
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
@@ -833,6 +836,13 @@ module internal HtmlParser =
                 parse' docType elements expectedTagEnd parentTagName rest
             | TagEnd _ :: rest ->
                 docType, rest, List.rev elements
+            | Text a :: Text b :: rest ->
+                if a = "" && b = "" then
+                   // ignore this token
+                    parse' docType elements expectedTagEnd parentTagName rest
+                else
+                    let t = HtmlText (a + b)
+                    parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Text cont :: rest ->
                 if cont = "" then
                     // ignore this token
