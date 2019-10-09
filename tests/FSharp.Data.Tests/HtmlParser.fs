@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -563,6 +563,21 @@ let ``Can handle html with doctype and xml namespaces``() =
                       "xmlns", "http://www.w3.org/1999/xhtml" ], 
                     [ HtmlNode.NewElement("body", [ HtmlNode.NewText "content" ]) ]) ])
     expected |> should equal htmlDoc
+
+[<Test>]
+let ``Can handle html without html tag``() = 
+   let html = """<body>
+       <div>no html-tag</div>
+       </body>"""
+
+   let htmlDoc = HtmlDocument.Parse html
+    
+   let expected = 
+       HtmlDocument.New 
+           [ HtmlNode.NewElement
+                 ("body", 
+                  [ HtmlNode.NewElement("div", [ HtmlNode.NewText "no html-tag" ])]) ]
+   expected |> should equal htmlDoc
 
 [<Test>]
 let ``Can find header when nested in a div``() = 
