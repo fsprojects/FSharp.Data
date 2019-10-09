@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data
+namespace FSharp.Data
 
 open System
 open FSharp.Data

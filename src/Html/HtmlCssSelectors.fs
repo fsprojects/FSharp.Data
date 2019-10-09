@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data
+namespace FSharp.Data
 
 open System
 open FSharp.Data
@@ -382,7 +382,7 @@ module CssSelectorExtensions =
         /// Gets descendants matched by Css selector
         [<Extension>]
         static member CssSelect(doc:HtmlDocument, selector) = 
-            CssSelectorExtensions.Select [doc.Html()] selector
+             CssSelectorExtensions.Select (doc.Elements()) selector
         
         /// Gets descendants matched by Css selector
         [<Extension>]
