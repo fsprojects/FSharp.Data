@@ -16,9 +16,9 @@
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Data/**/*.*">
+    <EmbeddedResource Include="Data/**/*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
     <Compile Include="Http.fs" />
     <Compile Include="MockServer.fs" />
     <Compile Include="HttpIntegrationTests.fs" />

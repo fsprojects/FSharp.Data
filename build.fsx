@@ -138,11 +138,13 @@ Target.create "CleanInternetCaches" <| fun _ ->
 let testNames =
     [ "FSharp.Data.DesignTime.Tests"
       "FSharp.Data.Tests.CSharp"
-      "FSharp.Data.Tests"  ]
+      "FSharp.Data.Tests"
+      "FSharp.Data.Reference.Tests"  ]
 let testProjs =
     [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj"
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj"
-      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
+      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"
+      "tests/FSharp.Data.Reference.Tests/FSharp.Data.Reference.Tests.fsproj"  ]
 
 let buildProjs =
     [ "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
