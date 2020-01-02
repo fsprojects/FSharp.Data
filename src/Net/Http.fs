@@ -1536,8 +1536,8 @@ type Http private() =
         // set cookies
         let addCookiesFromHeadersToCookieContainer, cookieContainer =
             match cookieContainer with
-            | Some x -> false, x
-            | None -> true, CookieContainer()
+            | Some x -> true, x
+            | None -> false, CookieContainer()
 
         match cookies with
         | None -> ()

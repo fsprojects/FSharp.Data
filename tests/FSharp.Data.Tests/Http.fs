@@ -9,6 +9,7 @@ module FSharp.Data.Tests.Http
 open FsUnit
 open NUnit.Framework
 open System
+open System.Net
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 open System.Text
@@ -130,6 +131,45 @@ let ``Cookies is not added in cookieContainer but is still returned when addCook
     let cookies = CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer false false
     cookieContainer.Count |> should equal 0
     cookies |> should haveCount 1
+
+let host = "http://localhost:8080/"
+
+let fakeLocalOneRequestListener (handler:(HttpListenerRequest->HttpListenerResponse->Async<unit>)) (cancellationToken: System.Threading.CancellationTokenSource) =
+    let hl = new HttpListener()
+    hl.Prefixes.Add host
+    hl.Start()
+    let cancelAction = fun () -> hl.Close()
+    let task = Async.FromBeginEnd(hl.BeginGetContext, hl.EndGetContext, cancelAction)
+    let handler req resp =
+        async {
+            do! handler req resp
+            hl.Close()
+        }
+    let asyncTask = async {
+        let! context = task
+        Async.Start(handler context.Request context.Response, cancellationToken.Token)
+    }
+    Async.Start(asyncTask, cancellationToken.Token)
+
+[<Test>]
+let ``Cookies are added to cookieContainer passed in parameters (if not already done by dotnet framework - for example because it still implements Path check against URI)`` () =
+    use cancellationToken = new System.Threading.CancellationTokenSource()
+    fakeLocalOneRequestListener (fun req resp ->
+        async {
+            let txt = Encoding.ASCII.GetBytes("Cookie passed")
+            resp.ContentType <- "text/html"
+            resp.Headers.Add("Set-Cookie", "TEST=1234; Path=/cookie-path/")
+            resp.OutputStream.Write(txt, 0, txt.Length)
+            resp.OutputStream.Close()
+        }) cancellationToken
+
+    try
+        let cookieContainer = System.Net.CookieContainer()
+        Http.Request("http://localhost:8080/another-path-than-cookie-path-rejected-by-dotnet-framework/", cookieContainer = cookieContainer) |> ignore
+        Uri("http://localhost:8080/cookie-path/") |> cookieContainer.GetCookies
+        |> should haveCount 1
+    with
+    | _ -> cancellationToken.Cancel(); reraise()
 
 [<Test>]
 let ``Web request's timeout is used`` () =
