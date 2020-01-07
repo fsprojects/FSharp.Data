@@ -1089,6 +1089,11 @@ module private HttpHelpers =
 
         let responseStream = res.GetResponseStream() |> copyToMemoryStream
 
+        let httpProperty f = 
+            match res with
+              | :? HttpWebResponse as httpRes -> Some (f httpRes)
+              | _ -> None
+
         override x.Headers = res.Headers
         override x.ResponseUri = res.ResponseUri
         override x.ContentType = res.ContentType
@@ -1100,6 +1105,18 @@ module private HttpHelpers =
         override x.GetResponseStream () = responseStream :> Stream
         member x.ResetResponseStream () = responseStream.Position <- 0L
 
+        member x.CharacterSet = httpProperty (fun r -> r.CharacterSet)
+        member x.ContentEncoding = httpProperty (fun r -> r.ContentEncoding)
+        member x.Cookies = httpProperty (fun r -> r.Cookies)
+        member x.LastModified = httpProperty (fun r -> r.LastModified)
+        member x.Method = httpProperty (fun r -> r.Method)
+        member x.ProtocolVersion = httpProperty (fun r -> r.ProtocolVersion)
+        member x.Server = httpProperty (fun r -> r.Server)
+        member x.StatusCode = httpProperty (fun r -> r.StatusCode)        
+        member x.StatusDescription = httpProperty (fun r -> r.StatusDescription)
+
+        member x.InnerResponse = res
+        
         interface IDisposable with
             member x.Dispose () =
                 match res :> obj with
