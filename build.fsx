@@ -305,7 +305,7 @@ Target.create "Help" <| fun _ ->
 
 Target.create "All" ignore
 
-"Clean" ==> "AssemblyInfo" ==> "Build"
+//"Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "Build" ==> "BuildTests" ==> "All"
 "BuildTests" ==> "RunTests" ==> "All"

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // CSV type provider
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -22,7 +22,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
   
     // Generate namespace and type 'FSharp.Data.CsvProvider'
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
     let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods=true, nonNullable = true)
   
@@ -169,4 +170,3 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ csvProvTy ])
-  

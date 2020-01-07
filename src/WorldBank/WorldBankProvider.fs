@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // The World Bank type provider 
 // --------------------------------------------------------------------------------------
 
@@ -20,20 +20,21 @@ open FSharp.Data.Runtime.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
     let cacheDuration = TimeSpan.FromDays 30.0
     let restCache = createInternetFileCache "WorldBankSchema" cacheDuration
 
-    let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
+    let createTypesForSources(sources, worldBankTypeName, asynchronous, addAttributes) = 
 
         ProviderHelpers.getOrCreateProvidedType cfg this worldBankTypeName <| fun () ->
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  
-        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, None, hideObjectMethods = true, nonNullable = true)
+        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, None, hideObjectMethods = addAttributes, nonNullable = addAttributes )
 
         let serviceTypesType = 
             let t = ProvidedTypeDefinition("ServiceTypes", None, hideObjectMethods = true, nonNullable = true)
@@ -176,8 +177,8 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
     let defaultSources = [ "World Development Indicators"; "Global Financial Development" ]
 
-    let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
-    do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.</summary>"
+    let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false, false)
+    //do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.</summary>"
 
     let paramWorldBankType = 
         let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", None, hideObjectMethods = true, nonNullable = true)
@@ -196,7 +197,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         t.DefineStaticParameters(parameters, fun typeName providerArgs -> 
             let sources = (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
             let isAsync = providerArgs.[1] :?> bool
-            createTypesForSources(sources, typeName, isAsync))
+            createTypesForSources(sources, typeName, isAsync, true))
         t
         
     do this.AddNamespace(ns, [ worldBankType; paramWorldBankType ])

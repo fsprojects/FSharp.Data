@@ -1,4 +1,4 @@
-﻿namespace ProviderImplementation
+namespace ProviderImplementation
 
 open System
 open System.IO
@@ -20,7 +20,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
   
     // Generate namespace and type 'FSharp.Data.JsonProvider'
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
     let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
   
