@@ -115,14 +115,3 @@ embedded Markdown documentation) to a nice HTML documentation.
  * If you want to build the documentation, simply run the `build.fsx` script
    ([GitHub link](https://github.com/fsharp/FSharp.Data/blob/master/tools/build.fsx)) which
    builds the documentation.
-
-## Related articles
-
-If you want to learn more about writing type providers in general, here are some useful resources:
-
-  * [Writing F# Type Providers with the F# 3.0 Developer Preview - An Introductory Guide and Samples](http://blogs.msdn.com/b/fsharpteam/archive/2011/09/24/developing-f-type-providers-with-the-f-3-0-developer-preview-an-introductory-guide-and-samples.aspx)
-
-  * [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com/) contains a number of examples ranging
-    from quite simple, to very complex.
-
-  * [Tutorial: Creating a Type Provider (F#)](http://msdn.microsoft.com/en-gb/library/hh361034.aspx)

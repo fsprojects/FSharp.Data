@@ -1,3 +1,6 @@
+#### 3.3.4 - January 7 2020
+* Rebuild using "Release" target
+
 #### 3.3.3 - January 7 2020
 * Fix nuget package
 
