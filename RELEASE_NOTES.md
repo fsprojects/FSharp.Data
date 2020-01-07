@@ -1,3 +1,9 @@
+#### 3.3.4 - January 7 2020
+* Rebuild using "Release" target
+
+#### 3.3.3 - January 7 2020
+* Fix nuget package
+
 #### 3.3.2 - September 24 2019
 * [Fix StackOverflow exception caused by many ampersand and semicolons](https://github.com/fsharp/FSharp.Data/pull/1281) 
 

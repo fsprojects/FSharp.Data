@@ -577,6 +577,20 @@ let ``Can handle html with doctype and xml namespaces``() =
     expected |> should equal htmlDoc
 
 [<Test>]
+let ``Can handle html without html tag``() = 
+   let html = """<body>
+       <div>no html-tag</div>
+       </body>"""
+
+   let htmlDoc = HtmlDocument.Parse html
+    
+   let expected = 
+       HtmlDocument.New 
+           [ HtmlNode.NewElement
+                 ("body", 
+                  [ HtmlNode.NewElement("div", [ HtmlNode.NewText "no html-tag" ])]) ]
+   expected |> should equal htmlDoc
+
 let ``Can find header when nested in a div``() =
     let tables =
         HtmlDocument.Load "Data/wimbledon_wikipedia.html"

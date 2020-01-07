@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // HTML type provider
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -18,7 +18,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
     let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
     
