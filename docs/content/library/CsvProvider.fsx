@@ -269,6 +269,9 @@ specify the units of measure. This will override both `AssumeMissingValues` and 
 * `date`
 * `date?`
 * `date option`
+* `datetimeoffset`
+* `datetimeoffset?`
+* `datetimeoffset option`
 * `guid`
 * `guid?`
 * `guid option`
