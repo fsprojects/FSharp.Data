@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.Experimental.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
@@ -466,3 +466,50 @@ let ``selector outside body tag``() =
     selection |> should haveLength 1
     let values = selection |> List.map (fun n -> n.InnerText())
     values |> should equal ["Page Title"]
+
+[<Test>]
+let ``page without html tag``() = 
+    let html = """
+        <head>
+            <title>Page Title</title>
+        </head>
+        <body>
+            <div id="example" >Content<div>
+        </body>""" |> HtmlDocument.Parse
+    let titleSelection = html.CssSelect "title"
+    titleSelection |> should haveLength 1
+    let titleValue = titleSelection |> List.map (fun n -> n.InnerText())
+    titleValue |> should equal ["Page Title"]
+    let divSelection = html.CssSelect "#example"
+    divSelection |> should haveLength 1
+    let divValue = divSelection |> List.map (fun n -> n.InnerText())
+    divValue |> should equal ["Content"]
+
+[<Test>]
+let ``page without html and head tags``() = 
+    let html = """
+        <body>
+            <div id="example" >Content<div>
+        </body>""" |> HtmlDocument.Parse
+    let selection = html.CssSelect "#example"
+    selection |> should haveLength 1
+    let values = selection |> List.map (fun n -> n.InnerText())
+    values |> should equal ["Content"]
+
+[<Test>]
+let ``page without html, head and body tags``() = 
+    let html = """
+        <div>
+            <div id="example">Content</div>
+            <div class="example">more content</div>
+        </div>
+        """ |> HtmlDocument.Parse
+
+    let firstDivSelection = html.CssSelect "#example"
+    firstDivSelection |> should haveLength 1
+    let firstDivValue = firstDivSelection |> List.map (fun n -> n.InnerText())
+    firstDivValue |> should equal ["Content"]
+    let secondDivSelection = html.CssSelect ".example"
+    secondDivSelection |> should haveLength 1
+    let secondDivValue = secondDivSelection |> List.map (fun n -> n.InnerText())
+    secondDivValue |> should equal ["more content"]

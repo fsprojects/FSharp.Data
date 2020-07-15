@@ -66,6 +66,7 @@ type JsonValue =
       | Null -> w.Write "null"
       | Boolean b -> w.Write(if b then "true" else "false")
       | Number number -> w.Write number
+      | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
       | Float number -> w.Write number
       | String s ->
           w.Write "\""
@@ -98,8 +99,7 @@ type JsonValue =
   // Encode characters that are not valid in JS string. The implementation is based
   // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
   static member internal JsonStringEncodeTo (w:TextWriter) (value:string) =
-    if String.IsNullOrEmpty value then ()
-    else 
+    if not (String.IsNullOrEmpty value) then
       for i = 0 to value.Length - 1 do
         let c = value.[i]
         let ci = int c
@@ -179,14 +179,6 @@ type private JsonParser(jsonText:string) =
         | 't' -> parseLiteral("true", JsonValue.Boolean true)
         | 'f' -> parseLiteral("false", JsonValue.Boolean false)
         | 'n' -> parseLiteral("null", JsonValue.Null)
-        | _ -> throw()
-
-    and parseRootValue() =
-        skipWhitespace()
-        ensure(i < s.Length)
-        match s.[i] with
-        | '{' -> parseObject()
-        | '[' -> parseArray()
         | _ -> throw()
 
     and parseString() =
@@ -294,7 +286,7 @@ type private JsonParser(jsonText:string) =
         JsonValue.Array(vals.ToArray())
 
     and parseLiteral(expected, r) =
-        ensure(i+expected.Length < s.Length)
+        ensure(i+expected.Length <= s.Length)
         for j in 0 .. expected.Length - 1 do
             ensure(s.[i+j] = expected.[j])
         i <- i + expected.Length
@@ -302,7 +294,7 @@ type private JsonParser(jsonText:string) =
 
     // Start by parsing the top-level value
     member x.Parse() =
-        let value = parseRootValue()
+        let value = parseValue()
         skipWhitespace()
         if i <> s.Length then
             throw()
@@ -311,7 +303,7 @@ type private JsonParser(jsonText:string) =
     member x.ParseMultiple() =
         seq {
             while i <> s.Length do
-                yield parseRootValue()
+                yield parseValue()
                 skipWhitespace()
         }
 

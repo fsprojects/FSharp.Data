@@ -10,6 +10,8 @@ It takes a sample document as an input (or document containing a root XML node w
 multiple child nodes that are used as samples). The generated type can then be used 
 to read files with the same structure. If the loaded file does not match the structure 
 of the sample, a runtime error may occur (but only when accessing e.g. non-existing element).
+Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
+relying on samples.
 
 ## Introducing the provider
 

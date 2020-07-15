@@ -1,7 +1,7 @@
 # F# Data: Library for Data Access
 
-The F# Data library (`FSharp.Data.dll`) implements everything you need to access data in your F# applications 
-and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and 
+The F# Data library (`FSharp.Data.dll`) implements everything you need to access data in your F# applications
+and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and
 for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
 
 We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) issues, or help to improve the [documentation][3].
@@ -39,14 +39,16 @@ When targeting .NET Standard 2.0 or .NET Core App 2.x:
 ## Supported Design-time Environments
 
 - .NET SDK 2.1.401 or higher (runs tools using .NET Core)
-- Visual F# Tools 3.1 or higher (runs tools using .NET Framework)
-- Mono 5.0.0 or higher (runs tools using Mono)
+- Visual F# Tools 4.1 or higher (runs tools using .NET Framework)
+- Mono 5.12.0 or higher (runs tools using Mono)
+- Visual Studio 2017 or higher (runs tools using .NET Framework)
 - Other F# tooling based on FSharp.Compiler.Service must have FSharp.Compiler.Service 21.0+ and FSharp.Core nuget 4.2.x+.
 
-## Documentation 
+## Documentation
 
 This library comes with comprehensive documentation. The documentation is 
-automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request! 
+automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request!
+
  - [F# Data Library home page][3] with more information about the library, contributions, etc.
  - The samples from the documentation are included as part of `FSharp.Data.Tests.sln`, make sure you build the
 solution before trying out the samples to ensure that all needed packages are installed.
@@ -57,6 +59,12 @@ solution before trying out the samples to ensure that all needed packages are in
  - If you want to submit a bug, a feature request or help with fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to F# Data](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md).
  - To discuss more general issues about F# Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
 
+## Code of Conduct
+
+This repository is governed by the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/).
+
+We pledge to be overt in our openness, welcoming all people to contribute, and pledging in return to value them as whole human beings and to foster an atmosphere of kindness, cooperation, and understanding.
+
 ## Library license
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
@@ -64,8 +72,6 @@ The library is available under Apache 2.0. For more information see the [License
 ## Maintainers
 
 Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus), [Tomas Petricek](http://github.com/tpetricek) and [Colin Bull](http://github.com/colinbull).
-
-
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content

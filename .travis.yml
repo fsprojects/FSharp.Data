@@ -6,33 +6,12 @@ dist: trusty
 # have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
 matrix:
   include:
-    - mono: 5.8.0
+    - mono: latest
       env: USE_DOTNET_CLI=1
       os: linux
-    - mono: 5.8.0
+    - mono: latest
       env: USE_DOTNET_CLI=1
       os: osx
-    - mono: 5.8.0
-      env: USE_MSBUILD=1
-      os: linux
-    - mono: 5.8.0
-      env: USE_MSBUILD=1
-      os: osx
-    - mono: 5.10.0
-      env: USE_MSBUILD=1
-      os: linux
-    - mono: 5.10.0
-      env: USE_MSBUILD=1
-      os: osx
-    - mono: latest
-      env: USE_MSBUILD=1
-      os: linux
-    - mono: latest
-      env: USE_MSBUILD=1
-      os: osx
-    - mono: weekly
-      env: USE_MSBUILD=1
-      os: linux
   allow_failures:
     - mono: latest
     - mono: weekly

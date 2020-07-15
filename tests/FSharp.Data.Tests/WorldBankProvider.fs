@@ -19,7 +19,7 @@ let data = WorldBankData.GetDataContext()
 
 [<Test>]
 let ``Should not throw exception for missing year in indicator``() =
-    data.Countries.``United Kingdom``.Indicators.``GDP growth (annual %)``.[1900] |> should equal Double.NaN
-    data.Countries.``United Kingdom``.Indicators.``GDP growth (annual %)``.[2012] |> should not' (equal Double.NaN)
-    data.Countries.``United Kingdom``.Indicators.``GDP growth (annual %)``.TryGetValueAt 1900 |> should equal None
-    data.Countries.``United Kingdom``.Indicators.``GDP growth (annual %)``.TryGetValueAt 2012 |> should not' (equal None)
+    data.Countries.``United Kingdom``.Indicators.``GNI growth (annual %)``.[1900] |> should equal Double.NaN
+    data.Countries.``United Kingdom``.Indicators.``GNI growth (annual %)``.[2012] |> should not' (equal Double.NaN)
+    data.Countries.``United Kingdom``.Indicators.``GNI growth (annual %)``.TryGetValueAt 1900 |> should equal None
+    data.Countries.``United Kingdom``.Indicators.``GNI growth (annual %)``.TryGetValueAt 2012 |> should not' (equal None)
