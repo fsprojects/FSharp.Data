@@ -24,7 +24,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data" 
 
-    let defaultServiceUrl = "http://api.worldbank.org"
+    let defaultServiceUrl = "http://api.worldbank.org/v2"
     let cacheDuration = TimeSpan.FromDays 30.0
     let restCache = createInternetFileCache "WorldBankSchema" cacheDuration
 
