@@ -8,9 +8,7 @@ countries in the world. The [data catalog](http://data.worldbank.org/) contains 
 8,000 indicators that can be programmatically accessed.
 
 The WorldBank Type Provider makes the WorldBank data easily accessible to F# programs and
-scripts in a type-safe manner. This article provides an introduction. The type provider
-is also used on the [Try F#](http://www.tryfsharp.org) web site in the "Data Science" tutorial,
-so you can find more examples there.
+scripts in a type-safe manner. This article provides an introduction.
 
 ## Introducing the provider
 
@@ -139,8 +137,6 @@ and then creates a single composed chart using `Chart.Combine`.
 (**
 ## Related articles
 
- * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) - The Data Science
-   tutorial on Try F# uses the WorldBank type provider in numerous examples.
  * [API Reference: WorldBankDataProvider type provider](../reference/fsharp-data-worldbankdataprovider.html)
 
 *)
