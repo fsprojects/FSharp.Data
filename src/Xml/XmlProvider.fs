@@ -20,7 +20,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
   
     // Generate namespace and type 'FSharp.Data.XmlProvider'
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
     let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
   
@@ -68,6 +69,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                       RepresentationType = result.ConvertedType
                       CreateFromTextReader = fun reader -> 
                               result.Converter <@@ XmlElement.Create(%reader) @@>
+                      CreateListFromTextReader = None
                       CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
                           <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@> }
 
@@ -97,6 +99,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                           RepresentationType = result.ConvertedType
                           CreateFromTextReader = fun reader -> 
                               result.Converter <@@ XmlElement.Create(%reader) @@>
+                          CreateListFromTextReader = None
                           CreateFromTextReaderForSampleList = fun reader -> 
                               result.Converter <@@ XmlElement.CreateList(%reader) @@> }
        

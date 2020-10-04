@@ -201,6 +201,9 @@ type JsonRuntime =
         let cultureInfo = TextRuntime.GetCulture cultureStr
         fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome ||
                     (JsonConversions.AsDateTime cultureInfo json).IsSome
+    | InferedTypeTag.DateTimeOffset ->
+        let cultureInfo = TextRuntime.GetCulture cultureStr
+        fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome
     | InferedTypeTag.TimeSpan -> 
         JsonConversions.AsTimeSpan (TextRuntime.GetCulture cultureStr)
         >> Option.isSome

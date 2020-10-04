@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+WorldBank
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+WorldBank[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+WorldBank : FDR.BaseTypes.IJsonDocument
     new : array:JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank

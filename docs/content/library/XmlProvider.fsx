@@ -403,7 +403,7 @@ When the file includes other schema files, the `ResolutionFolder` parameter can 
 The uri may also refer to online resources:
 *)
 
-type RssXsd = XmlProvider<Schema = "http://europa.eu/rapid/conf/RSS20.xsd">
+type RssXsd = XmlProvider<Schema = "https://www.w3schools.com/xml/note.xsd">
 
 (**
 

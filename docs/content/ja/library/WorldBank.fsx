@@ -11,9 +11,6 @@
 WorldBank 型プロバイダーを使うと、F#プログラムやスクリプトから型安全かつ
 簡単な方法でWorldBankのデータにアクセスできるようになります。
 このドキュメントはこの型プロバイダーの基本的な部分のみ説明しています。
-WorldBank 型プロバイダーは [Try F#](http://www.tryfsharp.org) の
-Webサイトにある"Data Science" のチュートリアルでも使われているため、
-そちらも参考にするとよいでしょう。
 
 ## 型プロバイダーの基本
 
@@ -149,9 +146,6 @@ let countries =
 (**
 ## 関連する記事
 
- * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) -
-   Try F# の Data Science チュートリアルにはFreebase 型プロバイダーを使った
-   様々な例があります。
  * [API リファレンス: WorldBankDataProvider 型プロバイダー](../../reference/fsharp-data-worldbankdataprovider.html)
 
 *)

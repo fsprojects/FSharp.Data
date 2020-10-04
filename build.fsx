@@ -77,8 +77,16 @@ let release = ReleaseNotes.load "RELEASE_NOTES.md"
 let bindir = "./bin"
 
 let isAppVeyorBuild = Environment.environVar "APPVEYOR" <> null
+let isAppVeyorBuildTag = Environment.environVar "APPVEYOR_REPO_TAG" <> null
+let appVeyorTagName = Environment.environVar "APPVEYOR_REPO_TAG_NAME"
 let nugetVersion =
-    if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
+    if isAppVeyorBuild then
+        if not isAppVeyorBuildTag then
+            sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
+        else
+            if appVeyorTagName  <> release.NugetVersion then
+                printfn "mismatch between tag '%s' and RELEASE_NOTES.md version '%s" appVeyorTagName release.NugetVersion
+            release.NugetVersion
     else release.NugetVersion
 
 Target.create "AppVeyorBuildVersion" (fun _ ->
@@ -130,11 +138,13 @@ Target.create "CleanInternetCaches" <| fun _ ->
 let testNames =
     [ "FSharp.Data.DesignTime.Tests"
       "FSharp.Data.Tests.CSharp"
-      "FSharp.Data.Tests"  ]
+      "FSharp.Data.Tests"
+      "FSharp.Data.Reference.Tests"  ]
 let testProjs =
     [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj"
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj"
-      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"  ]
+      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"
+      "tests/FSharp.Data.Reference.Tests/FSharp.Data.Reference.Tests.fsproj"  ]
 
 let buildProjs =
     [ "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
@@ -209,42 +219,8 @@ let publishFiles what branch fromFolder toFolder =
 #load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
 open Octokit
 
-let createRelease() =
-
-    // Set release date in release notes
-    let releaseNotes = File.ReadAllText "RELEASE_NOTES.md"
-    let releaseNotes = releaseNotes.Replace("#### " + release.NugetVersion + " - Unreleased", "#### " + release.NugetVersion + " - " + DateTime.Now.ToString("MMMM d yyyy"))
-    File.WriteAllText("RELEASE_NOTES.md", releaseNotes)
-
-    // Commit assembly info and RELEASE_NOTES.md
-    Staging.stageAll ""
-    Commit.exec "" (sprintf "Bump version to %s" release.NugetVersion)
-    Branches.pushBranch "" "upstream" "master"
-
-    // Create tag
-    Branches.tag "" release.NugetVersion
-    Branches.pushTag "" "upstream" release.NugetVersion
-
-    // Create github release
-    let token =
-        match Environment.environVarOrDefault "github_token" "" with
-        | s when not (System.String.IsNullOrWhiteSpace s) -> s
-        | _ -> failwith "please set the github_token environment variable to a github personal access token with repro access."
-
-    let draft =
-        createClientWithToken token
-        |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes
-
-    draft
-    |> releaseDraft
-    |> Async.RunSynchronously
-
 Target.create "ReleaseDocs" <| fun _ ->
     publishFiles "generated documentation" "gh-pages" "docs/output" ""
-
-Target.create "ReleaseBinaries" <| fun _ ->
-    createRelease()
-    publishFiles "binaries" "release" "bin" "bin"
 
 Target.create "TestSourcelink" <| fun _ ->
     let testSourcelink framework proj =
@@ -261,12 +237,6 @@ Target.create "Release" ignore
 
 open Fake.Core.TargetOperators
 
-"CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
-"ReleaseDocs" ==> "Release"
-"ReleaseBinaries" ==> "Release"
-"NuGet" ==> "Release"
-"TestSourcelink" ==> "Release"
-
 // --------------------------------------------------------------------------------------
 // Help
 
@@ -282,8 +252,7 @@ Target.create "Help" <| fun _ ->
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
-    printfn "  * ReleaseDocs (calls previous)"
-    printfn "  * ReleaseBinaries"
+    printfn "  * ReleaseDocs (calls previous and publishes to gh-pages)"
     printfn "  * NuGet (creates package only, doesn't publish)"
     printfn "  * TestSourceLink (validates the SourceLink embedded data)"
     printfn "  * Release (calls previous 5)"
@@ -295,8 +264,11 @@ Target.create "Help" <| fun _ ->
 
 Target.create "All" ignore
 
-"Clean" ==> "AssemblyInfo" ==> "Build"
-"Build" ==> "All"
+"Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs" ==> "Release"
+"NuGet" ==> "Release"
+"Build" ==> "TestSourcelink" ==> "Release"
+
+"Clean" ==> "AssemblyInfo" ==> "Build" ==> "NuGet" ==> "All"
 "Build" ==> "BuildTests" ==> "All"
 "BuildTests" ==> "RunTests" ==> "All"
 

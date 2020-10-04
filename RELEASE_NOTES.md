@@ -1,4 +1,25 @@
-#### 3.1.1 - March 28 2019
+#### 3.3.4 - January 7 2020
+* Rebuild using "Release" target
+
+#### 3.3.3 - January 7 2020
+* Fix nuget package
+
+#### 3.3.2 - September 24 2019
+* [Fix StackOverflow exception caused by many ampersand and semicolons](https://github.com/fsharp/FSharp.Data/pull/1281) 
+
+#### 3.3.1 - September 24 2019
+* Update latest TPSDK, fixing [Build with embedded resource broke](https://github.com/fsharp/FSharp.Data/issues/1255)
+
+#### 3.2.4 - September 16 2019
+* Make appevyor build nuget package (though we still releas via '.\build Release')
+
+#### 3.2.1 - September 10 2019
+* Fix for using on F# Interactive on .NET Core
+* [Add ParseList on JsonProvider](https://github.com/fsharp/FSharp.Data/pull/1272)
+* [Handle serialization of odd float values](https://github.com/fsharp/FSharp.Data/pull/1275)
+* [Adding HTML active patterns to expose internals of HtmlNode](https://github.com/fsharp/FSharp.Data/pull/1227)
+
+#### 3.1.1 - April 15 2019
 * [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
 * Require VS2017 or above [(due to TPSDK fix)](https://github.com/fsprojects/FSharp.TypeProviders.SDK/pull/305)
 

@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.Runtime.StructuralTypes
+namespace FSharp.Data.Runtime.StructuralTypes
 
 open System
 open FSharp.Data.Runtime
@@ -33,6 +33,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Json
   | DateTime
   | TimeSpan
+  | DateTimeOffset
   | Guid
   // Collections and sum types
   | Collection 
@@ -123,6 +124,7 @@ type InferedTypeTag with
     | String -> "String"
     | DateTime -> "DateTime"
     | TimeSpan -> "TimeSpan"
+    | DateTimeOffset -> "DateTimeOffset"
     | Guid -> "Guid"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
@@ -147,6 +149,7 @@ type InferedTypeTag with
     | "String" -> String 
     | "DateTime" -> DateTime
     | "TimeSpan" -> TimeSpan
+    | "DateTimeOffset" -> DateTimeOffset
     | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous

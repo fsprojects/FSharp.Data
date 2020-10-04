@@ -281,6 +281,13 @@ let ``Can serialize document with array, null and number``() =
     let json = JsonValue.Parse text
     json.ToString(JsonSaveOptions.DisableFormatting) |> should equal text
 
+[<TestCase(Double.NaN)>]
+[<TestCase(Double.PositiveInfinity)>]
+[<TestCase(Double.NegativeInfinity)>]
+let ``Serializes special float value as null`` v =
+    let json = JsonValue.Float v
+    json.ToString(JsonSaveOptions.DisableFormatting) |> should equal "null"
+
 let normalize (str:string) =
   str.Replace("\r\n", "\n")
      .Replace("\r", "\n")
