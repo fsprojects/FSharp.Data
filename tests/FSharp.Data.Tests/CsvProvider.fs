@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "../../bin/lib/net45/FSharp.Data.dll"
 #r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
 #r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
@@ -98,18 +98,23 @@ let ``Inference of numbers with empty values`` () =
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
-let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate
-2018-04-21,2018-04-20+10:00,2018-04-19+11:00
-2018-04-18,2018-04-17-06:00,2018-04-16"""
+let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate,OffsetOption (datetimeoffset option),OffsetNullable (datetimeoffset?)
+2018-04-21,2018-04-20+10:00,2018-04-19+11:00,2018-04-20+10:00,2018-04-20+10:00
+2018-04-18,2018-04-17-06:00,2018-04-16,,"""
 
 [<Test>]
 let ``Can infer DateTime and DateTimeOffset types correctly`` () =
   let csv = CsvProvider<csvData, ",", InferRows = 0>.GetSample()
   let firstRow = csv.Rows |> Seq.head
+  let secondRow = csv.Rows |> Seq.item 1
 
   firstRow.DateOnly.GetType() |> should equal typeof<DateTime>
   firstRow.DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
   firstRow.MixedDate.GetType() |> should equal typeof<DateTime>
+  firstRow.OffsetOption.GetType() |> should equal typeof<DateTimeOffset Option>
+  firstRow.OffsetNullable.GetType() |> should equal typeof<DateTimeOffset>
+  secondRow.OffsetOption |> should equal None
+  secondRow.OffsetNullable |> should equal null  
   
 
 [<Test>] 
