@@ -130,6 +130,17 @@ let ``Can handle attributes with no value``() =
     node.Attributes() |> should equal expected
 
 [<Test>]
+let ``Can handle attributes next to each other``() = 
+    let html = """<h1 class="foo"style="font-size: 0.7em">Test</h1>"""
+    let node = HtmlNode.Parse html |> List.head
+    let expected = 
+        [
+            HtmlAttribute.New("class", "foo")
+            HtmlAttribute.New("style", "font-size: 0.7em")
+        ]
+    node.Attributes() |> should equal expected
+
+[<Test>]
 let ``Can handle long html encoded attributes without StackOverflow``() = 
     let html =
         HtmlNode.Parse (

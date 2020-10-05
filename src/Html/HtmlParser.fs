@@ -750,7 +750,7 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); afterAttributeValueQuoted state
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop(); state.EmitTag(false)
-            | _ -> attributeName state
+            | _ -> state.NewAttribute(); attributeName state
 
         let next = ref (state.Reader.Peek())
         while !next <> -1 do
