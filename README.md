@@ -12,37 +12,13 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Install .NET SDK 2.1.401 or higher
-- Build FSharp.Data.sln and FSharp.Data.Tests.sln in Visual Studio 2017, Visual Studio 2017 for Mac (previously Xamarin Studio), or MonoDevelop. You can also use the FAKE script:
+- Install .NET SDK see version in global.json 
+- Build FSharp.Data.sln and FSharp.Data.Tests.sln in Visual Studio. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
     * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
   * Mono: Run *build.sh*
     * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.svg)](https://travis-ci.org/fsharp/FSharp.Data)
-
-## Supported F# Runtimes
-
-When targeting .NET Framework 4.5+:
-
-- FSharp.Core 4.3.1.0. nuget 3.1.x (default for F# 3.1/Visual Studio 2013)
-- FSharp.Core 4.4.0.0, nuget 4.0.x (default for F# 4.0/Visual Studio 2015)
-- FSharp.Core 4.4.1.0, nuget 4.2.x (default for F# Tools 4.1 SDK / Visual Studio 2017)
-- FSharp.Core 4.4.3.0, nuget 4.3.x (default for F# Tools 10.1 SDK / Visual Studio 2017 15.6+)
-- or higher versions of the same
-
-When targeting .NET Standard 2.0 or .NET Core App 2.x:
-
-- FSharp.Core 4.4.1.0, nuget 4.2.x (default for F# Tools 4.1 SDK / Visual Studio 2017) or higher
-- FSharp.Core 4.4.3.0, nuget 4.3.x (default for F# Tools 10.1 SDK / Visual Studio 2017 15.6+)
-- or higher versions of the same
-
-## Supported Design-time Environments
-
-- .NET SDK 2.1.401 or higher (runs tools using .NET Core)
-- Visual F# Tools 4.1 or higher (runs tools using .NET Framework)
-- Mono 5.12.0 or higher (runs tools using Mono)
-- Visual Studio 2017 or higher (runs tools using .NET Framework)
-- Other F# tooling based on FSharp.Compiler.Service must have FSharp.Compiler.Service 21.0+ and FSharp.Core nuget 4.2.x+.
 
 ## Documentation
 
@@ -71,7 +47,7 @@ The library is available under Apache 2.0. For more information see the [License
 
 ## Maintainers
 
-Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus), [Tomas Petricek](http://github.com/tpetricek) and [Colin Bull](http://github.com/colinbull).
+Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus), [Tomas Petricek](http://github.com/tpetricek), [Don Syme](http://github.com/dsyme) and [Colin Bull](http://github.com/colinbull).
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
