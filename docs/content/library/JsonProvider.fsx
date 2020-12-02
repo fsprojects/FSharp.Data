@@ -300,7 +300,7 @@ project file). If you are building a library `MyLib.dll`, you can write:
 
 *)
 type WB = JsonProvider<"../data/WorldBank.json", 
-  EmbeddedResource="MyLib, worldbank.json">
+  EmbeddedResource="MyLib, MyLib.data.worldbank.json">
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 
