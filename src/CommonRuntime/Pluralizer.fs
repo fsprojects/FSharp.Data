@@ -161,6 +161,7 @@ let private tables = lazy(
          "shears",           "",                 ""
          "silex",            "silices",          ""
          "simplex",          "simplices",        "simplexes"
+         "slice",            "slices",           ""
          "soliloquy",        "soliloquies",      "soliloquy"
          "species",          "",                 ""
          "stratum",          "strata",           ""
