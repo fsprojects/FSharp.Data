@@ -295,11 +295,12 @@ access the sample JSON. This works fine when the sample is specified inline, but
 the sample is specified as a local file (unless you distribute the samples with your library).
 
 For this reason, the JSON provider lets you specify samples as embedded resources using the 
-static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
+static parameter `EmbeddedResource` (don't forget then to [include the file](https://docs.microsoft.com/en-us/visualstudio/ide/build-actions) as EmbeddedResource in the
+project file). If you are building a library `MyLib.dll`, you can write:
 
 *)
 type WB = JsonProvider<"../data/WorldBank.json", 
-  EmbeddedResource="MyLib, worldbank.json">
+  EmbeddedResource="MyLib, MyLib.data.worldbank.json">
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 
