@@ -145,7 +145,7 @@ let authors = """
 データ内の情報を表示することができます：
 *)
 
-type Authors = XmlProvider<"../../data/Writers.xml">
+type Authors = XmlProvider<"../../data/Writers.xml", ResolutionFolder=__SOURCE_DIRECTORY__>
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -190,7 +190,7 @@ for author in topic.Authors do
 このような場合には引数 `Global` に `true` を指定します：
 *)
 
-type Html = XmlProvider<"../../data/HtmlBody.xml", Global=true>
+type Html = XmlProvider<"../../data/HtmlBody.xml", Global=true, ResolutionFolder=__SOURCE_DIRECTORY__>
 let html = Html.GetSample()
 
 (**

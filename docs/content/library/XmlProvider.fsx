@@ -129,7 +129,7 @@ The `Load` and `AsyncLoad` methods allows reading the data from a file or from a
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
-type Authors = XmlProvider<"../data/Writers.xml">
+type Authors = XmlProvider<"../data/Writers.xml", ResolutionFolder=__SOURCE_DIRECTORY__>
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -170,7 +170,7 @@ that processes `<div>` elements. To make this possible, you need to set an optio
 parameter `Global` to `true`:
 *)
 
-type Html = XmlProvider<"../data/HtmlBody.xml", Global=true>
+type Html = XmlProvider<"../data/HtmlBody.xml", Global=true, ResolutionFolder=__SOURCE_DIRECTORY__>
 let html = Html.GetSample()
 
 (**
@@ -233,7 +233,7 @@ to infer the schema correctly. For example, the first level `<dct:dataset>` elem
 least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
 *)
 
-type Census = XmlProvider<"../data/Census.xml">
+type Census = XmlProvider<"../data/Census.xml", ResolutionFolder=__SOURCE_DIRECTORY__>
 
 let data = Census.Load("https://api.census.gov/data.xml")
 

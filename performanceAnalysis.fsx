@@ -4,7 +4,7 @@
 open FSharp.Data
 open FSharp.Charting
 
-type Times = CsvProvider<"log.csv",Separators="|",IgnoreErrors=true,Schema="category,instance,time",HasHeaders=false>
+type Times = CsvProvider<"log.csv",Separators="|",IgnoreErrors=true,Schema="category,instance,time",HasHeaders=false, ResolutionFolder=__SOURCE_DIRECTORY__>
 
 let byCategory = 
     Times.GetSample().Rows
