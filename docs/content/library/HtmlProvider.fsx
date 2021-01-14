@@ -35,7 +35,7 @@ Usually with HTML files headers are demarked by using the <th> tag, however in t
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness. 
 *)
 
-type F1_2017 = HtmlProvider<"../data/2017_F1.htm">
+type F1_2017 = HtmlProvider<"../data/2017_F1.htm", ResolutionFolder=__SOURCE_DIRECTORY__>
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.

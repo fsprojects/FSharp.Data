@@ -51,4 +51,4 @@ Although this project is hosted in the [fsharp](https://github.com/fsharp) repos
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
- [3]: http://fsharp.github.io/FSharp.Data/
+ [3]: http://fsprojects.github.io/FSharp.Data/

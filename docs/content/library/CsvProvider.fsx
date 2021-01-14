@@ -36,7 +36,7 @@ and the next rows define the data. We can pass reference to the file to `CsvProv
 get a strongly typed view of the file:
 *)
 
-type Stocks = CsvProvider<"../data/MSFT.csv">
+type Stocks = CsvProvider<"../data/MSFT.csv", ResolutionFolder=__SOURCE_DIRECTORY__>
 
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
@@ -127,13 +127,13 @@ a static argument. Also note that in this case we're using the same data at runt
 so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
-let small = CsvProvider<"../data/SmallTest.csv">.GetSample()
+let small = CsvProvider<"../data/SmallTest.csv", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 
 (**
 We can also use the default constructor instead of the `GetSample` static method:
 *)
 
-let small2 = new CsvProvider<"../data/SmallTest.csv">()
+let small2 = new CsvProvider<"../data/SmallTest.csv", ResolutionFolder=__SOURCE_DIRECTORY__>()
 
 (**
 but the VisualStudio IntelliSense for the type provider parameters doesn't work when we use a default
@@ -167,7 +167,7 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-type AirQuality = CsvProvider<"../data/AirQuality.csv", ";">
+type AirQuality = CsvProvider<"../data/AirQuality.csv", ResolutionFolder=__SOURCE_DIRECTORY__, ";">
 
 let airQuality = new AirQuality()
 
@@ -187,7 +187,7 @@ we also set `IgnoreErrors` static parameter to `true` so that lines with incorre
 are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
-let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
+let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
@@ -205,7 +205,7 @@ for r in mortalityNy.Rows do
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains
 rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"../data/AirQuality.csv", Separator=";,">`.
+`CsvProvider<"../data/AirQuality.csv", Separator=";,", ResolutionFolder=__SOURCE_DIRECTORY__>`.
 
 ## Missing values
 
@@ -319,7 +319,8 @@ the other columns blank in the schema (you also don't need to add all the traili
 *)
 type Titanic1 =
   CsvProvider<"../data/Titanic.csv",
-    Schema=",,Passenger Class,,,float">
+    Schema=",,Passenger Class,,,float",
+    ResolutionFolder=__SOURCE_DIRECTORY__>
 
 let titanic1 = Titanic1.GetSample()
 for row in titanic1.Rows do
@@ -333,7 +334,8 @@ Alternatively, you can rename and override the type of any column by name instea
 *)
 type Titanic2 =
   CsvProvider<"../data/Titanic.csv",
-    Schema="Fare=float,PClass->Passenger Class">
+    Schema="Fare=float,PClass->Passenger Class",
+    ResolutionFolder=__SOURCE_DIRECTORY__>
 
 let titanic2 = Titanic2.GetSample()
 for row in titanic2.Rows do

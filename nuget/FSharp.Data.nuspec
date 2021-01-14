@@ -7,7 +7,7 @@
     <authors>@authors@</authors>
     <owners>@authors@</owners>
     <license type="expression">Apache-2.0</license>
-    <projectUrl>http://fsharp.github.io/FSharp.Data</projectUrl>
+    <projectUrl>http://fsprojects.github.io/FSharp.Data</projectUrl>
     <iconUrl>https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>

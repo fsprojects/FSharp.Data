@@ -72,7 +72,7 @@ a number of static parameters. If the `Asynchronous` parameter is set to `true` 
 type provider generates all operations as asynchronous:
 *)
 
-type WorldBank = WorldBankDataProvider<"World Development Indicators", Asynchronous=true>
+type WorldBank = WorldBankDataProvider<"World Development Indicators", Asynchronous=true, ResolutionFolder=__SOURCE_DIRECTORY__>
 WorldBank.GetDataContext()
 
 (**

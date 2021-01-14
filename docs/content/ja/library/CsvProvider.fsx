@@ -41,7 +41,7 @@ Yahoo FinanceのWebサイトでは以下のような構造のCSV形式で
 静的に型付けされた方法でファイルの内容を参照できるようになります：
 *)
 
-type Stocks = CsvProvider<"../../data/MSFT.csv">
+type Stocks = CsvProvider<"../../data/MSFT.csv", ResolutionFolder=__SOURCE_DIRECTORY__>
 
 (**
 生成された型にはデータをロードするための2つのstaticメソッドがあります。
@@ -142,7 +142,7 @@ Chart.Candlestick(recent).WithYAxis(Min = 40.0, Max = 50.0)
 `GetSample` メソッドを使っていることに注意してください。
 *)
 
-let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
+let small = CsvProvider<"../../data/SmallTest.csv", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 
 (**
 先ほどの例と同じく、行データは値 `small` の `Rows` プロパティで取得できます。
@@ -178,7 +178,7 @@ CSVの列区切り文字には代わりにセミコロン( `;` )が使われま�
 以下では区切り文字として `;` を使っています：
 *)
 
-let airQuality = CsvProvider<"../../data/AirQuality.csv", ";">.GetSample()
+let airQuality = CsvProvider<"../../data/AirQuality.csv", ";", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 
 for row in airQuality.Rows do
   if row.Month > 6 then 
@@ -201,7 +201,7 @@ for row in airQuality.Rows do
 末尾に構造化されていないデータが追加されています)：
 *)
 
-let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
+let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 
 // 原因名をコードで検索
 // (事故で負傷した自転車走者)
@@ -220,7 +220,7 @@ for r in mortalityNy.Rows do
 これはたとえばファイルが不正で、セミコロンかコロンのどちらかで
 行が区切られているような場合に有効です。
 具体的には
-`CsvProvider<"../../data/AirQuality.csv", Separator=";,">`
+`CsvProvider<"../../data/AirQuality.csv", Separator=";,", ResolutionFolder=__SOURCE_DIRECTORY__>`
 というようにします。
 
 ## 値無し
@@ -350,7 +350,7 @@ for row in csv.Rows do
 
 *)
 
-let titanic1 = CsvProvider<"../../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
+let titanic1 = CsvProvider<"../../data/Titanic.csv", Schema=",,Passenger Class,,,float", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 for row in titanic1.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
@@ -360,7 +360,7 @@ for row in titanic1.Rows do
 
 *)
 
-let titanic2 = CsvProvider<"../../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
+let titanic2 = CsvProvider<"../../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
 for row in titanic2.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
