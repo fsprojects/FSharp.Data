@@ -6,7 +6,7 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "FSharp.Data.dll" ]
 // Web site location for the generated documentation
-let repo = "https://github.com/fsharp/FSharp.Data/tree/master/"
+let repo = "https://github.com/fsprojects/FSharp.Data/tree/master/"
 let website = "/FSharp.Data"
 
 // Specify more information about your project
@@ -14,7 +14,7 @@ let info =
   [ "project-name", "F# Data"
     "project-author", "Tomas Petricek; Gustavo Guerra; Colin Bull"
     "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files, and for sending HTTP requests."
-    "project-github", "http://github.com/fsharp/FSharp.Data"
+    "project-github", "https://github.com/fsprojects/FSharp.Data"
     "project-nuget", "https://nuget.org/packages/FSharp.Data" ]
 
 // --------------------------------------------------------------------------------------
