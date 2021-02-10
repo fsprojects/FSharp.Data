@@ -1,6 +1,16 @@
 framework: >=net45
 source https://api.nuget.org/v3/index.json
 
+# These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
+# The TPSDK testing helpers like these to be placed in pacakges/...
+# see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs
+nuget NetStandard.Library.NetFramework
+nuget Microsoft.NETCore.App
+
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
+
 group Fake
     source https://api.nuget.org/v3/index.json
     storage: none
@@ -15,17 +25,7 @@ group Fake
     nuget Fake.Tools.Git               ~> 5.20.0
 	nuget Fake.DotNet.Paket            ~> 5.20.0
 
-github fsharp/FAKE modules/Octokit/Octokit.fsx
-
-github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
-github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
-
-# These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
-# The TPSDK testing helpers like these to be placed in pacakges/...
-# see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs
-nuget NetStandard.Library.NetFramework
-nuget Microsoft.NETCore.App
+    github fsharp/FAKE modules/Octokit/Octokit.fsx
 
 # NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
 # NOTE: The PackageReference items are themselves added by hand to the project files.
