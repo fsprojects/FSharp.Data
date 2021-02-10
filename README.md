@@ -13,12 +13,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 ## Building
 
 - Install .NET SDK see version in global.json 
-- Build FSharp.Data.sln and FSharp.Data.Tests.sln in Visual Studio. You can also use the FAKE script:
-
-  * Windows: Run *build.cmd* 
-    * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
-  * Mono: Run *build.sh*
-    * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.svg)](https://travis-ci.org/fsharp/FSharp.Data)
+- `build -t Build`
 
 ## Documentation
 
@@ -47,8 +42,8 @@ The library is available under Apache 2.0. For more information see the [License
 
 ## Maintainers
 
-Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](http://github.com/ovatsus), [Tomas Petricek](http://github.com/tpetricek), [Don Syme](http://github.com/dsyme) and [Colin Bull](http://github.com/colinbull).
+Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](https://github.com/ovatsus), [Tomas Petricek](https://github.com/tpetricek), [Don Syme](https://github.com/dsyme) and [Colin Bull](https://github.com/colinbull).
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
- [3]: http://fsprojects.github.io/FSharp.Data/
+ [3]: https://fsprojects.github.io/FSharp.Data/

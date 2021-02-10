@@ -6,8 +6,8 @@
     <version>3.0.1</version>
     <authors>Tomas Petricek, Gustavo Guerra, Colin Bull</authors>
     <owners>Tomas Petricek, Gustavo Guerra, Colin Bull</owners>
-    <licenseUrl>http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>http://fsprojects.github.io/FSharp.Data</projectUrl>
+    <licenseUrl>https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://fsprojects.github.io/FSharp.Data</projectUrl>
     <iconUrl>https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Library of F# type providers and data access tools</summary>

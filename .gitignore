@@ -25,3 +25,6 @@ TestResults
 .vscode
 .idea
 .ionide
+output
+tmp
+.fsdocs

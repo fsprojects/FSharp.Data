@@ -22,19 +22,26 @@ module HttpMethod =
 
     /// Request information about the communication options available on the request/response chain identified by the URI
     let Options = "OPTIONS"
+
     /// Retrieve whatever information (in the form of an entity) is identified by the URI
     let Get = "GET"
+
     /// Identical to GET except that the server MUST NOT return a message-body in the response
     let Head = "HEAD"
+
     /// Requests that the server accepts the entity enclosed in the request as a
     /// new subordinate of the resource identified by the Request-URI in the Request-Line
     let Post = "POST"
+
     /// Requests that the enclosed entity be stored under the supplied Request-URI
     let Put = "PUT"
+
     /// Requests that the origin server deletes the resource identified by the Request-URI
     let Delete = "DELETE"
+
     /// Used to invoke a remote, application-layer loop- back of the request message
     let Trace = "TRACE"
+
     /// Reserved for use with a proxy that can dynamically switch to being a tunnel
     let Connect = "CONNECT"
 
@@ -42,16 +49,22 @@ module HttpMethod =
 
     /// Retrieves properties defined on the resource identified by the request URI
     let PropFind = "PROPFIND"
+
     /// Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI
     let PropPatch = "PROPPATCH"
+
     /// Creates a new collection resource at the location specified by the Request URI
     let MkCol = "MKCOL"
+
     /// Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header
     let Copy = "COPY"
+
     /// Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source where all three actions are performed atomically
     let Move = "MOVE"
+
     /// Used to take out a lock of any access type on the resource identified by the request URI.
     let Lock = "LOCK"
+
     /// Removes the lock identified by the lock token from the request URI, and all other resources included in the lock
     let Unlock = "UNLOCK"
 
@@ -64,307 +77,444 @@ module HttpMethod =
 module HttpRequestHeaders =
     /// Content-Types that are acceptable for the response
     let Accept (contentType:string) = "Accept", contentType
+
     /// Character sets that are acceptable
     let AcceptCharset (characterSets:string) = "Accept-Charset", characterSets
+
     /// Acceptable version in time
     let AcceptDatetime (dateTime:DateTime) = "Accept-Datetime", dateTime.ToString("R", CultureInfo.InvariantCulture)
+
     /// List of acceptable encodings. See HTTP compression.
     let AcceptEncoding (encoding:string) = "Accept-Encoding", encoding
+
     /// List of acceptable human languages for response
     let AcceptLanguage (language:string) = "Accept-Language", language
+
     /// The Allow header, which specifies the set of HTTP methods supported.
     let Allow (methods:string) = "Allow", methods
+
     /// Authentication credentials for HTTP authentication
     let Authorization (credentials:string) = "Authorization", credentials
+
     /// Authentication header using Basic Auth encoding
     let BasicAuth (username:string) (password:string) =
         let base64Encode (s:string) =
             let bytes = Encoding.UTF8.GetBytes(s)
             Convert.ToBase64String(bytes)
         sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization
+
     /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain
     let CacheControl (control:string) = "Cache-Control", control
+
     /// What type of connection the user-agent would prefer
     let Connection (connection:string) = "Connection", connection
+
     /// Describes the placement of the content. Valid dispositions are: inline, attachment, form-data
     let ContentDisposition (placement: string, name: string option, fileName: string option) =
         let namePart = match name with Some n -> sprintf "; name=\"%s\"" n | None -> ""
         let fileNamePart = match fileName with Some n -> sprintf "; filename=\"%s\"" n | None -> ""
         "Content-Disposition", sprintf "%s%s%s" placement namePart fileNamePart
+
     /// The type of encoding used on the data
     let ContentEncoding (encoding:string) = "Content-Encoding", encoding
+
     /// The language the content is in
     let ContentLanguage (language:string) = "Content-Language", language
+
     /// An alternate location for the returned data
     let ContentLocation (location:string) = "Content-Location", location
+
     /// A Base64-encoded binary MD5 sum of the content of the request body
     let ContentMD5 (md5sum:string) = "Content-MD5", md5sum
+
     /// Where in a full body message this partial message belongs
     let ContentRange (range:string) = "Content-Range", range
+
     /// The MIME type of the body of the request (used with POST and PUT requests)
     let ContentType (contentType:string) = "Content-Type", contentType
+
     /// The MIME type of the body of the request (used with POST and PUT requests) with an explicit encoding
     let ContentTypeWithEncoding (contentType, charset:Encoding) = "Content-Type", sprintf "%s; charset=%s" contentType (charset.WebName)
+
     /// The date and time that the message was sent
     let Date (date:DateTime) = "Date", date.ToString("R", CultureInfo.InvariantCulture)
+
     /// Indicates that particular server behaviors are required by the client
     let Expect (behaviors:string) = "Expect", behaviors
+
     /// Gives the date/time after which the response is considered stale
     let Expires (dateTime:DateTime) = "Expires", dateTime.ToString("R", CultureInfo.InvariantCulture)
+
     /// The email address of the user making the request
     let From (email:string) = "From", email
+
     /// The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening.
     /// The port number may be omitted if the port is the standard port for the service requested.
     let Host (host:string) = "Host", host
+
     /// Only perform the action if the client supplied entity matches the same entity on the server.
     /// This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent
     let IfMatch (entity:string) = "If-Match", entity
+
     /// Allows a 304 Not Modified to be returned if content is unchanged
     let IfModifiedSince (dateTime:DateTime) = "If-Modified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+
     /// Allows a 304 Not Modified to be returned if content is unchanged
     let IfNoneMatch (etag:string) = "If-None-Match", etag
+
     /// If the entity is unchanged, send me the part(s) that I am missing; otherwise, send me the entire new entity
     let IfRange (range:string) = "If-Range", range
+
     /// Only send the response if the entity has not been modified since a specific time
     let IfUnmodifiedSince (dateTime:DateTime) = "If-Unmodified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+
     /// Specifies a parameter used into order to maintain a persistent connection
     let KeepAlive (keepAlive:string) = "Keep-Alive", keepAlive
+
     /// Specifies the date and time at which the accompanying body data was last modified
     let LastModified (dateTime:DateTime) = "Last-Modified", dateTime.ToString("R", CultureInfo.InvariantCulture)
+
     /// Limit the number of times the message can be forwarded through proxies or gateways
     let MaxForwards (count:int) = "Max-Forwards", count.ToString()
+
     /// Initiates a request for cross-origin resource sharing (asks server for an 'Access-Control-Allow-Origin' response header)
     let Origin (origin:string) = "Origin", origin
+
     /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
     let Pragma (pragma:string) = "Pragma", pragma
+
     /// Optional instructions to the server to control request processing. See RFC https://tools.ietf.org/html/rfc7240 for more details
     let Prefer (prefer:string) = "Prefer", prefer
+
     /// Authorization credentials for connecting to a proxy.
     let ProxyAuthorization (credentials:string) = "Proxy-Authorization", credentials
+
     /// Request only part of an entity. Bytes are numbered from 0
     let Range (start:int64, finish:int64) = "Range", sprintf "bytes=%d-%d" start finish
+
     /// This is the address of the previous web page from which a link to the currently requested page was followed. (The word "referrer" is misspelled in the RFC as well as in most implementations.)
     let Referer (referer:string) = "Referer", referer
+
     /// The transfer encodings the user agent is willing to accept: the same values as for the response header
     /// Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to
     /// notify the server it expects to receive additional headers (the trailers) after the last, zero-sized, chunk.
     let TE (te:string) = "TE", te
+
     /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding
     let Trailer (trailer:string) = "Trailer", trailer
+
     /// The TransferEncoding header indicates the form of encoding used to safely transfer the entity to the user.  The valid directives are one of: chunked, compress, deflate, gzip, or identity.
     let TransferEncoding (directive: string) = "Transfer-Encoding", directive
+
     /// Microsoft extension to the HTTP specification used in conjunction with WebDAV functionality.
     let Translate (translate:string) = "Translate", translate
+
     /// Specifies additional communications protocols that the client supports.
     let Upgrade (upgrade:string) = "Upgrade", upgrade
+
     /// The user agent string of the user agent
     let UserAgent (userAgent:string) = "User-Agent", userAgent
+
     /// Informs the server of proxies through which the request was sent
     let Via (server:string) = "Via", server
+
     /// A general warning about possible problems with the entity body
     let Warning (message:string) = "Warning", message
+
     /// Override HTTP method.
     let XHTTPMethodOverride (httpMethod:string) = "X-HTTP-Method-Override", httpMethod
 
 /// Headers that can be received in an HTTP response
 module HttpResponseHeaders =
+
     /// Specifying which web sites can participate in cross-origin resource sharing
     let [<Literal>] AccessControlAllowOrigin = "Access-Control-Allow-Origin"
+
     /// What partial content range types this server supports
     let [<Literal>] AcceptRanges = "Accept-Ranges"
+
     /// The age the object has been in a proxy cache in seconds
     let [<Literal>] Age = "Age"
+
     /// Valid actions for a specified resource. To be used for a 405 Method not allowed
     let [<Literal>] Allow = "Allow"
+
     /// Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds
     let [<Literal>] CacheControl = "Cache-Control"
+
     /// Options that are desired for the connection
     let [<Literal>] Connection = "Connection"
+
     /// The type of encoding used on the data. See HTTP compression.
     let [<Literal>] ContentEncoding = "Content-Encoding"
+
     /// The language the content is in
     let [<Literal>] ContentLanguage = "Content-Language"
+
     /// The length of the response body in octets (8-bit bytes)
     let [<Literal>] ContentLength = "Content-Length"
+
     /// An alternate location for the returned data
     let [<Literal>] ContentLocation = "Content-Location"
+
     /// A Base64-encoded binary MD5 sum of the content of the response
     let [<Literal>] ContentMD5 = "Content-MD5"
+
     /// An opportunity to raise a "File Download" dialogue box for a known MIME type with binary format or suggest a filename for dynamic content. Quotes are necessary with special characters.
     let [<Literal>] ContentDisposition = "Content-Disposition"
+
     /// Where in a full body message this partial message belongs
     let [<Literal>] ContentRange = "Content-Range"
+
     /// The MIME type of this content
     let [<Literal>] ContentType = "Content-Type"
+
     /// The date and time that the message was sent (in "HTTP-date" format as defined by RFC 2616)
     let [<Literal>] Date = "Date"
+
     /// An identifier for a specific version of a resource, often a message digest
     let [<Literal>] ETag = "ETag"
+
     /// Gives the date/time after which the response is considered stale
     let [<Literal>] Expires = "Expires"
+
     /// The last modified date for the requested object
     let [<Literal>] LastModified = "Last-Modified"
+
     /// Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988
     let [<Literal>] Link = "Link"
+
     /// Used in redirection, or when a new resource has been created.
     let [<Literal>] Location = "Location"
+
     /// This header is supposed to set P3P policy
     let [<Literal>] P3P = "P3P"
+
     /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
     let [<Literal>] Pragma = "Pragma"
+
     /// Request authentication to access the proxy.
     let [<Literal>] ProxyAuthenticate = "Proxy-Authenticate"
+
     /// Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds.
     let [<Literal>] Refresh = "Refresh"
+
     /// If an entity is temporarily unavailable, this instructs the client to try again later. Value could be a specified period of time (in seconds) or a HTTP-date.[28]
     let [<Literal>] RetryAfter = "Retry-After"
+
     /// A name for the server
     let [<Literal>] Server = "Server"
+
     /// An HTTP cookie
     let [<Literal>] SetCookie = "Set-Cookie"
+
     /// The HTTP status of the response
     let [<Literal>] Status = "Status"
+
     /// A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.
     let [<Literal>] StrictTransportSecurity = "Strict-Transport-Security"
+
     /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.
     let [<Literal>] Trailer = "Trailer"
+
     /// The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.
     let [<Literal>] TransferEncoding = "Transfer-Encoding"
+
     /// Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.
     let [<Literal>] Vary = "Vary"
+
     /// Informs the client of proxies through which the response was sent.
     let [<Literal>] Via = "Via"
+
     /// A general warning about possible problems with the entity body.
     let [<Literal>] Warning = "Warning"
+
     /// Indicates the authentication scheme that should be used to access the requested entity.
     let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
 
 /// Status codes that can be received in an HTTP response
 module HttpStatusCodes = 
+
     /// The server has received the request headers and the client should proceed to send the request body.
     let [<Literal>] Continue = 100
+
     /// The requester has asked the server to switch protocols and the server has agreed to do so.
     let [<Literal>] SwitchingProtocols = 101
+
     /// This code indicates that the server has received and is processing the request, but no response is available yet.
     let [<Literal>] Processing = 102
+
     /// Used to return some response headers before final HTTP message.
     let [<Literal>] EarlyHints = 103
 
     /// Standard response for successful HTTP requests.
     let [<Literal>] OK = 200
+
     /// The request has been fulfilled, resulting in the creation of a new resource.
     let [<Literal>] Created = 201
+
     /// The request has been accepted for processing, but the processing has not been completed.
     let [<Literal>] Accepted = 202
+
     /// The server is a transforming proxy (e.g. a Web accelerator) that received a 200 OK from its origin, but is returning a modified version of the origin's response.
     let [<Literal>] NonAuthoritativeInformation = 203
+
     /// The server successfully processed the request and is not returning any content.
     let [<Literal>] NoContent = 204
+
     /// The server successfully processed the request, but is not returning any content.
     let [<Literal>] ResetContent = 205
+
     /// The server is delivering only part of the resource (byte serving) due to a range header sent by the client.
     let [<Literal>] PartialContent = 206
+
     /// The message body that follows is by default an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.
     let [<Literal>] MultiStatus = 207
+
     /// The members of a DAV binding have already been enumerated in a preceding part of the (multistatus) response, and are not being included again.
     let [<Literal>] AlreadyReported = 208
+
     /// The server has fulfilled a request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance.
     let [<Literal>] IMUsed = 226
 
     /// Indicates multiple options for the resource from which the client may choose (via agent-driven content negotiation).
     let [<Literal>] MultipleChoices = 300
+
     /// This and all future requests should be directed to the given URI.
     let [<Literal>] MovedPermanently = 301
+
     /// Tells the client to look at (browse to) another url. 302 has been superseded by 303 and 307. 
     let [<Literal>] Found = 302
+
     /// The response to the request can be found under another URI using the GET method.
     let [<Literal>] SeeOther = 303
+
     /// Indicates that the resource has not been modified since the version specified by the request headers If-Modified-Since or If-None-Match.
     let [<Literal>] NotModified = 304
+
     /// The requested resource is available only through a proxy, the address for which is provided in the response. 
     let [<Literal>] UseProxy = 305
+
     /// No longer used. Originally meant "Subsequent requests should use the specified proxy."
     let [<Literal>] SwitchProxy = 306
+
     /// In this case, the request should be repeated with another URI; however, future requests should still use the original URI.
     let [<Literal>] TemporaryRedirect = 307
+
     /// The request and all future requests should be repeated using another URI. 
     let [<Literal>] PermanentRedirect = 308
 
     /// The server cannot or will not process the request due to an apparent client error.
     let [<Literal>] BadRequest = 400
+
     /// Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.
     let [<Literal>] Unauthorized = 401
+
     /// Reserved for future use. 
     let [<Literal>] PaymentRequired = 402
+
     /// The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort.
     let [<Literal>] Forbidden = 403
+
     /// The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.
     let [<Literal>] NotFound = 404
+
     /// A request method is not supported for the requested resource.
     let [<Literal>] MethodNotAllowed = 405
+
     /// The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
     let [<Literal>] NotAcceptable = 406
+
     /// The client must first authenticate itself with the proxy.
     let [<Literal>] ProxyAuthenticationRequired = 407
+
     /// The server timed out waiting for the request.
     let [<Literal>] RequestTimeout = 408
+
     /// Indicates that the request could not be processed because of conflict in the request, such as an edit conflict between multiple simultaneous updates.
     let [<Literal>] Conflict = 409
+
     /// Indicates that the resource requested is no longer available and will not be available again.
     let [<Literal>] Gone = 410
+
     /// The request did not specify the length of its content, which is required by the requested resource.
     let [<Literal>] LengthRequired = 411
+
     /// The server does not meet one of the preconditions that the requester put on the request.
     let [<Literal>] PreconditionFailed = 412
+
     /// The request is larger than the server is willing or able to process.
     let [<Literal>] PayloadTooLarge = 413
+
     /// The URI provided was too long for the server to process.
     let [<Literal>] URITooLong = 414
+
     /// The request entity has a media type which the server or resource does not support.
     let [<Literal>] UnsupportedMediaType = 415
+
     /// The client has asked for a portion of the file (byte serving), but the server cannot supply that portion.
     let [<Literal>] RangeNotSatisfiable = 416
+
     /// The server cannot meet the requirements of the Expect request-header field.
     let [<Literal>] ExpectationFailed = 417
+
     /// The request was directed at a server that is not able to produce a response.
     let [<Literal>] MisdirectedRequest = 421
+
     /// The request was well-formed but was unable to be followed due to semantic errors.
     let [<Literal>] UnprocessableEntity = 422
+
     /// The resource that is being accessed is locked.
     let [<Literal>] Locked = 423
+
     /// The request failed because it depended on another request and that request failed (e.g., a PROPPATCH).
     let [<Literal>] FailedDependency = 424
+
     /// The client should switch to a different protocol such as TLS/1.0, given in the Upgrade header field.
     let [<Literal>] UpgradeRequired = 426
+
     /// The origin server requires the request to be conditional.
     let [<Literal>] PreconditionRequired = 428
+
     /// The user has sent too many requests in a given amount of time.
     let [<Literal>] TooManyRequests = 429
+
     /// The server is unwilling to process the request because either an individual header field, or all the header fields collectively, are too large.
     let [<Literal>] RequestHeaderFieldsTooLarge = 431
+
     /// A server operator has received a legal demand to deny access to a resource or to a set of resources that includes the requested resource.
     let [<Literal>] UnavailableForLegalReasons = 451
 
     /// A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
     let [<Literal>] InternalServerError = 500 
+
     /// The server either does not recognize the request method, or it lacks the ability to fulfil the request. 
     let [<Literal>] NotImplemented = 501
+
     /// The server was acting as a gateway or proxy and received an invalid response from the upstream server.
     let [<Literal>] BadGateway = 502
+
     /// The server is currently unavailable (because it is overloaded or down for maintenance).
     let [<Literal>] ServiceUnavailable = 503
+
     /// The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.
     let [<Literal>] GatewayTimeout = 504
+
     /// The server does not support the HTTP protocol version used in the request.
     let [<Literal>] HTTPVersionNotSupported = 505 
+
     /// Transparent content negotiation for the request results in a circular reference.
     let [<Literal>] VariantAlsoNegotiates = 506
+
     /// The server is unable to store the representation needed to complete the request.
     let [<Literal>] InsufficientStorage = 507
+
     /// The server detected an infinite loop while processing the request.
     let [<Literal>] LoopDetected = 508
+
     /// Further extensions to the request are required for the server to fulfil it.
     let [<Literal>] NotExtended = 510
+
     /// The client needs to authenticate to gain network access.
     let [<Literal>] NetworkAuthenticationRequired = 511
 
@@ -373,9 +523,13 @@ type MultipartItem = | MultipartItem of formField: string * filename: string * c
 
 /// The body to send in an HTTP request
 type HttpRequestBody =
+
     | TextRequest of string
+
     | BinaryUpload of byte[]
+
     | FormValues of seq<string * string>
+
     /// A sequence of formParamName * fileName * fileContent groups
     | Multipart of boundary: string * parts: seq<MultipartItem>
 
@@ -404,40 +558,58 @@ type HttpResponseWithStream =
 
 /// Constants for common HTTP content types
 module HttpContentTypes =
+
     /// */*
     let [<Literal>] Any = "*/*"
+
     /// plain/text
     let [<Literal>] Text = "text/plain"
+
     /// application/octet-stream
     let [<Literal>] Binary = "application/octet-stream"
+
     /// application/octet-stream
     let [<Literal>] Zip = "application/zip"
+
     /// application/octet-stream
     let [<Literal>] GZip = "application/gzip"
+
     /// application/x-www-form-urlencoded
     let [<Literal>] FormValues = "application/x-www-form-urlencoded"
+
     /// application/json
     let [<Literal>] Json = "application/json"
+
     /// application/javascript
     let [<Literal>] JavaScript = "application/javascript"
+
     /// application/xml
     let [<Literal>] Xml = "application/xml"
+
     /// application/rss+xml
     let [<Literal>] Rss = "application/rss+xml"
+
     /// application/atom+xml
     let [<Literal>] Atom = "application/atom+xml"
+
     /// application/rdf+xml
     let [<Literal>] Rdf = "application/rdf+xml"
+
     /// text/html
     let [<Literal>] Html = "text/html"
+
     /// application/xhtml+xml
     let [<Literal>] XHtml = "application/xhtml+xml"
+
     /// application/soap+xml
     let [<Literal>] Soap = "application/soap+xml"
+
     /// text/csv
     let [<Literal>] Csv = "text/csv"
+
     /// application/json-rpc
     let [<Literal>] JsonRpc = "application/json-rpc"    
+
     /// multipart/form-data
     let Multipart boundary = sprintf "multipart/form-data; boundary=%s" boundary
 

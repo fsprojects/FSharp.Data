@@ -1,11 +1,11 @@
-﻿<Project>
+<Project>
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\netfx.props" />
   <PropertyGroup>
     <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
     <DefineConstants>NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

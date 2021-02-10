@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <!-- See https://stackoverflow.com/questions/43921992/how-can-i-use-beforebuild-and-afterbuild-targets-with-visual-studio-2017 -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\netfx.props" />
@@ -8,6 +8,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <FsDocsReleaseNotesLink>https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
+    <PackageProjectUrl>https://fsprojects.github.io/FSharp.Data/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageIconUrl>https://fsprojects.github.io/FSharp.Data/img/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/fsprojects/FSharp.Data</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <Tailcalls>true</Tailcalls>

@@ -11,7 +11,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypesTesting.fs">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\tests\ProvidedTypesTesting.fs">
       <Link>ProvidedTypesTesting.fs</Link> 
     </Compile>
     <Compile Include="TypeProviderInstantiation.fs" />

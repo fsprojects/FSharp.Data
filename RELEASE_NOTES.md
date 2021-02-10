@@ -1,3 +1,6 @@
+#### 3.3.5 - Febuary 10 2020
+* Documentation improvements
+
 #### 3.3.4 - January 7 2020
 * Rebuild using "Release" target
 

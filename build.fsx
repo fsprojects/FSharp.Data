@@ -2,8 +2,12 @@
 // FAKE build script
 // --------------------------------------------------------------------------------------
 
-#I "packages/FAKE/tools/"
-#r "FakeLib.dll"
+#r "paket: groupref fake //"
+
+#if !FAKE
+#load ".fake/build.fsx/intellisense.fsx"
+#r "netstandard"
+#endif
 
 open System
 open System.IO
@@ -164,7 +168,7 @@ Target.create "Build" <| fun _ ->
     // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
     buildProjs |> Seq.iter (fun proj ->
       DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
-                                                                        CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
+                                                                        CustomParams = Some ("/v:n /p:SourceLinkCreate=true /p:Version=" + nugetVersion) }
                                             Configuration = DotNet.BuildConfiguration.Release }) proj
     )
 
@@ -201,8 +205,10 @@ Target.create "NuGet" <| fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
-Target.create "GenerateDocs" <| fun _ ->
-    Fake.FSIHelper.executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
+Target.create "GenerateDocs" (fun _ ->
+    Shell.cleanDir ".fsdocs"
+    DotNet.exec id "fsdocs" ("build --property Configuration=Release --eval --clean --parameters fsdocs-package-version " + nugetVersion) |> ignore
+)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -220,7 +226,7 @@ let publishFiles what branch fromFolder toFolder =
 open Octokit
 
 Target.create "ReleaseDocs" <| fun _ ->
-    publishFiles "generated documentation" "gh-pages" "docs/output" ""
+    publishFiles "generated documentation" "gh-pages" "output" ""
 
 Target.create "TestSourcelink" <| fun _ ->
     let testSourcelink framework proj =
@@ -242,7 +248,7 @@ open Fake.Core.TargetOperators
 
 Target.create "Help" <| fun _ ->
     printfn ""
-    printfn "  Please specify the target by calling 'build <Target>'"
+    printfn "  Please specify the target by calling 'build -t <Target>'"
     printfn ""
     printfn "  Targets for building:"
     printfn "  * Build"
