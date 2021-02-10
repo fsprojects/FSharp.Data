@@ -1,11 +1,10 @@
 <Project>
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <DefineConstants>NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>

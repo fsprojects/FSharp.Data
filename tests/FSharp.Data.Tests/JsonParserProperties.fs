@@ -1,13 +1,9 @@
-﻿module FSharp.Data.Tests.JsonParserProperties
+module FSharp.Data.Tests.JsonParserProperties
 
 open NUnit.Framework
 open System
 open FSharp.Data
 open FsCheck
-
-#if INTERACTIVE
-Runner.init.Force()
-#endif
 
 let escaped = Set(['t';'r';'b';'n';'f';'\\';'"'])
 

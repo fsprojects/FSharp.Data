@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Feed : FDR.BaseTypes.XmlElement
-    new : lang:string -> id:string -> links:XmlProvider+Link[] -> title:string -> updated:System.DateTimeOffset -> itemsPerPage:int -> entries:XmlProvider+Entry[] -> XmlProvider+Feed
+    new : lang:string -> id:string -> links:XmlProvider+XmlProvider+Link[] -> title:string -> updated:System.DateTimeOffset -> itemsPerPage:int -> entries:XmlProvider+XmlProvider+Entry[] -> XmlProvider+Feed
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
                             [| ("{http://www.w3.org/XML/1998/namespace}lang",
                                 (lang :> obj)) |], 
@@ -44,7 +44,7 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Feed
     XmlElement.Create(xElement)
 
-    member Entries: XmlProvider+Entry[] with get
+    member Entries: XmlProvider+XmlProvider+Entry[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}entry", new Func<_,_>(id)))
 
     member Id: string with get
@@ -59,7 +59,7 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/XML/1998/namespace}lang")
     TextRuntime.GetNonOptionalValue("Attribute lang", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link[] with get
+    member Links: XmlProvider+XmlProvider+Link[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Title: string with get
@@ -72,7 +72,7 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Entry : FDR.BaseTypes.XmlElement
-    new : id:string -> published:System.DateTimeOffset -> links:XmlProvider+Link2[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTimeOffset -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
+    new : id:string -> published:System.DateTimeOffset -> links:XmlProvider+XmlProvider+Link2[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTimeOffset -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}id",
@@ -118,7 +118,7 @@ class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.twitter.com/}lang"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link2[] with get
+    member Links: XmlProvider+XmlProvider+Link2[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Metadata: XmlProvider+Metadata with get

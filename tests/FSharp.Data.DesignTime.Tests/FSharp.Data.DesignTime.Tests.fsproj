@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp3.1'">netstandard2.0</TargetLibraryFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\tests\ProvidedTypesTesting.fs">
@@ -26,7 +25,8 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="FsUnit" Version="3.1.0" />
-    <PackageReference Update="FSharp.Core" Version="4.7.2" />
+    <PackageReference Update="FSharp.Core" Version="5.0.0" />
+    <PackageReference Include="FSharp.Formatting" Version="8.0.1" />
 
     <Reference Include="FSharp.Data.DesignTime">
         <HintPath>..\..\src\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>

@@ -1,5 +1,5 @@
 class JsonProvider : obj
-    static member AsyncGetSamples: () -> JsonProvider+Root[] async
+    static member AsyncGetSamples: () -> JsonProvider+JsonProvider+Root[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.CreateList(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterSample.json"), f)
 
@@ -7,7 +7,7 @@ class JsonProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
-    static member GetSamples: () -> JsonProvider+Root[]
+    static member GetSamples: () -> JsonProvider+JsonProvider+Root[]
     JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterSample.json")))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
@@ -22,7 +22,7 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
-    static member ParseList: text:string -> JsonProvider+Root[]
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
     JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
 
 
@@ -176,7 +176,7 @@ class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
-    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> JsonProvider+Entities2
+    new : hashtags:JsonProvider+JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+JsonProvider+Url[] -> userMentions:JsonProvider+JsonProvider+UserMention[] -> JsonProvider+Entities2
     JsonRuntime.CreateRecord([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
@@ -189,16 +189,16 @@ class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Entities2
     JsonDocument.Create(jsonValue, "")
 
-    member Hashtags: JsonProvider+Hashtag[] with get
+    member Hashtags: JsonProvider+JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
     member Symbols: FDR.BaseTypes.IJsonDocument[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "symbols"), new Func<_,_>(id)))
 
-    member Urls: JsonProvider+Url[] with get
+    member Urls: JsonProvider+JsonProvider+Url[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+UserMention[] with get
+    member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
@@ -643,7 +643,7 @@ class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
-    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
+    new : hashtags:JsonProvider+JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+JsonProvider+Url[] -> userMentions:JsonProvider+JsonProvider+UserMention[] -> media:JsonProvider+JsonProvider+Media[] -> JsonProvider+Entities
     JsonRuntime.CreateRecord([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
@@ -658,19 +658,19 @@ class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Entities
     JsonDocument.Create(jsonValue, "")
 
-    member Hashtags: JsonProvider+Hashtag[] with get
+    member Hashtags: JsonProvider+JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
-    member Media: JsonProvider+Media[] with get
+    member Media: JsonProvider+JsonProvider+Media[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "media"), new Func<_,_>(id)))
 
     member Symbols: FDR.BaseTypes.IJsonDocument[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "symbols"), new Func<_,_>(id)))
 
-    member Urls: JsonProvider+Url[] with get
+    member Urls: JsonProvider+JsonProvider+Url[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+UserMention[] with get
+    member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 

@@ -1,5 +1,5 @@
 class XmlProvider : obj
-    static member AsyncGetSamples: () -> XmlProvider+PropertyBag[] async
+    static member AsyncGetSamples: () -> XmlProvider+XmlProvider+PropertyBag[] async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "JsonInXml.xml"), f)
 
@@ -7,7 +7,7 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
-    static member GetSamples: () -> XmlProvider+PropertyBag[]
+    static member GetSamples: () -> XmlProvider+XmlProvider+PropertyBag[]
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "JsonInXml.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+PropertyBag
@@ -38,7 +38,7 @@ class XmlProvider+PropertyBag : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
-    new : x:XmlProvider+X[] -> blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
+    new : x:XmlProvider+XmlProvider+X[] -> blahDataSomethingFoos:XmlProvider+XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
     XmlRuntime.CreateRecord("BlahData", 
                             [| |], 
                             [| ("X",
@@ -64,10 +64,10 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
     member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo3 option with get
     XmlRuntime.ConvertOptional(this, "BlahDataSomethingFoo4", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t)))
 
-    member BlahDataSomethingFoos: XmlProvider+BlahDataSomethingFoo[] with get
+    member BlahDataSomethingFoos: XmlProvider+XmlProvider+BlahDataSomethingFoo[] with get
     XmlRuntime.ConvertArray(this, "BlahDataSomethingFoo", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t)))
 
-    member X: XmlProvider+X[] with get
+    member X: XmlProvider+XmlProvider+X[] with get
     JsonRuntime.ConvertArray(XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "X")), new Func<_,_>(id)))
 
 
