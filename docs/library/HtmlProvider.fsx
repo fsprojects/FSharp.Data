@@ -34,8 +34,7 @@ open FSharp.Data
 
 ### Parsing Power Market Data
 
-The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format,
- (you can see an example of the raw HTML document this data was extracted from in [`data/MarketDepth.htm`](../data/MarketDepth.htm)):
+The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format.
 
     [lang=text]
     Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
@@ -78,6 +77,10 @@ for row in f1Calendar.Rows do
   printfn "Race, round %A is hosted at %A on %A" 
     row.Round row.``Grand Prix`` row.Date
 
+(** Gives output: *)
+
+(*** include-fsi-merged-output ***)
+
 (**
 The generated type has a property `Rows` that returns the data from the HTML file as a
 collection of rows. We iterate over the rows using a `for` loop. As you can see the
@@ -98,7 +101,6 @@ Note that we're using the live URL as the sample, so we can just use the default
 
 *)
 
-(*** define-output:nugetChart ***)
 
 // Configure the type provider
 type NugetStats = 
@@ -118,19 +120,17 @@ let stats =
       getMinorVersion r.Version)
   |> Seq.map (fun (k, xs) -> 
       k, xs |> Seq.sumBy (fun x -> x.Downloads))
+  |> Seq.toArray
 
-// Load the XPlot.Plotly library
-#r "nuget: XPlot.Plotly, Version=3.0.1"
-open XPlot.Plotly
+(** Gives output: *)
 
-// Visualize the package stats
-Chart.Bar stats
-
-(*** include-it:nugetChart ***)
+(*** include-fsi-merged-output ***)
 
 (**
 
 ### Getting statistics on Doctor Who 
+
+This sample shows some more screen scraping from Wikipedia:
 
 *)
 
@@ -152,10 +152,10 @@ let viewersByDoctor =
       doctor, averaged)
   |> Seq.toArray
 
-// Visualize it
-Chart.Column(viewersByDoctor).WithYTitle("Millions")
 
-(*** include-it:doctorWhoChart ***)
+(** Gives output: *)
+
+(*** include-fsi-merged-output ***)
 
 (**
 ## Related articles

@@ -222,7 +222,7 @@ let publishFiles what branch fromFolder toFolder =
     Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
 
-#load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+#load "paket-files/fsharp/fake/modules/Octokit/Octokit.fsx"
 open Octokit
 
 Target.create "ReleaseDocs" <| fun _ ->
