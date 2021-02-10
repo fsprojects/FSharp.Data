@@ -30,3 +30,4 @@ tmp
 .fsdocs
 paket.lock
 .paket
+*.obtained
