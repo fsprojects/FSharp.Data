@@ -28,3 +28,5 @@ TestResults
 output
 tmp
 .fsdocs
+paket.lock
+.paket

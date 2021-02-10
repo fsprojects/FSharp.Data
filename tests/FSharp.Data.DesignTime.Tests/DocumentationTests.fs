@@ -1,10 +1,4 @@
-﻿#if INTERACTIVE
-#load "../../packages/test/FSharp.Formatting/FSharp.Formatting.fsx"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.DesignTime.Tests.DocumentationTests
-#endif
+﻿module FSharp.Data.DesignTime.Tests.DocumentationTests
 
 #if !NETCOREAPP2_0 // no FSharp.Formatting available
 open NUnit.Framework

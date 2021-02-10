@@ -165,7 +165,7 @@ let logResults label lines =
   |> Trace.tracefn "%s:\n\t%s" label
 
 Target.create "Build" <| fun _ ->
-    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
+    // FSharp.Data.DesignTime.dll (netstandard2.0) must be built _before_ building FSharp.Data
     buildProjs |> Seq.iter (fun proj ->
       DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
                                                                         CustomParams = Some ("/v:n /p:SourceLinkCreate=true /p:Version=" + nugetVersion) }
@@ -235,7 +235,7 @@ Target.create "TestSourcelink" <| fun _ ->
         DotNet.exec (setSdkPathAndVerbose >> DotNet.Options.withWorkingDirectory(Path.GetDirectoryName proj)) "sourcelink" (sprintf "test %s" pdb)
         |> ignore
 
-    ["net45"; "netstandard2.0"]
+    ["netstandard2.0"]
     |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
     |> Seq.iter id
 
@@ -266,7 +266,6 @@ Target.create "Help" <| fun _ ->
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
     printfn ""
-    printfn "  Set USE_MSBUILD=1 in environment to use MSBuild toolchain and .NET Framework/Mono compiler."
 
 Target.create "All" ignore
 

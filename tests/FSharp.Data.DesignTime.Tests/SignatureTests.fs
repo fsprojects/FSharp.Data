@@ -1,12 +1,4 @@
-#if INTERACTIVE
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.DesignTime.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#load "../../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypesTesting.fs"
-#load "TypeProviderInstantiation.fs"
-#else
 module FSharp.Data.DesignTime.Tests.SignatureTests
-#endif
 
 open System
 open System.IO
@@ -37,7 +29,6 @@ let expectedDirectory = sourceDirectory ++ "expected"
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
-let net45RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "lib" ++ "net45" ++ assemblyName
 let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "lib" ++ "netstandard2.0" ++ assemblyName
 
 let getRuntimeRefs platform = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform
@@ -47,8 +38,8 @@ let generateAllExpected() =
         Directory.CreateDirectory expectedDirectory |> ignore
     for (sample, testCase) in testCasesTuple do
         try
-            let assemblyRefs = getRuntimeRefs Net45
-            testCase.Dump (resolutionFolder, expectedDirectory, net45RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
+            let assemblyRefs = getRuntimeRefs NetStandard20
+            testCase.Dump (resolutionFolder, expectedDirectory, netstandard2RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
             |> ignore
         with e ->
             raise(new Exception(sprintf "Failed generating: %s" sample, e))
@@ -61,9 +52,9 @@ let normalize (str:string) =
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
     let path = testCase.ExpectedPath expectedDirectory
     let expected = path |> File.ReadAllText |> normalize
-    let assemblyRefs = getRuntimeRefs Net45
+    let assemblyRefs = getRuntimeRefs NetStandard20
     printfn "assemblyRefs = %A" assemblyRefs
-    let outputRaw = testCase.Dump (resolutionFolder, "", net45RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
+    let outputRaw = testCase.Dump (resolutionFolder, "", netstandard2RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
     let output = outputRaw |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" outputRaw

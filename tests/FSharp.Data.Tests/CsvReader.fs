@@ -4,12 +4,6 @@
 
 module FSharp.Data.Tests.CsvReader
 
-#if INTERACTIVE
-#r "../../bin/lib/netstandard2.0/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#endif
-
 open NUnit.Framework
 open FsUnit
 open System.IO

@@ -1,13 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\..\netfx.props" />
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
+        <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DefineConstants Condition="'$(USE_MSBUILD)' == '1'">USE_MSBUILD;$(DefineConstants)</DefineConstants>
-        <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
         <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>

@@ -45,8 +45,7 @@ platform. Type providers consist of two components:
    CSV provider, this component does the type inference and generates types
    (that are mapped to runtime components by the compiler).
 
-To support multiple targets, we need a _runtime component_ for both .NET Framework 4.5 (net45) and
-.NET Standard 2.0 (netstandard2.0). We also need a _design time_
+We need a _runtime component_ for .NET Standard 2.0 (netstandard2.0). We also need a _design time_
 component for each, to be able to to host the type provider in .NET Core-based tooling.
 
 The _runtime_ components are in the following project:
