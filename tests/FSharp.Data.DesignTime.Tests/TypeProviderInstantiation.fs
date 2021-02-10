@@ -240,5 +240,5 @@ type TypeProviderInstantiation =
 
     static member GetRuntimeAssemblyRefs platform =
         match platform with
-        | NetStandard20 -> Targets.DotNetStandard20FSharp41Refs()
+        | NetStandard20 -> Targets.DotNetStandard20FSharpRefs()
 
