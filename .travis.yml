@@ -30,7 +30,7 @@ env:
   - MONO_MANAGED_WATCHER=disabled
 
 script:
-  - ./build.sh CleanInternetCaches && ./build.sh All
+  - ./build.sh -t CleanInternetCaches && ./build.sh -t All
 
 branches:
   except:

@@ -4,10 +4,10 @@ init:
   - git config --global core.autocrlf input
 
 build_script:
-  - cmd: build.cmd CleanInternetCaches
-  - cmd: build.cmd AppVeyorBuildVersion
-  - cmd: build.cmd All
-  - cmd: build.cmd NuGet
+  - cmd: build.cmd -t CleanInternetCaches
+  - cmd: build.cmd -t AppVeyorBuildVersion
+  - cmd: build.cmd -t All
+  - cmd: build.cmd -t NuGet
 
 matrix:
   fast_finish: true
