@@ -1,4 +1,4 @@
-frameworks: netcoreapp3.0, netstandard2.0
+frameworks: netcoreapp3.1, netstandard2.0
 source https://api.nuget.org/v3/index.json
 
 # These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
@@ -32,7 +32,7 @@ group Fake
 # NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
 # NOTE: We can return to using paket.references files at a later point.
 group Test
-    frameworks: netcoreapp2.0
+    frameworks: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
     source https://ci.appveyor.com/nuget/fsharp-formatting
     redirects: on
@@ -49,21 +49,21 @@ group Test
 # This is for TPSDK testing against FSharp.Core for F# 3.1. The TPSDK testing helpers like these to be placed in package groups
 # with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs31
-    frameworks: netcoreapp2.0
+    frameworks: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 3.1.0
 
 # This is for TPSDK testing against FSharp.Core for F# 4.0. The TPSDK testing helpers like these to be placed in package groups
 # with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs40
-    frameworks: netcoreapp2.0
+    frameworks: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 4.0.0
 
 # This is for TPSDK testing against FSharp.Core for F# 4.1. The TPSDK testing helpers like these to be placed in package groups
 # with these names, see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs#L680
 group fs41
-    frameworks: netcoreapp2.0
+    frameworks: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core ~> 4.2.0
 

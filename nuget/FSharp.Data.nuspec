@@ -13,11 +13,11 @@
     <summary>@summary@</summary>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright 2018</copyright>
+    <copyright>Copyright 2021</copyright>
     <tags>@tags@</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
-        <dependency id="FSharp.Core" version="4.3.4" />
+        <dependency id="FSharp.Core" version="4.7.2" />
       </group>
     </dependencies>
     <references>
