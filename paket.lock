@@ -449,7 +449,6 @@ NUGET
       System.Security.Principal.Windows (>= 5.0)
     Microsoft.Win32.SystemEvents (5.0)
       Microsoft.NETCore.Platforms (>= 5.0)
-    Nancy.Hosting.Self (2.0)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
     NUnit (3.13.1)

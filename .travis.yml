@@ -1,13 +1,14 @@
 language: csharp
 
-sudo: required
-dist: trusty
-
 # have to add dotnet to each mono build config because Travis doesn't have an 'include both runtimes' option
 matrix:
   include:
-    - os: linux
-    - os: osx
+    - mono: none
+      dotnet: 3.1.202
+      os: linux
+    - mono: none
+      dotnet: 3.1.202
+      os: osx
   # The whole build matrix fails when any individual builds fail (except those which have been allowed with allow_failures).
   fast_finish: true
 
