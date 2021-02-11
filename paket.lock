@@ -17,7 +17,7 @@ NUGET
     NETStandard.Library (2.0.3) - restriction: || (== netcoreapp3.1) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 1.1)
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
-    Nuget.CommandLine (5.8.1)
+    NuGet.CommandLine (5.8.1)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
     src/ProvidedTypes.fs (a09c88b03fb79b5dd4cde68e260ffad42f55dbaa)
@@ -224,7 +224,6 @@ NUGET
     NuGet.Protocol (5.8.1) - restriction: >= netstandard2.0
       NuGet.Packaging (>= 5.8.1) - restriction: >= netstandard2.0
     NuGet.Versioning (5.8.1) - restriction: >= netstandard2.0
-    Octokit (0.48)
     System.Buffers (4.5.1) - restriction: || (&& (>= monoandroid) (>= netcoreapp2.0)) (&& (>= monoandroid) (>= netcoreapp2.1)) (&& (>= monoandroid) (>= netstandard2.0)) (&& (< monoandroid) (< net46) (< netcoreapp2.0) (>= netstandard2.0) (< netstandard2.1)) (&& (< monoandroid) (< netstandard1.1) (>= netstandard2.0) (< win8)) (&& (>= monotouch) (>= netcoreapp2.0)) (&& (>= monotouch) (>= netcoreapp2.1)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net45) (>= net461) (>= netstandard2.0)) (&& (< net45) (< netcoreapp2.0) (>= netstandard2.0)) (&& (>= net461) (>= netcoreapp2.0)) (&& (>= net461) (>= netcoreapp2.1)) (>= net472) (&& (>= netcoreapp2.0) (< netstandard1.1)) (&& (>= netcoreapp2.0) (< netstandard2.0)) (&& (>= netcoreapp2.0) (>= xamarintvos)) (&& (>= netcoreapp2.0) (>= xamarinwatchos)) (&& (< netcoreapp2.0) (>= netcoreapp2.1)) (&& (>= netcoreapp2.1) (>= xamarintvos)) (&& (>= netcoreapp2.1) (>= xamarinwatchos)) (&& (< netstandard1.1) (>= netstandard2.0) (>= win8)) (&& (>= netstandard2.0) (>= uap10.1)) (&& (>= netstandard2.0) (>= xamarintvos)) (&& (>= netstandard2.0) (>= xamarinwatchos)) (>= xamarinios) (>= xamarinmac)
     System.CodeDom (5.0) - restriction: && (< net472) (>= netstandard2.0)
     System.Collections (4.3) - restriction: >= netcoreapp5.0
@@ -374,10 +373,7 @@ NUGET
     System.ValueTuple (4.5) - restriction: || (&& (>= net45) (>= netstandard2.0)) (&& (>= net461) (>= netcoreapp2.1)) (>= net472)
     System.Windows.Extensions (5.0) - restriction: >= netcoreapp3.0
       System.Drawing.Common (>= 5.0) - restriction: >= netcoreapp3.0
-GITHUB
-  remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (a210a980b1d1e9db5ed4b77232f3faecacab6f16)
-      Octokit (>= 0.20)
+
 GROUP Test
 RESTRICTION: == netcoreapp3.1
 NUGET
