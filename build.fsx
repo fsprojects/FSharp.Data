@@ -226,17 +226,6 @@ open Octokit
 Target.create "ReleaseDocsManual" <| fun _ ->
     publishFiles "generated documentation" "gh-pages" "output" ""
 
-Target.create "TestSourcelink" <| fun _ ->
-    let testSourcelink framework (proj: string) =
-        let basePath = Path.GetFileNameWithoutExtension proj
-        let pdb = sprintf "bin/Release/%s/%s.pdb" framework basePath
-        DotNet.exec (setSdkPathAndVerbose >> DotNet.Options.withWorkingDirectory(Path.GetDirectoryName proj)) "sourcelink" (sprintf "test %s" pdb)
-        |> ignore
-
-    ["netstandard2.0"]
-    |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
-    |> Seq.iter id
-
 Target.create "Release" ignore
 
 open Fake.Core.TargetOperators
@@ -251,7 +240,6 @@ Target.create "Help" <| fun _ ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
-    printfn "  * TestSourcelink (validates the SourceLink embedded data)"
     printfn "  * RunTests"
     printfn "  * GenerateDocs"
     printfn "  * NuGet (creates package only, doesn't publish)"
@@ -270,7 +258,7 @@ Target.create "All" ignore
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
 "Build" ==> "NuGet" ==> "All"
-"Build" ==> "TestSourcelink" ==> "All"
+"Build" ==> "All"
 "Build" ==> "BuildTests" ==> "RunTests" ==> "All"
 "All" ==> "Release"
 
