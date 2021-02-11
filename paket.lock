@@ -17,6 +17,7 @@ NUGET
     NETStandard.Library (2.0.3) - restriction: || (== netcoreapp3.1) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 1.1)
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
+    Nuget.CommandLine (5.8.1)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
     src/ProvidedTypes.fs (a09c88b03fb79b5dd4cde68e260ffad42f55dbaa)

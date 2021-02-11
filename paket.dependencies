@@ -11,6 +11,7 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 nuget FSharp.Core
+nuget Nuget.CommandLine
 
 group Fake
     source https://api.nuget.org/v3/index.json
