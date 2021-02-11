@@ -24,6 +24,12 @@ automatically generated from `*.fsx` files in [the content folder][2] and from t
  - The samples from the documentation are included as part of `FSharp.Data.Tests.sln`, make sure you build the
 solution before trying out the samples to ensure that all needed packages are installed.
 
+## Releasing
+
+Releasing of the NuGet package is done by GitHub actions CI is done from master branch when a new version is pushed.
+
+Releasing of docs is done by GitHub actions CI on each push to master branch.
+
 ## Support and community
 
  - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
@@ -42,7 +48,9 @@ The library is available under Apache 2.0. For more information see the [License
 
 ## Maintainers
 
-Although this project is hosted in the [fsharp](https://github.com/fsharp) repository for historical reasons, it is _not_ maintained and managed by the F# Core Engineering Group. The F# Core Engineering Group acknowledges that the independent owners and maintainers of this project are [Gustavo Guerra](https://github.com/ovatsus), [Tomas Petricek](https://github.com/tpetricek), [Don Syme](https://github.com/dsyme) and [Colin Bull](https://github.com/colinbull).
+Current maintainers are [Don Syme](https://github.com/dsyme) and [Phillip Carter](https://github.com/cartermp)
+
+Historical maintainers of this project are [Gustavo Guerra](https://github.com/ovatsus), [Tomas Petricek](https://github.com/tpetricek) and [Colin Bull](https://github.com/colinbull).
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
