@@ -22,8 +22,6 @@ jobs:
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t All
-    - name: Examine bin
-      run: ls -r bin
     - name: Deploy documentation from master
       uses: peaceiris/actions-gh-pages@v3
       with:
@@ -34,7 +32,7 @@ jobs:
     - name: Examine bin
       run: ls -r bin
     - name: Publish NuGets (if this version not published before)
-      run: dotnet nuget push bin/FSharp.Data.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_TOKEN_2020 }} --skip-duplicate
+      run: dotnet nuget push bin\FSharp.Data.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_TOKEN_2020 }} --skip-duplicate
 
 # NUGET_ORG_TOKEN_2020 is listed in "Repository secrets" in https://github.com/fsprojects/FSharp.Data/settings/secrets/actions
 # note, the nuget org token expires around June 2021
