@@ -6,24 +6,34 @@ on:
     - master
 
 jobs:
-  build:
+  build-windows:
 
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        dotnet: [3.1.302]
-    runs-on: ${{ matrix.os }}
-
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet }}
+        dotnet-version: 3.1.302
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t All
+
+  build-ubuntu:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.302
+    - name: Restore .NET local tools
+      run: dotnet tool restore
+    - name: Restore packages
+      run: dotnet paket restore
+    - name: Build and test
+      run: dotnet fake build -t RunTests
