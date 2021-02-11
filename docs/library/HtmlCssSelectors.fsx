@@ -14,7 +14,7 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (** 
 # F# Data: HTML CSS selectors
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=HtmlCssSelectors.ipynb)
+[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlCssSelectors.ipynb)
 
 This article demonstrates how to use HTML CSS selectors to browse the DOM of parsed HTML files.
 

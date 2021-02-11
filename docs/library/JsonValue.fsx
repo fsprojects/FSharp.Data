@@ -1,7 +1,7 @@
 ﻿(**
 # F# Data: JSON Parser
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=JsonValue.ipynb)
+[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonValue.ipynb)
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
 in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 

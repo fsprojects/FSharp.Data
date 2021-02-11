@@ -14,7 +14,7 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (**
 # F# Data: HTTP Utilities
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=Http.ipynb)
+[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/Http.ipynb)
 
 The .NET library provides a powerful API for creating and sending HTTP web requests.
 There is a simple `WebClient` type (see [MSDN][1]) and a more flexible `HttpWebRequest`
