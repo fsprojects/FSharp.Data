@@ -42,5 +42,4 @@ group Test
     nuget FsCheck
     nuget FSharp.Formatting
     nuget FSharp.Compiler.Service
-    nuget Nancy.Hosting.Self
 
