@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Authors : FDR.BaseTypes.XmlElement
-    new : topic:string -> authors:XmlProvider+Author[] -> XmlProvider+Authors
+    new : topic:string -> authors:XmlProvider+XmlProvider+Author[] -> XmlProvider+Authors
     XmlRuntime.CreateRecord("authors", 
                             [| ("topic",
                                 (topic :> obj)) |], 
@@ -34,7 +34,7 @@ class XmlProvider+Authors : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Authors
     XmlElement.Create(xElement)
 
-    member Authors: XmlProvider+Author[] with get
+    member Authors: XmlProvider+XmlProvider+Author[] with get
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
     member Topic: string with get

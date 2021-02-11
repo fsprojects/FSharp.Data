@@ -1,3 +1,6 @@
+#### 4.0.1 - Febuary 10 2020
+* .NET Standard 2.0 only 
+
 #### 3.3.4 - January 7 2020
 * Rebuild using "Release" target
 

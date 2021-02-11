@@ -64,7 +64,7 @@ type XmlElement =
   // (but since this is used across multiple files, we have explicit Create method)
   { XElement : XElement }
   
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   member x._Print =
@@ -72,18 +72,18 @@ type XmlElement =
     if str.Length > 512 then str.Substring(0, 509) + "..."
     else str
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   override x.ToString() = x.XElement.ToString()
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member Create(element) =
     { XElement = element }
   
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member Create(reader:TextReader) =    
@@ -92,7 +92,7 @@ type XmlElement =
     let element = XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root 
     { XElement = element }
   
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member CreateList(reader:TextReader) = 

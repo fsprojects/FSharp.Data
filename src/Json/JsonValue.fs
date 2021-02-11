@@ -20,10 +20,11 @@ open FSharp.Data.Runtime
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
 type JsonSaveOptions =
-  /// Format (indent) the JsonValue
-  | None = 0
-  /// Print the JsonValue in one line in a compact way
-  | DisableFormatting = 1
+    /// Format (indent) the JsonValue
+    | None = 0
+
+    /// Print the JsonValue in one line in a compact way
+    | DisableFormatting = 1
 
 /// Represents a JSON value. Large numbers that do not fit in the
 /// Decimal type are represented using the Float case, while
@@ -39,7 +40,7 @@ type JsonValue =
   | Boolean of bool
   | Null  
 
-  /// [omit]
+  /// <exclude />
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   member x._Print =
@@ -123,7 +124,7 @@ type JsonValue =
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 
-/// [omit]
+/// <exclude />
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonValue =
 

@@ -375,7 +375,7 @@ module Options =
       | Some str -> str
       | None -> JsonValueOptionExtensions.AsArray(x) |> Array.map (fun e -> e.InnerText) |> String.Concat
   
-  /// [omit]
+  /// <exclude />
   type JsonValueOverloads = JsonValueOverloads with
       static member inline ($) (x:JsonValue                 , JsonValueOverloads) = fun propertyName -> x.TryGetProperty propertyName
       static member inline ($) (x:JsonValue option          , JsonValueOverloads) = fun propertyName -> x |> Option.bind (fun x -> x.TryGetProperty propertyName)

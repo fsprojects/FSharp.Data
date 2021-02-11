@@ -1,10 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.HtmlCharRefs
-#endif
+﻿module FSharp.Data.Tests.HtmlCharRefs
 
 open NUnit.Framework
 open FsUnit
@@ -27,12 +21,12 @@ let ``Should substitute char references``(ref:string, result:string) =
 
 [<Test>]
 let ``Should substitute char references in attribute``() = 
-    let html = """<a href="/url?q=http://fsprojects.github.io/FSharp.Data/&amp;sa=U&amp;ei=sv1jU_3bMMmk0QX33YGQBw&amp;ved=0CB4QFjAA&amp;usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"><b>F# Data</b>: Library for Data Access - F# Open Source Group @ GitHub</a>"""
+    let html = """<a href="/url?q=https://fsprojects.github.io/FSharp.Data/&amp;sa=U&amp;ei=sv1jU_3bMMmk0QX33YGQBw&amp;ved=0CB4QFjAA&amp;usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"><b>F# Data</b>: Library for Data Access - F# Open Source Group @ GitHub</a>"""
     let parsed = HtmlDocument.Parse html
     let expected = 
         HtmlDocument.New(
          [
-           HtmlNode.NewElement("a", ["href", "/url?q=http://fsprojects.github.io/FSharp.Data/&sa=U&ei=sv1jU_3bMMmk0QX33YGQBw&ved=0CB4QFjAA&usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"],
+           HtmlNode.NewElement("a", ["href", "/url?q=https://fsprojects.github.io/FSharp.Data/&sa=U&ei=sv1jU_3bMMmk0QX33YGQBw&ved=0CB4QFjAA&usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"],
             [
                HtmlNode.NewElement("b", [HtmlNode.NewText "F# Data"])
                HtmlNode.NewText ": Library for Data Access - F# Open Source Group @ GitHub"
