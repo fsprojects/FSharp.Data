@@ -1,0 +1,41 @@
+name: Build and Test and Publish (release)
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        dotnet: [3.1.302]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    - name: Restore .NET local tools
+      run: dotnet tool restore
+    - name: Restore packages
+      run: dotnet paket restore
+    - name: Build and test
+      run: dotnet fake build -t All
+    - name: Deploy documentation from master
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./output
+        publish_branch: gh-pages
+        force_orphan: true
+    - name: Publish NuGets
+      run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_TOKEN_2020 }} --skip-duplicate
+
+# NUGET_ORG_TOKEN_2020 is listed in "Repository secrets" in https://github.com/fsprojects/FSharp.Data/settings/secrets/actions
+# note, the nuget org token expires around June 2021

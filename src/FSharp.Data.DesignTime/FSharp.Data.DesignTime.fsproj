@@ -76,6 +76,8 @@
   <Target Name="AfterBuild">  
     <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll" DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
     <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb" DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
+    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll" DestinationFolder="..\FSharp.Data\bin\$(Configuration)\typeproviders\fsharp41\$(TargetFramework)" />  
+    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb" DestinationFolder="..\FSharp.Data\bin\$(Configuration)\typeproviders\fsharp41\$(TargetFramework)" />  
   </Target>  
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
