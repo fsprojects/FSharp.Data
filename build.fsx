@@ -18,6 +18,7 @@ open Fake.DotNet.Testing
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
+open Fake.Core.TargetOperators
 open Fake.Tools.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
@@ -218,17 +219,13 @@ let publishFiles what branch fromFolder toFolder =
     Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
 
-#load "paket-files/fake/fsharp/FAKE/modules/Octokit/Octokit.fsx"
-open Octokit
-
 // note: doc release now done by github action, this is left in case we want to switch back to manuak
 // release
-Target.create "ReleaseDocsManual" <| fun _ ->
+Target.create "ReleaseDocsManually" <| fun _ ->
     publishFiles "generated documentation" "gh-pages" "output" ""
 
 Target.create "Release" ignore
 
-open Fake.Core.TargetOperators
 
 // --------------------------------------------------------------------------------------
 // Help
@@ -247,7 +244,7 @@ Target.create "Help" <| fun _ ->
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * Release (calls All)"
-    printfn "  * ReleaseDocsManual (note: doc release now done by github action)"
+    printfn "  * ReleaseDocsManually (note: doc release now done by github action)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
@@ -261,6 +258,5 @@ Target.create "All" ignore
 "Build" ==> "All"
 "Build" ==> "BuildTests" ==> "RunTests" ==> "All"
 "All" ==> "Release"
-
 
 Target.runOrDefaultWithArguments "Help"

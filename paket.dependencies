@@ -27,8 +27,6 @@ group Fake
     nuget Fake.Tools.Git               ~> 5.20.0
 	nuget Fake.DotNet.Paket            ~> 5.20.0
 
-    github fsharp/FAKE modules/Octokit/Octokit.fsx
-
 # NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
 # NOTE: The PackageReference items are themselves added by hand to the project files.
 # NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
