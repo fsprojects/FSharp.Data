@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: WorldBank Provider
+# WorldBank Provider
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/WorldBank.ipynb)
 
@@ -55,7 +55,7 @@ values for different years. Using `Seq.maxBy fst` we get the most recent availab
 
 If you need to download large amounts of data or run the operation without
 blocking the caller, then you probably want to use F# asynchronous workflows to perform
-the operation. The F# Data Library also provides the `WorldBankDataProvider` type which takes
+the operation. The FSharp.Data package also provides the `WorldBankDataProvider` type which takes
 a number of static parameters. If the `Asynchronous` parameter is set to `true` then the
 type provider generates all operations as asynchronous:
 *)

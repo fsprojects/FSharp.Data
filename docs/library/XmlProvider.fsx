@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: XML Type Provider
+# XML Type Provider
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/XmlProvider.ipynb)
 
@@ -594,7 +594,7 @@ The XML Type Provider supports most XSD features.
 Anyway the [XML Schema](https://www.w3.org/XML/Schema) specification is rich and complex and also provides a
 fair degree of [openness](http://docstore.mik.ua/orelly/xml/schema/ch13_02.htm)
 which may be [difficult to handle](https://link.springer.com/chapter/10.1007/978-3-540-76786-2_6) in
-data binding tools; but in F# Data, when providing typed views on elements becomes too challenging
+data binding tools; but in FSharp.Data, when providing typed views on elements becomes too challenging
 (take for example [wildcards](https://www.w3.org/TR/xmlschema11-1/#Wildcards)) the underlying `XElement`
 is still available.
 

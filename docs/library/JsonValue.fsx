@@ -1,11 +1,11 @@
 ﻿(**
-# F# Data: JSON Parser
+# JSON Parser
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonValue.ipynb)
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
 in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 
-but F# Data adds a simple API that can be used to access values dynamically.
+but FSharp.Data adds a simple API that can be used to access values dynamically.
 
 When working with well-defined JSON documents, it is easier to use the 
 [type provider](JsonProvider.html), but in a more dynamic scenario or when writing
@@ -161,9 +161,9 @@ as possible when parsing the file.
 
 ## Related articles
 
- * [F# Data: JSON Type Provider](JsonProvider.html) - discusses a F# type provider
+ * [JSON Type Provider](JsonProvider.html) - discusses a F# type provider
    that provides type-safe access to JSON data
- * [F# Data: WorldBank Provider](WorldBank.html) - the WorldBank type provider
+ * [WorldBank Provider](WorldBank.html) - the WorldBank type provider
    can be used to easily access data from the WorldBank
  * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
  * [API Reference: JsonExtensions module](../reference/fsharp-data-jsonextensions.html)

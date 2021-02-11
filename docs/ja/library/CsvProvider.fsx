@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: CSV 型プロバイダー
+# CSV 型プロバイダー
 
 この記事ではCSV 型プロバイダーを使って
 静的に型付けされた方法でCSVファイルを扱う方法を紹介します。
@@ -382,7 +382,7 @@ airQuality.Filter(fun row -> not (System.Double.IsNaN row.Ozone) &&
 (**
 ## 関連する記事
 
- * [F# Data: CSV パーサーおよびリーダー](CsvFile.html) -
+ * [CSV パーサーおよびリーダー](CsvFile.html) -
    CSVドキュメントを動的に処理するための詳しい説明があります。
  * [API リファレンス: CsvProvider 型プロバイダー](../../reference/fsharp-data-csvprovider.html)
 

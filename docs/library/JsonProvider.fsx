@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: JSON Type Provider
+# JSON Type Provider
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonProvider.ipynb)
 
@@ -291,7 +291,7 @@ type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 let newIssue = 
   GitHubIssue.Issue
     ( "Test issue",
-      "This is a test issue created in F# Data documentation", 
+      "This is a test issue created in FSharp.Data documentation", 
       assignee = "",
       labels = [| |], 
       milestone = 0)
@@ -326,7 +326,7 @@ without providing a local copy of the sample JSON files.
 
 ## Related articles
 
- * [F# Data: JSON Parser](JsonValue.html) - provides more information about 
+ * [JSON Parser](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
  * [API Reference: JsonProvider type provider](../reference/fsharp-data-jsonprovider.html)
  * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)

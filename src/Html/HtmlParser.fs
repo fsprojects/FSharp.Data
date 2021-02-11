@@ -14,7 +14,7 @@ open System.Runtime.InteropServices
 
 /// <summary>Represents an HTML attribute. The name is always normalized to lowercase</summary>
 /// <namespacedoc>
-///   <summary>Contains the primary types for the FSharp.Data library.</summary>
+///   <summary>Contains the primary types for the FSharp.Data package.</summary>
 /// </namespacedoc>
 ///
 type HtmlAttribute =

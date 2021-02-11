@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: CSV Type Provider
+# CSV Type Provider
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/CsvProvider.ipynb)
 
@@ -434,7 +434,7 @@ transformed the dataset to be smaller.
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
- * [F# Data: CSV Parser](CsvFile.html) - provides more information about
+ * [CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
  * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 

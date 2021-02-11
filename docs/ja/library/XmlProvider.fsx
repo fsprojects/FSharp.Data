@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: XML 型プロバイダー
+# XML 型プロバイダー
 
 このドキュメントではXML型プロバイダーを使用して、静的に型付けされた
 方法でXMLドキュメントにアクセスする方法について説明します。

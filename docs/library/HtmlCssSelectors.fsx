@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: HTML CSS selectors
+# HTML CSS selectors
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlCssSelectors.ipynb)
 
@@ -20,14 +20,14 @@ This article demonstrates how to use HTML CSS selectors to browse the DOM of par
 
 Usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
 The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.com/category/selectors/).
-To use CSS selectors, reference the F# Data library. You then need to open `FSharp.Data` namespace, which
+To use CSS selectors, reference the FSharp.Data package. You then need to open `FSharp.Data` namespace, which
 automatically exposes extension methods that implement the CSS selectors.
 *)
 open FSharp.Data
 
 (**
 
-## Practice 1: Search for F# Data on Google
+## Practice 1: Search for FSharp.Data on Google
 
 We will parse links of a Google to search for `FSharp.Data` like in the [HTML Parser](HtmlParser.html) article.
 *)

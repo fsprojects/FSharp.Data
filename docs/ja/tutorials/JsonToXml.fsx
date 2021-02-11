@@ -1,5 +1,5 @@
 ﻿(**
-# F# Data: JSON と XML の相互変換
+# JSON と XML の相互変換
 
 このチュートリアルではJSONドキュメント( [JSON パーサーの記事](JsonValue.html)
 で説明している `JsonValue` 型で表されるドキュメント)と
@@ -186,12 +186,12 @@ let toXml(x:JsonValue) =
 
 ## 関連する記事
 
- * [F# Data: JSON パーサーおよびリーダー](../library/JsonValue.html) -
+ * [JSON パーサーおよびリーダー](../library/JsonValue.html) -
    JSONの値を動的に処理する方法についての説明があります。
- * [F# Data: JSON 型プロバイダー](../library/JsonProvider.html) -
+ * [JSON 型プロバイダー](../library/JsonProvider.html) -
    型安全な方法でJSONデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
- * [F# Data: XML 型プロバイダー](../library/XmlProvider.html) -
+ * [XML 型プロバイダー](../library/XmlProvider.html) -
    型安全な方法でXMLデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
 

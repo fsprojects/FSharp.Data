@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: HTML Type Provider
+# HTML Type Provider
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlProvider.ipynb)
 
@@ -160,7 +160,7 @@ let viewersByDoctor =
 (**
 ## Related articles
 
- * [F# Data: HTML Parser](HtmlParser.html) - provides more information about 
+ * [HTML Parser](HtmlParser.html) - provides more information about 
    working with HTML documents dynamically.
 
 *)

@@ -22,7 +22,7 @@ module XElementExtensions =
         let headers =
             if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
             then headers
-            else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
+            else HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider" :: headers
         let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
         Http.Request(
           uri,
@@ -37,7 +37,7 @@ module XElementExtensions =
         let headers =
             if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
             then headers
-            else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
+            else HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider" :: headers
         let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
         Http.AsyncRequest(
           uri,

@@ -12,9 +12,9 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: CSV Parser
+# CSV Parser
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=CsvFile.ipynb)
+[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/CsvFile.ipynb)
 
 The F# [CSV Type Provider](CsvProvider.html) is built on top of an efficient CSV parser written
 in F#. There's also a simple API that can be used to access values dynamically.
@@ -105,7 +105,7 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
 
 ## Related articles
 
- * [F# Data: CSV Type Provider](CsvProvider.html) - discusses F# type provider
+ * [CSV Type Provider](CsvProvider.html) - discusses F# type provider
    that provides type-safe access to CSV data
  * [API Reference: CsvFile class](../reference/fsharp-data-csvfile.html)
  * [API Reference: CsvRow class](../reference/fsharp-data-csvrow.html)

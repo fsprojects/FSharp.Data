@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: JSON 型プロバイダー
+# JSON 型プロバイダー
 
 このドキュメントではJSON 型プロバイダーを使って
 静的に型付けされた方法でJSONファイルを扱う方法について説明します。
@@ -311,7 +311,7 @@ Issueそれぞれに対応するものとは異なります。
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",
-                                 "This is a test issue created in F# Data documentation", 
+                                 "This is a test issue created in FSharp.Data documentation", 
                                  assignee = "",
                                  labels = [| |], 
                                  milestone = 0)
@@ -320,7 +320,7 @@ newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issu
 (**
 ## 関連する記事
 
- * [F# Data: JSON パーサーおよびリーダー](JsonValue.html) -
+ * [JSON パーサーおよびリーダー](JsonValue.html) -
    JSONの値を動的に処理する方法についての説明があります。
  * [API リファレンス: JsonProvider 型プロバイダー](../../reference/fsharp-data-jsonprovider.html)
  * [API リファレンス: JsonValue 判別共用体](../../reference/fsharp-data-jsonvalue.html)

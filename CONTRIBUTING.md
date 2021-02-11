@@ -1,14 +1,14 @@
-Contributing to F# Data
+Contributing to FSharp.Data
 =======================
 
 This page should provide you with some basic information if you're thinking about
-contributing to the F# Data package. It gives a brief summary of the library 
-structure, how type providers are written and how the F# Data library handles 
+contributing to the FSharp.Data package. It gives a brief summary of the library 
+structure, how type providers are written and how the FSharp.Data package handles 
 multi-targeting (to make the providers available for Desktop as well
 as Portable libraries).
 
- * This page can be edited by sending a pull request to F# Data on GitHub, so
-   if you learn something when playing with F# Data, please record your
+ * This page can be edited by sending a pull request to FSharp.Data on GitHub, so
+   if you learn something when playing with FSharp.Data, please record your
    [findings here](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md)!
 
  * If you want to discuss a feature (a good idea!), or if you want to look at 
@@ -23,10 +23,10 @@ as Portable libraries).
 The root directory contains a number of Visual Studio solutions (`*.sln`) files 
 that group the projects in the main logical groups:
 
- * **FSharp.Data.sln** contains the main projects that implement the F# Data
+ * **FSharp.Data.sln** contains the main projects that implement the FSharp.Data
    functionality (such as runtime and design-time type provider libraries).
 
- * **FSharp.Data.Tests.sln** is a library with tests for F# Data and it also contains
+ * **FSharp.Data.Tests.sln** is a library with tests for FSharp.Data and it also contains
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
    to edit the documentation!
 
@@ -58,7 +58,7 @@ The _design time_ components are in the following project:
  
 ### Type provider structure
 
-Several of the F# Data type providers have similar structure - the CSV, JSON, XML and HTML
+Several of the FSharp.Data type providers have similar structure - the CSV, JSON, XML and HTML
 providers all infer the types from structure of a sample input. In addition, they all
 have a runtime component (CSV parser, HTML parser, JSON parser, and wrapper for `XDocument` type in .NET).
 
@@ -98,7 +98,7 @@ To debug the type generation, the best way is to change `FSharp.Data.DesignTime`
 
 ## Documentation
 
-The documentation for the F# Data library is automatically generated using the 
+The documentation for the FSharp.Data package is automatically generated using the 
 [F# Formatting](https://github.com/tpetricek/FSharp.Formatting) library. It turns 
 `*.md` (Markdown with embedded code snippets) and `*.fsx` files (F# script file with 
 embedded Markdown documentation) to a nice HTML documentation.
@@ -109,7 +109,7 @@ embedded Markdown documentation) to a nice HTML documentation.
 
  * Aside from direct documentation for individual types, there is also a `tutorials` folder
    ([on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/docs/content/tutorials)) where
-   you can add additional samples and tutorials that show some interesting aspects of F# Data.
+   you can add additional samples and tutorials that show some interesting aspects of FSharp.Data.
 
  * If you want to build the documentation, simply run the `build.fsx` script
    ([GitHub link](https://github.com/fsharp/FSharp.Data/blob/master/tools/build.fsx)) which

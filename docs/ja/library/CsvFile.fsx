@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: CSV パーサーおよびリーダー
+# CSV パーサーおよびリーダー
 
 F#の [CSV 型プロバイダー](CsvProvider.html) はF#で作成された
 効率の良いCSVパーサーを元にしています。
@@ -109,7 +109,7 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
 
 ## 関連する記事
 
- * [F# Data: CSV 型プロバイダー](CsvProvider.html) - 
+ * [CSV 型プロバイダー](CsvProvider.html) - 
    型セーフな方法でCSVデータにアクセスできるような
    F# 型プロバイダーについて説明しています。
  * [API リファレンス: CsvFile クラス](../../reference/fsharp-data-csvfile.html)

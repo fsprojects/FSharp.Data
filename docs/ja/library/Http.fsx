@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: HTTP ユーティリティ
+# HTTP ユーティリティ
 
 .NETライブラリにはHTTP Webリクエストを作成して送信するための
 強力なAPIが用意されています。

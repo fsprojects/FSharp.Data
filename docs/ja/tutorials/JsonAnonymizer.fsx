@@ -1,5 +1,5 @@
 (**
-# F# Data: JSONの匿名化
+# JSONの匿名化
 
 このチュートリアルではJSONドキュメント
 ( [JSONパーサーの記事](../library/JsonValue.html) で説明した
@@ -95,9 +95,9 @@ printfn "%O" anonymizedJson
 
 ## 関連する記事
 
- * [F# Data: JSON パーサーおよびリーダー](../library/JsonValue.html) -
+ * [JSON パーサーおよびリーダー](../library/JsonValue.html) -
    JSONの値を動的に処理する方法についての説明があります。
- * [F# Data: JSON 型プロバイダー](../library/JsonProvider.html) -
+ * [JSON 型プロバイダー](../library/JsonProvider.html) -
    型安全な方法でJSONデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
 

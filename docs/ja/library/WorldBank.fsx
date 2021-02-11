@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# F# Data: WorldBank プロバイダー
+# WorldBank プロバイダー
 
 [世界銀行](http://www.worldbank.org) (World Bank)は世界中の発展途上国に対して、
 経済的かつ技術的な支援を行っている国際組織です。

@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>@project@</id>
-    <title>F# Data</title>
+    <title>FSharp.Data</title>
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>

@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: HTTP Utilities
+# HTTP Utilities
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/Http.ipynb)
 
@@ -22,7 +22,7 @@ type (see [MSDN][2]). However, these two types are quite difficult to use if you
 want to quickly run a simple HTTP request and specify parameters such as method,
 HTTP POST data, or additional headers.
 
-The F# Data Library provides a simple `Http` type with four overloaded methods:
+The FSharp.Data package provides a simple `Http` type with four overloaded methods:
 `RequestString` and `AsyncRequestString`, that can be used to create a simple request and
 perform it synchronously or asynchronously, and `Request` and it's async companion `AsyncRequest` if
 you want to request binary files or you want to know more about the response like the status code,

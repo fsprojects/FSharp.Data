@@ -1,7 +1,7 @@
-F# Data: データアクセス用ライブラリ
+データアクセス用ライブラリ
 ===================================
 
-F# Data ライブラリ (`FSharp.Data.dll`) にはF#アプリケーションやスクリプトから
+FSharp.Data ライブラリ (`FSharp.Data.dll`) にはF#アプリケーションやスクリプトから
 データにアクセスする際に必要となるすべての機能が揃えられています。
 このライブラリには構造的な形式を持ったファイル（CSVやJSON、XML）を
 操作するためのF#型プロバイダや、WorldBankやFreebaseのデータにアクセスするための
@@ -34,7 +34,7 @@ $(function(){
   $('#cbtn').click(function(){ $('#anim').attr('src',ci.src); $('#lnk').attr('href',ci.src); });
 });</script>
 
-F# Data Libraryは <a href="https://nuget.org/packages/FSharp.Data">NuGetの
+FSharp.Data Libraryは <a href="https://nuget.org/packages/FSharp.Data">NuGetの
 FSharp.Dataパッケージ</a>として公開されています。
 ライブラリをインストールするには、
 <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">
@@ -53,7 +53,7 @@ FSharp.Dataパッケージ</a>として公開されています。
 ファイルから自動生成されています。
 もしも誤字脱字など見つけた場合には是非pullリクエストを投げてください！
 
- * [F# Data](fsharpdata.html) はドキュメントのホームページで、
+ * [FSharp.Data](fsharpdata.html) はドキュメントのホームページで、
    それぞれの型プロバイダ（CSVやXML、JSON、WorldBank、Freebase）に関する
    ドキュメントへのリンクが揃っています。
    また、 `FSharp.Data.dll` 内のpublic型に関するドキュメントへのリンクもあります。
@@ -74,7 +74,7 @@ pullリクエストを投げたりすることができます。
 
  * ライブラリのアーキテクチャや構成、その他の話題
    (たとえばWindows PhoneやSilverlightなどのためのポータブルライブラリサポート)
-   など、より詳しい話題については [F# Data に貢献する](contributing.html)
+   など、より詳しい話題については [FSharp.Data に貢献する](contributing.html)
    のページを参照してください。
 
 ### ライブラリの方針

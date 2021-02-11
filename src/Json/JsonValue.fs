@@ -355,7 +355,7 @@ type JsonValue with
     let headers =
         if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+        else HttpRequestHeaders.UserAgent "FSharp.Data JSON Type Provider" :: headers
     let headers = HttpRequestHeaders.ContentTypeWithEncoding (HttpContentTypes.Json, Encoding.UTF8) :: headers
     TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
       headers,

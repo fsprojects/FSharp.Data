@@ -12,7 +12,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: JSON パーサーおよびリーダー
+# JSON パーサーおよびリーダー
 
 F#の [JSON 型プロバイダー](JsonProvider.html) はF#で作成された
 効率の良いJSONパーサーを元にしています。
@@ -173,10 +173,10 @@ match value with
 
 ## 関連する記事
 
- * [F# Data: JSON 型プロバイダー](JsonProvider.html) -
+ * [JSON 型プロバイダー](JsonProvider.html) -
    型安全な方法でJSONデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
- * [F# Data: WorldBank プロバイダー](WorldBank.html) -
+ * [WorldBank プロバイダー](WorldBank.html) -
    WorldBank 型プロバイダーを使うとWorldBankから受け取ったデータを
    簡単に処理出来るようになります。
  * [API リファレンス: JsonValue 判別共用体](../../reference/fsharp-data-jsonvalue.html)

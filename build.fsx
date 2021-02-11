@@ -31,7 +31,7 @@ let project = "FSharp.Data"
 let authors = ["Tomas Petricek"; "Gustavo Guerra"; "Colin Bull"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
-  The F# Data library (FSharp.Data.dll) implements everything you need to access data
+  The FSharp.Data library (FSharp.Data.dll) implements everything you need to access data
   in your F# applications and scripts. It implements F# type providers for working with
   structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data.
   It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""

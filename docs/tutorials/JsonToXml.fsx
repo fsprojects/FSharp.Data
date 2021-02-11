@@ -12,19 +12,19 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# F# Data: Converting between JSON and XML
+# Converting between JSON and XML
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=tutorials/JsonToXml.ipynb)
 
 This tutorial shows how to implement convert JSON document (represented using
 the `JsonValue` type discussed in [JSON parser article](JsonValue.html)) to an
 XML document (represented as `XElement`) and the other way round.
-This functionality is not directly available in the F# Data library, but it can
+This functionality is not directly available in the FSharp.Data package, but it can
 be very easily implemented by recursively walking over the JSON (or XML) document.
 
 If you want to use the JSON to/from XML conversion in your code, you can copy the 
 [source from GitHub][jsontoxml] and just include it in your project. If you use these
-functions often and would like to see them in the F# Data library, please submit
+functions often and would like to see them in the FSharp.Data package, please submit
 a [feature request][issues].
 
   [jsontoxml]: https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonToXml.fsx
@@ -190,11 +190,11 @@ let toXml(x:JsonValue) =
 
 ## Related articles
 
- * [F# Data: JSON Parser](../library/JsonValue.html) - a tutorial that introduces
+ * [JSON Parser](../library/JsonValue.html) - a tutorial that introduces
    `JsonValue` for working with JSON values dynamically.
- * [F# Data: JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
+ * [JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
    that provides type-safe access to JSON data.
- * [F# Data: XML Type Provider](../library/XmlProvider.html) - discusses the F# type provider
+ * [XML Type Provider](../library/XmlProvider.html) - discusses the F# type provider
    that provides type-safe access to XML data.
 
 *)
