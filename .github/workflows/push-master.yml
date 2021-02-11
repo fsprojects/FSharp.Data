@@ -23,7 +23,7 @@ jobs:
     - name: Build and test
       run: dotnet fake build -t All
     - name: Examine bin
-      run: dir bin
+      run: dir /s bin
     - name: Deploy documentation from master
       uses: peaceiris/actions-gh-pages@v3
       with:
@@ -32,7 +32,7 @@ jobs:
         publish_branch: gh-pages
         force_orphan: true
     - name: Examine bin
-      run: dir bin
+      run: dir /s bin
     - name: Publish NuGets (if this version not published before)
       run: dotnet nuget push "bin/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_TOKEN_2020 }} --skip-duplicate
 
