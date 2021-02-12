@@ -9,7 +9,15 @@ CSV, HTML and JSON files and for sending HTTP requests.
 This library focuses on providing simple access to the structured documents 
 and other data sources. 
 
-## FSharp.Data type providers in action
+FSharp.Data stems from [Types from data Making structured data first-class citizens in F#](http://tomasp.net/academic/papers/fsharp-data/) by Petricek, Syme and Guerra. This paper
+received a Distinguished Paper award at PLDI 2016 and was selected as one of three CACM Research
+Highlight in 2018. 🏆🏆🏆
+
+The package is available on <a href="https://nuget.org/packages/FSharp.Data">NuGet</a>. [![NuGet Status](//img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data/)
+
+
+
+## Type Providers
 
 <div class="container-fluid" style="margin:15px 0px 15px 0px;">
     <div class="row-fluid">
@@ -21,32 +29,22 @@ and other data sources.
     </div>
 </div>
 
-
-## How to get FSharp.Data
-
-* The FSharp.Data package is available on <a href="https://nuget.org/packages/FSharp.Data">NuGet</a>. [![NuGet Status](//img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data/)
-
-
-## The FSharp.Data type providers
-
 The FSharp.Data type providers for CSV, HTML, JSON and XML infer types from the structure of a sample 
 document (or a document containing multiple samples). The structure is then used
 to provide easy to use type-safe access to documents that follow the same structure.
-The library also implements a type provider for accessing data from 
-[the WorldBank](http://data.worldbank.org/).
 
  * [CSV Type Provider](library/CsvProvider.html) - discusses the `CsvProvider<..>` type
  * [HTML Type Provider](library/HtmlProvider.html) - discusses the `HtmlProvider<...>` type
  * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
  * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
- * [WorldBank Provider](library/WorldBank.html) - discusses the `WorldBankData` type 
-   and the `WorldBankDataProvider<..>` type
 
-## The FSharp.Data data access tools
+The package also contains a type provider for accessing data from 
+[the WorldBank](library/WorldBank.html).
+
+## Data Access Tools
  
-In addition to the F# type providers, the library also defines several types that 
-simplify data access. In particular, it includes tools for HTTP web requests and 
-CSV, HTML, and JSON parsers with simple dynamic API. For more information about these types, see the 
+The package contains functionality to simplify data access. In particular, it includes tools for HTTP web requests and 
+CSV, HTML, and JSON parsers with simple dynamic API. For more information, see the 
 following topics:
 
  * [HTTP Utilities](library/Http.html) - discusses the `Http` type that can be used
@@ -60,15 +58,18 @@ following topics:
 
 ## Tutorials
 
-The above articles cover all key features of the FSharp.Data package. However, if you're interested
-in more samples or more details, then the following tutorials contain additional examples that 
-use multiple different features together:
+The following tutorials contain additional examples that 
+use multiple features together:
 
  * [Converting between JSON and XML](tutorials/JsonToXml.html) - implements two serialization 
    functions that convert between the standard .NET `XElement` and the `JsonValue` from FSharp.Data.
    The tutorial demonstrates pattern matching on `JsonValue`.
  * [Anonymizing JSON](tutorials/JsonAnonymizer.html) - implements a function to anonymize a `JsonValue` from FSharp.Data.
    The tutorial demonstrates pattern matching on `JsonValue`.
+
+Below is a brief practical demonstration of using FSharp.Data:
+
+<div style="padding-left:20px"><iframe src="https://channel9.msdn.com/posts/Understanding-the-World-with-F/player" width="640" height="360" allowFullScreen frameBorder="0"></iframe></div>
 
 ## Reference Documentation
 

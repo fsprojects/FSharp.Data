@@ -204,7 +204,7 @@ Target.create "NuGet" <| fun _ ->
 // Generate the documentation
 Target.create "GenerateDocs" (fun _ ->
     Shell.cleanDir ".fsdocs"
-    DotNet.exec id "fsdocs" ("build --property Configuration=Release --eval --clean --parameters fsdocs-package-version " + nugetVersion) |> ignore
+    DotNet.exec id "fsdocs" ("build --properties Configuration=Release --eval --clean --parameters fsdocs-package-version " + nugetVersion) |> ignore
 )
 
 // --------------------------------------------------------------------------------------
