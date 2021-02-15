@@ -25,8 +25,18 @@ present on the columns of that sample. The column names are obtained from the fi
 
 ## Introducing the provider
 
-The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly
-is located in the `../../../bin` directory, we can load it in F# Interactive as follows:
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <a id="lnk" href="../images/csv.gif"><img id="anim" src="../images/csv.gif" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the package is referenged
+we can access its namespace as follows:
 *)
 
 open FSharp.Data

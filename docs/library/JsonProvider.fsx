@@ -28,8 +28,18 @@ loaded file does not match the structure of the sample, a runtime error may occu
 
 ## Introducing the provider
 
-The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../../../bin` directory, we can load it in F# Interactive as follows: *)
+
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <a id="lnk" href="../images/json.gif"><img id="anim" src="../images/json.gif" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+
+The type provider is located in the `FSharp.Data.dll` assembly and namespace: *)
 
 open FSharp.Data
 

@@ -27,8 +27,17 @@ scripts in a type-safe manner. This article provides an introduction.
 
 ## Introducing the provider
 
-The following example loads the `FSharp.Data.dll` library (in F# Interactive), 
-initializes a connection to the WorldBank using the `GetDataContext` method and then
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <a id="lnk" href="../images/wb.gif"><img id="anim" src="../images/wb.gif" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+
+The following example initializes a connection to the WorldBank using the `GetDataContext` method and then
 retrieves the percentage of population who attend universities in the UK:
 *)
 
