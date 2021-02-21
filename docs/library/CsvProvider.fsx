@@ -237,12 +237,11 @@ It is quite common in statistical datasets for some values to be missing. If
 you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file you will see
 that some values for the ozone observations are marked `#N/A`. Such values are
 parsed as float and will be marked with `Double.NaN` in F#. The values 
-"NaN", "NA", "N/A", "#N/A", ":", "-", "TBA", and "TBD" 
+`NaN`, `NA`, `N/A`, `#N/A`, `:`, `-`, `TBA`, and `TBD` 
 are recognized as missing values by default, but you can customize it by specifying
 the `MissingValues` static parameter of `CsvProvider` as a comma-separated string. 
-For example, to ignore "this" and "that" we could do: 
+For example, to ignore `this` and `that` we could do: 
 *)
-
 
 CsvProvider<"X,Y,Z\nthis,that,1.0",
             MissingValues="this,that">.GetSample().Rows
