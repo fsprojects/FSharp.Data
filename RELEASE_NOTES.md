@@ -1,3 +1,6 @@
+#### 4.0.1 - Unreleased
+* Move `cssSelect` to `HtmlNode`.
+
 #### 4.0.0 - March 2 2021
 
 * FSharp.Data is now .NET Standard 2.0 only
@@ -16,6 +19,9 @@ Several other fixes:
 * [add ResolutionFolder=__SOURCE_DIRECTORY__ to docs](https://github.com/fsprojects/FSharp.Data/pull/1344)
 * [fix links in docs/tools/generate.fsx](https://github.com/fsprojects/FSharp.Data/pull/1348)
 * [Revamp docs generation and move to .NET Standard 2.0 only](https://github.com/fsprojects/FSharp.Data/pull/1350)
+
+#### 3.3.4 - January 7 2020
+* Rebuild using "Release" target
 
 #### 3.3.3 - January 7 2020
 * Fix nuget package

@@ -262,6 +262,182 @@ module HtmlNode =
     let directInnerText n = 
         innerTextExcluding' false [] n
 
+    open HtmlCssSelectors
+
+    let private getTargets level matched = 
+        match level with
+        | FilterLevel.Children    -> matched |> Seq.collect elements
+        | FilterLevel.Descendants -> matched |> Seq.collect (descendants true (fun _ -> true))
+        | _                       -> matched |> Seq.ofList
+
+    let private searchTag level matched tag =
+        match level with
+        | Children -> matched |> List.collect (elementsNamed [tag])
+        | _ -> matched |> Seq.collect (descendantsAndSelfNamed true [tag]) |> Seq.toList
+
+    let private filterByAttr level matched attr f = 
+        matched 
+        |> getTargets level
+        |> Seq.filter (attributeValue attr >> f)
+        |> Seq.toList
+
+    let private attrExists level matched attr =
+        matched
+        |> getTargets level
+        |> Seq.filter (attributes >> Seq.exists (HtmlAttribute.name >> (=) attr))
+        |> Seq.toList
+
+    let private selectCssElements tokens nodes =
+        let whiteSpaces = [|' '; '\t'; '\r'; '\n'|]
+        let rec selectElements' level acc source =
+
+            // if we already have an empty list, terminate early
+            if acc = [] then [] else
+
+            let selectDescendantOfType ty t = 
+                let selectedNodes = filterByAttr level acc "type" (fun v -> v = ty)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            let selectEvenOdd (isEven:bool) =
+                acc 
+                |> List.mapi(fun i n -> (i,n))
+                |> List.filter(
+                    fun (i,_) -> 
+                        match isEven with
+                        | true -> i%2 = 0
+                        | false -> i%2 <> 0
+                )
+                |> List.map (fun (_,n) -> n)
+
+            let containsIgnoreCase (value:string) (word:string) = word.IndexOf(value, StringComparison.OrdinalIgnoreCase) <> -1
+            let equalsIgnoreCase (value:string) (word:string) = word.Equals(value, StringComparison.OrdinalIgnoreCase)
+
+            match source with
+            | TagName(_, name) :: t -> 
+                let selectedNodes = searchTag level acc name
+                selectElements' FilterLevel.Root selectedNodes t
+            | ClassPrefix _ :: CssClass(_, className) :: t -> 
+                let selectedNodes = filterByAttr level acc "class" (fun v -> v.Split(whiteSpaces) |> Array.exists ((=) className))
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | IdPrefix _ :: CssId(_, id) :: t ->
+                let selectedNodes = filterByAttr level acc "id" (fun v -> v = id)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: Assign _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (fun v -> v = value)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: EndWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (fun v -> v.EndsWith value)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: StartWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (fun v -> v.StartsWith value)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsPrefix _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (fun v -> 
+                    let chars = v.ToCharArray() |> Seq.skipWhile(fun c -> c = '\'') |> Seq.takeWhile Char.IsLetter |> Seq.toArray
+                    let s = new String(chars)
+                    s = value )
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: AttributeContains _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (containsIgnoreCase value)
+                selectElements' FilterLevel.Root selectedNodes t
+                
+            | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsWord _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name (fun v -> v.Split(whiteSpaces) |> Array.exists (equalsIgnoreCase value))
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ :: AttributeName(_, name) :: AttributeNotEqual _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
+                let selectedNodes = filterByAttr level acc name ((<>) value)
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | OpenAttribute _ ::  AttributeName(_, name) :: CloseAttribute _ :: t ->
+                let selectedNodes = 
+                    acc |> List.filter(
+                            attributes
+                            >> List.exists (HtmlAttribute.name >> (=) name) )
+                selectElements' FilterLevel.Root selectedNodes t
+                
+            | Checkbox _ :: t -> selectDescendantOfType "checkbox" t
+            | File _ :: t -> selectDescendantOfType "file" t
+            | Hidden _ :: t -> selectDescendantOfType "hidden" t
+            | Radio _ :: t -> selectDescendantOfType "radio" t
+            | Password _ :: t -> selectDescendantOfType "password" t
+            | Image _ :: t -> selectDescendantOfType "image" t
+            | Textbox _ :: t -> selectDescendantOfType "text" t
+            | Submit _ :: t -> selectDescendantOfType "submit" t
+                
+            | Even _ :: t ->
+                let selectedNodes = selectEvenOdd true
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Odd _ :: t ->
+                let selectedNodes = selectEvenOdd false
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Button _ :: t ->
+                let selectedNodes = 
+                    filterByAttr level acc "type" ((=) "button")
+                    |> Seq.append (acc |> Seq.collect (descendantsAndSelfNamed true ["button"]))
+                    |> Seq.toList
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Checked _ :: t ->
+                let selectedNodes = attrExists level acc "checked"
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | EmptyNode _ :: t ->
+                let selectedNodes = 
+                    acc 
+                    |> Seq.collect(
+                        descendantsAndSelf true (fun _ -> true)
+                        >> Seq.filter(fun d ->
+                            String.IsNullOrWhiteSpace (d |> directInnerText) && (d |> descendants true (fun _ -> true)) |> Seq.isEmpty))
+                    |> Seq.toList
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Selected _ :: t ->
+                let selectedNodes = attrExists level acc "selected"
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Disabled _ :: t ->
+                let selectedNodes = attrExists level acc "disabled"
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | Enabled _ :: t ->
+                let selectedNodes = 
+                    acc
+                    |> getTargets level 
+                    |> Seq.filter (attributes >> Seq.exists (HtmlAttribute.name >> (=) "disabled") >> not)
+                    |> Seq.toList
+                selectElements' FilterLevel.Root selectedNodes t
+
+            | AllChildren _ :: t -> 
+                selectElements' FilterLevel.Descendants acc t
+
+            | DirectChildren _ :: t -> 
+                selectElements' FilterLevel.Children acc t
+
+            | [] -> acc
+            | tok -> failwithf "Invalid token: %A" tok
+
+        selectElements' FilterLevel.Descendants nodes tokens
+
+    let internal Select nodes selector =
+            let tokenizer = CssSelectorTokenizer()
+            match tokenizer.Tokenize selector with
+            | [] -> []
+            | tokens -> 
+                List.ofSeq nodes |> selectCssElements tokens
+
+    /// Gets descendants matched by Css selector
+    let cssSelect node selector =
+        Select [node] selector
+
 // --------------------------------------------------------------------------------------
 
 [<Extension>]
