@@ -89,6 +89,18 @@ let ``Can parse document with datetime offset from iso date format``() =
     let j = JsonValue.Parse "{\"anniversary\": \"2009-05-19 14:39:22+0600\"}"
     j?anniversary.AsDateTimeOffset() |> should equal <| DateTimeOffset(2009, 05, 19, 14, 39, 22, TimeSpan.FromHours 6.)
 
+[<Test; Explicit>]
+let ``Can parse deep arrays``() =
+    String.replicate 50000 "[" + String.replicate 50000 "]"
+    |> FSharp.Data.JsonValue.Parse
+    |> ignore
+
+[<Test; Explicit>]
+let ``Can parse deep objects``() =
+    (String.replicate 50000 "{\"a\":") + "\"\"" + (String.replicate 50000 "}")
+    |> FSharp.Data.JsonValue.Parse
+    |> ignore
+
 // TODO: Due to limitations in the current ISO 8601 datetime parsing these fail, and should be made to pass
 //[<Test>]
 //let ``Cant Yet parse document with basic iso date``() =
