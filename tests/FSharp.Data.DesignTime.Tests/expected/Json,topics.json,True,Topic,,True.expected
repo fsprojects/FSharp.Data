@@ -1,26 +1,26 @@
 class JsonProvider : obj
-    static member AsyncLoad: uri:string -> JsonProvider+Topic[] async
+    static member AsyncLoad: uri:string -> JsonProvider+JsonProvider+Topic[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t), new Func<_,_>(id))))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+Topic[]
+    static member Load: stream:System.IO.Stream -> JsonProvider+JsonProvider+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader)), new Func<_,_>(id)))
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+Topic[]
+    static member Load: reader:System.IO.TextReader -> JsonProvider+JsonProvider+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(reader), new Func<_,_>(id)))
 
-    static member Load: uri:string -> JsonProvider+Topic[]
+    static member Load: uri:string -> JsonProvider+JsonProvider+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri))), new Func<_,_>(id)))
 
-    static member Parse: text:string -> JsonProvider+Topic[]
+    static member Parse: text:string -> JsonProvider+JsonProvider+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
 
-    static member ParseList: text:string -> JsonProvider+Topic[][]
+    static member ParseList: text:string -> JsonProvider+JsonProvider+JsonProvider+Topic[][]
     JsonRuntime.ConvertArray(JsonDocument.CreateList(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
 
 
 class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
-    new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic
+    new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic
     JsonRuntime.CreateRecord([| ("photo",
                                  (photo :> obj))
                                 ("preview_link",
@@ -71,7 +71,7 @@ class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Topic
     JsonDocument.Create(jsonValue, "")
 
-    member Categories: JsonProvider+Category[] with get
+    member Categories: JsonProvider+JsonProvider+Category[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "categories"), new Func<_,_>(id)))
 
     member CategoryIds: string[] with get
@@ -80,7 +80,7 @@ class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     member CourseIds: int[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Courses: JsonProvider+Course[] with get
+    member Courses: JsonProvider+JsonProvider+Course[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "courses"), new Func<_,_>(id)))
 
     member Display: bool with get
@@ -135,7 +135,7 @@ class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     member SubtitleLanguagesCsv: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "subtitle_languages_csv"))
 
-    member Universities: JsonProvider+University[] with get
+    member Universities: JsonProvider+JsonProvider+University[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "universities"), new Func<_,_>(id)))
 
     member UniversityIds: string[] with get

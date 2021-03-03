@@ -1,5 +1,5 @@
 class XmlProvider : obj
-    static member AsyncGetSamples: () -> XmlProvider+Choice[] async
+    static member AsyncGetSamples: () -> XmlProvider+XmlProvider+Choice[] async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "search.atom.xml"), f)
 
@@ -7,7 +7,7 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
-    static member GetSamples: () -> XmlProvider+Choice[]
+    static member GetSamples: () -> XmlProvider+XmlProvider+Choice[]
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "search.atom.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Choice
@@ -73,7 +73,7 @@ class XmlProvider+Choice : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Entry : FDR.BaseTypes.XmlElement
-    new : id:string -> published:System.DateTimeOffset -> links:XmlProvider+Link[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTimeOffset -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
+    new : id:string -> published:System.DateTimeOffset -> links:XmlProvider+XmlProvider+Link[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTimeOffset -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}id",
@@ -119,7 +119,7 @@ class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.twitter.com/}lang"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link[] with get
+    member Links: XmlProvider+XmlProvider+Link[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Metadata: XmlProvider+Metadata with get

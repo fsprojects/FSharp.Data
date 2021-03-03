@@ -14,7 +14,7 @@ open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
 
 [<AutoOpen>]
-/// [omit]
+/// <exclude />
 module Implementation = 
 
     let private retryCount = 5
@@ -59,7 +59,7 @@ module Implementation =
                 | None -> 
                     Debug.WriteLine (sprintf "[WorldBank] downloading (%d): %s" attempt url)
                     try
-                        let! doc = Http.AsyncRequestString(url, headers = [ HttpRequestHeaders.UserAgent "F# Data WorldBank Type Provider" 
+                        let! doc = Http.AsyncRequestString(url, headers = [ HttpRequestHeaders.UserAgent "FSharp.Data WorldBank Type Provider" 
                                                                             HttpRequestHeaders.Accept HttpContentTypes.Json ])
                         Debug.WriteLine (sprintf "[WorldBank] got text: %s" (if doc = null then "null" elif doc.Length > 50 then doc.[0..49] + "..." else doc))
                         if not (String.IsNullOrEmpty doc) then 
@@ -199,7 +199,10 @@ module Implementation =
   
 [<DebuggerDisplay("{Name}")>]
 [<StructuredFormatDisplay("{Name}")>]
-/// Indicator data
+/// <summary>Indicator data</summary>
+/// <namespacedoc>
+///   <summary>Support types for the WorldBank type provider.</summary>
+/// </namespacedoc>
 type Indicator internal (connection:ServiceConnection, countryOrRegionCode:string, indicatorCode:string) = 
     let data = connection.GetData(countryOrRegionCode, indicatorCode) |> Seq.cache
     let dataDict = lazy (dict data)
@@ -256,12 +259,12 @@ type IndicatorDescription internal (connection:ServiceConnection, topicCode:stri
     /// Get the description of the indicator
     member x.Description = connection.IndicatorsIndexed.[indicatorCode].Description
 
-/// [omit]
+/// <exclude />
 type IIndicators =
     abstract GetIndicator : indicatorCode:string -> Indicator
     abstract AsyncGetIndicator : indicatorCode:string -> Async<Indicator>
 
-/// [omit]
+/// <exclude />
 type Indicators internal (connection:ServiceConnection, countryOrRegionCode) = 
     let indicators = seq { for indicator in connection.Indicators -> Indicator(connection, countryOrRegionCode, indicator.Id) }
     interface IIndicators with
@@ -270,18 +273,18 @@ type Indicators internal (connection:ServiceConnection, countryOrRegionCode) =
     interface seq<Indicator> with member x.GetEnumerator() = indicators.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = indicators.GetEnumerator() :> _
 
-/// [omit]
+/// <exclude />
 type IIndicatorsDescriptions =
     abstract GetIndicator : indicatorCode:string -> IndicatorDescription
 
-/// [omit]
+/// <exclude />
 type IndicatorsDescriptions internal (connection:ServiceConnection, topicCode) = 
     let indicatorsDescriptions = seq { for indicatorId in connection.IndicatorsByTopic.[topicCode] -> IndicatorDescription(connection, topicCode, indicatorId) }
     interface IIndicatorsDescriptions with member x.GetIndicator(indicatorCode) = IndicatorDescription(connection, topicCode, indicatorCode)
     interface seq<IndicatorDescription> with member x.GetEnumerator() = indicatorsDescriptions.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = indicatorsDescriptions.GetEnumerator() :> _
 
-/// [omit]
+/// <exclude />
 type ICountry = 
     abstract GetIndicators : unit -> Indicators
 
@@ -300,11 +303,11 @@ type Country internal (connection:ServiceConnection, countryCode:string) =
     member x.Region = connection.CountriesIndexed.[countryCode].Region
     interface ICountry with member x.GetIndicators() = indicators
 
-/// [omit]
+/// <exclude />
 type ICountryCollection =
     abstract GetCountry : countryCode:string * countryName:string -> Country
 
-/// [omit]
+/// <exclude />
 type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConnection, regionCodeOpt) = 
     let items = 
         seq { let countries = 
@@ -318,7 +321,7 @@ type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConne
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
     interface ICountryCollection with member x.GetCountry(countryCode, (*this parameter is only here to help FunScript*)_countryName) = Country(connection, countryCode)
     
-/// [omit]
+/// <exclude />
 type IRegion =
     abstract GetCountries<'T when 'T :> Country> : unit -> CountryCollection<'T>
     abstract GetIndicators : unit -> Indicators
@@ -336,18 +339,18 @@ type Region internal (connection:ServiceConnection, regionCode:string) =
         member x.GetCountries() = CountryCollection(connection,Some regionCode)
         member x.GetIndicators() = indicators
     
-/// [omit]
+/// <exclude />
 type IRegionCollection =
     abstract GetRegion : regionCode:string -> Region
 
-/// [omit]
+/// <exclude />
 type RegionCollection<'T when 'T :> Region> internal (connection: ServiceConnection) = 
     let items = seq { for (code, _) in connection.Regions -> Region(connection, code) :?> 'T } 
     interface seq<'T> with member x.GetEnumerator() = items.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
     interface IRegionCollection with member x.GetRegion(regionCode) = Region(connection, regionCode)
 
-/// [omit]
+/// <exclude />
 type ITopic = 
     abstract GetIndicators : unit -> IndicatorsDescriptions
 
@@ -364,24 +367,24 @@ type Topic internal (connection:ServiceConnection, topicCode:string) =
     member x.Description = connection.TopicsIndexed.[topicCode].Description
     interface ITopic with member x.GetIndicators() = indicatorsDescriptions
 
-/// [omit]
+/// <exclude />
 type ITopicCollection =
     abstract GetTopic : topicCode:string -> Topic
 
-/// [omit]
+/// <exclude />
 type TopicCollection<'T when 'T :> Topic> internal (connection: ServiceConnection) = 
     let items = seq { for topic in connection.Topics -> Topic(connection, topic.Id) :?> 'T } 
     interface seq<'T> with member x.GetEnumerator() = items.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
     interface ITopicCollection with member x.GetTopic(topicCode) = Topic(connection, topicCode)
 
-/// [omit]
+/// <exclude />
 type IWorldBankData =
     abstract GetCountries<'T when 'T :> Country> : unit -> seq<'T>
     abstract GetRegions<'T when 'T :> Region> : unit -> seq<'T>
     abstract GetTopics<'T when 'T :> Topic> : unit -> seq<'T>
 
-/// [omit]
+/// <exclude />
 type WorldBankData(serviceUrl:string, sources:string) = 
     let sources = sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
     let restCache = createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays 30.0)

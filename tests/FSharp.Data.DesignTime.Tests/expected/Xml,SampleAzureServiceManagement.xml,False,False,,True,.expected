@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Locations : FDR.BaseTypes.XmlElement
-    new : locations:XmlProvider+Location[] -> XmlProvider+Locations
+    new : locations:XmlProvider+XmlProvider+Location[] -> XmlProvider+Locations
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}Locations", 
                             [| |], 
                             [| ("{http://schemas.microsoft.com/windowsazure}Location",
@@ -33,7 +33,7 @@ class XmlProvider+Locations : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Locations
     XmlElement.Create(xElement)
 
-    member Locations: XmlProvider+Location[] with get
+    member Locations: XmlProvider+XmlProvider+Location[] with get
     XmlRuntime.ConvertArray(this, "{http://schemas.microsoft.com/windowsazure}Location", new Func<_,_>(id)))
 
 

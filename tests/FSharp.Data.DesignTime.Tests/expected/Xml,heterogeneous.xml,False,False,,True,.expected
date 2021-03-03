@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Test : FDR.BaseTypes.XmlElement
-    new : options:XmlProvider+Options[] -> XmlProvider+Test
+    new : options:XmlProvider+XmlProvider+Options[] -> XmlProvider+Test
     XmlRuntime.CreateRecord("test", 
                             [| |], 
                             [| ("options",
@@ -33,7 +33,7 @@ class XmlProvider+Test : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Test
     XmlElement.Create(xElement)
 
-    member Options: XmlProvider+Options[] with get
+    member Options: XmlProvider+XmlProvider+Options[] with get
     XmlRuntime.ConvertArray(this, "options", new Func<_,_>(id)))
 
 

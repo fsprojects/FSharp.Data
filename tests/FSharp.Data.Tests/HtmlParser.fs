@@ -1,10 +1,4 @@
-#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
 module FSharp.Data.Tests.HtmlParser
-#endif
 
 open System.Globalization
 open NUnit.Framework
@@ -126,6 +120,17 @@ let ``Can handle attributes with no value``() =
         [
             HtmlAttribute.New("itemscope", "")
             HtmlAttribute.New("itemtype", "http://schema.org/Place")
+        ]
+    node.Attributes() |> should equal expected
+
+[<Test>]
+let ``Can handle attributes next to each other``() = 
+    let html = """<h1 class="foo"style="font-size: 0.7em">Test</h1>"""
+    let node = HtmlNode.Parse html |> List.head
+    let expected = 
+        [
+            HtmlAttribute.New("class", "foo")
+            HtmlAttribute.New("style", "font-size: 0.7em")
         ]
     node.Attributes() |> should equal expected
 

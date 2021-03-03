@@ -1,17 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\netfx.props" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
-    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp3.1'">netstandard2.0</TargetLibraryFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypesTesting.fs">
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\tests\ProvidedTypesTesting.fs">
       <Link>ProvidedTypesTesting.fs</Link> 
     </Compile>
     <Compile Include="TypeProviderInstantiation.fs" />
@@ -19,23 +16,17 @@
     <None Include="SignatureTestCases.config" />
     <Compile Include="SignatureTests.fs" />
     <Compile Include="DocumentationTests.fs" />
-    <Compile Include="Program.fs" Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <Compile Include="Program.fs" Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
       <Link>Program.fs</Link>
     </Compile>
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="FsUnit" Version="3.1.0" />
-    <PackageReference Include="FSharp.Core" Version="4.3.*" />
-
-    <!-- Conditional references, see https://github.com/fsprojects/Paket/issues/3091 for why Paket doesn't seem to be able to handle these yet --> 
-    <PackageReference Include="FSharp.Charting" Version="0.91.1"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharp.Compiler.Service" Version="2.0.0.6"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharp.Formatting" Version="2.14.4"   Condition="'$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="FSharpVSPowerTools.Core" Version="2.3"   Condition="'$(TargetFramework)' == 'net461'" />
+    <PackageReference Update="FSharp.Core" Version="5.0.0" />
+    <PackageReference Include="FSharp.Formatting" Version="8.0.1" />
 
     <Reference Include="FSharp.Data.DesignTime">
         <HintPath>..\..\src\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetLibraryFramework)\FSharp.Data.DesignTime.dll</HintPath>

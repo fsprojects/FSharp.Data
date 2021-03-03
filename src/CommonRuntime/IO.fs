@@ -207,7 +207,7 @@ let internal asyncRead (uriResolver:UriResolver) formatName encodingStr (uri:Uri
             | "XML" -> [ HttpContentTypes.Xml ]
             | _ -> []
             @ [ HttpContentTypes.Any ]
-        let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") 
+        let headers = [ HttpRequestHeaders.UserAgent ("FSharp.Data " + formatName + " Type Provider") 
                         HttpRequestHeaders.Accept (String.concat ", " contentTypes) ]
         // Download the whole web resource at once, otherwise with some servers we won't get the full file
         let! text = Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)

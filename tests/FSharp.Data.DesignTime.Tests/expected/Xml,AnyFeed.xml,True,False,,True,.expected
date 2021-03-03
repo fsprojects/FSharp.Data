@@ -1,5 +1,5 @@
 class XmlProvider : obj
-    static member AsyncGetSamples: () -> XmlProvider+Choice[] async
+    static member AsyncGetSamples: () -> XmlProvider+XmlProvider+Choice[] async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "AnyFeed.xml"), f)
 
@@ -7,7 +7,7 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
-    static member GetSamples: () -> XmlProvider+Choice[]
+    static member GetSamples: () -> XmlProvider+XmlProvider+Choice[]
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "AnyFeed.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Choice
@@ -41,7 +41,7 @@ class XmlProvider+Choice : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Feed : FDR.BaseTypes.XmlElement
-    new : title:string -> subtitle:string -> links:XmlProvider+Link[] -> id:string -> updated:System.DateTimeOffset -> entry:XmlProvider+Entry -> XmlProvider+Feed
+    new : title:string -> subtitle:string -> links:XmlProvider+XmlProvider+Link[] -> id:string -> updated:System.DateTimeOffset -> entry:XmlProvider+Entry -> XmlProvider+Feed
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}title",
@@ -67,7 +67,7 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}id"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link[] with get
+    member Links: XmlProvider+XmlProvider+Link[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Subtitle: string with get
@@ -103,7 +103,7 @@ class XmlProvider+Rss : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Channel : FDR.BaseTypes.XmlElement
-    new : title:string -> link:string -> description:string -> items:XmlProvider+Item[] -> XmlProvider+Channel
+    new : title:string -> link:string -> description:string -> items:XmlProvider+XmlProvider+Item[] -> XmlProvider+Channel
     XmlRuntime.CreateRecord("channel", 
                             [| |], 
                             [| ("title",
@@ -122,7 +122,7 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Items: XmlProvider+Item[] with get
+    member Items: XmlProvider+XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
     member Link: string with get
@@ -135,7 +135,7 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Entry : FDR.BaseTypes.XmlElement
-    new : title:string -> links:XmlProvider+Link2[] -> id:string -> updated:System.DateTimeOffset -> summary:string -> author:XmlProvider+Author -> XmlProvider+Entry
+    new : title:string -> links:XmlProvider+XmlProvider+Link2[] -> id:string -> updated:System.DateTimeOffset -> summary:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}title",
@@ -161,7 +161,7 @@ class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}id"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link2[] with get
+    member Links: XmlProvider+XmlProvider+Link2[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Summary: string with get

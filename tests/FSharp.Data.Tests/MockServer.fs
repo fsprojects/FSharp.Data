@@ -1,6 +1,6 @@
 ﻿module FSharp.Data.Tests.MockServer
 
-#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
+#if !NETCOREAPP3_1 // no Nancy.Hosting.Self available
 open Nancy
 open Nancy.Hosting.Self
 open System

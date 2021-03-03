@@ -1,21 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\..\netfx.props" />
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp2.0; net461</TargetFrameworks>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <IsPackable>false</IsPackable>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DefineConstants Condition="'$(USE_MSBUILD)' == '1'">USE_MSBUILD;$(DefineConstants)</DefineConstants>
-        <TargetLibraryFramework Condition="'$(TargetFramework)' == 'net461'">net45</TargetLibraryFramework>
-        <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp2.0'">netstandard2.0</TargetLibraryFramework>
+        <TargetLibraryFramework Condition="'$(TargetFramework)' == 'netcoreapp3.1'">netstandard2.0</TargetLibraryFramework>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     </PropertyGroup>
 
     <ItemGroup>
         <Compile Include="JsonProvider.fs" />
-		<Compile Include="Program.fs" Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+		<Compile Include="Program.fs" Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
 		  <Link>Program.fs</Link>
 		</Compile>
     </ItemGroup>
@@ -29,6 +25,6 @@
         <PackageReference Include="NUnit" Version="3.9.0" />
         <PackageReference Include="FsUnit" Version="3.1.0" />
         <PackageReference Include="FsCheck" Version="2.10.7" />
-        <PackageReference Include="FSharp.Core" Version="4.3.*" />
+        <PackageReference Update="FSharp.Core" Version="4.7.2" />
     </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Xs : FDR.BaseTypes.XmlElement
-    new : xs:XmlProvider+X[] -> XmlProvider+Xs
+    new : xs:XmlProvider+XmlProvider+X[] -> XmlProvider+Xs
     XmlRuntime.CreateRecord("XS", 
                             [| |], 
                             [| ("X",
@@ -33,7 +33,7 @@ class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Xs
     XmlElement.Create(xElement)
 
-    member Xs: XmlProvider+X[] with get
+    member Xs: XmlProvider+XmlProvider+X[] with get
     XmlRuntime.ConvertArray(this, "X", new Func<_,_>(id)))
 
 

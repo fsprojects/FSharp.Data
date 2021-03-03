@@ -13,7 +13,11 @@ open System.Collections.Generic
 
 // --------------------------------------------------------------------------------------
 
-/// Represents an HTML attribute. The name is always normalized to lowercase
+/// <summary>Represents an HTML attribute. The name is always normalized to lowercase</summary>
+/// <namespacedoc>
+///   <summary>Contains the primary types for the FSharp.Data package.</summary>
+/// </namespacedoc>
+///
 type HtmlAttribute =
 
     internal | HtmlAttribute of name:string * value:string
@@ -144,7 +148,7 @@ type HtmlNode =
         serialize sb 0 false x |> ignore
         sb.ToString()
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member x._Print =
@@ -179,7 +183,7 @@ type HtmlDocument =
             +
             (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member x._Print =
@@ -751,7 +755,7 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); afterAttributeValueQuoted state
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop(); state.EmitTag(false)
-            | _ -> attributeName state
+            | _ -> state.NewAttribute(); attributeName state
 
         let next = ref (state.Reader.Peek())
         while !next <> -1 do

@@ -1,11 +1,4 @@
-#if INTERACTIVE
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../bin/typeproviders/fsharp41/net45/FSharp.Data.DesignTime.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#r "System.Xml.Linq"
-#else
 module FSharp.Data.DesignTime.Tests.InferenceTests
-#endif
 
 open FsUnit
 open System
