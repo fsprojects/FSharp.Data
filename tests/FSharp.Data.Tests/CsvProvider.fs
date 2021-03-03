@@ -1,10 +1,4 @@
-#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
 module FSharp.Data.Tests.CsvProvider
-#endif
 
 open NUnit.Framework
 open FsUnit
@@ -325,15 +319,15 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
     let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, "NaN (�񐔒l)")
 
-#if USE_MSBUILD // only valid when running with the .NET Framework compiler
-type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+// #if USE_MSBUILD // only valid when running with the .NET Framework compiler
+// type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
-[<Test>]
-let ``Respects encoding when specified``() =
-    let cp932 = CP932.GetSample()
-    let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
-    row2 |> should equal (2, Double.NaN)
-#endif
+// [<Test>]
+// let ``Respects encoding when specified``() =
+//     let cp932 = CP932.GetSample()
+//     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
+//     row2 |> should equal (2, Double.NaN)
+// #endif
 
 [<Test>]
 let ``Disposing CsvProvider shouldn't throw``() =

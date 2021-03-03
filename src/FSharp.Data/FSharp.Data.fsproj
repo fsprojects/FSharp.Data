@@ -1,13 +1,18 @@
-﻿<Project>
+<Project>
   <!-- See https://stackoverflow.com/questions/43921992/how-can-i-use-beforebuild-and-afterbuild-targets-with-visual-studio-2017 -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\..\netfx.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0; net45</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <FsDocsReleaseNotesLink>https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
+    <PackageProjectUrl>https://fsprojects.github.io/FSharp.Data/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageIconUrl>https://fsprojects.github.io/FSharp.Data/img/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/fsprojects/FSharp.Data</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <Tailcalls>true</Tailcalls>
@@ -44,8 +49,7 @@
     <Compile Include="..\AssemblyInfo.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="3.1.2.5" Condition="'$(TargetFramework)' == 'net45'" />
-    <PackageReference Include="FSharp.Core" Version="4.2.3" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" />
     <PackageReference Include="SourceLink.Embed.PaketFiles" Version="2.8.0" PrivateAssets="all" />
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
@@ -53,13 +57,8 @@
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
-  <!-- We build BOTH the design-time DLLs needed to support the use of the runtime DLL in different host tooling -->
-  <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
-  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309. Also for legacy loading -->
-  <!-- we still need a .NET 4.5 design-time DLL to place alongside the runtime DLL -->
-
-  <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
-  <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
+  <!-- We place the design-time DLLs in well-known locations with resepct to the runtime DLL -->
+  <!-- This enables any runtime DLL to be used with any host tooling -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(OutputPath)\FSharp.Data.dll" DestinationFolder="..\..\bin\lib\$(TargetFramework)" />
     <Copy SourceFiles="$(OutputPath)\FSharp.Data.pdb" DestinationFolder="..\..\bin\lib\$(TargetFramework)" />

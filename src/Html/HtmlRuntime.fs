@@ -14,7 +14,10 @@ open FSharp.Data.Runtime.StructuralTypes
 
 // --------------------------------------------------------------------------------------
 
-/// Representation of an HTML table cell
+/// <summary>Representation of an HTML table cell</summary>
+/// <namespacedoc>
+///   <summary>Contains the types used by FSharp.Data type providers at runtime.</summary>
+/// </namespacedoc>
 type HtmlTableCell = 
     | Cell of bool * string
     | Empty
@@ -328,7 +331,7 @@ type HtmlDocument internal (doc, tables, lists, definitionLists) =
 
     member __.Html = doc
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(includeLayoutTables, reader:TextReader) =
@@ -352,19 +355,19 @@ type HtmlDocument internal (doc, tables, lists, definitionLists) =
             |> Map.ofList        
         HtmlDocument(doc, tables, lists, definitionLists)
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member __.GetTable(id:string) = 
         tables |> Map.find id
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member __.GetList(id:string) = 
         lists |> Map.find id
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member __.GetDefinitionList(id:string) = 
@@ -378,7 +381,7 @@ type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:
     member __.Rows = values
     member __.Html = html
 
-    /// [omit]
+    /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'RowType>, doc:HtmlDocument, id:string, hasHeaders:bool) =

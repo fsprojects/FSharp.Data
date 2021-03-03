@@ -1,6 +1,6 @@
 ﻿module FSharp.Data.Tests.HttpIntegrationTests
 
-#if !NETCOREAPP2_0 // no Nancy.Hosting.Self available
+#if !NETCOREAPP3_1 // no Nancy.Hosting.Self available
 open System
 open System.IO
 open System.Net

@@ -2,8 +2,12 @@
 // FAKE build script
 // --------------------------------------------------------------------------------------
 
-#I "packages/FAKE/tools/"
-#r "FakeLib.dll"
+#r "paket: groupref fake //"
+
+#if !FAKE
+#load ".fake/build.fsx/intellisense.fsx"
+#r "netstandard"
+#endif
 
 open System
 open System.IO
@@ -14,6 +18,7 @@ open Fake.DotNet.Testing
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
+open Fake.Core.TargetOperators
 open Fake.Tools.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
@@ -27,13 +32,12 @@ let project = "FSharp.Data"
 let authors = ["Tomas Petricek"; "Gustavo Guerra"; "Colin Bull"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
-  The F# Data library (FSharp.Data.dll) implements everything you need to access data
-  in your F# applications and scripts. It implements F# type providers for working with
-  structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data.
-  It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
+  The FSharp.Data library (FSharp.Data.dll) contains type providers and utilities to access
+  common data formats in your F# applications and scripts. It contains F# type providers for working with
+  structured file formats (CSV, HTML, JSON and XML) and helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
 
-let gitOwner = "fsharp"
+let gitOwner = "fsprojects"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 
@@ -135,11 +139,6 @@ Target.create "CleanInternetCaches" <| fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
-let testNames =
-    [ "FSharp.Data.DesignTime.Tests"
-      "FSharp.Data.Tests.CSharp"
-      "FSharp.Data.Tests"
-      "FSharp.Data.Reference.Tests"  ]
 let testProjs =
     [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj"
       "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj"
@@ -147,13 +146,12 @@ let testProjs =
       "tests/FSharp.Data.Reference.Tests/FSharp.Data.Reference.Tests.fsproj"  ]
 
 let buildProjs =
-    [ "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-      "src/FSharp.Data/FSharp.Data.fsproj" ]
+    [ "FSharp.Data.sln" ]
 
 let setSdkPathAndVerbose (c: DotNet.Options) =
   { c with
       DotNetCliPath = getSdkPath ()
-      CustomParams = Some "/v:n" }
+      CustomParams = Some ("/v:n /p:SourceLinkCreate=true /p:Version=" + nugetVersion) }
 
 let logResults label lines =
   lines
@@ -161,12 +159,15 @@ let logResults label lines =
   |> Trace.tracefn "%s:\n\t%s" label
 
 Target.create "Build" <| fun _ ->
-    // Both flavours of FSharp.Data.DesignTime.dll (net45 and netstandard2.0) must be built _before_ building FSharp.Data
-    buildProjs |> Seq.iter (fun proj ->
-      DotNet.build (fun opts -> { opts with Common = { opts.Common with DotNetCliPath = getSdkPath ()
-                                                                        CustomParams = Some "/v:n /p:SourceLinkCreate=true" }
-                                            Configuration = DotNet.BuildConfiguration.Release }) proj
-    )
+    for proj in buildProjs do
+      DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
+                                      Configuration = DotNet.BuildConfiguration.Release }) proj
+    
+Target.create "Pack" <| fun _ ->
+    for proj in buildProjs do
+      DotNet.pack (fun o -> { o with Common = setSdkPathAndVerbose o.Common
+                                     Configuration = DotNet.BuildConfiguration.Release }) proj
+    
 
 Target.create "BuildTests" <| fun _ ->
   for testProj in testProjs do
@@ -175,8 +176,8 @@ Target.create "BuildTests" <| fun _ ->
 
 Target.create "RunTests" <| fun _ ->
     for testProj in testProjs do
-        DotNet.test (fun p -> { p with Configuration = DotNet.BuildConfiguration.Release
-                                       Common = setSdkPathAndVerbose p.Common }) testProj
+        DotNet.test (fun p -> { p with Common = setSdkPathAndVerbose p.Common
+                                       Configuration = DotNet.BuildConfiguration.Release }) testProj
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -201,8 +202,10 @@ Target.create "NuGet" <| fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
-Target.create "GenerateDocs" <| fun _ ->
-    Fake.FSIHelper.executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
+Target.create "GenerateDocs" (fun _ ->
+    Shell.cleanDir ".fsdocs"
+    DotNet.exec id "fsdocs" ("build --properties Configuration=Release --eval --clean --parameters fsdocs-package-version " + nugetVersion) |> ignore
+)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -216,60 +219,44 @@ let publishFiles what branch fromFolder toFolder =
     Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
 
-#load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
-open Octokit
-
-Target.create "ReleaseDocs" <| fun _ ->
-    publishFiles "generated documentation" "gh-pages" "docs/output" ""
-
-Target.create "TestSourcelink" <| fun _ ->
-    let testSourcelink framework proj =
-        let basePath = Path.GetFileNameWithoutExtension proj
-        let pdb = sprintf "bin/Release/%s/%s.pdb" framework basePath
-        DotNet.exec (setSdkPathAndVerbose >> DotNet.Options.withWorkingDirectory(Path.GetDirectoryName proj)) "sourcelink" (sprintf "test %s" pdb)
-        |> ignore
-
-    ["net45"; "netstandard2.0"]
-    |> Seq.collect (fun fw -> buildProjs |> Seq.map (testSourcelink fw))
-    |> Seq.iter id
+// note: doc release now done by github action, this is left in case we want to switch back to manuak
+// release
+Target.create "ReleaseDocsManually" <| fun _ ->
+    publishFiles "generated documentation" "gh-pages" "output" ""
 
 Target.create "Release" ignore
 
-open Fake.Core.TargetOperators
 
 // --------------------------------------------------------------------------------------
 // Help
 
 Target.create "Help" <| fun _ ->
     printfn ""
-    printfn "  Please specify the target by calling 'build <Target>'"
+    printfn "  Please specify the target by calling 'build -t <Target>'"
     printfn ""
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 3)"
+    printfn "  * GenerateDocs"
+    printfn "  * NuGet (creates package only, doesn't publish)"
+    printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
-    printfn "  * GenerateDocs"
-    printfn "  * ReleaseDocs (calls previous and publishes to gh-pages)"
-    printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * TestSourceLink (validates the SourceLink embedded data)"
-    printfn "  * Release (calls previous 5)"
+    printfn "  * Release (calls All)"
+    printfn "  * ReleaseDocsManually (note: doc release now done by github action)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
     printfn ""
-    printfn "  Set USE_MSBUILD=1 in environment to use MSBuild toolchain and .NET Framework/Mono compiler."
 
 Target.create "All" ignore
 
-"Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs" ==> "Release"
-"NuGet" ==> "Release"
-"Build" ==> "TestSourcelink" ==> "Release"
-
-"Clean" ==> "AssemblyInfo" ==> "Build" ==> "NuGet" ==> "All"
-"Build" ==> "BuildTests" ==> "All"
-"BuildTests" ==> "RunTests" ==> "All"
+"Clean" ==> "AssemblyInfo" ==> "Build"
+"Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
+"Build" ==> "NuGet" ==> "All"
+"Build" ==> "All"
+"Build" ==> "BuildTests" ==> "RunTests" ==> "All"
+"All" ==> "Release"
 
 Target.runOrDefaultWithArguments "Help"

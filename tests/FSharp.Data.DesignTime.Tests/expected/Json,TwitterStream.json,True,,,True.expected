@@ -1,5 +1,5 @@
 class JsonProvider : obj
-    static member AsyncGetSamples: () -> JsonProvider+Root[] async
+    static member AsyncGetSamples: () -> JsonProvider+JsonProvider+Root[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.CreateList(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterStream.json"), f)
 
@@ -7,7 +7,7 @@ class JsonProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
-    static member GetSamples: () -> JsonProvider+Root[]
+    static member GetSamples: () -> JsonProvider+JsonProvider+Root[]
     JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "TwitterStream.json")))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
@@ -22,7 +22,7 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
-    static member ParseList: text:string -> JsonProvider+Root[]
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
     JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
 
 
@@ -166,7 +166,7 @@ class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
-    new : userMentions:JsonProvider+UserMention[] -> hashtags:JsonProvider+Hashtag[] -> urls:JsonProvider+Url[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
+    new : userMentions:JsonProvider+JsonProvider+UserMention[] -> hashtags:JsonProvider+JsonProvider+Hashtag[] -> urls:JsonProvider+JsonProvider+Url[] -> media:JsonProvider+JsonProvider+Media[] -> JsonProvider+Entities
     JsonRuntime.CreateRecord([| ("user_mentions",
                                  (userMentions :> obj))
                                 ("hashtags",
@@ -179,16 +179,16 @@ class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Entities
     JsonDocument.Create(jsonValue, "")
 
-    member Hashtags: JsonProvider+Hashtag[] with get
+    member Hashtags: JsonProvider+JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
-    member Media: JsonProvider+Media[] with get
+    member Media: JsonProvider+JsonProvider+Media[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "media"), new Func<_,_>(id)))
 
-    member Urls: JsonProvider+Url[] with get
+    member Urls: JsonProvider+JsonProvider+Url[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+UserMention[] with get
+    member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
@@ -396,7 +396,7 @@ class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
-    new : notifications:JsonValue -> contributorsEnabled:bool -> timeZone:string option -> profileBackgroundColor:JsonProvider+IntOrString -> location:JsonProvider+IntOrString -> profileBackgroundTile:bool -> profileImageUrlHttps:string -> defaultProfileImage:bool -> followRequestSent:JsonValue -> profileSidebarFillColor:JsonProvider+IntOrString -> description:string option -> profileBannerUrl:string option -> favouritesCount:int -> screenName:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> idStr:int -> verified:bool -> lang:string -> statusesCount:int -> profileUseBackgroundImage:bool -> protected:bool -> profileImageUrl:string -> listedCount:int -> geoEnabled:bool -> createdAt:string -> profileTextColor:JsonProvider+FloatOrString -> name:string -> profileBackgroundImageUrl:string -> friendsCount:int -> url:string option -> id:int -> isTranslator:bool -> defaultProfile:bool -> following:JsonValue -> profileBackgroundImageUrlHttps:string -> utcOffset:int option -> profileLinkColor:JsonProvider+IntOrString -> followersCount:int -> JsonProvider+User
+    new : notifications:JsonValue -> contributorsEnabled:bool -> timeZone:string option -> profileBackgroundColor:JsonProvider+IntOrString -> location:JsonProvider+IntOrString -> profileBackgroundTile:bool -> profileImageUrlHttps:string -> defaultProfileImage:bool -> followRequestSent:JsonValue -> profileSidebarFillColor:JsonProvider+IntOrString -> description:string option -> profileBannerUrl:string option -> favouritesCount:int -> screenName:string -> profileSidebarBorderColor:JsonProvider+FloatOrString -> idStr:int -> verified:bool -> lang:string -> statusesCount:int -> profileUseBackgroundImage:bool -> protected:bool -> profileImageUrl:string -> listedCount:int -> geoEnabled:bool -> createdAt:string -> profileTextColor:JsonProvider+FloatOrString -> name:string -> profileBackgroundImageUrl:string -> friendsCount:int -> url:string option -> id:int -> isTranslator:bool -> defaultProfile:bool -> following:JsonValue -> profileBackgroundImageUrlHttps:string -> utcOffset:int option -> profileLinkColor:JsonProvider+IntOrString -> followersCount:int -> JsonProvider+User
     JsonRuntime.CreateRecord([| ("notifications",
                                  (notifications :> obj))
                                 ("contributors_enabled",
@@ -577,7 +577,7 @@ class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     member ProfileLinkColor: JsonProvider+IntOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_link_color")
 
-    member ProfileSidebarBorderColor: JsonProvider+IntOrString with get
+    member ProfileSidebarBorderColor: JsonProvider+FloatOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "profile_sidebar_border_color")
 
     member ProfileSidebarFillColor: JsonProvider+IntOrString with get
@@ -643,7 +643,7 @@ class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
-    new : userMentions:JsonProvider+UserMention[] -> hashtags:JsonProvider+Hashtag[] -> urls:JsonProvider+Url[] -> media:JsonProvider+Media[] -> JsonProvider+Entities2
+    new : userMentions:JsonProvider+JsonProvider+UserMention[] -> hashtags:JsonProvider+JsonProvider+Hashtag[] -> urls:JsonProvider+JsonProvider+Url[] -> media:JsonProvider+JsonProvider+Media[] -> JsonProvider+Entities2
     JsonRuntime.CreateRecord([| ("user_mentions",
                                  (userMentions :> obj))
                                 ("hashtags",
@@ -656,16 +656,16 @@ class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Entities2
     JsonDocument.Create(jsonValue, "")
 
-    member Hashtags: JsonProvider+Hashtag[] with get
+    member Hashtags: JsonProvider+JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
 
-    member Media: JsonProvider+Media[] with get
+    member Media: JsonProvider+JsonProvider+Media[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "media"), new Func<_,_>(id)))
 
-    member Urls: JsonProvider+Url[] with get
+    member Urls: JsonProvider+JsonProvider+Url[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+UserMention[] with get
+    member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 

@@ -278,7 +278,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
-    static member ParseRows: text:string -> CsvProvider+Row[]
+    static member ParseRows: text:string -> CsvProvider+CsvProvider+Row[]
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),

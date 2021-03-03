@@ -24,7 +24,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+Div : FDR.BaseTypes.XmlElement
-    new : id:string -> span:string -> divs:XmlProvider+Div2[] -> XmlProvider+Div
+    new : id:string -> span:string -> divs:XmlProvider+XmlProvider+Div2[] -> XmlProvider+Div
     XmlRuntime.CreateRecord("div", 
                             [| ("id",
                                 (id :> obj)) |], 
@@ -36,7 +36,7 @@ class XmlProvider+Div : FDR.BaseTypes.XmlElement
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
     XmlElement.Create(xElement)
 
-    member Divs: XmlProvider+Div2[] with get
+    member Divs: XmlProvider+XmlProvider+Div2[] with get
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 
     member Id: string with get
