@@ -1,3 +1,22 @@
+#### 4.0.0 - March 2 2021
+
+* FSharp.Data is now .NET Standard 2.0 only
+
+Several other fixes:
+
+* Fix [CssSelect fails when there is no html tag](https://github.com/fsprojects/FSharp.Data/pull/1290)
+* [Expose InnerResponse, Http properties](https://github.com/fsprojects/FSharp.Data/pull/1291)
+* [Add DateTimeOffset for Csv Schema Inference](https://github.com/fsprojects/FSharp.Data/pull/1304)
+* [Modified escaping of query string parameters](https://github.com/fsprojects/FSharp.Data/pull/1316)
+* [Build fix: Remove dependency on http://europa.eu/rapid/conf/RSS20.xsd and update WorldBank to API to V2](https://github.com/fsprojects/FSharp.Data/pull/1320)
+* [Remove dead links to tryfsharp.org](https://github.com/fsprojects/FSharp.Data/pull/1328)
+* [HTML parsing for attributes not separated by a space](https://github.com/fsprojects/FSharp.Data/pull/1327)
+* [Update JsonProvider.fsx](https://github.com/fsprojects/FSharp.Data/pull/1334)
+* [Pluralizer - Add "slices" to special cases](https://github.com/fsprojects/FSharp.Data/pull/1335)
+* [add ResolutionFolder=__SOURCE_DIRECTORY__ to docs](https://github.com/fsprojects/FSharp.Data/pull/1344)
+* [fix links in docs/tools/generate.fsx](https://github.com/fsprojects/FSharp.Data/pull/1348)
+* [Revamp docs generation and move to .NET Standard 2.0 only](https://github.com/fsprojects/FSharp.Data/pull/1350)
+
 #### 3.3.3 - January 7 2020
 * Fix nuget package
 
