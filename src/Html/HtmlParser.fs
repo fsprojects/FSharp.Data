@@ -9,6 +9,7 @@ open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
 open System.Runtime.InteropServices
+open System.Collections.Generic
 
 // --------------------------------------------------------------------------------------
 
@@ -806,7 +807,18 @@ module internal HtmlParser =
                 TagEnd expectedTagEnd :: tokens
             | _ -> tokens
 
-        let rec parse' docType elements expectedTagEnd parentTagName (tokens:HtmlToken list) =
+
+        let rec parse' (callstack: Stack<string*HtmlNode list*string*string*string*HtmlAttribute list>) docType elements expectedTagEnd parentTagName (tokens:HtmlToken list) =
+            let parse' = parse' callstack
+
+            let recursiveReturn (dt, tokens, content) =
+                if callstack.Count = 0
+                then (dt, tokens, content)
+                else
+                    let _, elements, expectedTagEnd, parentTagName, name, attributes = callstack.Pop()
+                    let e = HtmlElement(name, attributes, content)
+                    parse' dt (e :: elements) expectedTagEnd parentTagName tokens
+
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
             | Tag(_, "br", []) :: rest ->
@@ -826,17 +838,16 @@ module internal HtmlParser =
                 parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByEndTag expectedTagEnd tokens)
 
             | Tag(_, name, attributes) :: rest ->
-                let dt, tokens, content = parse' docType [] name expectedTagEnd rest
-                let e = HtmlElement(name, attributes, content)
-                parse' dt (e :: elements) expectedTagEnd parentTagName tokens
+                (docType, elements, expectedTagEnd, parentTagName, name, attributes) |> callstack.Push
+                parse' docType [] name expectedTagEnd rest
             | TagEnd name :: _ when name <> expectedTagEnd && name = parentTagName ->
                 // insert missing closing tag
                 parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
             | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) ->
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd parentTagName rest
-            | TagEnd _ :: rest ->
-                docType, rest, List.rev elements
+            | TagEnd _ :: rest -> 
+                recursiveReturn (docType, rest, List.rev elements)
             | Text cont :: rest ->
                 if cont = "" then
                     // ignore this token
@@ -850,10 +861,10 @@ module internal HtmlParser =
             | CData cont :: rest ->
                 let c = HtmlCData cont
                 parse' docType (c :: elements) expectedTagEnd parentTagName rest
-            | EOF :: _ -> docType, [], List.rev elements
-            | [] -> docType, [], List.rev elements
-        let tokens = tokenise reader
-        let docType, _, elements = tokens |> parse' "" [] "" ""
+            | EOF :: _ -> recursiveReturn (docType, [], List.rev elements)
+            | [] -> recursiveReturn (docType, [], List.rev elements)
+        let tokens = tokenise reader 
+        let docType, _, elements = tokens |> parse' (new Stack<_>()) "" [] "" ""
         if List.isEmpty elements then
             failwith "Invalid HTML"
         docType, elements
