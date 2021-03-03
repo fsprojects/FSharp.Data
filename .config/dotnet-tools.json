@@ -9,13 +9,13 @@
       ]
     },
     "fake-cli": {
-      "version": "5.20.3",
+      "version": "5.20.4-alpha.1642",
       "commands": [
         "fake"
       ]
     },
     "paket": {
-      "version": "5.249.0",
+      "version": "6.0.0-beta8",
       "commands": [
         "paket"
       ]
