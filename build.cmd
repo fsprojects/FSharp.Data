@@ -9,4 +9,4 @@ if errorlevel 1 (
   exit /b %errorlevel%
 )
 
-dotnet fake build %*
+dotnet fake build -t Build

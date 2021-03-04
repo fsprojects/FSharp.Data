@@ -9,4 +9,4 @@ exit_code=$?
 if [ $exit_code -ne 0 ]; then
   exit $exit_code
 fi
-dotnet fake build $@
+dotnet fake build -t Build

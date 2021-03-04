@@ -1,6 +1,5 @@
 ﻿module FSharp.Data.Tests.MockServer
 
-#if !NETCOREAPP3_1 // no Nancy.Hosting.Self available
 open Nancy
 open Nancy.Hosting.Self
 open System
@@ -13,7 +12,7 @@ open System.IO
 type EncodedResponse(body:string, encoding:string) =
     inherit Nancy.Response()
 
-    let writeBody (stream:IO.Stream) = 
+    let writeBody (stream:IO.Stream) =
         let bytes = Encoding.GetEncoding(encoding).GetBytes(body)
         stream.Write(bytes, 0, bytes.Length)
 
@@ -21,61 +20,61 @@ type EncodedResponse(body:string, encoding:string) =
 
 let recordedRequest = ref (null:Request)
 
-type FakeServer() as self = 
+type FakeServer() as self =
     inherit NancyModule()
     do
-        self.Post.["RecordRequest"] <- 
-            fun _ -> 
+        self.Post.["RecordRequest"] <-
+            fun _ ->
                 recordedRequest := self.Request
                 200 :> obj
 
-        self.Get.["RecordRequest"] <- 
-            fun _ -> 
+        self.Get.["RecordRequest"] <-
+            fun _ ->
                 recordedRequest := self.Request
                 200 :> obj
 
-        self.Get.["GoodStatusCode"] <- 
-            fun _ -> 
+        self.Get.["GoodStatusCode"] <-
+            fun _ ->
                 200 :> obj
 
-        self.Get.["BadStatusCode"] <- 
-            fun _ -> 
+        self.Get.["BadStatusCode"] <-
+            fun _ ->
                 401 :> obj
 
-        self.Get.["GotBody"] <- 
-            fun _ -> 
+        self.Get.["GotBody"] <-
+            fun _ ->
                 "My body" :> obj
 
-        self.Get.["AllTheThings"] <- 
-            fun _ -> 
-                let response = "Some JSON or whatever" |> Nancy.Response.op_Implicit 
+        self.Get.["AllTheThings"] <-
+            fun _ ->
+                let response = "Some JSON or whatever" |> Nancy.Response.op_Implicit
                 response.WithStatusCode(HttpStatusCode.ImATeapot)
                         .WithCookie("cookie1", "chocolate chip")
                         .WithCookie("cookie2", "smarties")
                         .WithHeader("Content-Encoding", "xpto")
                         .WithHeader("X-New-Fangled-Header", "some value") :> obj
 
-        self.Get.["MoonLanguageCorrectEncoding"] <- 
-            fun _ -> 
+        self.Get.["MoonLanguageCorrectEncoding"] <-
+            fun _ ->
                 let response = new EncodedResponse("яЏ§§їДЙ", "windows-1251")
                 response.ContentType <- "text/plain; charset=windows-1251"
                 response :> obj
 
-        self.Get.["MoonLanguageNoEncoding"] <- 
-            fun _ -> 
+        self.Get.["MoonLanguageNoEncoding"] <-
+            fun _ ->
                 let response = new EncodedResponse("яЏ§§їДЙ", "windows-1251")
                 response.ContentType <- "text/plain"
                 response :> obj
 
-        self.Get.["MoonLanguageInvalidEncoding"] <- 
-            fun _ -> 
+        self.Get.["MoonLanguageInvalidEncoding"] <-
+            fun _ ->
                 let response = new EncodedResponse("яЏ§§їДЙ", "windows-1251")
                 response.ContentType <- "text/plain; charset=Ninky-Nonk"
                 response :> obj
 
-        self.Get.["AllHeaders"] <- 
-            fun _ -> 
-                let response = "Some JSON or whatever" |> Nancy.Response.op_Implicit 
+        self.Get.["AllHeaders"] <-
+            fun _ ->
+                let response = "Some JSON or whatever" |> Nancy.Response.op_Implicit
                 response.ContentType <- "text/html; charset=utf-8"
                 response.Headers.Add("Access-Control-Allow-Origin", "*")
                 response.Headers.Add("Accept-Ranges", "bytes")
@@ -111,15 +110,15 @@ type FakeServer() as self =
                 response.Headers.Add("X-New-Fangled-Header", "some value")
                 response :> obj
 
-        self.Get.["CookieRedirect"] <- 
-            fun _ -> 
+        self.Get.["CookieRedirect"] <-
+            fun _ ->
                 let response = "body" |> Nancy.Response.op_Implicit
                 response.WithCookie("cookie1", "baboon")
                         .WithHeader("Location", "http://localhost:1235/TestServer/NoCookies")
                         .WithStatusCode(HttpStatusCode.TemporaryRedirect) :> obj
 
-        self.Get.["NoCookies"] <- 
-            fun _ -> 
+        self.Get.["NoCookies"] <-
+            fun _ ->
                 let response = "body" |> Nancy.Response.op_Implicit
                 response.StatusCode <- HttpStatusCode.OK
                 response :> obj
@@ -130,18 +129,17 @@ type FakeServer() as self =
                 response.WithCookie("gift", "krampus", Nullable<DateTime>(), "http://localhost", "/")
                         .WithStatusCode(HttpStatusCode.OK) :> obj
 
-        self.Post.["Multipart"] <- 
-            fun _ -> 
+        self.Post.["Multipart"] <-
+            fun _ ->
                 let multipartRegex = Regex("^multipart/form-data;\\s*boundary=(.*)$", RegexOptions.IgnoreCase)
                 match multipartRegex.Match self.Request.Headers.ContentType with
-                | m when not m.Success  -> 
+                | m when not m.Success  ->
                     let response = "Expected Multipart form data" |> Nancy.Response.op_Implicit
                     response.WithStatusCode(HttpStatusCode.BadRequest) :> _
-                | m -> 
+                | m ->
                     let response = Nancy.Response.op_Implicit 200
-                    response.Contents <- 
-                        fun stream -> 
+                    response.Contents <-
+                        fun stream ->
                             do self.Request.Body.CopyTo stream
                             stream.Flush()
                     response :> _
-#endif
