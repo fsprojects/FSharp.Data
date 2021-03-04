@@ -8,16 +8,16 @@ open FSharp.Data.HtmlNode
 open FSharp.Data.HtmlAttribute
 
 [<Test>]
-let ``Can get the name of a HtmlAttribute``() = 
+let ``Can get the name of a HtmlAttribute``() =
     let attr = HtmlAttribute.New("id", "table_1")
     HtmlAttribute.name attr |> should equal "id"
 
 [<Test>]
-let ``Can get the value of a HtmlAttribute``() = 
+let ``Can get the value of a HtmlAttribute``() =
     let attr = HtmlAttribute.New("id", "table_1")
     HtmlAttribute.value attr |> should equal "table_1"
 
-let htmlFragment = 
+let htmlFragment =
     HtmlNode.NewElement("div", ["id", "my_div"; "class", "my_class highlighted"], [HtmlNode.NewText "Hello World!"])
 
 [<Test>]
@@ -25,7 +25,7 @@ let ``Can get the name of a HtmlElement``() =
     HtmlNode.name htmlFragment |> should equal "div"
 
 [<Test>]
-let ``Name of a content element is an Empty string``() = 
+let ``Name of a content element is an Empty string``() =
     HtmlNode.name (HtmlNode.NewText "Hello") |> should equal String.Empty
 
 [<Test>]
@@ -53,13 +53,14 @@ let ``Checking for class works``() =
 
 [<Test>]
 let ``The children of a content node is an empty list``() =
-    HtmlNode.elements (HtmlNode.NewText "Hello") |> should equal []
+    let expected: HtmlNode list = []
+    HtmlNode.elements (HtmlNode.NewText "Hello") |> should equal expected
 
 [<Test>]
 let ``Can get the children of a node``() =
     HtmlNode.elements htmlFragment |> should equal [HtmlNode.NewText "Hello World!"]
 
-let doc = 
+let doc =
     """<html>
             <head>
                <script language="JavaScript" src="/bwx_generic.js"></script>
@@ -72,7 +73,7 @@ let doc =
                    <tr><td>1</td><td>yes</td></tr>
                </table>
            </body>
-       </html>""" 
+       </html>"""
        |> HtmlDocument.Parse
        |> HtmlDocument.elements
        |> Seq.head
@@ -104,8 +105,8 @@ let ``Can get all of the descendants with path that match the given set of names
     result |> Seq.map (snd >> List.map HtmlNode.name) |> Seq.toList |> should equal [["head"; "html"]]
 
 [<Test>]
-let ``Can get all elements of a node that matches a set of names``() = 
-    let result = 
+let ``Can get all elements of a node that matches a set of names``() =
+    let result =
         """<body>
                <img src="myimg.jpg">
                <div>Hello World</div>
@@ -124,7 +125,7 @@ let ``Can get all elements of a node that matches a set of names``() =
     result |> should equal expected
 
 [<Test>]
-let ``Can extract the inner text from a node``() = 
+let ``Can extract the inner text from a node``() =
     let result = doc.Descendants("tr") |> Seq.map (HtmlNode.innerText) |> Seq.toList
     result |> should equal [
         "Column 1Column 2"
@@ -132,22 +133,22 @@ let ``Can extract the inner text from a node``() =
     ]
 
 [<Test>]
-let ``Can get direct inner text``() = 
+let ``Can get direct inner text``() =
     let html = "<div>21 minutes ago<span> LIVE</span> x</div>" |> HtmlNode.Parse |> Seq.exactlyOne
     html.InnerText() |> should equal "21 minutes ago LIVE x"
     html.DirectInnerText() |> should equal "21 minutes ago x"
 
 [<Test>]
-let ``Inner text on a comment should be String.Empty``() = 
+let ``Inner text on a comment should be String.Empty``() =
     let comment = HtmlNode.NewComment "Hello World"
     HtmlNode.innerText comment |> should equal String.Empty
 
 [<Test>]
-let ``Inner text on a style should be String.Empty``() = 
+let ``Inner text on a style should be String.Empty``() =
     let comment = HtmlNode.NewElement("style", [HtmlNode.NewText "Hello World"])
     HtmlNode.innerText comment |> should equal String.Empty
 
 [<Test>]
-let ``Inner text on a script should be String.Empty``() = 
+let ``Inner text on a script should be String.Empty``() =
     let comment = HtmlNode.NewElement("script", [HtmlNode.NewText "Hello World"])
     HtmlNode.innerText comment |> should equal String.Empty

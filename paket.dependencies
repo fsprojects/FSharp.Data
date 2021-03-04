@@ -35,6 +35,7 @@ group Test
     frameworks: net5.0
     source https://api.nuget.org/v3/index.json
 
+    nuget Carter
     nuget FSharp.Core
     nuget NUnit
     nuget NUnit.Runners
