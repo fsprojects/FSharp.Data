@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
@@ -22,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../FSharp.Data.Tests/FSharp.Data.Tests.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Tests\FSharp.Data.Tests.fsproj" />
   </ItemGroup>
+
 </Project>
