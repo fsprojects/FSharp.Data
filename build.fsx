@@ -46,61 +46,8 @@ let repositoryType = "git"
 let repositoryUrl = "https://github.com/fsprojects/FSharp.Data"
 let license = "Apache-2.0"
 
-let desiredSdkVersion = (DotNet.getSDKVersionFromGlobalJson ())
-let mutable sdkPath = None
-let getSdkPath() = (defaultArg sdkPath "dotnet")
-let installed =
-  try
-    DotNet.getVersion id <> null
-  with _ -> false
-
-printfn "Desired .NET SDK version = %s" desiredSdkVersion
-printfn "DotNetCli.isInstalled() = %b" installed
-
-let getPathForSdkVersion (sdkVersion) =
-  DotNet.install (fun v -> { v with Version = DotNet.Version sdkVersion }) (DotNet.Options.Create ())
-  |> fun o -> o.DotNetCliPath
-
-if installed then
-    let installedSdkVersion = DotNet.getVersion id
-    printfn "The installed default .NET SDK version reported by FAKE's 'DotNetCli.getVersion()' is %s" installedSdkVersion
-    if installedSdkVersion <> desiredSdkVersion then
-        match Environment.environVar "CI" with
-        | null ->
-            if installedSdkVersion > desiredSdkVersion then
-                printfn "*** You have .NET SDK version '%s' installed, assuming it is compatible with version '%s'" installedSdkVersion desiredSdkVersion
-            else
-                printfn "*** You have .NET SDK version '%s' installed, we expect at least version '%s'" installedSdkVersion desiredSdkVersion
-        | _ ->
-            printfn "*** The .NET SDK version '%s' will be installed (despite the fact that version '%s' is already installed) because we want precisely that version in CI" desiredSdkVersion installedSdkVersion
-            sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
-    else
-        sdkPath <- Some (getPathForSdkVersion installedSdkVersion)
-else
-    printfn "*** The .NET SDK version '%s' will be installed (no other version was found by FAKE helpers)" desiredSdkVersion
-    sdkPath <- Some (getPathForSdkVersion desiredSdkVersion)
-
 // Read release notes & version info from RELEASE_NOTES.md
 let release = ReleaseNotes.load "RELEASE_NOTES.md"
-
-let bindir = "./bin"
-
-let isAppVeyorBuild = Environment.environVar "APPVEYOR" <> null
-let isAppVeyorBuildTag = Environment.environVar "APPVEYOR_REPO_TAG" <> null
-let appVeyorTagName = Environment.environVar "APPVEYOR_REPO_TAG_NAME"
-let nugetVersion =
-    if isAppVeyorBuild then
-        if not isAppVeyorBuildTag then
-            sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
-        else
-            if appVeyorTagName  <> release.NugetVersion then
-                printfn "mismatch between tag '%s' and RELEASE_NOTES.md version '%s" appVeyorTagName release.NugetVersion
-            release.NugetVersion
-    else release.NugetVersion
-
-Target.create "AppVeyorBuildVersion" (fun _ ->
-    Shell.Exec("appveyor", sprintf "UpdateBuild -Version \"%s\"" nugetVersion) |> ignore
-)
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -124,9 +71,7 @@ Target.create "AssemblyInfo" <| fun _ ->
 // Clean build results
 
 Target.create "Clean" <| fun _ ->
-    // have to clean netcore output directories because they corrupt the full-framework outputs
     seq {
-        yield bindir
         yield! !!"**/bin"
         yield! !!"**/obj"
     } |> Shell.cleanDirs
@@ -144,39 +89,15 @@ Target.create "CleanInternetCaches" <| fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
-let testProjs =
-    [ "tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj"
-      "tests/FSharp.Data.Tests.CSharp/FSharp.Data.Tests.CSharp.csproj"
-      "tests/FSharp.Data.Tests/FSharp.Data.Tests.fsproj"
-      "tests/FSharp.Data.Reference.Tests/FSharp.Data.Reference.Tests.fsproj"  ]
-
-let buildProjs =
-    [ "FSharp.Data.sln" ]
-
-let setSdkPathAndVerbose (c: DotNet.Options) =
-  { c with
-      DotNetCliPath = getSdkPath ()
-      CustomParams = Some ("/v:n /p:SourceLinkCreate=true /p:Version=" + nugetVersion) }
-
-let logResults label lines =
-  lines
-  |> String.concat "\n\t"
-  |> Trace.tracefn "%s:\n\t%s" label
-
 Target.create "Build" <| fun _ ->
-    for proj in buildProjs do
-      DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
-                                      Configuration = DotNet.BuildConfiguration.Release }) proj
-
-Target.create "Pack" <| fun _ ->
-    for proj in buildProjs do
-      DotNet.pack (fun o -> { o with Common = setSdkPathAndVerbose o.Common
-                                     Configuration = DotNet.BuildConfiguration.Release }) proj
+    "FSharp.Data.sln"
+    |>  DotNet.build (fun o ->
+            { o with Configuration = DotNet.BuildConfiguration.Release })
 
 Target.create "RunTests" <| fun _ ->
-    for testProj in testProjs do
-        DotNet.test (fun p -> { p with Common = setSdkPathAndVerbose p.Common
-                                       Configuration = DotNet.BuildConfiguration.Release }) testProj
+    "FSharp.Data.sln"
+    |>  DotNet.test (fun o ->
+            { o with Configuration = DotNet.BuildConfiguration.Release })
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -186,9 +107,9 @@ Target.create "NuGet" <| fun _ ->
     let releaseNotes = release.Notes |> String.concat "\n"
 
     let properties = [
-        ("Version", nugetVersion)
+        ("Version", release.NugetVersion)
         ("Authors", authors)
-        ("PackageProjectUrl", gitHome)
+        ("PackageProjectUrl", packageProjectUrl)
         ("PackageTags", tags)
         ("RepositoryType", repositoryType)
         ("RepositoryUrl", repositoryUrl)
@@ -215,7 +136,7 @@ Target.create "NuGet" <| fun _ ->
 // Generate the documentation
 Target.create "GenerateDocs" (fun _ ->
     Shell.cleanDir ".fsdocs"
-    DotNet.exec id "fsdocs" ("build --properties Configuration=Release --eval --clean --parameters fsdocs-package-version " + nugetVersion) |> ignore
+    DotNet.exec id "fsdocs" ("build --properties Configuration=Release --eval --clean --parameters fsdocs-package-version " + release.NugetVersion) |> ignore
 )
 
 // --------------------------------------------------------------------------------------
@@ -229,11 +150,6 @@ let publishFiles what branch fromFolder toFolder =
     Staging.stageAll tempFolder
     Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
-
-// note: doc release now done by github action, this is left in case we want to switch back to manuak
-// release
-Target.create "ReleaseDocsManually" <| fun _ ->
-    publishFiles "generated documentation" "gh-pages" "output" ""
 
 Target.create "Release" ignore
 

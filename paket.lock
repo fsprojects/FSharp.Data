@@ -2,6 +2,7 @@ RESTRICTION: || (== net50) (== netstandard2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
     FSharp.Core (5.0.1)
+    Microsoft.Build.Tasks.Git (1.0)
     Microsoft.NETCore.App (2.2.8)
       Microsoft.NETCore.DotNetHostPolicy (>= 2.2.8) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 2.2.4) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
@@ -14,10 +15,13 @@ NUGET
       Microsoft.NETCore.DotNetAppHost (>= 5.0.3)
     Microsoft.NETCore.Platforms (5.0.1) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
     Microsoft.NETCore.Targets (5.0) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
+    Microsoft.SourceLink.Common (1.0)
+    Microsoft.SourceLink.GitHub (1.0)
+      Microsoft.Build.Tasks.Git (>= 1.0)
+      Microsoft.SourceLink.Common (>= 1.0)
     NETStandard.Library (2.0.3) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 1.1)
     NetStandard.Library.NetFramework (2.0.0-preview2-25405-01)
-    Nuget.CommandLine (5.8.1)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
     src/ProvidedTypes.fs (377d56321ad062985ed5aa19f205c1c4f04ef328)

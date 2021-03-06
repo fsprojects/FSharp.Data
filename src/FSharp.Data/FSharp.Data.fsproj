@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,11 +10,9 @@
     <FSharpToolsDirectory>typeproviders</FSharpToolsDirectory>
     <PackagePath>typeproviders</PackagePath>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />
     <Compile Include="..\CommonRuntime\IO.fs" />
@@ -46,23 +44,14 @@
     <Compile Include="..\AssemblyInfo.fs" />
     <Compile Include="..\Runtime.fs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.2" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Embed.PaketFiles" Version="2.8.0" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj">
       <IsFSharpDesignTimeProvider>true</IsFSharpDesignTimeProvider>
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

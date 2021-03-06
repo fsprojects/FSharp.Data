@@ -12,7 +12,7 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
 nuget FSharp.Core >= 4.7.2
-nuget Nuget.CommandLine
+nuget Microsoft.SourceLink.GitHub
 
 group Fake
     source https://api.nuget.org/v3/index.json
