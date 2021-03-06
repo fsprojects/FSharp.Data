@@ -1,8 +1,6 @@
 # FSharp.Data: Making Data Access Simple
 
-The FSharp.Data package (`FSharp.Data.dll`) implements everything you need to access data in your F# applications
-and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and
-for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
+The FSharp.Data package (`FSharp.Data.dll`) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
 
 We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) issues, or help to improve the [documentation][3].
 
@@ -12,7 +10,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Install .NET SDK see version in global.json 
+- Install the .NET SDK specified in the `global.json` file
 - `build -t Build`
 
 ## Documentation

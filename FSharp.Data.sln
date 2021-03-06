@@ -3,6 +3,69 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\index.md = docs\content\index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\data\AirQuality.csv = docs\content\data\AirQuality.csv
+		docs\content\data\MSFT.csv = docs\content\data\MSFT.csv
+		docs\content\data\SmallTest.csv = docs\content\data\SmallTest.csv
+		docs\content\data\Titanic.csv = docs\content\data\Titanic.csv
+		docs\content\data\TwitterStream.json = docs\content\data\TwitterStream.json
+		docs\content\data\WorldBank.json = docs\content\data\WorldBank.json
+		docs\content\data\Writers.xml = docs\content\data\Writers.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922-4570-4D6D-8034-C3582756239B}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\generate.fsx = docs\tools\generate.fsx
+		performanceAnalysis.fsx = performanceAnalysis.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
+		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
+		docs\content\library\HtmlCssSelectors.fsx = docs\content\library\HtmlCssSelectors.fsx
+		docs\content\library\HtmlParser.fsx = docs\content\library\HtmlParser.fsx
+		docs\content\library\HtmlProvider.fsx = docs\content\library\HtmlProvider.fsx
+		docs\content\library\Http.fsx = docs\content\library\Http.fsx
+		docs\content\library\JsonProvider.fsx = docs\content\library\JsonProvider.fsx
+		docs\content\library\JsonValue.fsx = docs\content\library\JsonValue.fsx
+		docs\content\library\WorldBank.fsx = docs\content\library\WorldBank.fsx
+		docs\content\library\XmlProvider.fsx = docs\content\library\XmlProvider.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\tutorials\JsonAnonymizer.fsx = docs\content\tutorials\JsonAnonymizer.fsx
+		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{CA5C64CE-E68C-4320-A00A-E67CA883B9D2}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\ja\contributing.md = docs\content\ja\contributing.md
+		docs\content\ja\fsharpdata.md = docs\content\ja\fsharpdata.md
+		docs\content\ja\index.md = docs\content\ja\index.md
+		docs\content\ja\library\CsvFile.fsx = docs\content\ja\library\CsvFile.fsx
+		docs\content\ja\library\CsvProvider.fsx = docs\content\ja\library\CsvProvider.fsx
+		docs\content\ja\library\Http.fsx = docs\content\ja\library\Http.fsx
+		docs\content\ja\library\JsonProvider.fsx = docs\content\ja\library\JsonProvider.fsx
+		docs\content\ja\library\JsonValue.fsx = docs\content\ja\library\JsonValue.fsx
+		docs\content\ja\library\WorldBank.fsx = docs\content\ja\library\WorldBank.fsx
+		docs\content\ja\library\XmlProvider.fsx = docs\content\ja\library\XmlProvider.fsx
+		docs\content\ja\tutorials\JsonToXml.fsx = docs\content\ja\tutorials\JsonToXml.fsx
+		docs\tools\templates\ja\template.cshtml = docs\tools\templates\ja\template.cshtml
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36E72EB1-5847-4B38-8993-B951648CB0D9}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx

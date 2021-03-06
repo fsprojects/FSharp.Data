@@ -18,22 +18,9 @@ as Portable libraries).
    
    * Easier tasks to get started with are marked with the [up-for-grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) tag.
 
-## Solution files
+## General info about developing type providers
 
-The root directory contains a number of Visual Studio solutions (`*.sln`) files 
-that group the projects in the main logical groups:
-
- * **FSharp.Data.sln** contains the main projects that implement the FSharp.Data
-   functionality (such as runtime and design-time type provider libraries).
-
- * **FSharp.Data.Tests.sln** is a library with tests for FSharp.Data and it also contains
-   the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
-   to edit the documentation!
-
-## Projects and multi-targeting
-
-One problem with developing type providers is supporting multiple versions of the .NET 
-platform. Type providers consist of two components:
+Type providers consist of two components:
 
  * **Runtime** is the part of the type provider that is actually used when the
    compiled F# code that uses the provider runs. This assembly also has the

@@ -11,7 +11,7 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
-nuget FSharp.Core
+nuget FSharp.Core >= 4.7.2
 nuget Nuget.CommandLine
 
 group Fake
@@ -28,19 +28,15 @@ group Fake
     nuget Fake.Tools.Git               ~> 5.20.0
 	nuget Fake.DotNet.Paket            ~> 5.20.0
 
-# NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
-# NOTE: The PackageReference items are themselves added by hand to the project files.
-# NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
+# NOTE: These are needed because ProvidedTypesTesting requires paket to install packages.
 group Test
     frameworks: net5.0
     source https://api.nuget.org/v3/index.json
 
-    nuget Carter
-    nuget FSharp.Core
+    nuget Microsoft.NET.Test.Sdk
     nuget NUnit
-    nuget NUnit.Runners
+    nuget NUnit3TestAdapter
     nuget FsUnit
     nuget FsCheck
-    nuget FSharp.Formatting
+    nuget FSharp.Formatting = 8.0.1
     nuget FSharp.Compiler.Service
-
