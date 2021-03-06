@@ -29,7 +29,7 @@ let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
 // --------------------------------------------------------------------------------------
 
 let project = "FSharp.Data"
-let authors = ["Tomas Petricek"; "Gustavo Guerra"; "Colin Bull"]
+let authors = "Tomas Petricek;Gustavo Guerra;Colin Bull;fsprojects contributors"
 let summary = "Library of F# type providers and data access tools"
 let description = """
   The FSharp.Data library (FSharp.Data.dll) contains type providers and utilities to access
@@ -40,6 +40,11 @@ let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP lin
 let gitOwner = "fsprojects"
 let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
+
+let packageProjectUrl = "https://fsprojects.github.io/FSharp.Data/"
+let repositoryType = "git"
+let repositoryUrl = "https://github.com/fsprojects/FSharp.Data"
+let license = "Apache-2.0"
 
 let desiredSdkVersion = (DotNet.getSDKVersionFromGlobalJson ())
 let mutable sdkPath = None
@@ -162,17 +167,11 @@ Target.create "Build" <| fun _ ->
     for proj in buildProjs do
       DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
                                       Configuration = DotNet.BuildConfiguration.Release }) proj
-    
+
 Target.create "Pack" <| fun _ ->
     for proj in buildProjs do
       DotNet.pack (fun o -> { o with Common = setSdkPathAndVerbose o.Common
                                      Configuration = DotNet.BuildConfiguration.Release }) proj
-    
-
-Target.create "BuildTests" <| fun _ ->
-  for testProj in testProjs do
-        DotNet.build (fun o -> { o with Common = setSdkPathAndVerbose o.Common
-                                        Configuration = DotNet.BuildConfiguration.Release }) testProj
 
 Target.create "RunTests" <| fun _ ->
     for testProj in testProjs do
@@ -185,20 +184,32 @@ Target.create "RunTests" <| fun _ ->
 Target.create "NuGet" <| fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
-    NuGet.NuGetPack (fun p ->
+
+    let properties = [
+        ("Version", nugetVersion)
+        ("Authors", authors)
+        ("PackageProjectUrl", gitHome)
+        ("PackageTags", tags)
+        ("RepositoryType", repositoryType)
+        ("RepositoryUrl", repositoryUrl)
+        ("PackageLicenseExpression", license)
+        ("PackageReleaseNotes", releaseNotes)
+        ("Summary", summary)
+        ("PackageDescription", description)
+        ("EnableSourceLink", "true")
+        ("PublishRepositoryUrl", "true")
+        ("EmbedUntrackedSources", "true")
+        ("IncludeSymbols", "true")
+        ("SymbolPackageFormat", "snupkg")
+    ]
+
+    DotNet.pack (fun p ->
         { p with
-            Authors = authors
-            Project = project
-            Summary = summary
-            Description = description
-            Version = nugetVersion
-            ReleaseNotes = releaseNotes
-            Tags = tags
-            OutputPath = "bin"
-            AccessKey = Environment.environVarOrDefault "nugetkey" ""
-            Publish = Environment.hasEnvironVar "nugetkey"
-            Dependencies = [] })
-        "nuget/FSharp.Data.nuspec"
+            Configuration = DotNet.BuildConfiguration.Release
+            OutputPath = Some "bin"
+            MSBuildParams = { p.MSBuildParams with Properties = properties}
+        }
+    ) "src/FSharp.Data/FSharp.Data.fsproj"
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
@@ -236,7 +247,6 @@ Target.create "Help" <| fun _ ->
     printfn ""
     printfn "  Targets for building:"
     printfn "  * Build"
-    printfn "  * BuildTests"
     printfn "  * RunTests"
     printfn "  * GenerateDocs"
     printfn "  * NuGet (creates package only, doesn't publish)"
@@ -256,7 +266,7 @@ Target.create "All" ignore
 "Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
 "Build" ==> "NuGet" ==> "All"
 "Build" ==> "All"
-"Build" ==> "BuildTests" ==> "RunTests" ==> "All"
+"Build" ==> "RunTests" ==> "All"
 "All" ==> "Release"
 
 Target.runOrDefaultWithArguments "Help"
