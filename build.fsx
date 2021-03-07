@@ -164,6 +164,5 @@ Target.create "All" ignore
 "Build" ==> "NuGet" ==> "All"
 "Build" ==> "All"
 "Build" ==> "RunTests" ==> "All"
-"All" ==> "Release"
 
 Target.runOrDefaultWithArguments "Help"
