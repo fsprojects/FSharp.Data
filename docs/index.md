@@ -88,11 +88,11 @@ issues, or help to improve the documentation.
 
 The project is hosted on [GitHub][gh] where you can [report issues][issues], fork 
 the project and submit pull requests. If you're adding new public API's, please also 
-contribute [samples][samples] that can be turned into a documentation.
+contribute [samples][samples] to the docs.
 
   [source]: https://github.com/fsharp/FSharp.Data/zipball/master
   [compiled]: https://github.com/fsharp/FSharp.Data/zipball/release
-  [samples]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
+  [samples]: https://github.com/fsprojects/FSharp.Data/tree/master/docs/
   [gh]: https://github.com/fsharp/FSharp.Data
   [issues]: https://github.com/fsharp/FSharp.Data/issues
   [license]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
