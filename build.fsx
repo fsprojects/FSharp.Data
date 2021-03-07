@@ -140,21 +140,6 @@ Target.create "GenerateDocs" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Release Scripts
-let publishFiles what branch fromFolder toFolder =
-    let tempFolder = "temp/" + branch
-    Shell.cleanDir tempFolder
-    Repository.cloneSingleBranch "" (gitHome + "/" + gitName + ".git") branch tempFolder
-    Repository.fullclean tempFolder
-    Shell.copyRecursive fromFolder (tempFolder + "/" + toFolder) true |> Trace.tracefn "%A"
-    Staging.stageAll tempFolder
-    Commit.exec tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
-    Branches.push tempFolder
-
-Target.create "Release" ignore
-
-
-// --------------------------------------------------------------------------------------
 // Help
 
 Target.create "Help" <| fun _ ->
@@ -167,10 +152,6 @@ Target.create "Help" <| fun _ ->
     printfn "  * GenerateDocs"
     printfn "  * NuGet (creates package only, doesn't publish)"
     printfn "  * All (calls previous 5)"
-    printfn ""
-    printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
-    printfn "  * Release (calls All)"
-    printfn "  * ReleaseDocsManually (note: doc release now done by github action)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"

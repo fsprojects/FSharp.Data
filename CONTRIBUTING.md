@@ -77,27 +77,18 @@ of files, typically like this:
 The WorldBank provider is different. It doesn't need inference, but it still distinguishes
 between _runtime_ and _design-time_ components, so you'll find at least two files (and possibly some additional helpers).
 
-## Source code
-
 ### Debugging
 
 To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application, rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them. This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio. You'll also see in the console output the complete dump of the generated types and expressions. This is also the process used for the signature tests.
 
 ## Documentation
 
-The documentation for the FSharp.Data package is automatically generated using the 
-[F# Formatting](https://github.com/tpetricek/FSharp.Formatting) library. It turns 
-`*.md` (Markdown with embedded code snippets) and `*.fsx` files (F# script file with 
-embedded Markdown documentation) to a nice HTML documentation.
+Docs and samples are in the `docs` directory. To update docs on your own machine, run the following command:
 
- * The code for all the documents can be found in the `content` directory
-   [on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/docs/content). If you 
-   find a bug or add a new feature, make sure you document it!
+```console
+dotnet fsdocs watch
+```
 
- * Aside from direct documentation for individual types, there is also a `tutorials` folder
-   ([on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/docs/content/tutorials)) where
-   you can add additional samples and tutorials that show some interesting aspects of FSharp.Data.
+You can now edit documentation and the file watcher will pick up changes, regenerate the docs, and serve them up locally for you to view in a browser.
 
- * If you want to build the documentation, simply run the `build.fsx` script
-   ([GitHub link](https://github.com/fsharp/FSharp.Data/blob/master/tools/build.fsx)) which
-   builds the documentation.
+Docs updates are pushed to the website every time a pull request is merged.
