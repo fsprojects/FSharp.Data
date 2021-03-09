@@ -53,5 +53,8 @@
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.7.2" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

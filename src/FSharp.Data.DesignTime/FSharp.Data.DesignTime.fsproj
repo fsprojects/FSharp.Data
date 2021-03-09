@@ -60,5 +60,8 @@
     <Compile Include="..\AssemblyInfo.DesignTime.fs" />
     <None Include="..\Test.fsx" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.7.2" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
