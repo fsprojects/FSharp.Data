@@ -1,7 +1,7 @@
-frameworks: netcoreapp3.1, netstandard2.0
+frameworks: net5.0, netstandard2.0
 source https://api.nuget.org/v3/index.json
 
-# These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.  
+# These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.
 # The TPSDK testing helpers like these to be placed in pacakges/...
 # see https://github.com/fsprojects/FSharp.TypeProviders.SDK/blob/0c0c9d11135039821a380f60ec21c701354e8cdb/src/ProvidedTypesTesting.fs
 nuget NetStandard.Library.NetFramework
@@ -10,8 +10,9 @@ nuget Microsoft.NETCore.App
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
-nuget FSharp.Core
-nuget Nuget.CommandLine
+
+nuget FSharp.Core >= 4.7.2
+nuget Microsoft.SourceLink.GitHub
 
 group Fake
     source https://api.nuget.org/v3/index.json
@@ -27,18 +28,15 @@ group Fake
     nuget Fake.Tools.Git               ~> 5.20.0
 	nuget Fake.DotNet.Paket            ~> 5.20.0
 
-# NOTE: These are only used for advice by examining the versions chosen in the paket.lock file.
-# NOTE: The PackageReference items are themselves added by hand to the project files.
-# NOTE: This is because paket's diagnostics in missing packages were not helpful for .NET SDK cases.
+# NOTE: These are needed because ProvidedTypesTesting requires paket to install packages.
 group Test
-    frameworks: netcoreapp3.1
+    frameworks: net5.0
     source https://api.nuget.org/v3/index.json
 
-    nuget FSharp.Core
+    nuget Microsoft.NET.Test.Sdk
     nuget NUnit
-    nuget NUnit.Runners
+    nuget NUnit3TestAdapter
     nuget FsUnit
     nuget FsCheck
-    nuget FSharp.Formatting
+    nuget FSharp.Formatting = 8.0.1
     nuget FSharp.Compiler.Service
-
