@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data -> JsonProvider+Root
@@ -42,7 +45,7 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
-    new : modhash:JsonValue -> children:JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
+    new : modhash:JsonValue -> children:JsonProvider+JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
     JsonRuntime.CreateRecord([| ("modhash",
                                  (modhash :> obj))
                                 ("children",
@@ -62,7 +65,7 @@ class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
     member Before: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "before")
 
-    member Children: JsonProvider+Child[] with get
+    member Children: JsonProvider+JsonProvider+Child[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "children"), new Func<_,_>(id)))
 
     member Modhash: FDR.BaseTypes.IJsonDocument with get

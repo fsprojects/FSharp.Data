@@ -1,12 +1,10 @@
-﻿<Project>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\..\netfx.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
-    <DefineConstants>NO_GENERATIVE;$(DefineConstants)</DefineConstants>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>IS_DESIGNTIME;NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
@@ -50,10 +48,11 @@
     <Compile Include="..\Csv\CsvProvider.fs" />
     <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
     <Compile Include="..\WorldBank\WorldBankProvider.fs" />
+    <Compile Include="..\Html\HtmlCssSelectors.fs" />
     <Compile Include="..\Html\HtmlCharRefs.fs" />
     <Compile Include="..\Html\HtmlParser.fs" />
     <Compile Include="..\Html\HtmlOperations.fs" />
-    <Compile Include="..\Html\HtmlCssSelectors.fs" />
+    <Compile Include="..\Html\HtmlCssSelectorExtensions.fs" />
     <Compile Include="..\Html\HtmlInference.fs" />
     <Compile Include="..\Html\HtmlRuntime.fs" />
     <Compile Include="..\Html\HtmlGenerator.fs" />
@@ -62,28 +61,7 @@
     <None Include="..\Test.fsx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="3.1.2.5" Condition="'$(TargetFramework)' == 'net45'" />
-    <PackageReference Include="FSharp.Core" Version="4.2.3" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Embed.PaketFiles" Version="2.8.0" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
+    <PackageReference Include="FSharp.Core" Version="4.7.2" />
   </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <!-- We build BOTH the design-time DLLs needed to support the use of the runtime DLL in different host tooling -->
-  <!-- In the future it will be possible to just build a single netstandard2.0 design-time DLL, but for fsharp41 host tooling  -->
-  <!-- that is not yet possible because of https://github.com/Microsoft/visualfsharp/issues/3309. Also for legacy loading -->
-  <!-- we still need a .NET 4.5 design-time DLL to place alongside the runtime DLL -->
-
-  <!-- We place BOTH the design-time DLLs in well-known locations with resepct to the runtime DLL -->
-  <!-- This enables any runtime DLL to be used with any host tooling running in either netcoreapp2.0+ or net461+ -->
-  <Target Name="AfterBuild">  
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll" DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb" DestinationFolder="..\..\bin\typeproviders\fsharp41\$(TargetFramework)" />  
-    <!-- For legacy compat (to load into pre VS2017 15.6+ or FCS 20.x.x+ tooling) we place a copy of the .NET 4.x TPDTC DLL alongside the TPRTC DLL --> 
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll" DestinationFolder="..\..\bin\lib\net45" Condition="'$(TargetFramework)' == 'net45'" />  
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb" DestinationFolder="..\..\bin\lib\net45" Condition="'$(TargetFramework)' == 'net45'" />  
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.dll" DestinationFolder="..\..\bin\lib\netstandard2.0" Condition="'$(TargetFramework)' == 'net45'" />  
-    <Copy SourceFiles="..\FSharp.Data.DesignTime\bin\$(Configuration)\$(TargetFramework)\FSharp.Data.DesignTime.pdb" DestinationFolder="..\..\bin\lib\netstandard2.0" Condition="'$(TargetFramework)' == 'net45'" />  
-  </Target>  
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

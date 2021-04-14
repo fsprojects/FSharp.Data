@@ -1,10 +1,4 @@
-#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
 module FSharp.Data.Tests.Http
-#endif
 
 open FsUnit
 open NUnit.Framework
@@ -185,4 +179,15 @@ let ``escaping of url parameters`` () =
     ]
 
     Http.AppendQueryToUrl(url, queryParams)
-    |> should equal "https://graph.microsoft.com/beta/me/insights/shared?$select=Property1,Property2/SubProperty,*&$filter=Subject%20eq%20'A?%20%26%20%23B%20=%20C/D'&$top=10&$expand=ExtendedProperties($filter=PropertyId%20eq%20'String%20%7B36FF76DC-215F-4246-9544-DAB709259CE8%7D%20Name%20Some/Property2.0')&$orderby=Property2%20desc"
+    |> should equal "https://graph.microsoft.com/beta/me/insights/shared?%24select=Property1%2CProperty2%2FSubProperty%2C%2A&%24filter=Subject%20eq%20%27A%3F%20%26%20%23B%20%3D%20C%2FD%27&%24top=10&%24expand=ExtendedProperties%28%24filter%3DPropertyId%20eq%20%27String%20%7B36FF76DC-215F-4246-9544-DAB709259CE8%7D%20Name%20Some%2FProperty2.0%27%29&%24orderby=Property2%20desc"
+
+[<Test>]
+let ``escaping of reserve characters in query`` () =
+    let url = "http://nevermind.com"
+    let queryParams = [
+        "key!", "v@lue1"
+        "key#", "value2&(value:/?#[]@*+,;=)"
+    ]
+
+    Http.AppendQueryToUrl(url, queryParams)
+    |> should equal "http://nevermind.com?key%21=v%40lue1&key%23=value2%26%28value%3A%2F%3F%23%5B%5D%40%2A%2B%2C%3B%3D%29"

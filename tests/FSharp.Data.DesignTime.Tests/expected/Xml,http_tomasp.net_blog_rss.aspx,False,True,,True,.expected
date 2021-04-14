@@ -43,7 +43,7 @@ class XmlProvider+Rss : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+Channel : FDR.BaseTypes.XmlElement
-    new : title:string -> link:string -> description:string -> copyright:string -> items:XmlProvider+Item[] -> XmlProvider+Channel
+    new : title:string -> link:string -> description:string -> copyright:string -> items:XmlProvider+XmlProvider+Item[] -> XmlProvider+Channel
     XmlRuntime.CreateRecord("channel", 
                             [| |], 
                             [| ("title",
@@ -68,7 +68,7 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Items: XmlProvider+Item[] with get
+    member Items: XmlProvider+XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
     member Link: string with get

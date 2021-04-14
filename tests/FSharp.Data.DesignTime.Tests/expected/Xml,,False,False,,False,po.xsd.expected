@@ -3,6 +3,9 @@ class XmlProvider : obj
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
 
+    static member GetSchema: () -> System.Xml.Schema.XmlSchemaSet
+    (XmlSchema.parseSchemaFromTextReader "" FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XSD" "" "po.xsd")))
+
     static member Load: stream:System.IO.Stream -> XmlProvider+PurchaseOrder
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
@@ -17,7 +20,7 @@ class XmlProvider : obj
 
 
 class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
-    new : orderDate:System.DateTimeOffset option -> shipTo:XmlProvider+ShipTo -> billTo:XmlProvider+BillTo -> comment:string option -> items:XmlProvider+Item[] -> XmlProvider+PurchaseOrder
+    new : orderDate:System.DateTimeOffset option -> shipTo:XmlProvider+ShipTo -> billTo:XmlProvider+BillTo -> comment:string option -> items:XmlProvider+XmlProvider+Item[] -> XmlProvider+PurchaseOrder
     XmlRuntime.CreateRecord("{http://tempuri.org/po.xsd}purchaseOrder", 
                             [| ("orderDate",
                                 (orderDate :> obj)) |], 
@@ -41,7 +44,7 @@ class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
                                                                                             let value = XmlRuntime.TryGetValue(t)
                                                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
-    member Items: XmlProvider+Item[] with get
+    member Items: XmlProvider+XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "{http://tempuri.org/po.xsd}items|{http://tempuri.org/po.xsd}item", new Func<_,_>(id)))
 
     member OrderDate: System.DateTimeOffset option with get

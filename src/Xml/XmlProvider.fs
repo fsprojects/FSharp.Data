@@ -1,4 +1,4 @@
-﻿namespace ProviderImplementation
+namespace ProviderImplementation
 
 open System.IO
 open System.Xml.Linq
@@ -20,7 +20,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
   
     // Generate namespace and type 'FSharp.Data.XmlProvider'
-    let asm = AssemblyResolver.init cfg (this :> TypeProviderForNamespaces)
+    do AssemblyResolver.init ()
+    let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
     let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
   
@@ -47,18 +48,31 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpec _ value =
        
-            let inferedType = 
+            if schema <> "" then
        
-                if schema <> "" then
-       
-                     let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
-                          XsdParsing.parseSchema resolutionFolder value
-       
+                let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
+                    XmlSchema.parseSchema resolutionFolder value
+
+                let inferedType = 
                      using (IO.logTime "Inference" sample) <| fun _ ->
                         schemaSet
                         |> XsdParsing.getElements 
                         |> List.ofSeq
                         |> XsdInference.inferElements
+
+                using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+              
+                    let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+                    let result = XmlTypeBuilder.generateXmlType ctx inferedType
+                  
+                    { GeneratedType = tpType
+                      RepresentationType = result.ConvertedType
+                      CreateFromTextReader = fun reader -> 
+                              result.Converter <@@ XmlElement.Create(%reader) @@>
+                      CreateListFromTextReader = None
+                      CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
+                          <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@> }
+
 
                 else
        
@@ -69,23 +83,25 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                                 |> Array.map (fun doc -> doc.XElement)
                             else
                                 [| XDocument.Parse(value).Root |]
-       
-                    using (IO.logTime "Inference" sample) <| fun _ ->
-                        samples
-                        |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) (*allowEmptyValues*)false globalInference
-                        |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
+
+                    let inferedType = 
+                        using (IO.logTime "Inference" sample) <| fun _ ->
+                            samples
+                            |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) (*allowEmptyValues*)false globalInference
+                            |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
         
-            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+                    using (IO.logTime "TypeGeneration" sample) <| fun _ ->
           
-                let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
-                let result = XmlTypeBuilder.generateXmlType ctx inferedType
+                        let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+                        let result = XmlTypeBuilder.generateXmlType ctx inferedType
               
-                { GeneratedType = tpType
-                  RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> 
-                      result.Converter <@@ XmlElement.Create(%reader) @@>
-                  CreateFromTextReaderForSampleList = fun reader -> 
-                      result.Converter <@@ XmlElement.CreateList(%reader) @@> }
+                        { GeneratedType = tpType
+                          RepresentationType = result.ConvertedType
+                          CreateFromTextReader = fun reader -> 
+                              result.Converter <@@ XmlElement.Create(%reader) @@>
+                          CreateListFromTextReader = None
+                          CreateFromTextReaderForSampleList = fun reader -> 
+                              result.Converter <@@ XmlElement.CreateList(%reader) @@> }
        
         let source = 
             if schema <> "" then
@@ -115,7 +131,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
            <param name='SampleIsList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>
            <param name='Global'>If true, the inference unifies all XML elements with the same name.</param>                     
            <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
-           <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.</param>
+           <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <c>charset</c> is specified in the <c>Content-Type</c> response header.</param>
            <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>
            <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource 
               (e.g. 'MyCompany.MyAssembly, resource_name.xml'). This is useful when exposing types generated by the type provider.</param>
@@ -129,4 +145,3 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ xmlProvTy ])
-  

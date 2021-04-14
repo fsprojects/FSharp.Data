@@ -1,11 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.XmlProvider
-#endif
+﻿module FSharp.Data.Tests.XmlProvider
 
 open System
 open System.Xml.Linq
@@ -307,8 +300,8 @@ type SampleAzureServiceManagement = XmlProvider<"Data/SampleAzureServiceManageme
 [<Test>]
 let ``Collections are collapsed into just one element 4``() =
     let x = SampleAzureServiceManagement.GetSample()
-    x.Locations.[0].AvailableServices |> should equal ["Compute"; "Storage"]
-    x.Locations.[1].AvailableServices |> should equal ["Compute"; "Storage"; "PersistentVMRole"; "HighMemory"]
+    x.Locations.[0].AvailableServices |> should equal [|"Compute"; "Storage"|]
+    x.Locations.[1].AvailableServices |> should equal [|"Compute"; "Storage"; "PersistentVMRole"; "HighMemory"|]
 
 type JsonInXml = XmlProvider<"Data/JsonInXml.xml", SampleIsList=true>
 
@@ -455,14 +448,14 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   </channel>
 </rss>""")
 
-    let atom = 
+    let atom =
         AnyFeed.Choice(
-            AnyFeed.Feed("title", 
-                         "subtitle", 
-                         [| |], 
-                         "id", 
-                         DateTimeOffset(2014, 04, 27, 0, 0, 0, TimeSpan.Zero), 
-                         AnyFeed.Entry("title2", 
+            AnyFeed.Feed("title",
+                         "subtitle",
+                         [| |],
+                         "id",
+                         DateTimeOffset(2014, 04, 27, 0, 0, 0, TimeSpan.Zero),
+                         AnyFeed.Entry("title2",
                                        [| |],
                                        "id2",
                                        DateTimeOffset(2014, 04, 28, 0, 0, 0,TimeSpan.Zero),
@@ -499,10 +492,10 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000+00:00</updated>"""
     let itemsPerPage = AtomSearch.Choice(2)
     itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
-    let entry = AtomSearch.Entry("id", 
-                                 DateTimeOffset(2000, 2, 2, 0, 0, 0, TimeSpan.Zero), 
-                                 [| |], 
-                                 "title", 
+    let entry = AtomSearch.Entry("id",
+                                 DateTimeOffset(2000, 2, 2, 0, 0, 0, TimeSpan.Zero),
+                                 [| |],
+                                 "title",
                                  AtomSearch.Content("type", "value"),
                                  DateTimeOffset(2000, 3, 3, 0, 0, 0, TimeSpan.Zero),
                                  Unchecked.defaultof<_>,
@@ -1149,26 +1142,17 @@ let SimpleTypesXsd = """
 
 type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd>
 
-open System.Xml
+
 open System.Xml.Schema
 
-let parseSchema xsdText =    
-    let schemaSet = XmlSchemaSet() 
-    use reader = XmlReader.Create(new System.IO.StringReader(xsdText))
-    schemaSet.Add(null, reader) |> ignore
-    schemaSet.Compile()
-    schemaSet
-
-let isValid xsd =
-    let xmlSchemaSet = parseSchema xsd
-    fun xml ->
+let isValid xmlSchemaSet =
+    fun (xml: XElement) ->
         try
-            (XDocument.Parse xml).Validate(xmlSchemaSet, validationEventHandler = null)
+            XDocument(xml).Validate(xmlSchemaSet, validationEventHandler = null)
             true
-        with :? XmlSchemaException as e -> 
-            printfn "%s/n%s" e.Message xml
+        with :? XmlSchemaException as e ->
+            printfn "%s/n%O" e.Message xml
             false
-
 
 [<Test>]
 let ``simple types are formatted properly``() =
@@ -1181,8 +1165,7 @@ let ``simple types are formatted properly``() =
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
-        .ToString()
-    
+
     let minValues =
       SimpleTypes.A(
         int = System.Int32.MinValue,
@@ -1192,9 +1175,8 @@ let ``simple types are formatted properly``() =
         boolean = false,
         decimal = System.Decimal.MinValue,
         double = System.Double.NegativeInfinity)
-        .ToString()
 
-    let maxValues = 
+    let maxValues =
       SimpleTypes.A(
         int = System.Int32.MaxValue,
         long = System.Int64.MaxValue,
@@ -1203,16 +1185,17 @@ let ``simple types are formatted properly``() =
         boolean = true,
         decimal = System.Decimal.MaxValue,
         double = System.Double.PositiveInfinity)
-        .ToString()
 
-    let isValid = isValid SimpleTypesXsd
-    isValid simpleValues |> should equal true
-    isValid minValues |> should equal true
-    isValid maxValues |> should equal true
+    let schema = SimpleTypes.GetSchema()
+    let isValid = isValid schema
+    isValid simpleValues.XElement |> should equal true
+    isValid minValues.XElement |> should equal true
+    isValid maxValues.XElement |> should equal true
 
 [<Test>]
 let ``time is omitted when zero``() =
-    let simpleValues date = 
+    let schema = SimpleTypes.GetSchema()
+    let simpleValues date =
       SimpleTypes.A(
         int = 0,
         long = 0L,
@@ -1221,17 +1204,17 @@ let ``time is omitted when zero``() =
         boolean = false,
         decimal = 0M,
         double = System.Double.NaN)
-        .ToString()
-    let isValid = isValid SimpleTypesXsd
+
+    let isValid = isValid schema
 
     let validXml = System.DateTime(2018, 8, 29) |> simpleValues
-    isValid validXml |> should equal true
-    (XElement.Parse validXml).Attribute(XName.Get "date").Value
+    isValid validXml.XElement |> should equal true
+    validXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29"
 
     let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
-    isValid invalidXml |> should equal false
-    (XElement.Parse invalidXml).Attribute(XName.Get "date").Value
+    isValid invalidXml.XElement |> should equal false
+    invalidXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29T05:30:56.0000000"
 
 type TimeSpanXML = XmlProvider<"Data/TimeSpans.xml">
@@ -1252,11 +1235,11 @@ let ``Can parse negative time span with day and fraction``() =
     span |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
 
 [<Test>]
-let ``Parses timespan greater than max as string`` () = 
+let ``Parses timespan greater than max as string`` () =
     let span = TimeSpanXML.GetSample().TimespanOneTickGreaterThanMaxValue
     span.GetType() |> should equal (typeof<string>)
 
 [<Test>]
-let ``Parses timespan less than min as string`` () = 
+let ``Parses timespan less than min as string`` () =
     let span = TimeSpanXML.GetSample().TimespanOneTickLessThanMinValue
     span.GetType() |> should equal (typeof<string>)

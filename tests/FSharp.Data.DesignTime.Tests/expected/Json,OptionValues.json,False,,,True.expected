@@ -22,16 +22,19 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
-    new : authors:JsonProvider+Author[] -> JsonProvider+Root
+    new : authors:JsonProvider+JsonProvider+Author[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("authors",
                                  (authors :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
 
-    member Authors: JsonProvider+Author[] with get
+    member Authors: JsonProvider+JsonProvider+Author[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
 

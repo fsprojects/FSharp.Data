@@ -1,11 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.HtmlProvider
-#endif
+﻿module FSharp.Data.Tests.HtmlProvider
 
 open NUnit.Framework
 open FsUnit
@@ -29,32 +22,32 @@ let simpleHtml = """<html>
 type SimpleHtml = HtmlProvider<simpleHtml, PreferOptionals=true>
 
 [<Test>]
-let ``SimpleHtml infers date type correctly ``() = 
+let ``SimpleHtml infers date type correctly ``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].Date |> should equal (DateTime(2013, 01, 01, 12, 00, 00))
 
 [<Test>]
-let ``SimpleHtml infers int type correctly ``() = 
+let ``SimpleHtml infers int type correctly ``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 1`` |> should equal 1
 
 [<Test>]
-let ``SimpleHtml infers bool type correctly ``() = 
+let ``SimpleHtml infers bool type correctly ``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 2`` |> should equal true
 
 [<Test>]
-let ``SimpleHtml infers decimal type correctly ``() = 
+let ``SimpleHtml infers decimal type correctly ``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
-let ``SimpleHtml infers as optional fail through type correctly ``() = 
+let ``SimpleHtml infers as optional fail through type correctly ``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 4`` |> should equal (Some 2M)
 
 [<Test>]
-let ``Can create type for simple table``() = 
+let ``Can create type for simple table``() =
     let table = SimpleHtml().Tables.Table
     table.Rows.[0].``Column 1`` |> should equal 1
 
@@ -72,7 +65,7 @@ let ``NuGet table gets all rows``() =
     table.Rows.Length |> should equal 35
 
 [<Test>]
-let ``Should find the table as a header``() = 
+let ``Should find the table as a header``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <div>
@@ -87,7 +80,7 @@ let ``Should find the table as a header``() =
     table.Rows.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
-let ``Should find the table as a header when nested deeper``() = 
+let ``Should find the table as a header when nested deeper``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <div>
@@ -106,7 +99,7 @@ let ``Should find the table as a header when nested deeper``() =
     table.Rows.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
-let ``Should parse units from table headers``() = 
+let ``Should parse units from table headers``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -121,7 +114,7 @@ let ``Should parse units from table headers``() =
     time |> should equal 30.5<second>
 
 [<Test>]
-let ``Should parse units from inferred table headers``() = 
+let ``Should parse units from inferred table headers``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -137,7 +130,7 @@ let ``Should parse units from inferred table headers``() =
     time |> should equal 30.5<second>
 
 [<Test>]
-let ``Can handle a table with a single column``() = 
+let ``Can handle a table with a single column``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -151,7 +144,7 @@ let ``Can handle a table with a single column``() =
     percentage |> should equal 2
 
 [<Test>]
-let ``Should infer a column with a currency prefix as the correct type``() = 
+let ``Should infer a column with a currency prefix as the correct type``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -165,7 +158,7 @@ let ``Should infer a column with a currency prefix as the correct type``() =
     percentage |> should equal 2
 
 [<Test>]
-let ``Should infer a column with a percentage suffix as the correct type``() = 
+let ``Should infer a column with a percentage suffix as the correct type``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -194,7 +187,7 @@ let ``If finds name for table and element is empty reverts to default name``() =
     percentage |> should equal 2
 
 [<Test>]
-let ``Can handle a table with a thead declaring headers containing th``() = 
+let ``Can handle a table with a thead declaring headers containing th``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -213,7 +206,7 @@ let ``Can handle a table with a thead declaring headers containing th``() =
     percentage |> should equal 2
 
 [<Test>]
-let ``Can handle a table with a thead declaring headers containing td``() = 
+let ``Can handle a table with a thead declaring headers containing td``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -232,7 +225,7 @@ let ``Can handle a table with a thead declaring headers containing td``() =
     percentage |> should equal 2
 
 [<Test>]
-let ``Can handle a table with a thead, tfoot, tbody``() = 
+let ``Can handle a table with a thead, tfoot, tbody``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -265,7 +258,7 @@ let ``Can handle a table with a thead, tfoot, tbody``() =
     percentage |> should equal 180
 
 [<Test>]
-let ``Can handle a table with headers directly inside thead``() = 
+let ``Can handle a table with headers directly inside thead``() =
     let table = HtmlProvider<"""<html>
                     <body>
                         <table>
@@ -288,7 +281,7 @@ let ``Can handle a table with headers directly inside thead``() =
                 </html>""">.GetSample().Tables.Table1
     match table.Headers with
     | None -> failwith "No headers found"
-    | Some headers -> headers |> should equal [ "Month"; "Savings" ]
+    | Some headers -> headers |> should equal [| "Month"; "Savings" |]
 
 [<Test>]
 let ``Handles closing tag with number in script (Bug 800)``() =
@@ -312,7 +305,7 @@ let ``Handles closing tag with number in script (Bug 800)``() =
 
 type DoctorWho = FSharp.Data.HtmlProvider<"Data/doctor_who2.html">
 
-[<Test>]   
+[<Test>]
 let ``List and Table with same nome don't clash``() =
     DoctorWho().Lists.``Reference websites``.Values.[0] |> should equal "Doctor Who on TARDIS Data Core, an external wiki"
     DoctorWho().Tables.``Reference websites``.Rows.[0].Awards |> should equal "Preceded by The Bill"

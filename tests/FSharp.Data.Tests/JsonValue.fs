@@ -1,10 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.JsonValue
-#endif
+﻿module FSharp.Data.Tests.JsonValue
 
 open NUnit.Framework
 open System
@@ -94,6 +88,18 @@ let ``Can parse document with datetime offset as ticks and timezones`` () =
 let ``Can parse document with datetime offset from iso date format``() =
     let j = JsonValue.Parse "{\"anniversary\": \"2009-05-19 14:39:22+0600\"}"
     j?anniversary.AsDateTimeOffset() |> should equal <| DateTimeOffset(2009, 05, 19, 14, 39, 22, TimeSpan.FromHours 6.)
+
+[<Test; Explicit>]
+let ``Can parse deep arrays``() =
+    String.replicate 50000 "[" + String.replicate 50000 "]"
+    |> FSharp.Data.JsonValue.Parse
+    |> ignore
+
+[<Test; Explicit>]
+let ``Can parse deep objects``() =
+    (String.replicate 50000 "{\"a\":") + "\"\"" + (String.replicate 50000 "}")
+    |> FSharp.Data.JsonValue.Parse
+    |> ignore
 
 // TODO: Due to limitations in the current ISO 8601 datetime parsing these fail, and should be made to pass
 //[<Test>]
@@ -281,6 +287,13 @@ let ``Can serialize document with array, null and number``() =
     let json = JsonValue.Parse text
     json.ToString(JsonSaveOptions.DisableFormatting) |> should equal text
 
+[<TestCase(Double.NaN)>]
+[<TestCase(Double.PositiveInfinity)>]
+[<TestCase(Double.NegativeInfinity)>]
+let ``Serializes special float value as null`` v =
+    let json = JsonValue.Float v
+    json.ToString(JsonSaveOptions.DisableFormatting) |> should equal "null"
+
 let normalize (str:string) =
   str.Replace("\r\n", "\n")
      .Replace("\r", "\n")
@@ -412,12 +425,13 @@ let ``Can parse various JSON documents``() =
             """{"a":[]  ,"b":{}}"""                 , Some <| Record [|"a",Array [||];"b",Record [||]|]
             """{"a":[],  "b":{}}"""                 , Some <| Record [|"a",Array [||];"b",Record [||]|]
             """{"a":[]  ,  "b":{}}"""               , Some <| Record [|"a",Array [||];"b",Record [||]|]
+            """0"""                                 , Some <| Float 0.
+            """1234"""                              , Some <| Float 1234.
+            """true"""                              , Some <| Boolean true
+            """false"""                             , Some <| Boolean false
+            """null"""                              , Some <| Null
+            """ "Test" """                          , Some <| String "Test"
             // Negative tests
-            """0"""                                 , None
-            """1234"""                              , None
-            """true"""                              , None
-            """false"""                             , None
-            """ "Test" """                          , None
             """[NaN]"""                             , None
             """[,]"""                               , None
             """[true,]"""                           , None
