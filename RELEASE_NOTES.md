@@ -1,3 +1,8 @@
+#### 4.1.0 - Unreleased
+* [Fix internet cache invalidation](https://github.com/fsprojects/FSharp.Data/pull/1365)
+* Build against .NET 5
+
+
 #### 4.0.1 - Unreleased
 * Move `cssSelect` to `HtmlNode`.
 
