@@ -1,10 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.JsonConversions
-#endif
+﻿module FSharp.Data.Tests.JsonConversions
 
 open NUnit.Framework
 open FsUnit

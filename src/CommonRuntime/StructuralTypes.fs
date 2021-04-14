@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.Runtime.StructuralTypes
+namespace rec FSharp.Data.Runtime.StructuralTypes
 
 open System
 open FSharp.Data.Runtime
@@ -7,7 +7,10 @@ open FSharp.Data.Runtime
 // Types that represent the result of the type inference
 // --------------------------------------------------------------------------------------
 
-/// A property of a record has a name and type and may be optional
+/// <summary>A property of a record has a name and type and may be optional</summary>
+/// <namespacedoc>
+///   <summary>Types that represent the result of static type inference.</summary>
+/// </namespacedoc>
 type InferedProperty =
   { Name : string
     mutable Type : InferedType }
@@ -16,14 +19,15 @@ type InferedProperty =
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
 /// this type represents the number of occurrences of individual forms
-and InferedMultiplicity = 
+type InferedMultiplicity = 
   | Single
   | OptionalSingle
   | Multiple
 
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)
-and [<RequireQualifiedAccess>] InferedTypeTag = 
+[<RequireQualifiedAccess>]
+type InferedTypeTag = 
   // Unknown type
   | Null
   // Primitive types
@@ -33,6 +37,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Json
   | DateTime
   | TimeSpan
+  | DateTimeOffset
   | Guid
   // Collections and sum types
   | Collection 
@@ -54,7 +59,8 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// Why is collection not simply a list of Heterogeneous types? If we used that
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
-and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
+[<CustomEquality; NoComparison; RequireQualifiedAccess>]
+type InferedType =
   | Primitive of typ:Type * unit:option<System.Type> * optional:bool
   | Record of name:string option * fields:InferedProperty list * optional:bool
   | Json of typ:InferedType * optional:bool
@@ -123,6 +129,7 @@ type InferedTypeTag with
     | String -> "String"
     | DateTime -> "DateTime"
     | TimeSpan -> "TimeSpan"
+    | DateTimeOffset -> "DateTimeOffset"
     | Guid -> "Guid"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
@@ -147,6 +154,7 @@ type InferedTypeTag with
     | "String" -> String 
     | "DateTime" -> DateTime
     | "TimeSpan" -> TimeSpan
+    | "DateTimeOffset" -> DateTimeOffset
     | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous
@@ -189,10 +197,9 @@ type PrimitiveInferedProperty =
   static member Create(name, typ, optional, unit) =
     PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), unit)
 
-and     
-    [<RequireQualifiedAccess>] 
-    /// Represents a transformation of a type
-    TypeWrapper = 
+/// Represents a transformation of a type
+[<RequireQualifiedAccess>]
+type TypeWrapper = 
     /// No transformation will be made to the type
     | None 
     /// The type T will be converter to type T option

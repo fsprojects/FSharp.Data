@@ -22,16 +22,19 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+WorldBank
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+JsonProvider+WorldBank[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+WorldBank : FDR.BaseTypes.IJsonDocument
-    new : array:JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
+    new : array:JsonProvider+JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
     JsonRuntime.CreateArray([| (array :> obj)
                                (record :> obj) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+WorldBank
     JsonDocument.Create(jsonValue, "")
 
-    member Array: JsonProvider+Record[] with get
+    member Array: JsonProvider+JsonProvider+Record[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "", "Array"), new Func<_,_>(id)))
 
     member Record: JsonProvider+Record2 with get

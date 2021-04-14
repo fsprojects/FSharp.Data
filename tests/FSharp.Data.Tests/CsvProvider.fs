@@ -1,10 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
 module FSharp.Data.Tests.CsvProvider
-#endif
 
 open NUnit.Framework
 open FsUnit
@@ -21,28 +15,28 @@ let [<Literal>] simpleCsv = """
 type SimpleCsv = CsvProvider<simpleCsv>
 
 [<Test>]
-let ``Bool column correctly inferred and accessed`` () = 
+let ``Bool column correctly inferred and accessed`` () =
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:bool = first.Column1
   actual |> should be True
 
 [<Test>]
-let ``Decimal column correctly inferred and accessed`` () = 
+let ``Decimal column correctly inferred and accessed`` () =
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:decimal = first.Column3
   actual |> should equal 3.0M
 
 [<Test>]
-let ``Guid column correctly inferred and accessed from mislabeled TSV`` () = 
+let ``Guid column correctly inferred and accessed from mislabeled TSV`` () =
   let csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:Guid option = first.Column3
   actual |> should equal (Some (Guid.Parse("f1b1cf71-bd35-4e99-8624-24a6e15f133a")))
 
 [<Test>]
-let ``Guid column correctly infered and accessed`` () = 
+let ``Guid column correctly infered and accessed`` () =
   let csv = CsvProvider<"Data/LastFM.tsv", HasHeaders=false>.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:Guid option = first.Column3
@@ -53,12 +47,12 @@ let [<Literal>] csvWithGermanDate = """Preisregelung_ID;Messgebiet_Nr;gueltig_se
 2;214230001;01.02.2006;20.03.2007;2;2000;;;1;27.09.2006;28.11.2007;10.04.2007"""
 
 [<Test>]
-let ``Inference of german dates`` () = 
+let ``Inference of german dates`` () =
   let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE">.GetSample()
   let rows = csv.Rows |> Seq.toArray
-  
+
   let row = rows.[1]
-  
+
   let d1:DateTime = row.Gueltig_seit
   d1 |> should equal (DateTime(2006,02,01))
 
@@ -69,12 +63,12 @@ Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 ,,2.0,#N/A,1,#N/A,2.0,"""
 
 [<Test>]
-let ``Inference of numbers with empty values`` () = 
+let ``Inference of numbers with empty values`` () =
   let csv = CsvProvider<csvWithEmptyValues>.GetSample()
   let rows = csv.Rows |> Seq.toArray
-  
+
   let row = rows.[0]
-  
+
   let f1:float = row.Float1
   let f2:float = row.Float2
   let f3:float = row.Float3
@@ -83,13 +77,13 @@ let ``Inference of numbers with empty values`` () =
   let f5:float = row.Float5
   let f6:float = row.Float6
   let d:option<DateTime> = row.Date
-  
+
   let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, (None: DateTime option)
-  let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date    
+  let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
   let row = rows.[1]
-  let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Some(new DateTime(2010, 01,10)) 
+  let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Some(new DateTime(2010, 01,10))
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
@@ -98,24 +92,29 @@ let ``Inference of numbers with empty values`` () =
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
-let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate
-2018-04-21,2018-04-20+10:00,2018-04-19+11:00
-2018-04-18,2018-04-17-06:00,2018-04-16"""
+let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate,OffsetOption (datetimeoffset option),OffsetNullable (datetimeoffset?)
+2018-04-21,2018-04-20+10:00,2018-04-19+11:00,2018-04-20+10:00,2018-04-20+10:00
+2018-04-18,2018-04-17-06:00,2018-04-16,,"""
 
 [<Test>]
 let ``Can infer DateTime and DateTimeOffset types correctly`` () =
   let csv = CsvProvider<csvData, ",", InferRows = 0>.GetSample()
   let firstRow = csv.Rows |> Seq.head
+  let secondRow = csv.Rows |> Seq.item 1
 
   firstRow.DateOnly.GetType() |> should equal typeof<DateTime>
   firstRow.DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
   firstRow.MixedDate.GetType() |> should equal typeof<DateTime>
-  
+  firstRow.OffsetOption.GetType() |> should equal typeof<DateTimeOffset Option>
+  firstRow.OffsetNullable.GetType() |> should equal typeof<DateTimeOffset>
+  secondRow.OffsetOption |> should equal None
+  secondRow.OffsetNullable |> should equal null
 
-[<Test>] 
+
+[<Test>]
 let ``Can create type for small document``() =
   let csv = CsvProvider<"Data/SmallTest.csv">.GetSample()
-  let row1 = csv.Rows |> Seq.head 
+  let row1 = csv.Rows |> Seq.head
   row1.Distance |> should equal 50.<metre>
   let time = row1.Time
   time |> should equal 3.7<second>
@@ -126,19 +125,20 @@ let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 
-[<Test>] 
+[<Test>]
 let ``Can parse sample file with whitespace in the name``() =
   let csv = CsvProvider<"Data/file with spaces.csv">.GetSample()
-  let row1 = csv.Rows |> Seq.head 
+  let row1 = csv.Rows |> Seq.head
   row1.Distance |> should equal 50.<metre>
   let time = row1.Time
   time |> should equal 3.7<second>
 
 [<Test>]
-let ``Infers type of an emtpy CSV file`` () = 
+let ``Infers type of an emtpy CSV file`` () =
   let csv = CsvProvider<"Column1, Column2">.GetSample()
-  let actual : string list = [ for r in csv.Rows -> r.Column1 ]
-  actual |> should equal []
+  let actual : string array = [| for r in csv.Rows -> r.Column1 |]
+  let expected : string array = [||]
+  actual |> should equal expected
 
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
@@ -159,13 +159,13 @@ let csvWithRepeatedAndEmptyColumns = """Foo3,Foo3,Bar,
 ,4,6,"""
 
 [<Test>]
-let ``Repeated and empty column names``() = 
+let ``Repeated and empty column names``() =
   let csv = CsvProvider<csvWithRepeatedAndEmptyColumns>.GetSample()
   let row = csv.Rows |> Seq.head
   row.Foo3.GetType() |> should equal typeof<string>
   row.Foo4.GetType() |> should equal typeof<int>
   row.Bar.GetType() |> should equal typeof<int>
-  row.Column4.GetType() |> should equal typeof<string>  
+  row.Column4.GetType() |> should equal typeof<string>
 
 [<Literal>]
 let csvWithSpuriousTrailingEmptyHeaderColumn = """A,B,C,
@@ -192,13 +192,13 @@ let ``Header with trailing empty column that does appear in data rows``() =
   row |> should equal (1,2,3,4)
   let row = csv.Rows |> Seq.skip 1 |> Seq.head
   row |> should equal (5,6,7,8)
-  
+
 let [<Literal>] simpleCsvNoHeaders = """
 TRUE,no,3
 "yes", "false", 1.92 """
 
 [<Test>]
-let ``Columns correctly inferred and accessed when headers are missing`` () = 
+let ``Columns correctly inferred and accessed when headers are missing`` () =
     let csv = CsvProvider<simpleCsvNoHeaders, HasHeaders=false>.GetSample()
     let row = csv.Rows |> Seq.head
     let col1:bool = row.Column1
@@ -216,18 +216,18 @@ let ``Columns correctly inferred and accessed when headers are missing`` () =
     col3 |> should equal 1.92M
 
 [<Test>]
-let ``IgnoreErrors skips lines with wrong number of columns`` () = 
+let ``IgnoreErrors skips lines with wrong number of columns`` () =
     let csv = CsvProvider<"a,b,c\n1,2\n0,1,2,3,4\n2,3,4", IgnoreErrors=true>.GetSample()
     let row = csv.Rows |> Seq.head
     row |> should equal (2,3,4)
 
 [<Test>]
-let ``Lines with wrong number of columns throw exception when ignore errors is set to false`` () = 
+let ``Lines with wrong number of columns throw exception when ignore errors is set to false`` () =
     let csv = CsvProvider<"a,b,c">.Parse("a,b,c\n1,2\n0,1,2,3,4\n2,3,4")
     (fun () -> csv.Rows |> Seq.head |> ignore) |> should throw typeof<Exception>
 
 [<Test>]
-let ``IgnoreErrors skips lines with wrong number of columns when there's no header`` () = 
+let ``IgnoreErrors skips lines with wrong number of columns when there's no header`` () =
     let csv = CsvProvider<"1,2\n0,1,2,3,4\n2,3,4\n5,6", IgnoreErrors=true, HasHeaders=false>.GetSample()
     let row1 = csv.Rows |> Seq.head
     let row2 = csv.Rows |> Seq.skip 1 |> Seq.head
@@ -235,18 +235,18 @@ let ``IgnoreErrors skips lines with wrong number of columns when there's no head
     row2 |> should equal (5,6)
 
 [<Test>]
-let ``IgnoreErrors skips lines with wrong types`` () = 
+let ``IgnoreErrors skips lines with wrong types`` () =
     let csv = CsvProvider<"a (int),b (int),c (int)\nx,y,c\n2,3,4", IgnoreErrors=true>.GetSample()
     let row = csv.Rows |> Seq.head
     row |> should equal (2,3,4)
 
 [<Test>]
-let ``Lines with wrong types throw exception when ignore errors is set to false`` () = 
+let ``Lines with wrong types throw exception when ignore errors is set to false`` () =
     let csv = CsvProvider<"a (int),b (int),c (int)\nx,y,z\n2,3,4">.GetSample()
     (fun () -> csv.Rows |> Seq.head |> ignore) |> should throw typeof<Exception>
 
 [<Test>]
-let ``Columns explicitly overrided to string option should return None when empty or whitespace`` () = 
+let ``Columns explicitly overrided to string option should return None when empty or whitespace`` () =
     let csv = CsvProvider<"a,b,c\n , ,1\na,b,2",Schema=",string option,int option">.GetSample()
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
@@ -257,7 +257,7 @@ let ``Columns explicitly overrided to string option should return None when empt
     row2 |> should equal ("a", Some "b", Some 2)
 
 [<Test>]
-let ``NaN's should work correctly when using option types`` () = 
+let ``NaN's should work correctly when using option types`` () =
     let csv = CsvProvider<"a,b\n1,\n:,1.0", Schema="float option,float option">.GetSample()
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
@@ -266,7 +266,7 @@ let ``NaN's should work correctly when using option types`` () =
     row1.B |> should equal None
     row2.A |> should equal None
     row2.B |> should equal (Some 1.0)
-    
+
 [<Test>]
 let ``Currency symbols on decimal columns should work``() =
     let csv = CsvProvider<"$66.92,0.9458,Jan-13,0,0,0,1", HasHeaders=false, Culture="en-US">.GetSample()
@@ -274,7 +274,7 @@ let ``Currency symbols on decimal columns should work``() =
     row.Column1 : decimal |> should equal 66.92M
 
 [<Test>]
-let ``AssumeMissingValues works when inferRows limit is reached``() = 
+let ``AssumeMissingValues works when inferRows limit is reached``() =
     let errorMessage =
         try
             (CsvProvider<"Data/Adwords.csv", InferRows=4>.GetSample().Rows
@@ -282,13 +282,13 @@ let ``AssumeMissingValues works when inferRows limit is reached``() =
         with e -> e.Message
     errorMessage |> should equal "Couldn't parse row 5 according to schema: Parent ID is missing"
 
-    let rowWithMissingParentIdNullable = 
+    let rowWithMissingParentIdNullable =
         CsvProvider<"Data/Adwords.csv", InferRows=4, AssumeMissingValues=true>.GetSample().Rows
         |> Seq.skip 4 |> Seq.head
     let parentId : Nullable<int> = rowWithMissingParentIdNullable.``Parent ID``
     parentId |> should equal null
 
-    let rowWithMissingParentIdOptional = 
+    let rowWithMissingParentIdOptional =
         CsvProvider<"Data/Adwords.csv", InferRows=4, AssumeMissingValues=true, PreferOptionals=true>.GetSample().Rows
         |> Seq.skip 4 |> Seq.head
     let parentId : Option<int> = rowWithMissingParentIdOptional.``Parent ID``
@@ -297,7 +297,7 @@ let ``AssumeMissingValues works when inferRows limit is reached``() =
 type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
 
 [<Test>]
-let ``Sample which also is a valid filename``() = 
+let ``Sample which also is a valid filename``() =
     let row = CsvWithSampleWhichIsAValidFilename.GetSample().Rows |> Seq.exactlyOne
     row.Column1 |> should equal 1
     row.Column2 |> should equal 2
@@ -306,7 +306,7 @@ let ``Sample which also is a valid filename``() =
 type CsvWithoutSample = CsvProvider<Schema="category (string), id (string), timestamp (string)", HasHeaders=false>
 
 [<Test>]
-let ``Csv without sample``() = 
+let ``Csv without sample``() =
     let row = CsvWithoutSample.Parse("1,2,3").Rows |> Seq.exactlyOne
     row.Category |> should equal "1"
     row.Id |> should equal "2"
@@ -320,19 +320,19 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
     let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, "NaN (�񐔒l)")
 
-#if USE_MSBUILD // only valid when running with the .NET Framework compiler
-type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+// #if USE_MSBUILD // only valid when running with the .NET Framework compiler
+// type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
-[<Test>]
-let ``Respects encoding when specified``() =
-    let cp932 = CP932.GetSample()
-    let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
-    row2 |> should equal (2, Double.NaN)
-#endif
+// [<Test>]
+// let ``Respects encoding when specified``() =
+//     let cp932 = CP932.GetSample()
+//     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
+//     row2 |> should equal (2, Double.NaN)
+// #endif
 
 [<Test>]
 let ``Disposing CsvProvider shouldn't throw``() =
-    let csv = 
+    let csv =
         use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
         csv.Rows |> Seq.iter (fun x -> ())
     ()
@@ -357,11 +357,11 @@ let [<Literal>] percentageCsv = """
   Column1,Column2,Column3
   TRUE,no,3
   "yes", "false", 1.92%"""
-  
+
 type PercentageCsv = CsvProvider<percentageCsv>
 
 [<Test>]
-let ``Can handle percentages in the values``() = 
+let ``Can handle percentages in the values``() =
     let data = PercentageCsv.GetSample().Rows |> Seq.item 1
     data.Column3 |> should equal 1.92M
 
@@ -373,17 +373,17 @@ let [<Literal>] currency = """
 type Currency = CsvProvider<currency>
 
 [<Test>]
-let ``Can handle currency in the values``() = 
+let ``Can handle currency in the values``() =
    let data = Currency.GetSample().Rows |> Seq.head
    data.Column3 |> should equal 3M
 
 [<Test>]
-let ``Can parse http://databank.worldbank.org/data/download/GDP.csv``() = 
+let ``Can parse http://databank.worldbank.org/data/download/GDP.csv``() =
    let gdp = new CsvProvider<"Data/GDP.csv", SkipRows=3, MissingValues="..">()
    let firstRow = gdp.Rows |> Seq.head
    firstRow.Ranking |> should equal 1
    firstRow.Column1 |> should equal "USA"
-   firstRow.Economy |> should equal "United States"   
+   firstRow.Economy |> should equal "United States"
    firstRow.``US dollars)`` |> should equal 16800000.
 
 
@@ -396,7 +396,7 @@ let [<Literal>] simpleWithStrCsv = """
 type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
 
 [<Test>]
-let ``Can duplicate own rows``() = 
+let ``Can duplicate own rows``() =
   let csv = SimpleWithStrCsv.GetSample()
   let csv' = csv.Append csv.Rows
   let out = csv'.SaveToString()
@@ -408,7 +408,7 @@ let ``Can duplicate own rows``() =
   row.Column3 |> should equal 1.92
 
 [<Test>]
-let ``Create particular row``() = 
+let ``Create particular row``() =
   let row = new SimpleWithStrCsv.Row(true, "Second col", 42.5M)
 
   row.Column1 |> should equal true
@@ -416,7 +416,7 @@ let ``Create particular row``() =
   row.Column3 |> should equal 42.5M
 
 [<Test>]
-let ``Can set created rows``() = 
+let ``Can set created rows``() =
   let row1 = new SimpleWithStrCsv.Row(true, "foo", 1.3M)
   let row2 = new SimpleWithStrCsv.Row(column1 = false, columnB = "foo", column3 = 42M)
   let csv = new SimpleWithStrCsv([row1; row2])
@@ -429,13 +429,13 @@ let ``Can set created rows``() =
 
 
 type CsvUom = CsvProvider<"Data/SmallTest.csv">
-[<Test>] 
+[<Test>]
 let ``Can create new csv row with units of measure``() =
   let row = new CsvUom.Row("name", 3.5M<metre>, 27M<Data.UnitSystems.SI.UnitSymbols.s>)
   row.Distance |> should equal 3.5M<metre>
-  
+
 [<Test>]
-let ``Parse single row``() = 
+let ``Parse single row``() =
   let rows = SimpleWithStrCsv.ParseRows("""false,"Quoted, col", 31""")
   rows.Length |> should equal 1
   rows.[0].Column1 |> should equal false
@@ -443,7 +443,7 @@ let ``Parse single row``() =
   rows.[0].Column3 |> should equal 31
 
 [<Test>]
-let ``Parse single row with trailing newline``() = 
+let ``Parse single row with trailing newline``() =
   let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\n")
   rows.Length |> should equal 1
   rows.[0].Column1 |> should equal false
@@ -451,7 +451,7 @@ let ``Parse single row with trailing newline``() =
   rows.[0].Column3 |> should equal 31
 
 [<Test>]
-let ``Parse two rows``() = 
+let ``Parse two rows``() =
   let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\ntrue, def, 42")
   rows.Length |> should equal 2
   (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + Environment.NewLine + "false,abc,31" + Environment.NewLine + "true, def,42" + Environment.NewLine)
@@ -461,8 +461,8 @@ Name|Company |Email|Password
 Johnson|ABC|johnson@abc.com|12345i|
 Yoda|XYZ|yoda@xyz.com|98123"""
 
-[<Test>]    
-let ``Accepts data rows ending with separator when header length matches to the row length``() = 
+[<Test>]
+let ``Accepts data rows ending with separator when header length matches to the row length``() =
   let csv = CsvProvider<csvWithDataEndingWithSeparator, Separators="|", IgnoreErrors=true>.GetSample()
   let row1 = csv.Rows |> Seq.head
   row1 |> should equal ("Johnson","ABC","johnson@abc.com","12345i")
@@ -475,7 +475,7 @@ Doe|QWE|johnson@abc.com|32167|x@y.z
 Yoda|XYZ|yoda@xyz.com|98123"""
 
 [<Test>]
-let ``Rejects data rows ending with extra non-empty content``() = 
+let ``Rejects data rows ending with extra non-empty content``() =
   let csv = CsvProvider<csvWithDataEndingWithSeparatorFollowedByContent, Separators="|", IgnoreErrors=true>.GetSample()
   let row = csv.Rows |> Seq.exactlyOne
   row |> should equal ("Yoda","XYZ","yoda@xyz.com", 98123)
@@ -487,7 +487,7 @@ Doe|QWE|johnson@abc.com|32167|x@y.z||
 Yoda|XYZ|yoda@xyz.com|98123|"""
 
 [<Test>]
-let ``Rejects data rows ending with two or more separators when header length matches to the rest of the row length``() = 
+let ``Rejects data rows ending with two or more separators when header length matches to the rest of the row length``() =
   let csv = CsvProvider<csvWithDataEndingWithSeparatorFollowedBySeparators, Separators="|", IgnoreErrors=true>.GetSample()
   let row = csv.Rows |> Seq.exactlyOne
   row |> should equal ("Yoda","XYZ","yoda@xyz.com", 98123)
@@ -500,7 +500,7 @@ ghi"
 """
 
 [<Test>]
-let ``Multiline cells saved correctly``() = 
+let ``Multiline cells saved correctly``() =
     let csv = CsvProvider<csvWithMultilineCells>.GetSample()
     csv.Rows |> Seq.map (fun r -> r.Id, r.Text.Replace("\r", "")) |> Seq.toList |> should equal [1, "abc,"; 2, "def\nghi"]
     csv.SaveToString().Replace("\r", "") |> should equal (csvWithMultilineCells.Replace("\r", ""))
@@ -515,10 +515,10 @@ let ``Fields with quotes should be quoted and escaped when saved``() =
 
 
 
-type MappingType = CsvProvider<"IndicatorName, CountryName, Type, Code", 
-                                                        Schema = "IndicatorName (string), CountryName (string), Type (string), Code (string)", 
-                                                        Encoding="windows-1252", 
-                                                        HasHeaders=true, 
+type MappingType = CsvProvider<"IndicatorName, CountryName, Type, Code",
+                                                        Schema = "IndicatorName (string), CountryName (string), Type (string), Code (string)",
+                                                        Encoding="windows-1252",
+                                                        HasHeaders=true,
                                                         SkipRows=0>
 type WithName = {
     Name: string
@@ -533,13 +533,13 @@ type Mapping = {
 
 [<Test>]
 let ``Having null in a cell should not fail saving to string (issue#978)`` () =
-    
+
     let Stringify (mappings:seq<Mapping>) =
-                    let rows = mappings |> Seq.map(fun x -> MappingType.Row(x.Indicator.Name, x.Country.Name, x.RelationshipType.ToString(), x.Code )) 
+                    let rows = mappings |> Seq.map(fun x -> MappingType.Row(x.Indicator.Name, x.Country.Name, x.RelationshipType.ToString(), x.Code ))
                     let output = new MappingType( rows )
                     output.SaveToString()
 
-    
+
     let data = seq {
         yield {
             Indicator = {Name = "Ind-1" }
@@ -561,7 +561,7 @@ let ``Having null in a cell should not fail saving to string (issue#978)`` () =
             RelationshipType = {Name = "RT-3" }
             Code = null
         }
-        
+
         yield {
             Indicator = {Name = "Ind-4" }
             Country = {Name = "Cnt-4" }
@@ -578,15 +578,15 @@ let ``Having null in a cell should not fail saving to string (issue#978)`` () =
     }
 
     data
-    |> Stringify 
+    |> Stringify
     |> ignore
-    
+
 [<Test>]
 let ``CsvFile.TryGetColumnIndex returns Some matching column if a match``() =
   let csv = CsvFile.Parse simpleCsv
   let nameColumnIndex = csv.TryGetColumnIndex "Column1"
   nameColumnIndex |> should equal (Some 0)
- 
+
 [<Test>]
 let ``CsvFile.TryGetColumnIndex returns None if no match``() =
   let csv = CsvFile.Parse simpleCsv
@@ -611,11 +611,11 @@ let ``Can parse negative time span with day and fraction``() =
     span |> should equal (new TimeSpan(-1, -3, -16, -50, -500))
 
 [<Test>]
-let ``Parses timespan greater than max as string`` () = 
+let ``Parses timespan greater than max as string`` () =
     let span = row.TimespanOneTickGreaterThanMaxValue
     span.GetType() |> should equal (typeof<string>)
 
 [<Test>]
-let ``Parses timespan less than min as string`` () = 
+let ``Parses timespan less than min as string`` () =
     let span = row.TimespanOneTickLessThanMinValue
     span.GetType() |> should equal (typeof<string>)

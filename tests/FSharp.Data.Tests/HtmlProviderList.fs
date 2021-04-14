@@ -1,11 +1,4 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
-module FSharp.Data.Tests.HtmlProviderLists
-#endif
+﻿module FSharp.Data.Tests.HtmlProviderLists
 
 open NUnit.Framework
 open FsUnit
@@ -13,7 +6,7 @@ open System
 open FSharp.Data
 
 [<Test>]
-let ``Simple List infers int type correctly ``() = 
+let ``Simple List infers int type correctly ``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -23,10 +16,10 @@ let ``Simple List infers int type correctly ``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal [1;2;3]
+    list.Values |> should equal [|1;2;3|]
 
 [<Test>]
-let ``Can handle nested lists``() = 
+let ``Can handle nested lists``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -42,10 +35,10 @@ let ``Can handle nested lists``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal ["Foo Bar";"1";"2";"2";"3"]
+    list.Values |> should equal [|"Foo Bar";"1";"2";"2";"3"|]
 
 [<Test>]
-let ``Simple List handles missing values``() = 
+let ``Simple List handles missing values``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -55,10 +48,10 @@ let ``Simple List handles missing values``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal [Some 1;Some 2; None]
+    list.Values |> should equal [|Some 1;Some 2; None|]
 
 [<Test>]
-let ``Simple List infers decimal type correctly ``() = 
+let ``Simple List infers decimal type correctly ``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -68,10 +61,10 @@ let ``Simple List infers decimal type correctly ``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal [1.123M;2.123M;3.123M]
+    list.Values |> should equal [|1.123M;2.123M;3.123M|]
 
 [<Test>]
-let ``Simple List infers date type correctly ``() = 
+let ``Simple List infers date type correctly ``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -81,10 +74,10 @@ let ``Simple List infers date type correctly ``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal [DateTime(2013,1,1);DateTime(2013,2,2);DateTime(2013,3,3)]
+    list.Values |> should equal [|DateTime(2013,1,1);DateTime(2013,2,2);DateTime(2013,3,3)|]
 
 [<Test>]
-let ``Simple List infers hetergenous list as string type correctly ``() = 
+let ``Simple List infers hetergenous list as string type correctly ``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
@@ -94,10 +87,10 @@ let ``Simple List infers hetergenous list as string type correctly ``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal ["01/01/2013";"1";"Foobar"]
+    list.Values |> should equal [|"01/01/2013";"1";"Foobar"|]
 
 [<Test>]
-let ``Should find the list as a header``() = 
+let ``Should find the list as a header``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <div>
@@ -110,10 +103,10 @@ let ``Should find the list as a header``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.``Example List``
-    list.Values |> should equal [1;2;3]
+    list.Values |> should equal [|1;2;3|]
 
 [<Test>]
-let ``Should find the list as a header when nested deeper``() = 
+let ``Should find the list as a header when nested deeper``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <div>
@@ -130,10 +123,10 @@ let ``Should find the list as a header when nested deeper``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.``Example List``
-    list.Values |> should equal [1;2;3]
+    list.Values |> should equal [|1;2;3|]
 
 [<Test>]
-let ``Handles simple definition list``() = 
+let ``Handles simple definition list``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <dl>
@@ -152,13 +145,13 @@ let ``Handles simple definition list``() =
                         </dl>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
-    list.Count.Values |> should equal [1;2]
-    list.Dates.Values |> should equal [DateTime(2014,1,1); DateTime(2014, 2,2)]
-    list.Decimals.Values |> should equal [1.23M; 2.23M]
-    list.Missing.Values |> should equal [Some "Foobar"; None]
+    list.Count.Values |> should equal [|1;2|]
+    list.Dates.Values |> should equal [|DateTime(2014,1,1); DateTime(2014, 2,2)|]
+    list.Decimals.Values |> should equal [|1.23M; 2.23M|]
+    list.Missing.Values |> should equal [|Some "Foobar"; None|]
 
 [<Test>]
-let ``Handles definition list correctly``() = 
+let ``Handles definition list correctly``() =
     let list = HtmlProvider<"""<html>
                     <body>
                         <dl>
@@ -172,12 +165,12 @@ let ``Handles definition list correctly``() =
                         </dl>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
-    list.Authors.Values |> should equal ["Remy Sharp"; "Rich Clark"]
-    list.Category.Values |> should equal ["Comment"]
-    list.Editor.Values |> should equal ["Brandan Lennox"]
+    list.Authors.Values |> should equal [|"Remy Sharp"; "Rich Clark"|]
+    list.Category.Values |> should equal [|"Comment"|]
+    list.Editor.Values |> should equal [|"Brandan Lennox"|]
 
 [<Test>]
-let ``Handles SimpleListHtml file``() = 
+let ``Handles SimpleListHtml file``() =
     let list = HtmlProvider<"Data/SimpleHtmlLists.html">.GetSample()
-    list.Lists.SimpleCount.Values |> should equal [1;2;3]
-    list.DefinitionLists.MyDLLists.Count.Values |> should equal [1;2]
+    list.Lists.SimpleCount.Values |> should equal [|1;2;3|]
+    list.DefinitionLists.MyDLLists.Count.Values |> should equal [|1;2|]

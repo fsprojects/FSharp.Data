@@ -22,6 +22,9 @@ class JsonProvider : obj
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader))
 
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
 
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ab:JsonProvider+Ab -> JsonProvider+Root
@@ -36,19 +39,19 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 
 
 class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
-    new : persons:JsonProvider+Person[] -> JsonProvider+Ab
+    new : persons:JsonProvider+JsonProvider+Person[] -> JsonProvider+Ab
     JsonRuntime.CreateRecord([| ("persons",
                                  (persons :> obj)) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Ab
     JsonDocument.Create(jsonValue, "")
 
-    member Persons: JsonProvider+Person[] with get
+    member Persons: JsonProvider+JsonProvider+Person[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
 
 
 class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
-    new : contacts:JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
+    new : contacts:JsonProvider+JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
     JsonRuntime.CreateRecord([| ("contacts",
                                  (contacts :> obj))
                                 ("emails",
@@ -59,7 +62,7 @@ class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Person
     JsonDocument.Create(jsonValue, "")
 
-    member Contacts: JsonProvider+Contact[] with get
+    member Contacts: JsonProvider+JsonProvider+Contact[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "contacts"), new Func<_,_>(id)))
 
     member Emails: FDR.BaseTypes.IJsonDocument[] with get

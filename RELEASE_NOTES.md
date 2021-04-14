@@ -1,3 +1,60 @@
+#### 4.0.1 - Unreleased
+* Move `cssSelect` to `HtmlNode`.
+
+#### 4.0.0 - March 2 2021
+
+* FSharp.Data is now .NET Standard 2.0 only
+
+Several other fixes:
+
+* Fix [CssSelect fails when there is no html tag](https://github.com/fsprojects/FSharp.Data/pull/1290)
+* [Expose InnerResponse, Http properties](https://github.com/fsprojects/FSharp.Data/pull/1291)
+* [Add DateTimeOffset for Csv Schema Inference](https://github.com/fsprojects/FSharp.Data/pull/1304)
+* [Modified escaping of query string parameters](https://github.com/fsprojects/FSharp.Data/pull/1316)
+* [Build fix: Remove dependency on http://europa.eu/rapid/conf/RSS20.xsd and update WorldBank to API to V2](https://github.com/fsprojects/FSharp.Data/pull/1320)
+* [Remove dead links to tryfsharp.org](https://github.com/fsprojects/FSharp.Data/pull/1328)
+* [HTML parsing for attributes not separated by a space](https://github.com/fsprojects/FSharp.Data/pull/1327)
+* [Update JsonProvider.fsx](https://github.com/fsprojects/FSharp.Data/pull/1334)
+* [Pluralizer - Add "slices" to special cases](https://github.com/fsprojects/FSharp.Data/pull/1335)
+* [add ResolutionFolder=__SOURCE_DIRECTORY__ to docs](https://github.com/fsprojects/FSharp.Data/pull/1344)
+* [fix links in docs/tools/generate.fsx](https://github.com/fsprojects/FSharp.Data/pull/1348)
+* [Revamp docs generation and move to .NET Standard 2.0 only](https://github.com/fsprojects/FSharp.Data/pull/1350)
+
+#### 3.3.4 - January 7 2020
+* Rebuild using "Release" target
+
+#### 3.3.3 - January 7 2020
+* Fix nuget package
+
+#### 3.3.2 - September 24 2019
+* [Fix StackOverflow exception caused by many ampersand and semicolons](https://github.com/fsharp/FSharp.Data/pull/1281) 
+
+#### 3.3.1 - September 24 2019
+* Update latest TPSDK, fixing [Build with embedded resource broke](https://github.com/fsharp/FSharp.Data/issues/1255)
+
+#### 3.2.4 - September 16 2019
+* Make appevyor build nuget package (though we still releas via '.\build Release')
+
+#### 3.2.1 - September 10 2019
+* Fix for using on F# Interactive on .NET Core
+* [Add ParseList on JsonProvider](https://github.com/fsharp/FSharp.Data/pull/1272)
+* [Handle serialization of odd float values](https://github.com/fsharp/FSharp.Data/pull/1275)
+* [Adding HTML active patterns to expose internals of HtmlNode](https://github.com/fsharp/FSharp.Data/pull/1227)
+
+#### 3.1.1 - April 15 2019
+* [Further fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
+* Require VS2017 or above [(due to TPSDK fix)](https://github.com/fsprojects/FSharp.TypeProviders.SDK/pull/305)
+
+#### 3.0.3 - March 28 2019
+* [Fix for excessive memory usage (hold TP instances weakly in file watcher callbacks)](https://github.com/fsharp/FSharp.Data/pull/1252)
+* [NameUtils/Pluralizer: Fix unusual singularizations for some common words (choices; releases)](https://github.com/fsharp/FSharp.Data/pull/1226) 
+* [Reduced cache time to partially address possible excess memory usage](https://github.com/fsharp/FSharp.Data/pull/1254)  
+* [Update TPSDK and paket](https://github.com/fsharp/FSharp.Data/pull/1250)
+* [Fixed undisposed writers in CSV saving](https://github.com/fsharp/FSharp.Data/pull/1248)
+
+#### 3.0.1 - March 21 2019
+* Fix for excessive memory usage (incorprating latest TPSDK)
+
 #### 3.0.0 - October 14 2018
 * Add GetSchema method in XML type provider.
 

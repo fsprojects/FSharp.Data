@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // JSON type provider - generate code for accessing inferred elements
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -27,10 +27,12 @@ type internal JsonGenerationContext =
     JsonRuntimeType : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
     GenerateConstructors : bool }
+
   static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
     JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, true)
+
   static member Create(cultureStr, tpType, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
@@ -47,10 +49,13 @@ type internal JsonGenerationResult =
     { ConvertedType : Type
       OptionalConverter : (Expr -> Expr) option
       ConversionCallingType : JsonConversionCallingType }
+
     member x.Convert = 
         defaultArg x.OptionalConverter id
+
     member x.ConverterFunc ctx =
       ReflectionHelpers.makeDelegate x.Convert ctx.IJsonDocumentType
+
     member x.ConvertedTypeErased ctx =
       if x.ConvertedType.IsArray then
         match x.ConvertedType.GetElementType() with

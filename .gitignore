@@ -24,3 +24,10 @@ TestResults
 *.log
 .vscode
 .idea
+.ionide
+output
+tmp
+.fsdocs
+paket.lock
+.paket
+*.obtained

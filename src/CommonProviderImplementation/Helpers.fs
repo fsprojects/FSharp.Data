@@ -160,6 +160,7 @@ module internal ProviderHelpers =
           RepresentationType : Type
           // the constructor from a text reader to the representation
           CreateFromTextReader : Expr<TextReader> -> Expr
+          CreateListFromTextReader : (Expr<TextReader> -> Expr) option
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 
@@ -283,7 +284,7 @@ module internal ProviderHelpers =
                 else
                     failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
     
-    let private providedTypesCache = createInMemoryCache (TimeSpan.FromMinutes 5.)
+    let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 30.0)
     let private activeDisposeActions = HashSet<_>()
 
     // Cache generated types for a short time, since VS invokes the TP multiple tiems
@@ -304,7 +305,13 @@ module internal ProviderHelpers =
                     match fileToWatch with
                     | Some file ->
                         let name = sprintf "%s [%d]" fullTypeName tp.Id
-                        let invalidateAction() = tp.InvalidateOneType(fullTypeName)
+                        // Hold a weak reference to the type provider instance.  If the TP instance is leaked
+                        // and not held strongly by anyone else, then don't hold it strongly here.
+                        let tpref = WeakReference<_>(tp)
+                        let invalidateAction() = 
+                            match tpref.TryGetTarget() with
+                            | true, tp -> tp.InvalidateOneType(fullTypeName)
+                            | _ -> ()
                         Some (watchForChanges file (name, invalidateAction))
                     | None -> None
                 
@@ -394,6 +401,18 @@ module internal ProviderHelpers =
                                         |> spec.CreateFromTextReader )
           m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
           yield m :> MemberInfo
+
+          match spec.CreateListFromTextReader with
+          | None -> ()
+          | Some listParser ->
+            let resultTypeList = resultType.MakeArrayType()
+            let args = [ ProvidedParameter("text", typeof<string>) ]
+            let m = ProvidedMethod("ParseList", args, resultTypeList, isStatic = true,
+                                      invokeCode  = fun (Singleton text) ->
+                                          <@ new StringReader(%%text) :> TextReader @>
+                                          |> listParser )
+            m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
+            yield m :> _
           
           // Generate static Load stream method
           let args = [ ProvidedParameter("stream", typeof<Stream>) ]

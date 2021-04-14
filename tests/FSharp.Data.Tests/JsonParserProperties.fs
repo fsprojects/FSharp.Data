@@ -1,20 +1,9 @@
-﻿#if INTERACTIVE
-#r "../../bin/lib/net45/FSharp.Data.dll"
-#r "../../packages/test/NUnit/lib/net45/nunit.framework.dll"
-#r "../../packages/FsCheck/lib/net45/FsCheck.dll"
-#r "../../packages/test/FsUnit/lib/net46/FsUnit.NUnit.dll"
-#else
 module FSharp.Data.Tests.JsonParserProperties
-#endif
 
 open NUnit.Framework
 open System
 open FSharp.Data
 open FsCheck
-
-#if INTERACTIVE
-Runner.init.Force()
-#endif
 
 let escaped = Set(['t';'r';'b';'n';'f';'\\';'"'])
 
