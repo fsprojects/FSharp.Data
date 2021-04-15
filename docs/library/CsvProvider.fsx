@@ -56,7 +56,7 @@ following structure (you can find a larger example in the [`data/MSFT.csv`](../d
     2012-01-24,29.47,29.57,29.18,29.34,51703300,29.34
 
 As usual with CSV files, the first row contains the headers (names of individual columns)
-and the next rows define the data. We can pass reference to the file to `CsvProvider` to
+and the next rows define the data. We can pass reference to the file to `cref:T:FSharp.Data.CsvProvider` to
 get a strongly typed view of the file:
 *)
 
@@ -455,6 +455,6 @@ transformed the dataset to be smaller.
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
  * [CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
- * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
+ * API Reference: `cref:T:FSharp.Data.CsvProvider`
 
 *)

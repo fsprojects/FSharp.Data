@@ -17,6 +17,8 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlCssSelectors.ipynb)
 
 This article demonstrates how to use HTML CSS selectors to browse the DOM of parsed HTML files.
+We use the `cref:T:FSharp.Data.HtmlDocument` type and associated `cref:T:FSharp.Data.HtmlDocumentModule` module 
+and `cref:T:FSharp.Data.HtmlDocumentExtensions` extensions.
 
 Usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
 The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.com/category/selectors/).

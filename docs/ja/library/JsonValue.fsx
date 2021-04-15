@@ -16,9 +16,6 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 
 F#の [JSON 型プロバイダー](JsonProvider.html) はF#で作成された
 効率の良いJSONパーサーを元にしています。
-このパーサーは [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com)
-内にあるJSONパーサーを元にしていますが、
-F# Dataでは値を動的にアクセスできるようにするための単純なAPIが追加されています。
 
 厳密に定義されたJSONドキュメントを処理する場合、
 [型プロバイダー](JsonProvider.html) を使うと簡単なのですが、

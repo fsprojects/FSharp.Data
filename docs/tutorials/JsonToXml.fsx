@@ -17,7 +17,7 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=tutorials/JsonToXml.ipynb)
 
 This tutorial shows how to implement convert JSON document (represented using
-the `JsonValue` type discussed in [JSON parser article](JsonValue.html)) to an
+the `cref:T:FSharp.Data.JsonValue` type discussed in [JSON parser article](JsonValue.html)) to an
 XML document (represented as `XElement`) and the other way round.
 This functionality is not directly available in the FSharp.Data package, but it can
 be very easily implemented by recursively walking over the JSON (or XML) document.
@@ -34,7 +34,7 @@ Initialization
 --------------
 
 We will be using the LINQ to XML API (available in `System.Xml.Linq.dll`) and the
-`JsonValue` which is available in the `FSharp.Data` namespace:
+`cref:T:FSharp.Data.JsonValue` which is available in the `FSharp.Data` namespace:
 *)
 
 #r "System.Xml.Linq.dll"
@@ -76,7 +76,7 @@ As you can see, the `item` element has been automatically pluralized to `items` 
 array contains two record values that consist of the `value` attribute.
 
 The conversion function is a recursive function that takes a `XElement` and produces 
-`JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
+`cref:T:FSharp.Data.JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
 `JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the 
 sample does not imlement more sophisticated conversion that would turn numeric 
 attributes to a corresponding JSON type:
@@ -138,7 +138,7 @@ complex values (array or record) become objects:
     </root>
 
 The conversion function is, again, implemented as a recursive function. This time, we use 
-pattern matching to distinguish between the different possible cases of `JsonValue`.
+pattern matching to distinguish between the different possible cases of `cref:T:FSharp.Data.JsonValue`.
 The cases representing a primitive value simply return the value as `obj`, while array
 and record construct nested element(s) or attribute:
 
@@ -190,6 +190,7 @@ let toXml(x:JsonValue) =
 
 ## Related articles
 
+ * API Reference: `cref:T:FSharp.Data.JsonValue`
  * [JSON Parser](../library/JsonValue.html) - a tutorial that introduces
    `JsonValue` for working with JSON values dynamically.
  * [JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider

@@ -17,7 +17,7 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=tutorials/JsonAnonymizer.ipynb)
 
 This tutorial shows how to implement an anonymizer for a JSON document (represented using
-the `JsonValue` type discussed in [JSON parser article](JsonValue.html))
+the `cref:T:FSharp.Data.JsonValue` type discussed in [JSON parser article](JsonValue.html))
 This functionality is not directly available in the FSharp.Data package, but it can
 be very easily implemented by recursively walking over the JSON document.
 
@@ -116,8 +116,9 @@ printfn "%O" anonymizedJson
 
 ## Related articles
 
+ * API Reference: `cref:T:FSharp.Data.JsonValue`
  * [JSON Parser](../library/JsonValue.html) - a tutorial that introduces
-   `JsonValue` for working with JSON values dynamically.
+   `cref:T:FSharp.Data.JsonValue` for working with JSON values dynamically.
  * [JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
    that provides type-safe access to JSON data.
 

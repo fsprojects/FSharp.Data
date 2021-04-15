@@ -612,7 +612,7 @@ when a schema becomes available.
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to XML type provider
- * [API Reference: XmlProvider type provider](../reference/fsharp-data-xmlprovider.html)
- * [API Reference: XElementExtensions module](../reference/fsharp-data-xelementextensions.html)
+ * API Reference: `cref:T:FSharp.Data.XmlProvider` type provider
+ * API Reference: `cref:T:FSharp.Data.XElementExtensions`
 
 *)
