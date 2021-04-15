@@ -12,9 +12,12 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-# CSV Type Provider
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/CsvProvider.ipynb)
+[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Script](img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
+[![Script](img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+
+# CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
 in a statically typed way.
@@ -455,6 +458,6 @@ transformed the dataset to be smaller.
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
  * [CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
- * API Reference: `cref:T:FSharp.Data.CsvProvider`
+ * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 
 *)
