@@ -2,7 +2,7 @@
 ---
 category: Type Providers
 categoryindex: 1
-index: 4
+index: 5
 ---
 *)
 (*** condition: prepare ***)
