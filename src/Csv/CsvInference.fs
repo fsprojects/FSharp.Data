@@ -1,4 +1,4 @@
-﻿/// Structural inference for CSV
+/// Structural inference for CSV
 module FSharp.Data.Runtime.CsvInference
 
 open System
@@ -58,8 +58,10 @@ type private SchemaParseResult =
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
+/// <summary>
 /// Parses type specification in the schema for a single column. 
-/// This can be of the form: type|measure|type<measure>
+/// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
+/// </summary>
 let private parseTypeAndUnit unitsOfMeasureProvider str = 
   let m = typeAndUnitRegex.Value.Match(str)
   if m.Success then
@@ -323,15 +325,16 @@ let internal inferColumnTypes headerNamesAndUnits schema rows inferRows missingV
     ||> getFields preferOptionals
 
 type CsvFile with
+    /// <summary>
     /// Infers the types of the columns of a CSV file
-    /// Parameters:
-    /// * inferRows - Number of rows to use for inference. If this is zero, all rows are used
-    /// * missingValues - The set of strings recogized as missing values
-    /// * cultureInfo - The culture used for parsing numbers and dates
-    /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "timespan", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
-    /// * assumeMissingValues - Assumes all columns can have missing values
-    /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
-    /// * unitsOfMeasureProvider - optional function to resolve Units of Measure
+    /// </summary>
+    /// <param name="inferRows"> - Number of rows to use for inference. If this is zero, all rows are used</param>
+    /// <param name="missingValues"> - The set of strings recogized as missing values</param>
+    /// <param name="cultureInfo"> - The culture used for parsing numbers and dates</param>
+    /// <param name="schema"> - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "timespan", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'</param>
+    /// <param name="assumeMissingValues"> - Assumes all columns can have missing values</param>
+    /// <param name="preferOptionals"> - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values</param>
+    /// <param name="unitsOfMeasureProvider"> - optional function to resolve Units of Measure</param>
     member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, [<Optional>] ?unitsOfMeasureProvider) =
         let unitsOfMeasureProvider = defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
         let headerNamesAndUnits, schema = parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider

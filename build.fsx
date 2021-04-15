@@ -32,9 +32,9 @@ let project = "FSharp.Data"
 let authors = "Tomas Petricek;Gustavo Guerra;Colin Bull;fsprojects contributors"
 let summary = "Library of F# type providers and data access tools"
 let description = """
-  The FSharp.Data library (FSharp.Data.dll) contains type providers and utilities to access
-  common data formats in your F# applications and scripts. It contains F# type providers for working with
-  structured file formats (CSV, HTML, JSON and XML) and helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
+  The FSharp.Data package contains type providers and utilities to access
+  common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
+  contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
 
 let gitOwner = "fsprojects"

@@ -180,19 +180,25 @@ module internal ProviderHelpers =
             | _ -> None
         | _ -> None
 
+    /// <summary>
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
-    /// Samples from the web are cached for 30 minutes
+    /// </summary>
+    /// <remarks>
+    /// Samples from the web are cached for 30 minutes. 
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
+    /// </remarks>
     /// 
-    /// Parameters:
-    /// * valueToBeParsedOrItsUri - the text which can be a sample or an uri for a sample
-    /// * parseFunc - receives the file/url extension (or ""  if not applicable) and the text value 
-    /// * formatName - the description of what is being parsed (for the error message)
-    /// * tp - the type provider
-    /// * cfg - the type provider config
-    /// * resource - when specified, we first try to treat read the sample from an embedded resource
-    ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
-    /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
+    /// <param name="valueToBeParsedOrItsUri">the text which can be a sample or an uri for a sample</param>
+    /// <param name="parseFunc">receives the file/url extension (or ""  if not applicable) and the text value </param>
+    /// <param name="formatName">the description of what is being parsed (for the error message)</param>
+    /// <param name="tp">the type provider</param>
+    /// <param name="cfg">the type provider config</param>
+    /// <param name="resource">when specified, we first try to treat read the sample from an embedded resource
+    ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")</param>
+    /// <param name="resolutionFolder">if the type provider allows to override the resolutionFolder pass it here</param>
+    /// <param name="encodingStr"></param>
+    /// <param name="fullTypeName"></param>
+    /// <param name="maxNumberOfRows"></param>
     let private parseTextAtDesignTime valueToBeParsedOrItsUri parseFunc formatName (tp:DisposableTypeProviderForNamespaces) 
                                       (cfg:TypeProviderConfig) encodingStr resolutionFolder resource fullTypeName maxNumberOfRows =
     
@@ -358,16 +364,16 @@ module internal ProviderHelpers =
     | Schema of string
 
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
-    /// * source - the sample/sample list/schema from which the types will be generated
-    /// * getSpec - receives the file/url extension (or ""  if not applicable) and the text value of the sample or schema
-    /// * tp - the type provider
-    /// * cfg - the type provider config
-    /// * encodingStr - the encoding to be used when reading the sample or schema
-    /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
-    /// * resource - when specified, we first try to treat read the sample from an embedded resource
-    ///     (the value specifies assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
-    /// * fullTypeName - the full name of the type provider, this will be used as the caching key
-    /// * maxNumberOfRows - the max number of rows to read from the sample or schema
+    /// <param name="source">the sample/sample list/schema from which the types will be generated</param>
+    /// <param name="getSpec">receives the file/url extension (or ""  if not applicable) and the text value of the sample or schema</param>
+    /// <param name="tp">the type provider</param>
+    /// <param name="cfg">the type provider config</param>
+    /// <param name="encodingStr">the encoding to be used when reading the sample or schema</param>
+    /// <param name="resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here</param>
+    /// <param name="resource">when specified, we first try to treat read the sample from an embedded resource</param>
+    ///     (the value specifies assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")</param>
+    /// <param name="fullTypeName">the full name of the type provider, this will be used as the caching key</param>
+    /// <param name="maxNumberOfRows">the max number of rows to read from the sample or schema</param>
     let generateType formatName source getSpec
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) 
                      encodingStr resolutionFolder resource fullTypeName maxNumberOfRows  =

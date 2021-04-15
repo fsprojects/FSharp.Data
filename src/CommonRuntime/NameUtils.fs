@@ -1,4 +1,4 @@
-﻿/// Tools for generating nice member names that follow F# & .NET naming conventions
+/// Tools for generating nice member names that follow F# & .NET naming conventions
 module FSharp.Data.Runtime.NameUtils
 
 open System
@@ -62,7 +62,7 @@ let niceCamelName (s:string) =
     name.[0].ToString().ToLowerInvariant() + name.Substring(1)
   else name
 
-/// Given a function to format names (such as `niceCamelName` or `nicePascalName`)
+/// Given a function to format names (such as 'niceCamelName' or 'nicePascalName')
 /// returns a name generator that never returns duplicate name (by appending an
 /// index to already used names)
 /// 

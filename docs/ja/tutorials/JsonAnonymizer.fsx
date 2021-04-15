@@ -21,7 +21,7 @@ JSON匿名化機能をコード内で利用したい場合には、
 
 *)
 
-#r "../../../bin/lib/netstandard2.0/FSharp.Data.dll"
+#r "../../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 open System
 open System.Globalization
 open FSharp.Data
