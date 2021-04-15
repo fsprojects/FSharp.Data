@@ -14,7 +14,7 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (** 
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Script](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
 
 # HTML Type Provider
 
