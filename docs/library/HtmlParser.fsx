@@ -29,17 +29,18 @@ open FSharp.Data
 (**
 The following example uses Google to search for `FSharp.Data` then parses the first set of
 search results from the page, extracting the URL and Title of the link.
+We use the `cref:T:FSharp.Data.HtmlDocument` type.
 
 To achieve this we must first parse the webpage into our DOM. We can do this using
-the `HtmlDocument.Load` method. This method will take a URL and make a synchronous web call
-to extract the data from the page. Note: an asynchronous variant `HtmlDocument.AsyncLoad` is also available  
+the `cref:M:FSharp.Data.HtmlDocument.Load` method. This method will take a URL and make a synchronous web call
+to extract the data from the page. Note: an asynchronous variant `cref:M:FSharp.Data.HtmlDocument.AsyncLoad` is also available  
 *)
 let results = HtmlDocument.Load("http://www.google.co.uk/search?q=FSharp.Data")
 
 (**
 Now that we have a loaded HTML document we can begin to extract data from it. 
 Firstly we want to extract all of the anchor tags `a` out of the document, then
-inspect the links to see if it has a `href` attribute. If it does, extract the value,
+inspect the links to see if it has a `href` attribute, using `cref:M:FSharp.Data.HtmlDocumentExtensions.Descendants`. If it does, extract the value,
 which in this case is the url that the search result is pointing to, and additionally the 
 `InnerText` of the anchor tag to provide the name of the web page for the search result
 we are looking at. 

@@ -1,11 +1,23 @@
-﻿(**
+﻿(*** condition: prepare ***)
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
+(*** condition: fsx ***)
+#if FSX
+#r "nuget: FSharp.Data,{{fsdocs-package-version}}"
+#endif // FSX
+(*** condition: ipynb ***)
+#if IPYNB
+#r "nuget: FSharp.Data,{{fsdocs-package-version}}"
+
+Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
+Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
+#endif // IPYNB
+(**
 # JSON Parser
 
 [View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonValue.ipynb)
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
-in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 
-but FSharp.Data adds a simple API that can be used to access values dynamically.
+in F#.
 
 When working with well-defined JSON documents, it is easier to use the 
 [type provider](JsonProvider.html), but in a more dynamic scenario or when writing
@@ -13,15 +25,13 @@ quick and simple scripts, the parser might be a simpler option.
 
 ## Loading JSON documents
 
-To load a sample JSON document, we first need to reference the `FSharp.Data.dll` library
-(when using F# Interactive) or to add reference to a project. 
+To load a sample JSON document, we first need to reference the `FSharp.Data` package. 
 *)
 
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 open FSharp.Data
 
 (**
-The `FSharp.Data` namespace contains the `JsonValue` type that can be used
+The `FSharp.Data` namespace contains the `cref:T:FSharp.Data.JsonValue` type that can be used
 to parse strings formatted using JSON as follows:
 *)
 
@@ -31,15 +41,15 @@ let info =
       "siblings": [ "Jan", "Alexander" ] } """)
 
 (**
-The parsed value can be processed using pattern matching - the `JsonValue` type
+The parsed value can be processed using pattern matching - the `cref:T:FSharp.Data.JsonValue` type
 is a discriminated union with cases such as `Record`, `Collection` and others that
 can be used to examine the structure.
 
 ## Using JSON extensions
 
 We do not cover this technique in this introduction. Instead, we look at a number
-of extensions that become available after opening the `FSharp.Data.JsonExtensions` 
-namespace. Once opened, we can write:
+of extensions that become available after opening the `cref:T:FSharp.Data.JsonExtensionsModule` 
+module. Once opened, we can write:
 
  * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`.
  * `value.AsInteger()` returns the value as integer if it is numeric and can be
@@ -85,7 +95,7 @@ for sib in info?siblings do
   printfn "%s" (sib.AsString())
 
 (**
-Note that the `JsonValue` type does not actually implement the `IEnumerable<'T>` 
+Note that the `cref:T:FSharp.Data.JsonValue` type does not actually implement the `IEnumerable<'T>` 
 interface (meaning that it cannot be passed to `Seq.xyz` functions). It only has
 the `GetEnumerator` method, which makes it possible to use it in sequence expressions
 and with the `for` loop.
@@ -155,12 +165,13 @@ However, for a mixed collection of `DateTime` (that is, without the offset) and
 `DateTimeOffset` values, the type of the collection will be collection of `DateTime` 
 after parsing. Also note that the `date` and `value` properties are formatted as strings 
 in the source file (e.g. `"1990"`) instead of numbers (e.g. `1990`). When you try
-accessing the value as an integer or float, the `JsonValue` automatically parses
+accessing the value as an integer or float, the `cref:T:FSharp.Data.JsonValue` automatically parses
 the string into the desired format. In general, the API attempts to be as tolerant
 as possible when parsing the file.
 
 ## Related articles
 
+ * `cref:T:FSharp.Data.JsonValue`
  * [JSON Type Provider](JsonProvider.html) - discusses a F# type provider
    that provides type-safe access to JSON data
  * [WorldBank Provider](WorldBank.html) - the WorldBank type provider

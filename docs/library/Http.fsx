@@ -22,17 +22,16 @@ type (see [MSDN][2]). However, these two types are quite difficult to use if you
 want to quickly run a simple HTTP request and specify parameters such as method,
 HTTP POST data, or additional headers.
 
-The FSharp.Data package provides a simple `Http` type with four overloaded methods:
-`RequestString` and `AsyncRequestString`, that can be used to create a simple request and
-perform it synchronously or asynchronously, and `Request` and it's async companion `AsyncRequest` if
+The FSharp.Data package provides a simple `cref:T:FSharp.Data.Http` type with four methods:
+`cref:M:FSharp.Data.Http.RequestString` and `cref:M:FSharp.Data.Http.AsyncRequestString`, that can be used to create a simple request and
+perform it synchronously or asynchronously, and `cref:M:FSharp.Data.Http.Request` and it's async companion `cref:M:FSharp.Data.Http.AsyncRequest` if
 you want to request binary files or you want to know more about the response like the status code,
 the response URL, or the returned headers and cookies.
 
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
 
-To use the type, we first need to reference the library using `#r` (in an F# interactive)
-or add reference to a project. The type is located in `FSharp.Data` namespace:
+The type is located in `FSharp.Data` namespace:
 *)
 
 open FSharp.Data
@@ -41,7 +40,7 @@ open FSharp.Data
 ## Sending simple requests
 
 To send a simple HTTP (GET) request that downloads a specified web page, you 
-can use `Http.RequestString` and `Http.AsyncRequestString` with just a single parameter:
+can use `cref:M:FSharp.Data.Http.RequestString` and `cref:M:FSharp.Data.Http.AsyncRequestString` with just a single parameter:
 *)
 
 // Download the content of a web site
@@ -92,7 +91,7 @@ Http.RequestString
 (**
 The library supports a simple and unchecked string based API (used in the previous example),
 but you can also use pre-defined header names to avoid spelling mistakes. The named headers
-are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
+are available in `cref:T:FSharp.Data.HttpRequestHeaders` (and `cref:T:FSharp.Data.HttpResponseHeaders`) modules, so you can either
 use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
 `Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
 well known content types:
@@ -128,7 +127,8 @@ Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
 headers, the returned cookies, and the response url (which might be different to 
-the url you passed when there are redirects), you can use the `Request` method instead of the `RequestString` method:
+the url you passed when there are redirects), you can use the `cref:M:FSharp.Data.Http.Request` method
+instead of the `cref:M:FSharp.Data.Http.RequestString` method:
 
 *)
 
@@ -144,7 +144,7 @@ response.StatusCode
 ## Sending request data
 
 If you want to create a POST request with HTTP POST data, you can specify the
-additional data in the `body` optional parameter. This parameter is of type `HttpRequestBody`, which
+additional data in the `body` optional parameter. This parameter is of type `cref:T:FSharp.Data.HttpRequestBody`, which
 is a discriminated union with three cases:
 
 * `TextRequest` for sending a string in the request body.
@@ -209,8 +209,8 @@ docInFSharp.Contains "<a>F#</a>"
 (**
 ## Requesting binary data
 
-The `RequestString` method will always return the response as a `string`, but if you use the 
-`Request` method, it will return a `HttpResponseBody.Text` or a 
+The `cref:M:FSharp.Data.Http.RequestString` method will always return the response as a `string`, but if you use the 
+`cref:M:FSharp.Data.Http.Request` method, it will return a `HttpResponseBody.Text` or a 
 `HttpResponseBody.Binary` depending on the response `content-type` header:
 *)
 
@@ -251,7 +251,7 @@ Http.Request
 (**
 ## Handling multipart form data
 
-You can also send http multipart form data via the `Multipart` `HttpRequestBody` case.
+You can also send http multipart form data via the `Multipart` `cref:T:FSharp.Data.HttpRequestBody` case.
 Data sent in this way is streamed instead of being read into memory in its entirety, allowing for 
 uploads of arbitrary size.
 
@@ -274,14 +274,16 @@ Http.Request
 (**
 ## Related articles
 
- * [API Reference: HTTP class](../reference/fsharp-data-http.html)
- * [API Reference: HttpMethod module](../reference/fsharp-data-httpmethod.html)
- * [API Reference: HttpRequestHeaders module](../reference/fsharp-data-httprequestheaders.html)
- * [API Reference: HttpResponseHeaders module](../reference/fsharp-data-httpresponseheaders.html)
- * [API Reference: HttpContentTypes module](../reference/fsharp-data-httpcontenttypes.html)
- * [API Reference: HttpRequestBody discriminated union](../reference/fsharp-data-httprequestbody.html)
- * [API Reference: HttpResponse record](../reference/fsharp-data-httpresponse.html)
- * [API Reference: HttpResponseBody discriminated union](../reference/fsharp-data-httpresponsebody.html)
- * [API Reference: HttpResponseWithStream record](../reference/fsharp-data-httpresponsewithstream.html)
+ * API Reference: `cref:T:FSharp.Data.Http`
+ * API Reference: `cref:T:FSharp.Data.HttpContentTypes`
+ * API Reference: `cref:T:FSharp.Data.HttpEncodings`
+ * API Reference: `cref:T:FSharp.Data.HttpMethod`
+ * API Reference: `cref:T:FSharp.Data.HttpRequestBody`
+ * API Reference: `cref:T:FSharp.Data.HttpRequestHeaders`
+ * API Reference: `cref:T:FSharp.Data.HttpResponse`
+ * API Reference: `cref:T:FSharp.Data.HttpResponseBody`
+ * API Reference: `cref:T:FSharp.Data.HttpResponseHeaders`
+ * API Reference: `cref:T:FSharp.Data.HttpResponseWithStream`
+ * API Reference: `cref:T:FSharp.Data.HttpStatusCodes`
 
  *)

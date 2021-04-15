@@ -251,8 +251,4 @@ F#スクリプトファイル) ファイルを素敵なHTMLドキュメントに
 
   * [Writing F# Type Providers with the F# 3.0 Developer Preview - An Introductory Guide and Samples](http://blogs.msdn.com/b/fsharpteam/archive/2011/09/24/developing-f-type-providers-with-the-f-3-0-developer-preview-an-introductory-guide-and-samples.aspx)
 
-  * [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com/)
-    には非常に単純なものからかなり複雑なものまで、
-    様々な型プロバイダのサンプルがあります。
-
   * [Tutorial: Creating a Type Provider (F#)](http://msdn.microsoft.com/en-gb/library/hh361034.aspx)

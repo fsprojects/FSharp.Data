@@ -5,18 +5,18 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\index.md = docs\content\index.md
+		docs\index.md = docs\index.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\data\AirQuality.csv = docs\content\data\AirQuality.csv
-		docs\content\data\MSFT.csv = docs\content\data\MSFT.csv
-		docs\content\data\SmallTest.csv = docs\content\data\SmallTest.csv
-		docs\content\data\Titanic.csv = docs\content\data\Titanic.csv
-		docs\content\data\TwitterStream.json = docs\content\data\TwitterStream.json
-		docs\content\data\WorldBank.json = docs\content\data\WorldBank.json
-		docs\content\data\Writers.xml = docs\content\data\Writers.xml
+		docs\data\AirQuality.csv = docs\data\AirQuality.csv
+		docs\data\MSFT.csv = docs\data\MSFT.csv
+		docs\data\SmallTest.csv = docs\data\SmallTest.csv
+		docs\data\Titanic.csv = docs\data\Titanic.csv
+		docs\data\TwitterStream.json = docs\data\TwitterStream.json
+		docs\data\WorldBank.json = docs\data\WorldBank.json
+		docs\data\Writers.xml = docs\data\Writers.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922-4570-4D6D-8034-C3582756239B}"
@@ -32,37 +32,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
-		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
-		docs\content\library\HtmlCssSelectors.fsx = docs\content\library\HtmlCssSelectors.fsx
-		docs\content\library\HtmlParser.fsx = docs\content\library\HtmlParser.fsx
-		docs\content\library\HtmlProvider.fsx = docs\content\library\HtmlProvider.fsx
-		docs\content\library\Http.fsx = docs\content\library\Http.fsx
-		docs\content\library\JsonProvider.fsx = docs\content\library\JsonProvider.fsx
-		docs\content\library\JsonValue.fsx = docs\content\library\JsonValue.fsx
-		docs\content\library\WorldBank.fsx = docs\content\library\WorldBank.fsx
-		docs\content\library\XmlProvider.fsx = docs\content\library\XmlProvider.fsx
+		docs\library\CsvFile.fsx = docs\library\CsvFile.fsx
+		docs\library\CsvProvider.fsx = docs\library\CsvProvider.fsx
+		docs\library\HtmlCssSelectors.fsx = docs\library\HtmlCssSelectors.fsx
+		docs\library\HtmlParser.fsx = docs\library\HtmlParser.fsx
+		docs\library\HtmlProvider.fsx = docs\library\HtmlProvider.fsx
+		docs\library\Http.fsx = docs\library\Http.fsx
+		docs\library\JsonProvider.fsx = docs\library\JsonProvider.fsx
+		docs\library\JsonValue.fsx = docs\library\JsonValue.fsx
+		docs\library\WorldBank.fsx = docs\library\WorldBank.fsx
+		docs\library\XmlProvider.fsx = docs\library\XmlProvider.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\tutorials\JsonAnonymizer.fsx = docs\content\tutorials\JsonAnonymizer.fsx
-		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
+		docs\tutorials\JsonAnonymizer.fsx = docs\tutorials\JsonAnonymizer.fsx
+		docs\tutorials\JsonToXml.fsx = docs\tutorials\JsonToXml.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{CA5C64CE-E68C-4320-A00A-E67CA883B9D2}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\ja\contributing.md = docs\content\ja\contributing.md
-		docs\content\ja\fsharpdata.md = docs\content\ja\fsharpdata.md
-		docs\content\ja\index.md = docs\content\ja\index.md
-		docs\content\ja\library\CsvFile.fsx = docs\content\ja\library\CsvFile.fsx
-		docs\content\ja\library\CsvProvider.fsx = docs\content\ja\library\CsvProvider.fsx
-		docs\content\ja\library\Http.fsx = docs\content\ja\library\Http.fsx
-		docs\content\ja\library\JsonProvider.fsx = docs\content\ja\library\JsonProvider.fsx
-		docs\content\ja\library\JsonValue.fsx = docs\content\ja\library\JsonValue.fsx
-		docs\content\ja\library\WorldBank.fsx = docs\content\ja\library\WorldBank.fsx
-		docs\content\ja\library\XmlProvider.fsx = docs\content\ja\library\XmlProvider.fsx
-		docs\content\ja\tutorials\JsonToXml.fsx = docs\content\ja\tutorials\JsonToXml.fsx
+		docs\ja\contributing.md = docs\ja\contributing.md
+		docs\ja\fsharpdata.md = docs\ja\fsharpdata.md
+		docs\ja\index.md = docs\ja\index.md
+		docs\ja\library\CsvFile.fsx = docs\ja\library\CsvFile.fsx
+		docs\ja\library\CsvProvider.fsx = docs\ja\library\CsvProvider.fsx
+		docs\ja\library\Http.fsx = docs\ja\library\Http.fsx
+		docs\ja\library\JsonProvider.fsx = docs\ja\library\JsonProvider.fsx
+		docs\ja\library\JsonValue.fsx = docs\ja\library\JsonValue.fsx
+		docs\ja\library\WorldBank.fsx = docs\ja\library\WorldBank.fsx
+		docs\ja\library\XmlProvider.fsx = docs\ja\library\XmlProvider.fsx
+		docs\ja\tutorials\JsonToXml.fsx = docs\ja\tutorials\JsonToXml.fsx
 		docs\tools\templates\ja\template.cshtml = docs\tools\templates\ja\template.cshtml
 	EndProjectSection
 EndProject
