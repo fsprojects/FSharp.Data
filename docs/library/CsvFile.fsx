@@ -1,6 +1,6 @@
 (**
 ---
-category: Utilties
+category: Utilities
 categoryindex: 2
 index: 1
 ---
