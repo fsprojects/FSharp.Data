@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Untyped CSV api
 // --------------------------------------------------------------------------------------
 
@@ -29,13 +29,15 @@ type CsvRow(parent:CsvFile, columns:string[]) =
   /// Gets a column by name
   member __.Item with get columnName = columns.[parent.GetColumnIndex columnName]
 
-/// Represents a CSV file. The lines are read on demand from `reader`.
-/// Columns are delimited by one of the chars passed by `separators` (defaults to just `,`), and
-/// to escape the separator chars, the `quote` character will be used (defaults to `"`).
-/// If `hasHeaders` is true (the default), the first line read by `reader` will not be considered part of data.
-/// If `ignoreErrors` is true (the default is false), rows with a different number of columns from the header row
+/// <summary>
+/// Represents a CSV file. The lines are read on demand from <c>reader</c>.
+/// Columns are delimited by one of the chars passed by <c>separators</c> (defaults to just <c>,</c>), and
+/// to escape the separator chars, the <c>quote</c> character will be used (defaults to <c>"</c>).
+/// If <c>hasHeaders</c> is true (the default), the first line read by <c>reader</c> will not be considered part of data.
+/// If <c>ignoreErrors</c> is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored.
-/// The first `skipRows` lines will be skipped.
+/// The first <c>skipRows</c> lines will be skipped.
+/// </summary>
 and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) as this =
   inherit CsvFile<CsvRow>(
     Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
