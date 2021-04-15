@@ -1,3 +1,10 @@
+(**
+---
+category: Tutorials
+categoryindex: 3
+index: 1
+---
+*)
 (*** condition: prepare ***)
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
