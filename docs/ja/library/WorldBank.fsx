@@ -1,5 +1,5 @@
 (*** condition: prepare ***)
-#r "../../../bin/lib/netstandard2.0/FSharp.Data.dll"
+#r "../../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
