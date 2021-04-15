@@ -1,3 +1,10 @@
+(**
+---
+category: Type Providers
+categoryindex: 1
+index: 1
+---
+*)
 (*** condition: prepare ***)
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)

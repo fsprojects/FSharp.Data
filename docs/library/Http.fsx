@@ -1,4 +1,10 @@
-(*** condition: prepare ***)
+(**
+---
+category: Utilities
+categoryindex: 1
+index: 4
+---
+*)(*** condition: prepare ***)
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
