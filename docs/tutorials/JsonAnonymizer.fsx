@@ -14,9 +14,9 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (**
 # Anonymizing JSON 
 
-[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Script](img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
+[![Script](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
 
 This tutorial shows how to implement an anonymizer for a JSON document (represented using
 the `cref:T:FSharp.Data.JsonValue` type discussed in [JSON parser article](JsonValue.html))
