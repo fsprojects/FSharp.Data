@@ -124,6 +124,6 @@ computation to perform all the downloads:
 (**
 ## Related articles
 
- * [API Reference: WorldBankDataProvider type provider](../reference/fsharp-data-worldbankdataprovider.html)
+ * API Reference: `cref:T:FSharp.Data.WorldBankDataProvider` type provider
 
 *)

@@ -338,7 +338,7 @@ without providing a local copy of the sample JSON files.
 
  * [JSON Parser](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
- * [API Reference: JsonProvider type provider](../reference/fsharp-data-jsonprovider.html)
- * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
+ * API Reference: `cref:T:FSharp.Data.JsonProvider`
+ * API Reference: `cref:T:FSharp.Data.JsonValue`
 
 *)

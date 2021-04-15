@@ -106,8 +106,8 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
 
  * [CSV Type Provider](CsvProvider.html) - discusses F# type provider
    that provides type-safe access to CSV data
- * [API Reference: CsvFile class](../reference/fsharp-data-csvfile.html)
- * [API Reference: CsvRow class](../reference/fsharp-data-csvrow.html)
- * [API Reference: CsvExtensions module](../reference/fsharp-data-csvextensions.html)
+ * API Reference: `cref:T:FSharp.Data.CsvFile`
+ * API Reference: `cref:T:FSharp.Data.CsvRow`
+ * API Reference: `cref:T:FSharp.Data.CsvExtensionsModule`
 
 *)

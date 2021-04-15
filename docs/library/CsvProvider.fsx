@@ -455,6 +455,6 @@ transformed the dataset to be smaller.
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
  * [CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
- * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
+ * API Reference: `cref:T:FSharp.Data.CsvProvider`
 
 *)
