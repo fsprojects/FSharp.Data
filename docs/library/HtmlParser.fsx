@@ -12,9 +12,11 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (** 
-# HTML Parser
+[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Script](img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
+[![Script](img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlParser.ipynb)
+# HTML Parser
 
 This article demonstrates how to use the HTML Parser to parse HTML files.
 

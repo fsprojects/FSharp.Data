@@ -1,4 +1,4 @@
-﻿(*** condition: prepare ***)
+(*** condition: prepare ***)
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
@@ -14,7 +14,9 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (**
 # Converting between JSON and XML
 
-[View this documentation in a .NET Interactive notebook ![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=tutorials/JsonToXml.ipynb)
+[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Script](img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
+[![Script](img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
 
 This tutorial shows how to implement convert JSON document (represented using
 the `cref:T:FSharp.Data.JsonValue` type discussed in [JSON parser article](JsonValue.html)) to an
