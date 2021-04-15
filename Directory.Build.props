@@ -5,7 +5,7 @@
   common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
   contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
     </Description>
-    <FsDocsLicenseLink>https://raw.githubusercontent.com/fsprojects/FSharp.Data/master/README.md</FsDocsLicenseLink>
+    <FsDocsLicenseLink>https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md</FsDocsLicenseLink>
     <FsDocsReleaseNotesLink>https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md</FsDocsReleaseNotesLink>
     <RepositoryUrl>https://github.com/fsprojects/FSharp.Data</RepositoryUrl>
     <PackageProjectUrl>https://fsprojects.github.io/FSharp.Data</PackageProjectUrl>
