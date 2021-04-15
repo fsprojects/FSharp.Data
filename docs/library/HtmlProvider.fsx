@@ -77,8 +77,6 @@ for row in f1Calendar.Rows do
   printfn "Race, round %A is hosted at %A on %A" 
     row.Round row.``Grand Prix`` row.Date
 
-(** Gives output: *)
-
 (*** include-fsi-merged-output ***)
 
 (**
@@ -122,8 +120,6 @@ let stats =
       k, xs |> Seq.sumBy (fun x -> x.Downloads))
   |> Seq.toArray
 
-(** Gives output: *)
-
 (*** include-fsi-merged-output ***)
 
 (**
@@ -152,8 +148,6 @@ let viewersByDoctor =
       doctor, averaged)
   |> Seq.toArray
 
-
-(** Gives output: *)
 
 (*** include-fsi-merged-output ***)
 
