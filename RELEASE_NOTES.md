@@ -1,4 +1,7 @@
-#### 4.1.0 - Unreleased
+#### 4.1.1 - March 27 2021
+* [set sourcelink to be a private asset so that it doesn't get added to package dependencies](https://github.com/fsprojects/FSharp.Data/pull/1377)
+
+#### 4.1.0 - March 14 2021
 * [Fix internet cache invalidation](https://github.com/fsprojects/FSharp.Data/pull/1365)
 * Build against .NET 5
 
