@@ -6,6 +6,7 @@ open System
 open System.IO
 open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
+open FSharp.Data.Runtime.CsvInference
 
 let [<Literal>] simpleCsv = """
   Column1,Column2,Column3
@@ -121,7 +122,7 @@ let ``Can create type for small document``() =
 
 [<Test>]
 let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
-  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))  
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 
@@ -619,3 +620,11 @@ let ``Parses timespan greater than max as string`` () =
 let ``Parses timespan less than min as string`` () =
     let span = row.TimespanOneTickLessThanMinValue
     span.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``InferColumnTypes shall infer empty string as Double``() =
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/emptyMissingValue.csv"))
+  let types = csv.InferColumnTypes(2,[|""|],System.Globalization.CultureInfo.GetCultureInfo(""), null, false, false)
+  let expected = "Double"
+  let actual = types.[3].InferedType.Name
+  actual |> should equal expected
