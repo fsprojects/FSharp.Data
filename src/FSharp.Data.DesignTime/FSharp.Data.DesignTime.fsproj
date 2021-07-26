@@ -6,6 +6,9 @@
     <OtherFlags>--warnon:1182</OtherFlags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\keyfile.snk</AssemblyOriginatorKeyFile>
+    <PublicSign>false</PublicSign>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Net\Http.fs" />
@@ -58,6 +61,9 @@
     <Compile Include="..\Html\HtmlGenerator.fs" />
     <Compile Include="..\Html\HtmlProvider.fs" />
     <Compile Include="..\AssemblyInfo.DesignTime.fs" />
+    <None Include="..\keyfile.snk">
+      <Link>keyfile.snk</Link>
+    </None>
     <None Include="..\Test.fsx" />
   </ItemGroup>
   <ItemGroup>
