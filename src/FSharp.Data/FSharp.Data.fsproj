@@ -9,6 +9,9 @@
     <PackageIcon>logo.png</PackageIcon>
     <FSharpToolsDirectory>typeproviders</FSharpToolsDirectory>
     <PackagePath>typeproviders</PackagePath>
+    <PublicSign>false</PublicSign>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\keyfile.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <Tailcalls>true</Tailcalls>
@@ -52,9 +55,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="..\keyfile.snk">
+      <Link>keyfile.snk</Link>
+    </None>
+    <None Include="keyfile.snk" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.7.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\keyfile.snk">
+      <Link>keyfile.snk</Link>
+    </Content>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
