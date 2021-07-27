@@ -1,3 +1,6 @@
+#### 4.2.0 - July  27 2021
+* [sign assemblies with strong name key file](https://github.com/fsprojects/FSharp.Data/pull/1386)
+
 #### 4.1.1 - March 27 2021
 * [set sourcelink to be a private asset so that it doesn't get added to package dependencies](https://github.com/fsprojects/FSharp.Data/pull/1377)
 
