@@ -2,7 +2,7 @@
 ---
 category: Utilities
 categoryindex: 1
-index: 2
+index: 4
 ---
 *)
 (*** condition: prepare ***)
@@ -18,15 +18,15 @@ index: 2
 Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
-(** 
+(**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
 # HTML CSS selectors
 
 This article demonstrates how to use HTML CSS selectors to browse the DOM of parsed HTML files.
-We use the `cref:T:FSharp.Data.HtmlDocument` type and associated `cref:T:FSharp.Data.HtmlDocumentModule` module 
+We use the `cref:T:FSharp.Data.HtmlDocument` type and associated `cref:T:FSharp.Data.HtmlDocumentModule` module
 and `cref:T:FSharp.Data.HtmlDocumentExtensions` extensions.
 
 Usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
@@ -47,12 +47,12 @@ let doc = HtmlDocument.Load(googleUrl)
 
 (**
 To make sure we extract search results only, we will parse links in the `<div>` with id `search`.
-Then we can , for example, use the direct descendants selector to select another `<div>` with the 
+Then we can , for example, use the direct descendants selector to select another `<div>` with the
 id `ires`. The CSS selector to do so is `div#search > div#ires`:
 *)
-let links = 
+let links =
   doc.CssSelect("div#search > div#ires div.g > div.s div.kv cite")
-  |> List.map (fun n -> 
+  |> List.map (fun n ->
       match n.InnerText() with
       | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
       | t -> "http://" + t )
@@ -64,7 +64,7 @@ so we only extract proper links.
 Now we might want the pages titles associated with their URLs. To do this, we can use the `List.zip` function:
 *)
 
-let searchResults = 
+let searchResults =
     doc.CssSelect("div#search > div#ires div.g > h3")
     |> List.map (fun n -> n.InnerText())
     |> List.zip (links)
@@ -80,7 +80,7 @@ we need to look for `<div>` with `class` set to `g`, then for `<h3>` with CSS cl
 let fsys = "https://www.google.com/search?tbm=bks&q=F%23"
 let doc2 = HtmlDocument.Load(fsys)
 
-let books = 
+let books =
     doc2.CssSelect("div.g h3.r a")
     |> List.map(fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
     |> List.filter(fun (title, href) -> title.Contains("F#"))
@@ -88,7 +88,7 @@ let books =
 (**
 ## JQuery selectors
 
-This section provides a quick overview of the supported CSS selectors. If you are familiar 
+This section provides a quick overview of the supported CSS selectors. If you are familiar
 with CSS selectors in JQuery, then you will see that most of the features are the same.
 You can also refer to the table below for a complete list of supported selectors.
 
@@ -106,7 +106,7 @@ let englishDoc = HtmlDocument.Parse("""
   </body>
   </html>""")
 
-let englishLinks = 
+let englishLinks =
   englishDoc.CssSelect("a[hreflang|=en]")
 (**
 ### Attribute Contains Selector
@@ -127,14 +127,14 @@ let manDoc = HtmlDocument.Parse("""
   </body>
   </html>""")
 
-let manElems = 
+let manElems =
   manDoc.CssSelect("input[name*='man']")
 (**
 ### Attribute Contains Word Selector
 
 Finds all inputs with a name containing the word "man". This requires a whitespace around the word:
 *)
-let manWordElems = 
+let manWordElems =
   manDoc.CssSelect("input[name~='man']")
 
 (**
@@ -142,7 +142,7 @@ let manWordElems =
 
 Finds all inputs with a name ending with "man".
 *)
-let manEndElemes = 
+let manEndElemes =
   manDoc.CssSelect("input[name$='man']")
 
 (**
@@ -151,7 +151,7 @@ let manEndElemes =
 Finds all inputs with a name equal to "man".
 *)
 
-let manEqElemes = 
+let manEqElemes =
   manDoc.CssSelect("input[name='man']")
 
 (**
@@ -204,7 +204,7 @@ let htmlForm = HtmlDocument.Parse("""
 
 (**
 You can use `:prop` to find CSS elements with the specified value of the `type` attribute
-or a specified form control property. This lets you easily select all buttons, checkboxes, 
+or a specified form control property. This lets you easily select all buttons, checkboxes,
 radio buttons, but also hidden or disabled form elements:
 *)
 

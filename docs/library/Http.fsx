@@ -2,7 +2,7 @@
 ---
 category: Utilities
 categoryindex: 1
-index: 4
+index: 1
 ---
 *)
 (*** condition: prepare ***)
@@ -20,8 +20,8 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 #endif // IPYNB
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
 # HTTP Utilities
 
@@ -48,7 +48,7 @@ open FSharp.Data
 (**
 ## Sending simple requests
 
-To send a simple HTTP (GET) request that downloads a specified web page, you 
+To send a simple HTTP (GET) request that downloads a specified web page, you
 can use `cref:M:FSharp.Data.Http.RequestString` and `cref:M:FSharp.Data.Http.AsyncRequestString` with just a single parameter:
 *)
 
@@ -60,7 +60,7 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
         printfn "%d" html.Length }
 |> Async.Start
 
-(** 
+(**
 In the rest of the documentation, we focus on the `RequestString` method, because
 the use of `AsyncRequestString` is exactly the same.
 
@@ -73,15 +73,15 @@ specifies the GET method, but it will be set automatically for you if you omit i
 *)
 
 Http.RequestString
-  ( "http://httpbin.org/get", 
+  ( "http://httpbin.org/get",
     query=["test", "foo"], httpMethod="GET" )
 
-(** 
+(**
 Additional headers are specified similarly - using an optional parameter `headers`.
-The collection can contain custom headers, but also standard headers such as the 
+The collection can contain custom headers, but also standard headers such as the
 Accept header (which has to be set using a specific property when using `HttpWebRequest`).
 
-The following example uses [The Movie Database](http://www.themoviedb.org) API 
+The following example uses [The Movie Database](http://www.themoviedb.org) API
 to search for the word "batman". To run the sample, you'll need to register and
 provide your API key:
 *)
@@ -134,8 +134,8 @@ Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors 
 (*** include-it:request ***)
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
-If you want to see more information about the response, including the status code, the response 
-headers, the returned cookies, and the response url (which might be different to 
+If you want to see more information about the response, including the status code, the response
+headers, the returned cookies, and the response url (which might be different to
 the url you passed when there are redirects), you can use the `cref:M:FSharp.Data.Http.Request` method
 instead of the `cref:M:FSharp.Data.Http.RequestString` method:
 
@@ -162,7 +162,7 @@ is a discriminated union with three cases:
 
 If you specify a body, you do not need to set the `httpMethod` parameter, it will be set to `Post` automatically.
 
-The following example uses the [httpbin.org](http://httpbin.org) service which 
+The following example uses the [httpbin.org](http://httpbin.org) service which
 returns the request details:
 *)
 
@@ -175,15 +175,15 @@ this behaviour by adding `content-type` to the list of headers using the optiona
 *)
 
 Http.RequestString
-  ( "http://httpbin.org/post", 
+  ( "http://httpbin.org/post",
     headers = [ ContentType HttpContentTypes.Json ],
     body = TextRequest """ {"test": 42} """)
 
 (**
 ## Maintaining cookies across requests
 
-If you want to maintain cookies between requests, you can specify the `cookieContainer` 
-parameter. 
+If you want to maintain cookies between requests, you can specify the `cookieContainer`
+parameter.
 
 The following is an old sample showing how this is set.
 *)
@@ -191,7 +191,7 @@ The following is an old sample showing how this is set.
 (*** do-not-eval ***)
 
 // Build URL with documentation for a given class
-let msdnUrl className = 
+let msdnUrl className =
   let root = "http://msdn.microsoft.com"
   sprintf "%s/en-gb/library/%s.aspx" root className
 
@@ -204,30 +204,30 @@ let cc = CookieContainer()
 
 // Send a request to switch the language
 Http.RequestString
-  ( msdnUrl "system.datetime", 
-    query = ["cs-save-lang", "1"; "cs-lang","fsharp"], 
+  ( msdnUrl "system.datetime",
+    query = ["cs-save-lang", "1"; "cs-lang","fsharp"],
     cookieContainer = cc) |> ignore
 
 // Request the documentation again & search for F#
-let docInFSharp = 
+let docInFSharp =
   Http.RequestString
-    ( msdnUrl "system.web.httprequest", 
+    ( msdnUrl "system.web.httprequest",
       cookieContainer = cc )
 docInFSharp.Contains "<a>F#</a>"
 
 (**
 ## Requesting binary data
 
-The `cref:M:FSharp.Data.Http.RequestString` method will always return the response as a `string`, but if you use the 
-`cref:M:FSharp.Data.Http.Request` method, it will return a `HttpResponseBody.Text` or a 
+The `cref:M:FSharp.Data.Http.RequestString` method will always return the response as a `string`, but if you use the
+`cref:M:FSharp.Data.Http.Request` method, it will return a `HttpResponseBody.Text` or a
 `HttpResponseBody.Binary` depending on the response `content-type` header:
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| Text text -> 
+| Text text ->
     printfn "Got text content: %s" text
-| Binary bytes -> 
+| Binary bytes ->
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**
@@ -248,20 +248,20 @@ Assuming the certificate is stored in `myCertificate.pfx`:
 open System.Security.Cryptography.X509Certificates
 
 // Load the certificate from local file
-let clientCert = 
+let clientCert =
   new X509Certificate2(".\myCertificate.pfx", "password")
 
 // Send the request with certificate
 Http.Request
   ( "http://yourprotectedresouce.com/data",
-    customizeHttpRequest = fun req -> 
+    customizeHttpRequest = fun req ->
         req.ClientCertificates.Add(clientCert) |> ignore; req)
 
 (**
 ## Handling multipart form data
 
 You can also send http multipart form data via the `Multipart` `cref:T:FSharp.Data.HttpRequestBody` case.
-Data sent in this way is streamed instead of being read into memory in its entirety, allowing for 
+Data sent in this way is streamed instead of being read into memory in its entirety, allowing for
 uploads of arbitrary size.
 
 *)
@@ -272,7 +272,7 @@ let largeFilePath = "//path/to/large/file.mp4"
 let data = System.IO.File.OpenRead(largeFilePath) :> System.IO.Stream
 
 Http.Request
-  ( "http://endpoint/for/multipart/data", 
+  ( "http://endpoint/for/multipart/data",
   body = Multipart(
     boundary = "define a custom boundary here", // this is used to separate the items you're streaming
     parts = [

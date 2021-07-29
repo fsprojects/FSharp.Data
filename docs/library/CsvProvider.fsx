@@ -21,8 +21,8 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 (**
 
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
 # CSV Type Provider
 
@@ -246,16 +246,16 @@ rows separated by either semicolon or a colon. You can use:
 It is quite common in statistical datasets for some values to be missing. If
 you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file you will see
 that some values for the ozone observations are marked `#N/A`. Such values are
-parsed as float and will be marked with `Double.NaN` in F#. The values 
-`NaN`, `NA`, `N/A`, `#N/A`, `:`, `-`, `TBA`, and `TBD` 
+parsed as float and will be marked with `Double.NaN` in F#. The values
+`NaN`, `NA`, `N/A`, `#N/A`, `:`, `-`, `TBA`, and `TBD`
 are recognized as missing values by default, but you can customize it by specifying
-the `MissingValues` static parameter of `CsvProvider` as a comma-separated string. 
-For example, to ignore `this` and `that` we could do: 
+the `MissingValues` static parameter of `CsvProvider` as a comma-separated string.
+For example, to ignore `this` and `that` we could do:
 *)
 
 CsvProvider<"X,Y,Z\nthis,that,1.0",
             MissingValues="this,that">.GetSample().Rows
-(*** include-it ***)            
+(*** include-it ***)
 
 (**
 
