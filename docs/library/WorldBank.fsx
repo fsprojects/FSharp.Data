@@ -18,10 +18,10 @@ index: 5
 Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
-(** 
+(**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
 # WorldBank Provider
 
@@ -66,7 +66,7 @@ dimensions are provided as properties, so you can use autocomplete to easily dis
 various data sources. Most of the indicators use longer names, so we need to wrap the name
 in `\`\``.
 
-The result of the `Gross capital formation (% of GDP)` property is a sequence with 
+The result of the `Gross capital formation (% of GDP)` property is a sequence with
 values for different years. Using `Seq.maxBy fst` we get the most recent available value.
 
 ## Using World Bank data asynchronously
@@ -82,9 +82,9 @@ type WorldBank = WorldBankDataProvider<"World Development Indicators", Asynchron
 WorldBank.GetDataContext()
 
 (**
-The above snippet specified "World Development Indicators" as the name of the data 
+The above snippet specified "World Development Indicators" as the name of the data
 source (a collection of commonly available indicators) and it set the optional argument
-`Asynchronous` to `true`. As a result, properties such as 
+`Asynchronous` to `true`. As a result, properties such as
 `Gross capital formation (% of GDP)` will now have a type `Async<(int * int)[]>` meaning
 that they represent an asynchronous computation that can be started and will eventually
 produce the data.
@@ -93,14 +93,14 @@ produce the data.
 
 To demonstrate the asynchronous version of the type provider, let's write code that
 downloads the university enrollment data about a number of countries in parallel.
-We first create a data context and then define an array with some countries we want to 
+We first create a data context and then define an array with some countries we want to
 process:
 *)
 
 let wb = WorldBank.GetDataContext()
 
 // Create a list of countries to process
-let countries = 
+let countries =
  [| wb.Countries.``Arab World``
     wb.Countries.``European Union``
     wb.Countries.Australia
@@ -117,8 +117,8 @@ let countries =
     wb.Countries.``United States`` |]
 
 (**
-To download the information in parallel, we can create a list of asynchronous 
-computations, compose them using `Async.Parallel` and then run the (single) obtained 
+To download the information in parallel, we can create a list of asynchronous
+computations, compose them using `Async.Parallel` and then run the (single) obtained
 computation to perform all the downloads:
 *)
 

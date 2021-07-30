@@ -18,28 +18,28 @@ index: 4
 Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
-(** 
+(**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
-[![Script](../img/badge-script.svg)]({{fsdocs-source-basename}}.fsx)&emsp;
-[![Notebook](../img/badge-notebook.svg)]({{fsdocs-source-basename}}.ipynb)
+[![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
 # XML Type Provider
 
 This article demonstrates how to use the XML Type Provider to access XML documents
-in a statically typed way. We first look at how the structure is inferred and then 
+in a statically typed way. We first look at how the structure is inferred and then
 demonstrate the provider by parsing a RSS feed.
 
 The XML Type Provider provides statically typed access to XML documents.
 It takes a sample document as an input (or document containing a root XML node with
-multiple child nodes that are used as samples). The generated type can then be used 
-to read files with the same structure. If the loaded file does not match the structure 
+multiple child nodes that are used as samples). The generated type can then be used
+to read files with the same structure. If the loaded file does not match the structure
 of the sample, a runtime error may occur (but only when accessing e.g. non-existing element).
 Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
 relying on samples.
 
 ## Introducing the provider
 
-The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly
 is located in the `../../bin` directory, we can load it in F# Interactive as follows:
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type internally): *)
@@ -50,9 +50,9 @@ open FSharp.Data
 (**
 ### Inferring type from sample
 
-The `XmlProvider<...>` takes one static parameter of type `string`. The parameter can 
-be _either_ a sample XML string _or_ a sample file (relative to the current folder or online 
-accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
+The `XmlProvider<...>` takes one static parameter of type `string`. The parameter can
+be _either_ a sample XML string _or_ a sample file (relative to the current folder or online
+accessible via `http` or `https`). It is not likely that this could lead to ambiguities.
 
 The following sample generates a type that can read simple XML documents with a root node
 containing two attributes:
@@ -65,7 +65,7 @@ printfn "%s (%d)" sample.Name sample.Born
 
 (**
 The type provider generates a type `Author` that has properties corresponding to the
-attributes of the root element of the XML document. The types of the properties are 
+attributes of the root element of the XML document. The types of the properties are
 inferred based on the values in the sample document. In this case, the `Name` property
 has a type `string` and `Born` is `int`.
 
@@ -82,14 +82,14 @@ printfn "%s (%d)" sampleAlt.Name sampleAlt.Born
 (**
 The generated type provides exactly the same API for reading documents following this
 convention (Note that you cannot use `AuthorAlt` to parse samples that use the
-first style - the implementation of the types differs, they just provide the same public API.) 
+first style - the implementation of the types differs, they just provide the same public API.)
 
 The provider turns a node into a simply typed property only when the node contains just
-a primitive value and has no children or attributes. 
+a primitive value and has no children or attributes.
 
 ### Types for more complex structure
 
-Now let's look at a number of examples that have more interesting structure. First of 
+Now let's look at a number of examples that have more interesting structure. First of
 all, what if a node contains some value, but also has some attributes?
 *)
 
@@ -100,15 +100,15 @@ printfn "%s (full=%b)" info.Name.Value info.Name.Full
 
 (**
 If the node cannot be represented as a simple type (like `string`) then the provider
-builds a new type with multiple properties. Here, it generates a property `Full` 
+builds a new type with multiple properties. Here, it generates a property `Full`
 (based on the name of the attribute) and infers its type to be boolean. Then it
 adds a property with a (special) name `Value` that returns the content of the element.
 
 ### Types for multiple simple elements
 
-Another interesting case is when there are multiple nodes that contain just a 
+Another interesting case is when there are multiple nodes that contain just a
 primitive value. The following example shows what happens when the root node
-contains multiple `<value>` nodes (note that if we leave out the parameter to the 
+contains multiple `<value>` nodes (note that if we leave out the parameter to the
 `Parse` method, the same text used for the schema will be used as the runtime value).
 *)
 
@@ -124,18 +124,18 @@ are turned into `int` values and so the `Values` property returns just `int[]`!
 
 ## Processing philosophers
 
-In this section we look at an example that demonstrates how the type provider works 
-on a simple document that lists authors that write about a specific topic. The 
+In this section we look at an example that demonstrates how the type provider works
+on a simple document that lists authors that write about a specific topic. The
 sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
 
     [lang=xml]
     <authors topic="Philosophy of Science">
       <author name="Paul Feyerabend" born="1924" />
       <author name="Thomas Kuhn" />
-    </authors> 
+    </authors>
 
 At runtime, we use the generated type provider to parse the following string
-(which has the same structure as the sample document with the exception that 
+(which has the same structure as the sample document with the exception that
 one of the `author` nodes also contains a `died` attribute):
 *)
 
@@ -157,7 +157,7 @@ let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
 for author in topic.Authors do
-  printf " - %s" author.Name 
+  printf " - %s" author.Name
   author.Born |> Option.iter (printf " (%d)")
   printfn ""
 
@@ -176,7 +176,7 @@ dynamically using `author.XElement.Attribute(XName.Get("died"))`).
 In the examples shown earlier, an element was never (recursively) contained in an
 element of the same name (for example `<author>` never contained another `<author>`).
 However, when we work with documents such as XHTML files, this can often be the case.
-Consider for example, the following sample (a simplified version of 
+Consider for example, the following sample (a simplified version of
 [`data/HtmlBody.xml`](../data/HtmlBody.xml)):
 
     [lang=xml]
@@ -212,7 +212,7 @@ let rec printDiv (div:Html.Div) =
   if div.Spans.Length = 0 && div.Divs.Length = 0 then
       div.Value |> Option.iter (printfn "%s")
 
-// Print the root <div> element with all children  
+// Print the root <div> element with all children
 printDiv html
 
 (**
@@ -225,11 +225,11 @@ then we print the `Value` (inner text).
 ## Loading Directly from a File or URL
 
 In many cases we might want to define schema using a local sample file, but then directly
-load the data from disk or from a URL either synchronously (with `Load`) or asynchronously 
+load the data from disk or from a URL either synchronously (with `Load`) or asynchronously
 (with `AsyncLoad`).
 
 For this example I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
-which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so 
+which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so
 that it contains only the elements and attributes relevant to us:
 
     [lang=xml]
@@ -242,7 +242,7 @@ that it contains only the elements and attributes relevant to us:
             <dcat:distribution
                 dcat:accessURL="https://api.census.gov/data/2010/acs5">
             </dcat:distribution>
-        </dct:dataset>    
+        </dct:dataset>
         <dct:dataset>
             <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
             <dcat:distribution
@@ -251,8 +251,8 @@ that it contains only the elements and attributes relevant to us:
         </dct:dataset>
     </census-api>
 
-When doing this for your scenario, be careful to ensure that enough data is given for the provider 
-to infer the schema correctly. For example, the first level `<dct:dataset>` element must be included at 
+When doing this for your scenario, be careful to ensure that enough data is given for the provider
+to infer the schema correctly. For example, the first level `<dct:dataset>` element must be included at
 least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
 *)
 
@@ -265,21 +265,21 @@ let apiLinks = data.Datasets
 
 (**
 This US Census data is an interesting dataset with this top level API returning hundreds of other
-datasets each with their own API. Here we use the Census data to get a list of titles and URLs for 
+datasets each with their own API. Here we use the Census data to get a list of titles and URLs for
 the lower level APIs.
 *)
 
 (**
 ## Bringing in Some Async Action
 
-Let's go one step further and assume here a sligthly contrived but certainly plausible example where 
-we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background 
-and then post each link over (for example) a message queue. 
+Let's go one step further and assume here a sligthly contrived but certainly plausible example where
+we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background
+and then post each link over (for example) a message queue.
 
 This is where `AsyncLoad` comes into play:
 *)
 
-let enqueue (title,apiUrl) = 
+let enqueue (title,apiUrl) =
   // do the real message enqueueing here instead of
   printfn "%s -> %s" title apiUrl
 
@@ -315,7 +315,7 @@ easy - you can simply type `blog` followed by `.` and see what the autocompletio
 offers. The code looks like this:
 *)
 
-// Title is a property returning string 
+// Title is a property returning string
 printfn "%s" blog.Channel.Title
 
 // Get all item nodes and print title with link
@@ -369,7 +369,7 @@ We'll create types from both the input and output samples and use the constructo
 type InputXml = XmlProvider<customersXmlSample>
 type OutputXml = XmlProvider<orderLinesXmlSample>
 
-let orderLines = 
+let orderLines =
   OutputXml.OrderLines [|
     for customer in InputXml.GetSample().Customers do
       for order in customer.Orders do
