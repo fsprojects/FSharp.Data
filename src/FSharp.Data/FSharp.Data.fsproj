@@ -63,10 +63,5 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.7.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\keyfile.snk">
-      <Link>keyfile.snk</Link>
-    </Content>
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
