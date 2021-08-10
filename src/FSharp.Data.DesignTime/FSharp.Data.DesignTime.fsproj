@@ -61,9 +61,6 @@
     <Compile Include="..\Html\HtmlGenerator.fs" />
     <Compile Include="..\Html\HtmlProvider.fs" />
     <Compile Include="..\AssemblyInfo.DesignTime.fs" />
-    <None Include="..\keyfile.snk">
-      <Link>keyfile.snk</Link>
-    </None>
     <None Include="..\Test.fsx" />
   </ItemGroup>
   <ItemGroup>
