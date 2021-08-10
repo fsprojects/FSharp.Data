@@ -1,3 +1,7 @@
+#### 4.2.1 - Aug 08 2021
+
+* [Removing snk file from fsproj references](https://github.com/fsprojects/FSharp.Data/pull/1389)
+
 #### 4.2.0 - July  27 2021
 * [sign assemblies with strong name key file](https://github.com/fsprojects/FSharp.Data/pull/1386)
 
