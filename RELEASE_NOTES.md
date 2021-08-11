@@ -1,4 +1,4 @@
-#### 4.2.1 - Aug 08 2021
+#### 4.2.2 - Aug 08 2021
 
 * [Removing snk file from fsproj references](https://github.com/fsprojects/FSharp.Data/pull/1389)
 
