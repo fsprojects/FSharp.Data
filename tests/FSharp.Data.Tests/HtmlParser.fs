@@ -882,3 +882,28 @@ let ``Can handle escaped characters in a string inside script tag`` content =
                 [],
                 [ HtmlNode.NewText content ]) ]
     result |> should equal expected
+
+[<Test>]
+let ``Parsing non-html content doesn't cause an infinite loop - Github-1264``() =
+    let content =
+      """Steve Jobs steve@apple.com Education: - Master of Mathematics Honours Computer Science and Combinatorics &
+          Optimization. I
+          specialized in systems and real-time programming, programming language
+          implementation, and mathematical optimization.
+      Skills:
+        - Proficient in Rust, C++, Scheme, x86(_64) LaTeX,
+          (Postgre)SQL, Gurobi, AWS, Google Cloud Platform, .NET (Core), C#,
+          Python, low-level profiling and optimization on Linux and Windows.
+        - Can do things with Java, Haskell, Clojure,
+          Scala, AMPS, redis, OpenGL.
+        Instructional support assistant at the School,
+        September to January 2010.
+          - Started the Java project[3], a custom IDE for students in an
+            introductory computer science course."""
+
+    let result = HtmlDocument.Parse content
+    let expected =
+        HtmlDocument.New [
+            HtmlNode.NewText content
+        ]
+    result |> should equal expected
