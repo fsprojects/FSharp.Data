@@ -1,3 +1,7 @@
+### 4.2.3 - Sep 15 2021
+
+* [Fix a bug where HTML parsing could run indefinitely](https://github.com/fsprojects/FSharp.Data/pull/1393)
+
 #### 4.2.2 - Aug 08 2021
 
 * [Removing snk file from fsproj references](https://github.com/fsprojects/FSharp.Data/pull/1389)
