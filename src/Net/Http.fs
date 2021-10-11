@@ -1359,7 +1359,7 @@ module private HttpHelpers =
                 [ prefixedBoundary
                   HttpRequestHeaders.ContentDisposition("form-data", Some formField, Some fileName) |> printHeader
                   HttpRequestHeaders.ContentType contentType |> printHeader ]
-                |> String.concat Environment.NewLine
+                |> String.concat "\r\n"
             let headerStream =
                 let bytes = e.GetBytes headerpart
                 new MemoryStream(bytes) :> Stream
