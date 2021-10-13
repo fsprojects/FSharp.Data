@@ -907,3 +907,13 @@ let ``Parsing non-html content doesn't cause an infinite loop - Github-1264``() 
             HtmlNode.NewText content
         ]
     result |> should equal expected
+
+[<Test; Timeout(2000)>]
+let ``Can handle incomplete tags at end of file without creating an infinite loop``() =
+    let result = HtmlDocument.Parse """<html><head></head></html"""
+    let expected = 
+        HtmlDocument.New
+            [ HtmlNode.NewElement
+                ("html",
+                    [ HtmlNode.NewElement("head")])]
+    result |> should equal expected
