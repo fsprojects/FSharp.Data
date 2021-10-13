@@ -1,3 +1,7 @@
+### 4.2.4 - Oct 13 2021
+
+* [Fix a bug where HTML parsing could run indefinitely out with incomplete XML tags](https://github.com/fsprojects/FSharp.Data/pull/1396)
+
 ### 4.2.3 - Sep 15 2021
 
 * [Fix a bug where HTML parsing could run indefinitely](https://github.com/fsprojects/FSharp.Data/pull/1393)
