@@ -657,6 +657,7 @@ module internal HtmlParser =
         and tagName isEndTag state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
+            | TextParser.EndOfFile _ -> state.EmitTag(isEndTag)
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop(); state.EmitTag(isEndTag)
             | _ -> state.ConsTag(); tagName isEndTag state
@@ -684,6 +685,7 @@ module internal HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
             | TextParser.Whitespace _ -> afterAttributeName state
+            | TextParser.EndOfFile _ -> state.EmitTag(false)
             | _ -> state.ConsAttrName(); attributeName state
         and afterAttributeName state =
             match state.Peek() with
@@ -695,6 +697,7 @@ module internal HtmlParser =
         and beforeAttributeValue state =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
+            | TextParser.EndOfFile _ -> state.EmitTag(false)
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop(); state.EmitTag(false)
             | '"' -> state.Pop(); attributeValueQuoted '"' state
