@@ -11,32 +11,44 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
-nuget FSharp.Core >= 4.7.2
-nuget Microsoft.SourceLink.GitHub copy_local: true
+nuget FSharp.Core >= 4.7.2 lowest_matching: true
+nuget Microsoft.SourceLink.GitHub 1.0 copy_local: true
 
 group Fake
     source https://api.nuget.org/v3/index.json
     storage: none
 
-    nuget Fake.Core.Target             ~> 5.20.0
-    nuget Fake.Core.ReleaseNotes       ~> 5.20.0
-    nuget Fake.DotNet.AssemblyInfoFile ~> 5.20.0
-    nuget Fake.DotNet.Cli              ~> 5.20.0
-    nuget Fake.DotNet.Testing.NUnit    ~> 5.20.0
-    nuget Fake.DotNet.NuGet            ~> 5.20.0
-    nuget Fake.DotNet.MsBuild          ~> 5.20.0
-    nuget Fake.Tools.Git               ~> 5.20.0
-	nuget Fake.DotNet.Paket            ~> 5.20.0
+    nuget Fake.Testing.Common          5.20.3
+    nuget Fake.Net.Http                5.20.3
+    nuget Fake.IO.FileSystem           5.20.3
+    nuget Fake.Core.CommandLineParsing 5.20.3
+    nuget Fake.Core.Environment        5.20.3
+    nuget Fake.Core.FakeVar            5.20.3
+    nuget Fake.Core.SemVer             5.20.3
+    nuget Fake.Core.String             5.20.3
+    nuget Fake.Core.Context            5.20.3
+    nuget Fake.Core.Trace              5.20.3
+    nuget Fake.Core.Tasks              5.20.3
+    nuget Fake.Core.Target             5.20.3
+    nuget Fake.Core.ReleaseNotes       5.20.3
+    nuget Fake.DotNet.AssemblyInfoFile 5.20.3
+    nuget Fake.DotNet.Cli              5.20.3
+    nuget Fake.DotNet.Testing.NUnit    5.20.3
+    nuget Fake.DotNet.NuGet            5.20.3
+    nuget Fake.DotNet.MsBuild          5.20.3
+    nuget Fake.Tools.Git               5.20.3
+	nuget Fake.DotNet.Paket            5.20.3
+	nuget Microsoft.Build              16.9
+	nuget Microsoft.Build.Tasks.Core   16.9
+	nuget Microsoft.Build.Utilities.Core   16.9
 
-# NOTE: These are needed because ProvidedTypesTesting requires paket to install packages.
 group Test
     frameworks: net5.0
     source https://api.nuget.org/v3/index.json
 
+    nuget FSharp.Core 5.0.1
     nuget Microsoft.NET.Test.Sdk
-    nuget NUnit
+    nuget NUnit 3.13.1
     nuget NUnit3TestAdapter
-    nuget FsUnit
-    nuget FsCheck
-    nuget FSharp.Formatting = 8.0.1
-    nuget FSharp.Compiler.Service
+    nuget FsUnit  4.0.4
+    nuget FsCheck 2.15.1

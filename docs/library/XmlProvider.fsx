@@ -79,6 +79,8 @@ let sampleAlt = AuthorAlt.Parse(doc)
 
 printfn "%s (%d)" sampleAlt.Name sampleAlt.Born
 
+(*** include-fsi-merged-output ***)
+
 (**
 The generated type provides exactly the same API for reading documents following this
 convention (Note that you cannot use `AuthorAlt` to parse samples that use the
@@ -98,6 +100,8 @@ let info = Detailed.Parse("""<author><name full="false">Thomas Kuhn</name></auth
 
 printfn "%s (full=%b)" info.Name.Value info.Name.Full
 
+(*** include-fsi-merged-output ***)
+
 (**
 If the node cannot be represented as a simple type (like `string`) then the provider
 builds a new type with multiple properties. Here, it generates a property `Full`
@@ -114,8 +118,8 @@ contains multiple `<value>` nodes (note that if we leave out the parameter to th
 
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
-Test.GetSample().Values
-|> Seq.iter (printfn "%d")
+for v in Test.GetSample().Values do
+   printfn "%d" v
 
 (**
 The type provider generates a property `Values` that returns an array with the
@@ -152,14 +156,19 @@ The `Load` and `AsyncLoad` methods allows reading the data from a file or from a
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
-type Authors = XmlProvider<"../data/Writers.xml", ResolutionFolder=__SOURCE_DIRECTORY__>
+[<Literal>]
+let ResolutionFolder = __SOURCE_DIRECTORY__
+
+type Authors = XmlProvider<"../data/Writers.xml", ResolutionFolder=ResolutionFolder>
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
 for author in topic.Authors do
-  printf " - %s" author.Name
-  author.Born |> Option.iter (printf " (%d)")
-  printfn ""
+    printf " - %s" author.Name
+    author.Born |> Option.iter (printf " (%d)")
+    printfn ""
+
+(*** include-fsi-merged-output ***)
 
 (**
 The value `topic` has a property `Topic` (of type `string`) which returns the value
@@ -193,7 +202,7 @@ that processes `<div>` elements. To make this possible, you need to set an optio
 parameter `Global` to `true`:
 *)
 
-type Html = XmlProvider<"../data/HtmlBody.xml", Global=true, ResolutionFolder=__SOURCE_DIRECTORY__>
+type Html = XmlProvider<"../data/HtmlBody.xml", Global=true, ResolutionFolder=ResolutionFolder>
 let html = Html.GetSample()
 
 (**
@@ -214,6 +223,8 @@ let rec printDiv (div:Html.Div) =
 
 // Print the root <div> element with all children
 printDiv html
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -256,12 +267,14 @@ to infer the schema correctly. For example, the first level `<dct:dataset>` elem
 least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
 *)
 
-type Census = XmlProvider<"../data/Census.xml", ResolutionFolder=__SOURCE_DIRECTORY__>
+type Census = XmlProvider<"../data/Census.xml", ResolutionFolder=ResolutionFolder>
 
 let data = Census.Load("https://api.census.gov/data.xml")
 
 let apiLinks = data.Datasets
                |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+
+(*** include-fsi-merged-output ***)
 
 (**
 This US Census data is an interesting dataset with this top level API returning hundreds of other
@@ -289,6 +302,8 @@ let cacheJanitor() = async {
   reloadData.Datasets |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
                       |> Array.iter enqueue
 }
+
+(*** include-fsi-merged-output ***)
 
 (**
 ## Reading RSS feeds
@@ -321,6 +336,8 @@ printfn "%s" blog.Channel.Title
 // Get all item nodes and print title with link
 for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -379,6 +396,8 @@ let orderLines =
                     order.Number,
                     line.Item,
                     line.Quantity ) |]
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -468,6 +487,8 @@ match e2.Root1, e2.Root2 with
     printfn "Bar = %s and Baz = %O" x.Bar x.Baz
 | _ -> failwith "Unexpected"
 
+(*** include-fsi-merged-output ***)
+
 (**
 
 
@@ -541,6 +562,8 @@ match fooChoice.Baz with
 | Some date -> printfn "%d" date.Year // 1957
 | None -> ()
 
+(*** include-fsi-merged-output ***)
+
 (**
 Another xsd construct to model the content of an element is `all`, which is used less often and
 it's like a sequence where the order of elements does not matter. The corresponding provided type
@@ -579,6 +602,8 @@ let formula = Prop.Parse """
 printfn "%s" formula.Props.[0] // p1
 printfn "%s" formula.Ands.[0].Props.[0] // p2
 printfn "%s" formula.Ands.[0].Props.[1] // p3
+
+(*** include-fsi-merged-output ***)
 
 (**
 Substitution groups are like choices, and the type provider produces an optional

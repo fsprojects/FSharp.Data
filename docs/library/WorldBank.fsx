@@ -59,6 +59,8 @@ data
   .Indicators.``Gross capital formation (% of GDP)``
 |> Seq.maxBy fst
 
+(*** include-fsi-merged-output ***)
+
 (**
 When generating the data context, the WorldBank Type Provider retrieves the list of all
 countries known to the WorldBank and the list of all supported indicators. Both of these
@@ -122,13 +124,12 @@ computations, compose them using `Async.Parallel` and then run the (single) obta
 computation to perform all the downloads:
 *)
 
-(*** define-output:chart2 ***)
-
 [ for c in countries ->
     c.Indicators.``Gross capital formation (% of GDP)`` ]
 |> Async.Parallel
 |> Async.RunSynchronously
 
+(*** include-fsi-merged-output ***)
 
 (**
 ## Related articles

@@ -70,7 +70,10 @@ and the next rows define the data. We can pass reference to the file to `cref:T:
 get a strongly typed view of the file:
 *)
 
-type Stocks = CsvProvider<"../data/MSFT.csv", ResolutionFolder=__SOURCE_DIRECTORY__>
+[<Literal>]
+let ResolutionFolder = __SOURCE_DIRECTORY__
+
+type Stocks = CsvProvider<"../data/MSFT.csv", ResolutionFolder=ResolutionFolder>
 
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
@@ -93,6 +96,8 @@ let lastOpen = firstRow.Open
 for row in msft.Rows do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
+(*** include-fsi-merged-output ***)
+
 (**
 The generated type has a property `Rows` that returns the data from the CSV file as a
 collection of rows. We iterate over the rows using a `for` loop. As you can see the
@@ -103,48 +108,9 @@ As you can see, the type provider also infers types of individual rows. The `Dat
 property is inferred to be a `DateTime` (because the values in the sample file can all
 be parsed as dates) while HLOC prices are inferred as `decimal`.
 
-### Charting stock prices
-
-We can use the [XPlot.Plotly](https://fslab.org/XPlot/) library to draw a simple line chart showing how the price
-of MSFT stocks changes:
-*)
-
-// Load the XPlot.Plotly library
-#r "nuget: XPlot.Plotly, Version=3.0.1"
-open XPlot.Plotly
-open System
-
-(*** define-output:chart1 ***)
-
-// Visualize the stock prices
-[ for row in msft.Rows -> row.Date, row.Open ]
-|> Chart.Line
-
-(*** include-it:chart1 ***)
-
-(**
-As one more example, we use the `Candlestick` chart to get a more detailed look at the
-data over the last month:
-*)
-
-// Get last months' prices in HLOC format
-let recent =
-  [ for row in msft.Rows do
-      if row.Date > DateTime.Parse("9 Sep 2017") then
-        yield row.Date, row.High, row.Low, row.Open, row.Close ]
-
-(*** define-output:chart2 ***)
-
-// Visualize prices using Candlestick chart
-Chart.Candlestick(recent)
-
-(*** include-it:chart2 ***)
-
-(**
 ## Using units of measure
 
-Another interesting feature of the CSV type provider is that it supports F# units of measure.
-If the header includes the name or symbol of one of the standard SI units, then the generated type
+The CSV type provider supports F# units of measure: if the header includes the name or symbol of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit.
 
 In this section, we use a simple file [`data/SmallTest.csv`](../data/SmallTest.csv) which
@@ -161,13 +127,17 @@ a static argument. Also note that in this case we're using the same data at runt
 so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
-let small = CsvProvider<"../data/SmallTest.csv", ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
+let small = CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>.GetSample()
+
+(*** include-fsi-merged-output ***)
 
 (**
 We can also use the default constructor instead of the `GetSample` static method:
 *)
 
-let small2 = new CsvProvider<"../data/SmallTest.csv", ResolutionFolder=__SOURCE_DIRECTORY__>()
+let small2 = new CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>()
+
+(*** include-fsi-merged-output ***)
 
 (**
 but the VisualStudio IntelliSense for the type provider parameters doesn't work when we use a default
@@ -185,6 +155,8 @@ for row in small.Rows do
   if speed > 15.0M<metre/second> then
     printfn "%s (%A m/s)" row.Name speed
 
+(*** include-fsi-merged-output ***)
+
 (**
 The numerical values of `Distance` and `Time` are both inferred as `decimal` (because they
 are small enough). Thus the type of `speed` becomes `decimal<metre/second>`. The compiler
@@ -201,13 +173,15 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-type AirQuality = CsvProvider<"../data/AirQuality.csv", ";", ResolutionFolder=__SOURCE_DIRECTORY__>
+type AirQuality = CsvProvider<"../data/AirQuality.csv", ";", ResolutionFolder=ResolutionFolder>
 
 let airQuality = new AirQuality()
 
 for row in airQuality.Rows do
   if row.Month > 6 then
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
+
+(*** include-fsi-merged-output ***)
 
 (**
 The air quality dataset ([`data/AirQuality.csv`](../data/AirQuality.csv)) is used in many
@@ -221,7 +195,7 @@ we also set `IgnoreErrors` static parameter to `true` so that lines with incorre
 are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
-let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=__SOURCE_DIRECTORY__>.GetSample()
+let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=ResolutionFolder>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
@@ -234,12 +208,14 @@ for r in mortalityNy.Rows do
   if r.``Cause of death Code`` = "V13.4" then
     printfn "%s (%d cases)" r.County r.Count
 
+(*** include-fsi-merged-output ***)
+
 (**
 
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains
 rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"../data/AirQuality.csv", Separator=";,", ResolutionFolder=__SOURCE_DIRECTORY__>`.
+`CsvProvider<"../data/AirQuality.csv", Separator=";,", ResolutionFolder=ResolutionFolder>`.
 
 ## Missing values
 
@@ -255,14 +231,14 @@ For example, to ignore `this` and `that` we could do:
 
 CsvProvider<"X,Y,Z\nthis,that,1.0",
             MissingValues="this,that">.GetSample().Rows
-(*** include-it ***)
-
+(*** include-fsi-merged-output ***)
 (**
 
 The following snippet calculates the mean of the ozone observations
 excluding the `Double.NaN` values. We first obtain the `Ozone` property for
 each row, then remove missing values and then use the standard `Seq.average` function:
 *)
+open System
 
 let mean =
   airQuality.Rows
@@ -270,6 +246,8 @@ let mean =
   |> Array.map (fun row -> row.Ozone)
   |> Array.filter (fun elem -> not (Double.IsNaN elem))
   |> Array.average
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -351,6 +329,9 @@ for row in csv.Rows do
     (row.Duration/1.0<second>)
     row.Foo
     (defaultArg row.Column3 1.0)
+
+(*** include-fsi-merged-output ***)
+
 (**
 
 You don't need to override all the columns, you can skip the ones to leave as default.
@@ -363,12 +344,14 @@ the other columns blank in the schema (you also don't need to add all the traili
 type Titanic1 =
   CsvProvider<"../data/Titanic.csv",
               Schema=",,Passenger Class,,,float",
-              ResolutionFolder=__SOURCE_DIRECTORY__>
+              ResolutionFolder=ResolutionFolder>
 
 let titanic1 = Titanic1.GetSample()
 for row in titanic1.Rows do
   printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -378,12 +361,15 @@ Alternatively, you can rename and override the type of any column by name instea
 type Titanic2 =
   CsvProvider<"../data/Titanic.csv",
               Schema="Fare=float,PClass->Passenger Class",
-              ResolutionFolder=__SOURCE_DIRECTORY__>
+              ResolutionFolder=ResolutionFolder>
 
 let titanic2 = Titanic2.GetSample()
 for row in titanic2.Rows do
   printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
+
+(*** include-fsi-merged-output ***)
+
 (**
 
 You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,PClass->Passenger Class=string"`
@@ -405,6 +391,8 @@ airQuality
   .Truncate(10)
   .SaveToString()
 
+(*** include-fsi-merged-output ***)
+
 (**
 
 It's also possible to transform the columns themselves by using `Map` and the constructor for the `Row` type.
@@ -416,6 +404,8 @@ let doubleOzone =
     AirQuality.Row
       ( row.Ozone * 2.0, row.``Solar.R``,
         row.Wind, row.Temp, row.Month, row.Day))
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -431,6 +421,8 @@ let newRows =
 let airQualityWithExtraRows =
   airQuality.Append newRows
 
+(*** include-fsi-merged-output ***)
+
 (**
 
 It's even possible to create csv files without parsing at all:
@@ -443,10 +435,12 @@ type MyCsvType =
 
 let myRows =
   [ MyCsvType.Row(1, "a", None)
-    MyCsvType.Row(2, "B", Some DateTime.Now) ]
+    MyCsvType.Row(2, "B", Some System.DateTime.Now) ]
 
 let myCsv = new MyCsvType(myRows)
 myCsv.SaveToString()
+
+(*** include-fsi-merged-output ***)
 
 (**
 

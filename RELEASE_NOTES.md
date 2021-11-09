@@ -39,7 +39,7 @@ Several other fixes:
 * [HTML parsing for attributes not separated by a space](https://github.com/fsprojects/FSharp.Data/pull/1327)
 * [Update JsonProvider.fsx](https://github.com/fsprojects/FSharp.Data/pull/1334)
 * [Pluralizer - Add "slices" to special cases](https://github.com/fsprojects/FSharp.Data/pull/1335)
-* [add ResolutionFolder=__SOURCE_DIRECTORY__ to docs](https://github.com/fsprojects/FSharp.Data/pull/1344)
+* [add ResolutionFolder=ResolutionFolder to docs](https://github.com/fsprojects/FSharp.Data/pull/1344)
 * [fix links in docs/tools/generate.fsx](https://github.com/fsprojects/FSharp.Data/pull/1348)
 * [Revamp docs generation and move to .NET Standard 2.0 only](https://github.com/fsprojects/FSharp.Data/pull/1350)
 
