@@ -22,8 +22,6 @@ jobs:
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t All
-    - name: Build docs
-      run: dotnet fsdocs build --properties Configuration=Release --clean --strict --eval
     - name: Deploy documentation from master
       uses: peaceiris/actions-gh-pages@v3
       with:
