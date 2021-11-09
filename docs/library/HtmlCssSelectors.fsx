@@ -19,7 +19,7 @@ Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
-[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/diffsharp/diffsharp.github.io/master?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/main?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
 [![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
