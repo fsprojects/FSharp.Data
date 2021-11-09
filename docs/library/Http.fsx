@@ -60,6 +60,8 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
         printfn "%d" html.Length }
 |> Async.Start
 
+(*** include-fsi-merged-output ***)
+
 (**
 In the rest of the documentation, we focus on the `RequestString` method, because
 the use of `AsyncRequestString` is exactly the same.
@@ -75,6 +77,8 @@ specifies the GET method, but it will be set automatically for you if you omit i
 Http.RequestString
   ( "http://httpbin.org/get",
     query=["test", "foo"], httpMethod="GET" )
+
+(*** include-fsi-merged-output ***)
 
 (**
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -126,12 +130,10 @@ the response content, so it's easier to debug in F# interactive when the server 
 You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
 *)
 
-(*** define-output:request ***)
 
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
 
-(** This returns the following: *)
-(*** include-it:request ***)
+(*** include-fsi-merged-output ***)
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response
@@ -168,6 +170,8 @@ returns the request details:
 
 Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 
+(*** include-fsi-merged-output ***)
+
 (**
 By default, the `Content-Type` header is set to `text/plain`, `application/x-www-form-urlencoded`,
 or `application/octet-stream`, depending on which kind of `HttpRequestBody` you specify, but you can change
@@ -178,6 +182,8 @@ Http.RequestString
   ( "http://httpbin.org/post",
     headers = [ ContentType HttpContentTypes.Json ],
     body = TextRequest """ {"test": 42} """)
+
+(*** include-fsi-merged-output ***)
 
 (**
 ## Maintaining cookies across requests

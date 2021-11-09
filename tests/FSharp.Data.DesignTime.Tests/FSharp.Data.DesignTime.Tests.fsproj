@@ -16,7 +16,6 @@
     <Compile Include="InferenceTests.fs" />
     <None Include="SignatureTestCases.config" />
     <Compile Include="SignatureTests.fs" />
-    <Compile Include="DocumentationTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

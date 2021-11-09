@@ -57,7 +57,10 @@ Usually with HTML files headers are demarked by using the <th> tag, however in t
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness.
 *)
 
-type F1_2017 = HtmlProvider<"../data/2017_F1.htm", ResolutionFolder=__SOURCE_DIRECTORY__>
+[<Literal>]
+let ResolutionFolder = __SOURCE_DIRECTORY__
+
+type F1_2017 = HtmlProvider<"../data/2017_F1.htm", ResolutionFolder=ResolutionFolder>
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
@@ -114,7 +117,7 @@ type NugetStats =
   HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats().Tables.``Version History``
+let rawStats = NugetStats().Tables.Table3
 
 // helper function to analyze version numbers from nuget
 let getMinorVersion (v:string) =

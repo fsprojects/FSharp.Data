@@ -4,4 +4,4 @@ group Test
     NUnit
     NUnit3TestAdapter
     FsUnit
-    FSharp.Formatting
+    

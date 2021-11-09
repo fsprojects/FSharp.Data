@@ -45,6 +45,7 @@ We will parse links of a Google to search for `FSharp.Data` like in the [HTML Pa
 let googleUrl = "http://www.google.co.uk/search?q=FSharp.Data"
 let doc = HtmlDocument.Load(googleUrl)
 
+(*** include-fsi-merged-output ***)
 (**
 To make sure we extract search results only, we will parse links in the `<div>` with id `search`.
 Then we can , for example, use the direct descendants selector to select another `<div>` with the
@@ -57,6 +58,8 @@ let links =
       | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
       | t -> "http://" + t )
 
+(*** include-fsi-merged-output ***)
+
 (**
 The rest of the selector (written as `li.g > div.s`) skips the first 4 sub-results targeting GitHub pages,
 so we only extract proper links.
@@ -68,6 +71,8 @@ let searchResults =
     doc.CssSelect("div#search > div#ires div.g > h3")
     |> List.map (fun n -> n.InnerText())
     |> List.zip (links)
+
+(*** include-fsi-merged-output ***)
 
 (**
 
@@ -84,6 +89,8 @@ let books =
     doc2.CssSelect("div.g h3.r a")
     |> List.map(fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
     |> List.filter(fun (title, href) -> title.Contains("F#"))
+
+(*** include-fsi-merged-output ***)
 
 (**
 ## JQuery selectors
@@ -108,6 +115,8 @@ let englishDoc = HtmlDocument.Parse("""
 
 let englishLinks =
   englishDoc.CssSelect("a[hreflang|=en]")
+
+(*** include-fsi-merged-output ***)
 (**
 ### Attribute Contains Selector
 
@@ -129,6 +138,8 @@ let manDoc = HtmlDocument.Parse("""
 
 let manElems =
   manDoc.CssSelect("input[name*='man']")
+
+(*** include-fsi-merged-output ***)
 (**
 ### Attribute Contains Word Selector
 
@@ -137,6 +148,8 @@ Finds all inputs with a name containing the word "man". This requires a whitespa
 let manWordElems =
   manDoc.CssSelect("input[name~='man']")
 
+(*** include-fsi-merged-output ***)
+
 (**
 ### Attribute Ends With Selector
 
@@ -144,6 +157,8 @@ Finds all inputs with a name ending with "man".
 *)
 let manEndElemes =
   manDoc.CssSelect("input[name$='man']")
+
+(*** include-fsi-merged-output ***)
 
 (**
 ### Attribute Equals Selector
@@ -154,6 +169,8 @@ Finds all inputs with a name equal to "man".
 let manEqElemes =
   manDoc.CssSelect("input[name='man']")
 
+(*** include-fsi-merged-output ***)
+
 (**
 ### Attribute Not Equal Selector
 
@@ -161,6 +178,8 @@ Finds all inputs with a name different to "man".
 *)
 let notManElems =
   manDoc.CssSelect("input[name!='man']")
+
+(*** include-fsi-merged-output ***)
 
 (**
 ### Attribute Starts With Selector
@@ -170,6 +189,8 @@ Finds all inputs with a name starting with "man".
 
 let manStartElems =
   manDoc.CssSelect("input[name^='man']")
+
+(*** include-fsi-merged-output ***)
 
 (**
 ### Forms helpers
@@ -231,6 +252,8 @@ let password = htmlForm.CssSelect(":password")
 
 // Find all files uploaders.
 let file = htmlForm.CssSelect(":file")
+
+(*** include-fsi-merged-output ***)
 
 (**
 

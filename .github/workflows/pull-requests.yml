@@ -21,6 +21,8 @@ jobs:
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t All
+    - name: Build docs
+      run: dotnet fsdocs build --properties Configuration=Release --clean --strict --eval
 
   build-ubuntu:
 
@@ -37,3 +39,5 @@ jobs:
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t RunTests
+    - name: Build docs
+      run: dotnet fsdocs build --properties Configuration=Release --clean --strict --eval

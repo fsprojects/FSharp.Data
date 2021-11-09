@@ -46,6 +46,8 @@ to extract the data from the page. Note: an asynchronous variant `cref:M:FSharp.
 *)
 let results = HtmlDocument.Load("http://www.google.co.uk/search?q=FSharp.Data")
 
+(*** include-fsi-merged-output ***)
+
 (**
 Now that we have a loaded HTML document we can begin to extract data from it.
 Firstly we want to extract all of the anchor tags `a` out of the document, then
@@ -62,6 +64,8 @@ let links =
     )
     |> Seq.toList
 
+(*** include-fsi-merged-output ***)
+
 (**
 Now that we have extracted our search results you will notice that there are lots of
 other links to various Google services and cached/similar results. Ideally we would
@@ -76,8 +80,5 @@ let searchResults =
                     name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
     |> List.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
 
-(**
-Putting this all together yields the following:
-*)
+(*** include-fsi-merged-output ***)
 
-(*** include-value:searchResults ***)

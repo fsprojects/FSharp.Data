@@ -55,6 +55,7 @@ for row in msft.Rows do
   printfn "HLOC: (%s, %s, %s)"
     (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
+(*** include-fsi-merged-output ***)
 (**
 
 Note that unlike `CsvProvider`, `cref:T:FSharp.Data.CsvFile` works in streaming mode for performance reasons, which means
@@ -94,6 +95,8 @@ for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)"
     (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
+(*** include-fsi-merged-output ***)
+
 (**
 
 ## Transforming CSV files
@@ -109,6 +112,7 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
     .Truncate(10)
     .SaveToString('\t')
 
+(*** include-fsi-merged-output ***)
 (**
 
 ## Related articles

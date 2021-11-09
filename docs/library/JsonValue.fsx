@@ -49,6 +49,8 @@ let info =
     { "name": "Tomas", "born": 1985,
       "siblings": [ "Jan", "Alexander" ] } """)
 
+(*** include-fsi-merged-output ***)
+
 (**
 The parsed value can be processed using pattern matching - the `cref:T:FSharp.Data.JsonValue` type
 is a discriminated union with cases such as `Record`, `Collection` and others that
@@ -103,6 +105,8 @@ printfn "%s (%d)" (info?name.AsString()) (info?born.AsInteger())
 for sib in info?siblings do
   printfn "%s" (sib.AsString())
 
+(*** include-fsi-merged-output ***)
+
 (**
 Note that the `cref:T:FSharp.Data.JsonValue` type does not actually implement the `IEnumerable<'T>`
 interface (meaning that it cannot be passed to `Seq.xyz` functions). It only has
@@ -144,6 +148,8 @@ let wbReq =
 let valueAsync =
   JsonValue.AsyncLoad(wbReq)
 
+(*** include-fsi-merged-output ***)
+
 (** To split the top-level array into the first record (with overall information)
 and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
@@ -163,6 +169,8 @@ match value with
         printfn "%d: %f" (record?date.AsInteger())
                          (record?value.AsFloat())
 | _ -> printfn "failed"
+
+(*** include-fsi-merged-output ***)
 
 (**
 The `value` property of a data point is not always available - as demonstrated
