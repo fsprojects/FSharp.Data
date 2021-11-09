@@ -1,8 +1,8 @@
 RESTRICTION: || (== net50) (== netstandard2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (4.7.2)
-    Microsoft.Build.Tasks.Git (1.1) - copy_local: true
+    FSharp.Core (5.0.1)
+    Microsoft.Build.Tasks.Git (1.0) - copy_local: true
     Microsoft.NETCore.App (2.2.8)
       Microsoft.NETCore.DotNetHostPolicy (>= 2.2.8) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 2.2.4) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
@@ -15,7 +15,7 @@ NUGET
       Microsoft.NETCore.DotNetAppHost (>= 6.0)
     Microsoft.NETCore.Platforms (6.0) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
     Microsoft.NETCore.Targets (5.0) - restriction: || (== net50) (&& (== netstandard2.0) (>= netcoreapp2.2))
-    Microsoft.SourceLink.Common (1.1) - copy_local: true
+    Microsoft.SourceLink.Common (1.0) - copy_local: true
     Microsoft.SourceLink.GitHub (1.0) - copy_local: true
       Microsoft.Build.Tasks.Git (>= 1.0)
       Microsoft.SourceLink.Common (>= 1.0)

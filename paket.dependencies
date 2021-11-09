@@ -11,8 +11,10 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
-nuget FSharp.Core >= 4.7.2 lowest_matching: true
+nuget FSharp.Core >= 5.0.1 lowest_matching: true
 nuget Microsoft.SourceLink.GitHub 1.0 copy_local: true
+nuget Microsoft.SourceLink.Common 1.0 copy_local: true
+nuget Microsoft.Build.Tasks.Git 1.0 copy_local: true
 
 group Fake
     source https://api.nuget.org/v3/index.json
