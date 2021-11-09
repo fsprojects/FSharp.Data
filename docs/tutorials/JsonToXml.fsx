@@ -15,13 +15,13 @@ index: 2
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
-Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
+Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
 # Converting between JSON and XML
 
-[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/main?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
 [![Notebook](../img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 
