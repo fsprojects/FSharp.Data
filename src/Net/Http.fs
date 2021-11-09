@@ -1367,7 +1367,8 @@ module private HttpHelpers =
                 [ headerStream
                   newlineStream()
                   newlineStream()
-                  fileStream ]
+                  fileStream 
+                  newlineStream()]
             let partLength = partSubstreams |> Seq.sumBy (fun s -> s.Length)
             new CombinedStream(partLength, partSubstreams) :> Stream
         )
