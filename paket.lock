@@ -172,7 +172,7 @@ NUGET
       System.Text.Encoding.CodePages (>= 4.0.1) - restriction: >= netcoreapp2.1
       System.Text.Json (>= 4.7) - restriction: || (>= net472) (>= netcoreapp2.1)
       System.Threading.Tasks.Dataflow (>= 4.9) - restriction: || (>= net472) (>= netcoreapp2.1)
-    Microsoft.Build.Framework (17.0) - restriction: >= netstandard2.0
+    Microsoft.Build.Framework (16.9)
       System.Security.Permissions (>= 4.7) - restriction: && (< net472) (>= netstandard2.0)
     Microsoft.Build.Tasks.Core (16.9)
       Microsoft.Build.Framework (>= 16.9) - restriction: >= netstandard2.0
@@ -298,7 +298,7 @@ NUGET
       System.Memory (>= 4.5.4) - restriction: && (< net461) (>= netstandard2.0)
       System.Security.AccessControl (>= 6.0) - restriction: || (>= net461) (>= netstandard2.0)
       System.Security.Cryptography.Pkcs (>= 6.0) - restriction: && (< net461) (>= netstandard2.0)
-    System.Security.Permissions (6.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= netcoreapp2.1)
+    System.Security.Permissions (6.0) - restriction: && (< net472) (>= netstandard2.0)
       System.Security.AccessControl (>= 6.0) - restriction: || (>= net461) (>= netstandard2.0)
       System.Windows.Extensions (>= 6.0) - restriction: >= netcoreapp3.1
     System.Security.Principal.Windows (5.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= netcoreapp2.1)

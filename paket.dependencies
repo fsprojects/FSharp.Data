@@ -41,6 +41,7 @@ group Fake
     nuget Fake.Tools.Git               5.20.3
 	nuget Fake.DotNet.Paket            5.20.3
 	nuget Microsoft.Build              16.9
+	nuget Microsoft.Build.Framework    16.9
 	nuget Microsoft.Build.Tasks.Core   16.9
 	nuget Microsoft.Build.Utilities.Core   16.9
 
