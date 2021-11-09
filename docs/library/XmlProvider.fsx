@@ -15,7 +15,7 @@ index: 4
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
-Formatter.SetPreferredMimeTypeFor(typeof<obj>, "text/plain")
+Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 (**
