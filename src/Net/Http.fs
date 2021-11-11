@@ -1236,7 +1236,7 @@ module HttpEncodings =
         | _ -> Encoding.GetEncoding encodingStr
 
 [<AutoOpen>]
-module private HttpHelpers =
+module internal HttpHelpers =
 
     /// Decorator for System.Net.WebResponse class
     /// used to make response stream seekable

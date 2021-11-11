@@ -191,3 +191,19 @@ let ``escaping of reserve characters in query`` () =
 
     Http.AppendQueryToUrl(url, queryParams)
     |> should equal "http://nevermind.com?key%21=v%40lue1&key%23=value2%26%28value%3A%2F%3F%23%5B%5D%40%2A%2B%2C%3B%3D%29"
+    
+[<Test>]
+let ``correct multipart content format`` () =
+    let numFiles = 2
+    let boundary = "**"
+    let content = "Text file content"
+    let multiPartItem (content: string) name = MultipartItem(name, name, (new IO.MemoryStream(Encoding.UTF8.GetBytes(content))) :> IO.Stream)
+    let multiparts = seq {for i in [0..numFiles] -> multiPartItem content (i.ToString()) } 
+    let combinedStream = HttpHelpers.writeMultipart boundary multiparts Encoding.UTF8
+    use ms = new IO.MemoryStream()
+    combinedStream.CopyTo(ms)
+    let str = Encoding.UTF8.GetString(ms.ToArray())
+    Console.WriteLine(str)
+    let singleMultipartFormat file = sprintf "--%s\r\nContent-Disposition: form-data; name=\"%i\"; filename=\"%i\"\r\nContent-Type: application/octet-stream\r\n\r\n%s\r\n" boundary file file content
+    let finalFormat = [sprintf "\r\n--%s--" boundary] |> Seq.append (seq {for i in [0..numFiles] -> singleMultipartFormat i }) |>  String.concat ""
+    str |> should equal finalFormat
