@@ -92,8 +92,8 @@ let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
 
-// Print the prices in the HLOC format
-for row in msft.Rows do
+// Print the first 10 prices in the HLOC format
+for row in msft.Rows |> Seq.truncate 10 do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
 (*** include-fsi-merged-output ***)
@@ -177,7 +177,7 @@ type AirQuality = CsvProvider<"../data/AirQuality.csv", ";", ResolutionFolder=Re
 
 let airQuality = new AirQuality()
 
-for row in airQuality.Rows do
+for row in airQuality.Rows |> Seq.truncate 10 do
   if row.Month > 6 then
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
@@ -347,7 +347,7 @@ type Titanic1 =
               ResolutionFolder=ResolutionFolder>
 
 let titanic1 = Titanic1.GetSample()
-for row in titanic1.Rows do
+for row in titanic1.Rows |> Seq.truncate 10 do
   printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
 
@@ -364,7 +364,7 @@ type Titanic2 =
               ResolutionFolder=ResolutionFolder>
 
 let titanic2 = Titanic2.GetSample()
-for row in titanic2.Rows do
+for row in titanic2.Rows |> Seq.truncate 10 do
   printfn "%s Class = %d Fare = %g"
     row.Name row.``Passenger Class`` row.Fare
 
