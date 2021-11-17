@@ -1441,7 +1441,7 @@ module internal HttpHelpers =
             checkForRepeatedHeaders (header::visitedHeaders) remainingHeaders
 
     let setHeaders headers (req:HttpWebRequest) =
-        let hasContentType = ref false
+        let mutable hasContentType = false
         checkForRepeatedHeaders [] headers
         headers |> List.iter (fun (header:string, value) ->
             match header.ToLowerInvariant() with
@@ -1461,7 +1461,7 @@ module internal HttpHelpers =
             | "content-range" -> req.Headers.[HeaderEnum.ContentRange] <- value
             | "content-type" ->
                 req.ContentType <- value
-                hasContentType := true
+                hasContentType <- true
             | "date" -> req.Date <- DateTime.SpecifyKind(DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture), DateTimeKind.Utc)
             | "expect" -> req.Expect <- value
             | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
@@ -1493,7 +1493,7 @@ module internal HttpHelpers =
             | "warning" -> req.Headers.[HeaderEnum.Warning] <- value
             | _ -> req.Headers.[header] <- value
         )
-        hasContentType.Value
+        hasContentType
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
 

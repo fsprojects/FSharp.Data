@@ -411,12 +411,12 @@ let ``Can parse wiki sample``() =
 [<Test>]
 let ``Can load empty json file and fails on property access``() = 
     let document = WikiSample.Load("Data/Empty.json")
-    let failed = ref false
+    let mutable failed = false
     try
         document.Age |> ignore
     with
-    | _ -> failed := true
-    !failed |> should be True
+    | _ -> failed <- true
+    failed |> should be True
 
 let newJson = 
     """{  

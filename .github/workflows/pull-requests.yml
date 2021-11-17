@@ -19,8 +19,10 @@ jobs:
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
-    - name: Build and test
+    - name: Build and test (Release)
       run: dotnet fake build -t All
+    - name: Build (Debug)
+      run: dotnet build -c Debug
 
   build-ubuntu:
 
@@ -37,3 +39,5 @@ jobs:
       run: dotnet paket restore
     - name: Build and test
       run: dotnet fake build -t RunTests
+    - name: Build (Debug)
+      run: dotnet build -c Debug

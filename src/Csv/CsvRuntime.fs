@@ -250,16 +250,16 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
-    let disposed = ref false
+    let mutable disposed = false
     let disposer = 
       { new IDisposable with
           member x.Dispose() = 
-            if not !disposed then
+            if not disposed then
                 Seq.iter (fun f -> f()) disposeFuncs
-                disposed := true }
+                disposed <- true }
 
     let newReader() =
-        if !disposed then
+        if disposed then
             raise <| ObjectDisposedException(this.GetType().Name)
         let reader = readerFunc.Invoke()
         disposeFuncs.Add reader.Dispose
