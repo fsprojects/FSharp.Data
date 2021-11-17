@@ -62,6 +62,7 @@ let links =
            x.TryGetAttribute("href")
            |> Option.map (fun a -> x.InnerText(), a.Value())
     )
+    |> Seq.truncate 10
     |> Seq.toList
 
 (*** include-fsi-merged-output ***)

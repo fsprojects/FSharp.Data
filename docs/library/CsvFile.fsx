@@ -51,7 +51,7 @@ points to a live CSV file on the Yahoo finance web site:
 let msft = CsvFile.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Print the prices in the HLOC format
-for row in msft.Rows do
+for row in msft.Rows |> Seq.truncate 10 do
   printfn "HLOC: (%s, %s, %s)"
     (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
@@ -91,7 +91,7 @@ The following example shows how to process the sample previous CSV sample using 
 
 open FSharp.Data.CsvExtensions
 
-for row in msft.Rows do
+for row in msft.Rows |> Seq.truncate 10 do
   printfn "HLOC: (%f, %M, %O)"
     (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 

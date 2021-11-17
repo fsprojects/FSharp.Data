@@ -271,8 +271,10 @@ type Census = XmlProvider<"../data/Census.xml", ResolutionFolder=ResolutionFolde
 
 let data = Census.Load("https://api.census.gov/data.xml")
 
-let apiLinks = data.Datasets
-               |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+let apiLinks =
+    data.Datasets
+    |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+    |> Array.truncate 10
 
 (*** include-fsi-merged-output ***)
 
