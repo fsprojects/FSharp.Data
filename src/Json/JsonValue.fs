@@ -172,14 +172,14 @@ type private JsonParser(jsonText:string) =
         skipWhitespace()
         ensure(i < s.Length)
         match s.[i] with
-        | '"' -> JsonValue.String(parseString()) |> cont
-        | '-' -> parseNum() |> cont
-        | c when Char.IsDigit(c) -> parseNum() |> cont
+        | '"' -> cont (JsonValue.String(parseString()))
+        | '-' -> cont (parseNum())
+        | c when Char.IsDigit(c) -> cont (parseNum())
         | '{' -> parseObject cont
         | '[' -> parseArray cont
-        | 't' -> parseLiteral("true", JsonValue.Boolean true) |> cont
-        | 'f' -> parseLiteral("false", JsonValue.Boolean false) |> cont
-        | 'n' -> parseLiteral("null", JsonValue.Null) |> cont
+        | 't' -> cont (parseLiteral("true", JsonValue.Boolean true))
+        | 'f' -> cont (parseLiteral("false", JsonValue.Boolean false))
+        | 'n' -> cont (parseLiteral("null", JsonValue.Null))
         | _ -> throw()
 
     and parseString() =
@@ -250,7 +250,7 @@ type private JsonParser(jsonText:string) =
         ensure(i < s.Length && s.[i] = ':')
         i <- i + 1
         skipWhitespace()
-        parseValue (fun v -> (key, v) |> cont)
+        parseValue (fun v -> cont (key, v))
 
     and parseObject cont =
         ensure(i < s.Length && s.[i] = '{')
@@ -260,7 +260,8 @@ type private JsonParser(jsonText:string) =
         let parseObjectEnd() =
             ensure(i < s.Length && s.[i] = '}')
             i <- i + 1
-            pairs.ToArray() |> JsonValue.Record |> cont
+            let res = pairs.ToArray() |> JsonValue.Record
+            cont res
         if i < s.Length && s.[i] = '"' then
             parsePair (fun p ->
                 pairs.Add(p)
@@ -287,7 +288,8 @@ type private JsonParser(jsonText:string) =
         let parseArrayEnd() =
             ensure(i < s.Length && s.[i] = ']')
             i <- i + 1
-            vals.ToArray() |> JsonValue.Array |> cont
+            let res = vals.ToArray() |> JsonValue.Array
+            cont res
         if i < s.Length && s.[i] <> ']' then
             parseValue (fun v ->
                 vals.Add(v)
