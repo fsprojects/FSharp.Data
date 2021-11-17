@@ -22,7 +22,7 @@ jobs:
     - name: Build and test (Release)
       run: dotnet fake build -t All
     - name: Build (Debug)
-      run: dotnet build -c Debug
+      run: dotnet build -c Debug -v n
 
   build-ubuntu:
 
@@ -40,4 +40,4 @@ jobs:
     - name: Build and test
       run: dotnet fake build -t RunTests
     - name: Build (Debug)
-      run: dotnet build -c Debug
+      run: dotnet build -c Debug -v n
