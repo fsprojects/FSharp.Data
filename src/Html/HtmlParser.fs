@@ -334,14 +334,11 @@ module internal HtmlParser =
             x.Tokens := result :: !x.Tokens
 
         member x.IsFormattedTag
-            with get() =
-               match x.CurrentTagName() with
-               | "pre" | "code" -> true
-               | _ -> false
+            with get() = x.CurrentTagName().ToLower() = "pre"
 
         member x.IsScriptTag
             with get() =
-               match x.CurrentTagName().Trim().ToLower() with
+               match x.CurrentTagName().ToLower() with
                | "script" | "style" -> true
                | _ -> false
 
@@ -386,7 +383,9 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData (content.Replace("<![CDATA[", "").Replace("]]>", ""))
             x.Content := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.InsertionMode :=
+                if x.IsFormattedTag then FormattedMode
+                else DefaultMode
             match result with
             | Text t when String.IsNullOrEmpty(t) -> ()
             | _ -> x.Tokens := result :: !x.Tokens

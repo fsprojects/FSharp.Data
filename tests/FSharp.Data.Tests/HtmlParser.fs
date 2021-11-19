@@ -805,15 +805,16 @@ let ``Can parse pre blocks``() =
     result |> should equal [ "\r\n        This code should be indented and\r\n        have line feeds in it" ]
 
 [<Test>]
-let ``Can parse code blocks``() =
-    let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
+let ``Can parse pre blocks with char refs``() =
+    let html = "<pre>let hello who =\r\n    &quot;hello&quot; + who</pre>"
 
     let result =
         (HtmlDocument.Parse html)
-        |> HtmlDocument.descendantsNamed true [ "code" ]
-        |> Seq.map (HtmlNode.innerText)
-        |> Seq.toList
-    result |> should equal [ "\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30" ]
+        |> HtmlDocument.descendantsNamed true [ "pre" ]
+        |> Seq.head
+        |> HtmlNode.innerText
+    let expected = "let hello who =\r\n    \"hello\" + who"
+    result |> should equal expected
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() =
@@ -911,7 +912,7 @@ let ``Parsing non-html content doesn't cause an infinite loop - Github-1264``() 
 [<Test; Timeout(2000)>]
 let ``Can handle incomplete tags at end of file without creating an infinite loop``() =
     let result = HtmlDocument.Parse """<html><head></head></html"""
-    let expected = 
+    let expected =
         HtmlDocument.New
             [ HtmlNode.NewElement
                 ("html",
