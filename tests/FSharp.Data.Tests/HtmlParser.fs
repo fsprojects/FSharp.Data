@@ -805,15 +805,26 @@ let ``Can parse pre blocks``() =
     result |> should equal [ "\r\n        This code should be indented and\r\n        have line feeds in it" ]
 
 [<Test>]
+let ``Can parse code blocks``() =
+    let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
+
+    let result =
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed true [ "code" ]
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
+    result |> should equal [ "\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30" ]
+
+[<Test>]
 let ``Can parse pre blocks with char refs``() =
-    let html = "<pre>let hello who =\r\n    &quot;hello&quot; + who</pre>"
+    let html = "<pre>let hello =\r\n    fun who -&gt;\r\n        &quot;hello&quot; + who</pre>"
 
     let result =
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "pre" ]
         |> Seq.head
         |> HtmlNode.innerText
-    let expected = "let hello who =\r\n    \"hello\" + who"
+    let expected = "let hello =\r\n    fun who ->\r\n        \"hello\" + who"
     result |> should equal expected
 
 [<Test>]

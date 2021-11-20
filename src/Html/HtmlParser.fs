@@ -334,7 +334,10 @@ module internal HtmlParser =
             x.Tokens := result :: !x.Tokens
 
         member x.IsFormattedTag
-            with get() = x.CurrentTagName().ToLower() = "pre"
+            with get() =
+                match x.CurrentTagName().ToLower() with
+                | "pre" | "code" -> true
+                | _ -> false
 
         member x.IsScriptTag
             with get() =
