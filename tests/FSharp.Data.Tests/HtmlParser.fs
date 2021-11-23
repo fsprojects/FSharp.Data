@@ -1,5 +1,6 @@
 module FSharp.Data.Tests.HtmlParser
 
+open System
 open System.Globalization
 open NUnit.Framework
 open FsUnit
@@ -818,8 +819,8 @@ let ``Can parse pre blocks``() =
     result |> should equal [ "\r\n        This code should be indented and\r\n        have line feeds in it" ]
 
 [<Test>]
-let ``Can parse code blocks``() =
-    let html = "<code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code>"
+let ``Can parse pre containing code blocks``() =
+    let html = "<pre><code>\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30</code></pre>"
 
     let result =
         (HtmlDocument.Parse html)
@@ -827,6 +828,33 @@ let ``Can parse code blocks``() =
         |> Seq.map (HtmlNode.innerText)
         |> Seq.toList
     result |> should equal [ "\r\n        let f a b = a * b\r\n        f 5 6 |> should equal 30" ]
+
+[<Test>]
+let ``Can parse pre blocks with char refs``() =
+    let html = "<pre>let hello =\r\n    fun who -&gt;\r\n        &quot;hello&quot; + who</pre>"
+
+    let result =
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed true [ "pre" ]
+        |> Seq.head
+        |> HtmlNode.innerText
+    let expected = "let hello =\r\n    fun who ->\r\n        \"hello\" + who"
+    result |> should equal expected
+
+[<Test>]
+let ``Drops whitespace outside pre``() =
+    let html =
+        "<div>foo    <pre>    bar    </pre>    baz</div>"
+
+    let result =
+        (HtmlDocument.Parse html)
+        |> HtmlDocument.descendantsNamed false [ "div" ]
+        |> Seq.head
+        |> string
+    // default indentation is 2 spaces
+    let nl = Environment.NewLine
+    let expected = $"<div>%s{nl}  foo <pre>    bar    </pre> baz%s{nl}</div>"
+    result |> should equal expected
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() =

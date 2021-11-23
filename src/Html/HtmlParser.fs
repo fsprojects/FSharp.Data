@@ -258,7 +258,6 @@ module internal HtmlParser =
 
     type InsertionMode =
         | DefaultMode
-        | FormattedMode
         | ScriptMode
         | CharRefMode
         | CommentMode
@@ -267,7 +266,6 @@ module internal HtmlParser =
         override x.ToString() =
             match x with
             | DefaultMode -> "default"
-            | FormattedMode -> "formatted"
             | ScriptMode -> "script"
             | CharRefMode -> "charref"
             | CommentMode -> "comment"
@@ -278,6 +276,7 @@ module internal HtmlParser =
         { Attributes : (CharList * CharList) list ref
           CurrentTag : CharList ref
           Content : CharList ref
+          HasFormattedParent: bool ref
           InsertionMode : InsertionMode ref
           Tokens : HtmlToken list ref
           Reader : TextReader }
@@ -285,6 +284,7 @@ module internal HtmlParser =
             { Attributes = ref []
               CurrentTag = ref CharList.Empty
               Content = ref CharList.Empty
+              HasFormattedParent = ref false
               InsertionMode = ref DefaultMode
               Tokens = ref []
               Reader = reader }
@@ -338,13 +338,13 @@ module internal HtmlParser =
 
         member x.IsFormattedTag
             with get() =
-               match x.CurrentTagName() with
-               | "pre" | "code" -> true
-               | _ -> false
+                match x.CurrentTagName().ToLower() with
+                | "pre" -> true
+                | _ -> false
 
         member x.IsScriptTag
             with get() =
-               match x.CurrentTagName().Trim().ToLower() with
+               match x.CurrentTagName().ToLower() with
                | "script" | "style" -> true
                | _ -> false
 
@@ -358,9 +358,15 @@ module internal HtmlParser =
                     else TagEnd(name)
                 else Tag(false, name, x.GetAttributes())
 
+            // pre is the only default formatted tag, nested pres are not
+            // allowed in the spec.
+            if x.IsFormattedTag then
+                x.HasFormattedParent := not isEnd
+            else
+                x.HasFormattedParent := !x.HasFormattedParent || x.IsFormattedTag
+
             x.InsertionMode :=
-                if x.IsFormattedTag && (not isEnd) then FormattedMode
-                elif x.IsScriptTag && (not isEnd) then ScriptMode
+                if x.IsScriptTag && (not isEnd) then ScriptMode
                 else DefaultMode
 
             x.CurrentTag := CharList.Empty
@@ -380,9 +386,11 @@ module internal HtmlParser =
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
                 | DefaultMode ->
-                    let normalizedContent = wsRegex.Value.Replace(content, " ")
-                    if normalizedContent = " " then Text "" else Text normalizedContent
-                | FormattedMode -> content |> Text
+                    if !x.HasFormattedParent then
+                        Text content
+                    else
+                        let normalizedContent = wsRegex.Value.Replace(content, " ")
+                        if normalizedContent = " " then Text "" else Text normalizedContent
                 | ScriptMode -> content |> Text
                 | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
                 | CommentMode -> Comment content
@@ -425,7 +433,6 @@ module internal HtmlParser =
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
                 | ScriptMode -> script state;
-                | FormattedMode -> state.Cons(); data state
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
                 | CommentMode -> comment state
