@@ -1,5 +1,6 @@
 module FSharp.Data.Tests.HtmlParser
 
+open System
 open System.Globalization
 open NUnit.Framework
 open FsUnit
@@ -838,7 +839,8 @@ let ``Drops whitespace outside pre``() =
         |> Seq.head
         |> string
     // default indentation is 2 spaces
-    let expected = "<div>\n  foo <pre>    bar    </pre> baz\n</div>"
+    let nl = Environment.NewLine
+    let expected = $"<div>%s{nl}  foo <pre>    bar    </pre> baz%s{nl}</div>"
     result |> should equal expected
 
 [<Test>]
