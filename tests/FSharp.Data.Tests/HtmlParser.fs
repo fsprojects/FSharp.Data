@@ -648,6 +648,19 @@ let ``Renders textarea closing tag``() =
     result |> should equal """<textarea cols="40" rows="2"></textarea>"""
 
 [<Test>]
+let ``Renders self-closing tag for void elements``() =
+    [ "area"; "base"; "br"; "col"; "command"; "embed"; "hr"; "img"; "input"
+      "keygen"; "link"; "meta"; "param"; "source"; "track"; "wbr" ]
+    |> List.iter (fun name ->
+        let html = HtmlNode.NewElement name |> string
+        html |> should equal $"<%s{name} />")
+
+[<Test>]
+let ``Renders no self-closing tag for non-void elements``() =
+    let html = HtmlNode.NewElement "foo" |> string
+    html |> should equal "<foo></foo>"
+
+[<Test>]
 let ``Can handle CDATA blocks``() =
     let cData = """
       Trying to provoke the CDATA parser with almost complete CDATA end tags
@@ -911,7 +924,7 @@ let ``Parsing non-html content doesn't cause an infinite loop - Github-1264``() 
 [<Test; Timeout(2000)>]
 let ``Can handle incomplete tags at end of file without creating an infinite loop``() =
     let result = HtmlDocument.Parse """<html><head></head></html"""
-    let expected = 
+    let expected =
         HtmlDocument.New
             [ HtmlNode.NewElement
                 ("html",

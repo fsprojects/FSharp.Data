@@ -93,14 +93,18 @@ type HtmlNode =
     static member NewCData content = HtmlCData(content)
 
     override x.ToString() =
+        let isVoidElement =
+            let set =
+                [| "area"; "base"; "br"; "col"; "command"; "embed"; "hr"; "img"; "input"
+                   "keygen"; "link"; "meta"; "param"; "source"; "track"; "wbr" |]
+                |> Set.ofArray
+            fun name -> Set.contains name set
         let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
             let append (str:string) = sb.Append str |> ignore
             let appendEndTag name =
                 append "</"
                 append name
                 append ">"
-            let shouldAppendEndTag name =
-                name = "textarea"
             let newLine plus =
                 sb.AppendLine() |> ignore
                 String(' ', indentation + plus) |> append
@@ -117,12 +121,11 @@ type HtmlNode =
                     append "=\""
                     append value
                     append "\""
-                if elements.IsEmpty then
-                    if shouldAppendEndTag name then
-                        append ">"
-                        appendEndTag name
-                    else
-                        append " />"
+                if isVoidElement name then
+                    append " />"
+                elif elements.IsEmpty then
+                    append ">"
+                    appendEndTag name
                 else
                     append ">"
                     if not onlyText then
