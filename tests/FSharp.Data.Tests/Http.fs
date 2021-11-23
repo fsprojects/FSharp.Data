@@ -207,3 +207,62 @@ let ``correct multipart content format`` () =
     let singleMultipartFormat file = sprintf "--%s\r\nContent-Disposition: form-data; name=\"%i\"; filename=\"%i\"\r\nContent-Type: application/octet-stream\r\n\r\n%s\r\n" boundary file file content
     let finalFormat = [sprintf "\r\n--%s--" boundary] |> Seq.append (seq {for i in [0..numFiles] -> singleMultipartFormat i }) |>  String.concat ""
     str |> should equal finalFormat
+
+[<Test>]
+let ``CombinedStream has length with Some length`` () =
+    use combinedStream = new HttpHelpers.CombinedStream(Some 10L, [])
+    combinedStream.Length |> should equal 10L
+    
+[<Test>]
+let ``CombinedStream can seek with Some length`` () =
+    use combinedStream = new HttpHelpers.CombinedStream(Some 10L, [])
+    combinedStream.CanSeek |> should equal true
+    
+[<Test>]
+let ``CombinedStream length throws with None length`` () =
+    use combinedStream = new HttpHelpers.CombinedStream(None, [])
+    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<System.NotSupportedException>
+    
+[<Test>]
+let ``CombinedStream cannot seek with None length`` () =
+    use combinedStream = new HttpHelpers.CombinedStream(None, [])
+    combinedStream.CanSeek |> should equal false
+    
+type nonSeekableStream (b: byte[]) =
+    inherit IO.MemoryStream(b)
+    override _.Length with get():Int64 = failwith "Im not seekable"
+    override _.CanSeek with get() = false
+    
+[<Test>]
+let ``Non-seekable streams create non-seekable CombinedStream`` () =
+    use nonSeekms = new nonSeekableStream(Array.zeroCreate 10)
+    let multiparts = [MultipartItem("","", nonSeekms)]
+    let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
+    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<System.NotSupportedException>
+    combinedStream.CanSeek |> should equal false
+    
+[<Test>]
+let ``Seekable streams create Seekable CombinedStream`` () =
+    let byteLen = 10L
+    let result = byteLen + 110L //110 is headers
+    use ms = new IO.MemoryStream(Array.zeroCreate (int byteLen))
+    let multiparts = [MultipartItem("","", ms)]
+    let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
+    combinedStream.Length |> should equal result
+    combinedStream.CanSeek |> should equal true
+    
+[<Test>]
+let ``HttpWebRequest length is set with seekable streams`` () =
+    use ms = new IO.MemoryStream(Array.zeroCreate 10)
+    let wr = Net.HttpWebRequest.Create("http://x") :?> Net.HttpWebRequest
+    wr.Method <- "POST"
+    HttpHelpers.writeBody wr ms |> Async.RunSynchronously
+    wr.ContentLength |> should equal 10
+    
+[<Test>]
+let ``HttpWebRequest length is not set with non-seekable streams`` () =
+    use nonSeekms = new nonSeekableStream(Array.zeroCreate 10)
+    let wr = Net.HttpWebRequest.Create("http://x") :?> Net.HttpWebRequest
+    wr.Method <- "POST"
+    HttpHelpers.writeBody wr nonSeekms |> Async.RunSynchronously
+    wr.ContentLength |> should equal 0

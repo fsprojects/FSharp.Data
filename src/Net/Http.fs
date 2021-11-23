@@ -1313,11 +1313,11 @@ module internal HttpHelpers =
             let mutable streams = streams |> Seq.cache
 
             let rec readFromStream buffer offset count =
-                if Seq.isEmpty streams
-                then 0
-                else
-                    let stream = Seq.head streams
-                    let read = stream.Read(buffer, offset, min count (int stream.Length))
+                match streams |> Seq.tryHead with
+                | None -> 0
+                | Some stream ->
+                    let qty = if stream.CanSeek then min count (int stream.Length) else count
+                    let read = stream.Read(buffer, offset, qty)
                     if read < count
                     then
                         stream.Dispose()
@@ -1327,9 +1327,9 @@ module internal HttpHelpers =
                     else read
 
             override x.CanRead = true
-            override x.CanSeek = false
+            override x.CanSeek = match length with | None -> false | Some _ -> true
             override x.CanWrite = false
-            override x.Length with get () = length
+            override x.Length with get () = length |> Option.defaultWith (fun () -> NotSupportedException() |> raise)
             override x.Position with get () = v and set(_) = failwith "no position setting"
             override x.Flush() = ()
             override x.CanTimeout = false
@@ -1351,7 +1351,16 @@ module internal HttpHelpers =
     let writeMultipart (boundary: string) (parts: seq<MultipartItem>) (e : Encoding) =
         let newlineStream () = new MemoryStream(e.GetBytes "\r\n") :> Stream
         let prefixedBoundary = sprintf "--%s" boundary
-        let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, fileStream)) ->
+        let trySumLength streams = //allows seq to be blocking & non seekable
+            let mutable seekable = true
+            let mutable length = 0L
+            let takeIfSeekable (str: Stream) =
+                seekable <- str.CanSeek
+                if str.CanSeek then length <- length + str.Length
+                str.CanSeek
+            streams |> Seq.takeWhile takeIfSeekable |> List.ofSeq |> ignore
+            if seekable then Some length else None
+        let segments = parts |> Seq.map (fun (MultipartItem(formField, fileName, contentStream)) ->
             let fileExt = Path.GetExtension fileName    
             let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
             let printHeader (header, value) = sprintf "%s: %s" header value
@@ -1367,9 +1376,9 @@ module internal HttpHelpers =
                 [ headerStream
                   newlineStream()
                   newlineStream()
-                  fileStream 
+                  contentStream 
                   newlineStream()]
-            let partLength = partSubstreams |> Seq.sumBy (fun s -> s.Length)
+            let partLength = partSubstreams |> trySumLength
             new CombinedStream(partLength, partSubstreams) :> Stream
         )
 
@@ -1380,7 +1389,7 @@ module internal HttpHelpers =
             new MemoryStream(bytes) :> Stream
 
         let wholePayload = Seq.append segments [newlineStream(); endBoundaryStream; ]
-        let wholePayloadLength = wholePayload |> Seq.sumBy (fun s -> s.Length)
+        let wholePayloadLength = wholePayload |> trySumLength
         new CombinedStream(wholePayloadLength, wholePayload) :> Stream
 
     let asyncCopy (source: Stream) (dest: Stream) =
@@ -1393,7 +1402,8 @@ module internal HttpHelpers =
 
     let writeBody (req:HttpWebRequest) (data: Stream) =
         async {
-            req.ContentLength <- data.Length
+            if data.CanSeek then
+                req.ContentLength <- data.Length
             use! output = req.GetRequestStreamAsync () |> Async.AwaitTask
             do! asyncCopy data output
             output.Flush()
