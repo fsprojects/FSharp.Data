@@ -1,3 +1,10 @@
+### 4.2.6 - Nov 29 2021
+
+* Update TPSDK dependencies
+* [HtmlState: restore FormattedMode if still in pre after char ref](https://github.com/fsprojects/FSharp.Data/pull/1414)
+* [HtmlNode.ToString(): fix self-closing tags on empty non-void elements](https://github.com/fsprojects/FSharp.Data/pull/1413)
+* [non seekable multipart form files](https://github.com/fsprojects/FSharp.Data/pull/1415)
+
 ### 4.2.5 - Nov 11 2021
 
 * [Fix for multi-part data](https://github.com/fsprojects/FSharp.Data/pull/1397)
