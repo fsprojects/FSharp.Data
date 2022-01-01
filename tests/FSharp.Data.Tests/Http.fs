@@ -205,7 +205,8 @@ let ``correct multipart content format`` () =
     let str = Encoding.UTF8.GetString(ms.ToArray())
     Console.WriteLine(str)
     let singleMultipartFormat file = sprintf "--%s\r\nContent-Disposition: form-data; name=\"%i\"; filename=\"%i\"\r\nContent-Type: application/octet-stream\r\n\r\n%s\r\n" boundary file file content
-    let finalFormat = [sprintf "\r\n--%s--" boundary] |> Seq.append (seq {for i in [0..numFiles] -> singleMultipartFormat i }) |>  String.concat ""
+     // No need extra newline /r/n before closing delimiter
+    let finalFormat = [sprintf "--%s--" boundary] |> Seq.append (seq {for i in [0..numFiles] -> singleMultipartFormat i }) |>  String.concat ""
     str |> should equal finalFormat
 
 [<Test>]
@@ -244,7 +245,7 @@ let ``Non-seekable streams create non-seekable CombinedStream`` () =
 [<Test>]
 let ``Seekable streams create Seekable CombinedStream`` () =
     let byteLen = 10L
-    let result = byteLen + 110L //110 is headers
+    let result = byteLen + 108L // As no extra /r/n, 2 bytes removed, 108 is headers
     use ms = new IO.MemoryStream(Array.zeroCreate (int byteLen))
     let multiparts = [MultipartItem("","", ms)]
     let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
