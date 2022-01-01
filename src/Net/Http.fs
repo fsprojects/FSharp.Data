@@ -1388,7 +1388,8 @@ module internal HttpHelpers =
             let bytes = e.GetBytes text
             new MemoryStream(bytes) :> Stream
 
-        let wholePayload = Seq.append segments [newlineStream(); endBoundaryStream; ]
+        /// per spec, close-delimiter := "--" boundary "--" CRLF ; no need extra newline
+        let wholePayload = Seq.append segments [ endBoundaryStream; ]
         let wholePayloadLength = wholePayload |> trySumLength
         new CombinedStream(wholePayloadLength, wholePayload) :> Stream
 
