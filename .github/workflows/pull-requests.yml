@@ -14,7 +14,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.200
+        dotnet-version: 6.0.100
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
@@ -32,7 +32,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.200
+        dotnet-version: 6.0.100
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
