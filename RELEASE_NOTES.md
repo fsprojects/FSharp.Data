@@ -1,3 +1,7 @@
+### 4.2.7 - Jan 1 2022
+
+* [remove extra newline before endBoundaryStream](https://github.com/fsprojects/FSharp.Data/pull/1421)
+
 ### 4.2.6 - Nov 29 2021
 
 * Update TPSDK dependencies
