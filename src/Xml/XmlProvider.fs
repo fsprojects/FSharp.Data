@@ -71,7 +71,9 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                               result.Converter <@@ XmlElement.Create(%reader) @@>
                       CreateListFromTextReader = None
                       CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
-                          <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@> }
+                          <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@>
+                      CreateFromValue = None
+                           }
 
 
                 else
@@ -100,10 +102,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                           CreateFromTextReader = fun reader -> 
                               result.Converter <@@ XmlElement.Create(%reader) @@>
                           CreateListFromTextReader = None
-                          CreateFromTextReaderForSampleList = fun reader -> 
-                              result.Converter <@@ XmlElement.CreateList(%reader) @@> }
-       
-        let source = 
+                          CreateFromTextReaderForSampleList = fun reader ->
+                              result.Converter <@@ XmlElement.CreateList(%reader) @@>
+                          CreateFromValue = None
+                               }
+
+        let source =
             if schema <> "" then
                 Schema schema
             elif sampleIsList then

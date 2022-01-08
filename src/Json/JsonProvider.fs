@@ -67,13 +67,15 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
                       result.Convert <@@ JsonDocument.Create(%reader) @@>
                   CreateListFromTextReader = Some (fun reader ->
                       result.Convert <@@ JsonDocument.CreateList(%reader) @@>)
-                  CreateFromTextReaderForSampleList = fun reader -> 
-                      result.Convert <@@ JsonDocument.CreateList(%reader) @@> }
-            
-        let source = 
-            if sampleIsList then 
-                SampleList sample 
-            else 
+                  CreateFromTextReaderForSampleList = fun reader ->
+                      result.Convert <@@ JsonDocument.CreateList(%reader) @@>
+                  CreateFromValue = Some (typeof<JsonValue>, fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)
+                       }
+
+        let source =
+            if sampleIsList then
+                SampleList sample
+            else
                 Sample sample
 
         generateType "JSON" source getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
