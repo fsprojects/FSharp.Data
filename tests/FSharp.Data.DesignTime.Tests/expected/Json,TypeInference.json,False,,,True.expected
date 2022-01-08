@@ -19,6 +19,9 @@ class JsonProvider : obj
     static member Load: uri:string -> JsonProvider+JsonProvider+Root[]
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri))), new Func<_,_>(id)))
 
+    static member Load: value:JsonValue -> JsonProvider+JsonProvider+Root[]
+    JsonRuntime.ConvertArray(JsonDocument.Create(value, ""), new Func<_,_>(id)))
+
     static member Parse: text:string -> JsonProvider+JsonProvider+Root[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader)), new Func<_,_>(id)))
 

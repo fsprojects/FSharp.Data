@@ -728,3 +728,32 @@ let ``Getting a large decimal at runtime when an integer was inferred should thr
 let ``ParseList return result list`` () =
   let prov = NumericFields.ParseList(""" [{"a":123}, {"a":987}] """)
   prov |> Array.map (fun v -> v.A) |> Array.sort |> should equal [|123M; 987M|]
+
+
+type ServiceResponse = JsonProvider<"""[
+{ "code": 0, "value": {"generic payload": "yes"}, "message": null},
+{ "code": 1, "value": null, "message": "Warning"},
+{ "code": 2, "value": [], "message": "Exception"}
+]
+""", SampleIsList = true>
+
+type FirstPayload = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">
+type SecondPayload = JsonProvider<"""{"user": "alice", "role": "admin", "registeredSince": "2021-11-01"}""">
+
+[<Test>]
+let ``Can re-load JsonValue`` () =
+  let json = FirstPayload.Parse("""{ "x" : -0.250, "y" : 12345}""")
+  FirstPayload.Load(json.JsonValue) |> should equal json
+
+[<Test>]
+let ``Can load different nested payloads`` () =
+  let json1 = ServiceResponse.Parse("""{ "code": 0, "value": { "x" : -0.250, "y" : 12345}, "message": null}""")
+  let json2 = ServiceResponse.Parse("""{ "code": 0, "value": {"user": "alice", "role": "admin", "registeredSince": "2021-11-01"}, "message": null}""")
+  let payload1 = FirstPayload.Load(json1.Value.JsonValue)
+
+  let payload2 = SecondPayload.Load(json2.Value.JsonValue)
+  payload1.X |> should equal -0.250
+  payload1.Y |> should equal 12345
+  payload2.User |> should equal "alice"
+  payload2.Role |> should equal "admin"
+  payload2.RegisteredSince |> should equal (DateTime(2021, 11, 1))

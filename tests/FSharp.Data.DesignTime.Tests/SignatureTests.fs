@@ -28,7 +28,13 @@ let expectedDirectory = sourceDirectory ++ "expected"
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
-let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "src" ++ "FSharp.Data" ++ "bin" ++ "Release" ++ "netstandard2.0" ++ assemblyName
+let netstandard2RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "src" ++ "FSharp.Data" ++ "bin" ++
+                                #if DEBUG
+                                    "Debug"
+                                #else
+                                    "Release"
+                                #endif
+                                ++ "netstandard2.0" ++ assemblyName
 
 let getRuntimeRefs platform = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform
 
