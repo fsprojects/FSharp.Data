@@ -117,8 +117,10 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                                                separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
                   Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
               CreateListFromTextReader = None
-              CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
-        
+              CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable"
+              CreateFromValue = None
+               }
+
         let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
         
         // On the CsvProvider the schema might be partial and we will still infer from the sample

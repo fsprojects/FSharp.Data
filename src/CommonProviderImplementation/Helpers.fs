@@ -153,7 +153,7 @@ module internal ProviderHelpers =
     let private webUrisCache = createInternetFileCache "DesignTimeURIs" cacheDuration
     
     // part of the information needed by generateType
-    type TypeProviderSpec = 
+    type TypeProviderSpec<'RuntimeValue> =
         { //the generated type
           GeneratedType : ProvidedTypeDefinition 
           //the representation type (what's returned from the constructors, may or may not be the same as Type)
@@ -162,10 +162,13 @@ module internal ProviderHelpers =
           CreateFromTextReader : Expr<TextReader> -> Expr
           CreateListFromTextReader : (Expr<TextReader> -> Expr) option
           // the constructor from a text reader to an array of the representation
-          CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
+          CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr
+          /// Runtime representation of underlying data (e.g. JsonValue) * Mapper function
+          CreateFromValue: (Type * (Expr<'RuntimeValue> -> Expr)) option
+           }
 
-    type private ParseTextResult =
-        { Spec : TypeProviderSpec
+    type private ParseTextResult<'RuntimeValue> =
+        { Spec : TypeProviderSpec<'RuntimeValue>
           IsUri : bool
           IsResource : bool }
 
@@ -455,7 +458,19 @@ module internal ProviderHelpers =
                                          asyncMap resultType readerAsync spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
-          
+
+          // Generate static Load value method
+          match spec.CreateFromValue with
+          | None -> ()
+          | Some (valueType, valueMapper) ->
+            let args = [ ProvidedParameter("value", valueType) ]
+            let m = ProvidedMethod("Load", args, resultType, isStatic = true,
+                                    invokeCode = fun (Singleton value) ->
+                                         let value = value |> Expr.Cast
+                                         <@ %value @> |> valueMapper)
+            m.AddXmlDoc <| sprintf "Loads %s from the specified value" formatName
+            yield m :> _
+
           if not parseResult.IsResource then
 
               match source with
