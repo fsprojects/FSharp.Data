@@ -11,7 +11,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 ## Building
 
 - Install the .NET SDK specified in the `global.json` file
-- `build -t Build`
+- `build.sh -t Build` or `build.cmd -t Build`
 
 ## Documentation
 
