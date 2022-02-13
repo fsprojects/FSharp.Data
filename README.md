@@ -24,7 +24,7 @@ solution before trying out the samples to ensure that all needed packages are in
 
 ## Releasing
 
-Releasing of the NuGet package is done by GitHub actions CI is done from master branch when a new version is pushed.
+Releasing of the NuGet package is done by GitHub actions CI from master branch when a new version is pushed.
 
 Releasing of docs is done by GitHub actions CI on each push to master branch.
 
