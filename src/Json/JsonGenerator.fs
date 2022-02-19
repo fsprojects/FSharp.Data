@@ -301,7 +301,7 @@ module JsonTypeBuilder =
             | InferedType.Record (_, fields, opt) -> InferedType.Record (None, fields, opt)
             | _  -> infType
 
-          if not <| ctx.InferDictionariesFromRecords
+          if not ctx.InferDictionariesFromRecords
           then None
           else
             let infType = 
@@ -321,12 +321,9 @@ module JsonTypeBuilder =
           let keyResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true "" inferedKeyType  
           let valueResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true valueName inferedValueType  
           let valueConvertedTypeErased = valueResult.ConvertedTypeErased ctx
-          let valueOptionalType = typedefof<_ option>.MakeGenericType([|valueResult.ConvertedType|])
 
           let tupleType = Microsoft.FSharp.Reflection.FSharpType.MakeTupleType([|keyResult.ConvertedType; valueResult.ConvertedType|])
           let itemsSeqType = typedefof<_ seq>.MakeGenericType([|tupleType|])
-          
-          //let itemsSeqType = typedefof<seq<_>>.MakeGenericType([|valueResult.ConvertedType|])
           
           let itemsGetter = fun (Singleton jDoc) -> 
             ctx.JsonRuntimeType?ConvertRecordToDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx)
@@ -363,7 +360,7 @@ module JsonTypeBuilder =
             ProvidedProperty("IsEmpty", typeof<bool>, getterCode = isEmptyGetter) ]
           |> objectTy.AddMembers
           [
-            ProvidedMethod("TryFind",  [ProvidedParameter("key", keyResult.ConvertedType)], valueOptionalType, tryFindCode)
+            ProvidedMethod("TryFind",  [ProvidedParameter("key", keyResult.ConvertedType)], valueResult.ConvertedType |> ctx.MakeOptionType, tryFindCode)
             ProvidedMethod("ContainsKey",  [ProvidedParameter("key", keyResult.ConvertedType)], typeof<bool>, containsKeyCode) ]
           |> objectTy.AddMembers
           if ctx.GenerateConstructors then
