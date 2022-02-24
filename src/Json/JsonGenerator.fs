@@ -26,16 +26,16 @@ type internal JsonGenerationContext =
     JsonValueType : Type
     JsonRuntimeType : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
-    InferDictionariesFromRecords: bool
+    PreferDictionaries: bool
     GenerateConstructors : bool }
 
-  static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache, ?inferDictionariesFromRecords) =
+  static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache, ?preferDictionaries) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
-    let inferDictionariesFromRecords = defaultArg inferDictionariesFromRecords false
-    JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, inferDictionariesFromRecords, true)
+    let preferDictionaries = defaultArg preferDictionaries false
+    JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, true)
 
-  static member Create(cultureStr, tpType, uniqueNiceName, typeCache, inferDictionariesFromRecords, generateConstructors) =
+  static member Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       UniqueNiceName = uniqueNiceName 
@@ -43,7 +43,7 @@ type internal JsonGenerationContext =
       JsonValueType = typeof<JsonValue>
       JsonRuntimeType = typeof<JsonRuntime>
       TypeCache = typeCache
-      InferDictionariesFromRecords = inferDictionariesFromRecords
+      PreferDictionaries = preferDictionaries
       GenerateConstructors = generateConstructors }
   member x.MakeOptionType(typ:Type) = 
     typedefof<option<_>>.MakeGenericType typ
@@ -301,7 +301,7 @@ module JsonTypeBuilder =
             | InferedType.Record (_, fields, opt) -> InferedType.Record (None, fields, opt)
             | _  -> infType
 
-          if not ctx.InferDictionariesFromRecords
+          if not ctx.PreferDictionaries
           then None
           else
             let infType = 
@@ -325,30 +325,30 @@ module JsonTypeBuilder =
           let tupleType = Microsoft.FSharp.Reflection.FSharpType.MakeTupleType([|keyResult.ConvertedType; valueResult.ConvertedType|])
           let itemsSeqType = typedefof<_ seq>.MakeGenericType([|tupleType|])
           
-          let itemsGetter = fun (Singleton jDoc) -> 
+          let itemsGetter (Singleton jDoc) = 
             ctx.JsonRuntimeType?ConvertRecordToDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx)
 
-          let keysGetter = fun (Singleton jDoc) -> 
+          let keysGetter (Singleton jDoc) =
             ctx.JsonRuntimeType?GetKeysFromInferedDictionary (keyResult.ConvertedType) (jDoc, keyResult.ConverterFunc ctx)
 
-          let valuesGetter = fun (Singleton jDoc) -> 
+          let valuesGetter (Singleton jDoc) =
             ctx.JsonRuntimeType?GetValuesFromInferedDictionary (valueConvertedTypeErased) (jDoc, valueResult.ConverterFunc ctx)
 
           let (|Doubleton|) = function [f; s] -> f, s | _ -> failwith "Parameter mismatch"
           
-          let itemGetter = fun (Doubleton (jDoc, key)) -> 
+          let itemGetter (Doubleton (jDoc, key)) =
             ctx.JsonRuntimeType?GetValueByKeyFromInferedDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
-          let tryFindCode = fun (Doubleton (jDoc, key)) -> 
+          let tryFindCode (Doubleton (jDoc, key)) =
             ctx.JsonRuntimeType?TryGetValueByKeyFromInferedDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
-          let containsKeyCode = fun (Doubleton (jDoc, key)) -> 
+          let containsKeyCode (Doubleton (jDoc, key)) =
             ctx.JsonRuntimeType?InferedDictionaryContainsKey (keyResult.ConvertedType) (jDoc, keyResult.ConverterFunc ctx, key)
 
-          let countGetter = fun (Singleton jDoc) -> 
+          let countGetter (Singleton jDoc) =
             <@@ JsonRuntime.GetRecordProperties(%%jDoc).Length @@>
 
-          let isEmptyGetter = fun (Singleton jDoc) -> 
+          let isEmptyGetter (Singleton jDoc) =
             <@@ JsonRuntime.GetRecordProperties(%%jDoc).Length = 0 @@>            
                    
           [
@@ -385,7 +385,7 @@ module JsonTypeBuilder =
               let propName = prop.Name
               let optionalityHandledByProperty = propResult.ConversionCallingType <> JsonDocument
 
-              let getter = fun (Singleton jDoc) -> 
+              let getter (Singleton jDoc) =
 
                 if optionalityHandledByProperty then 
 

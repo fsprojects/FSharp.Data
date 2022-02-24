@@ -67,7 +67,7 @@ Json { Sample = "optionals.json"
        ResolutionFolder = ""
        EmbeddedResource = ""
        InferTypesFromValues = true
-       InferDictionariesFromRecords = false }
+       PreferDictionaries = false }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"      

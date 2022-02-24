@@ -761,12 +761,12 @@ let ``Can load different nested payloads`` () =
 
 [<Test>]
 let ``Can control dictionary inference`` () =
-    let notinferred = JsonProvider<"Data/DictionaryInference.json", InferDictionariesFromRecords=false>.GetSamples().[0]
+    let notinferred = JsonProvider<"Data/DictionaryInference.json", PreferDictionaries=false>.GetSamples().[0]
 
     notinferred.Rec.``0``   |> should equal 111
     notinferred.Rec.``1``   |> should equal (Some 222)
     
-    let inferred = JsonProvider<"Data/DictionaryInference.json", InferDictionariesFromRecords=true>.GetSamples().[0]
+    let inferred = JsonProvider<"Data/DictionaryInference.json", PreferDictionaries=true>.GetSamples().[0]
     
     inferred.Rec.Count |> should equal 2
     inferred.Rec.IsEmpty |> should equal false
