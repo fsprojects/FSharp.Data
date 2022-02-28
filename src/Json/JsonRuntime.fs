@@ -157,6 +157,56 @@ type JsonRuntime =
     | JsonValue.Null -> [| |]
     | x -> failwithf "Expecting an array at '%s', got %s" (doc.Path()) <| x.ToString(JsonSaveOptions.DisableFormatting)
 
+  /// Get properties of the record
+  static member GetRecordProperties(doc:IJsonDocument) =
+    match doc.JsonValue with     
+    | JsonValue.Record items -> items
+    | JsonValue.Null -> [||]
+    | x -> failwithf "Expecting a record at '%s', got %s" (doc.Path()) <| x.ToString(JsonSaveOptions.DisableFormatting)
+  
+  /// Converts JSON record to dictionary
+  static member ConvertRecordToDictionary<'Key, 'Value when 'Key: equality>(doc:IJsonDocument, mappingKey:Func<IJsonDocument,'Key>, mappingValue:Func<IJsonDocument,'Value>) = 
+    JsonRuntime.GetRecordProperties(doc)
+    |> Seq.map (fun (k, v) -> 
+                  let key = doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke
+                  let value = doc.CreateNew(v, k) |> mappingValue.Invoke
+                  key, value)
+ 
+
+  /// Get a value by the key from infered dictionary
+  static member InferedDictionaryContainsKey<'Key when 'Key: equality>(doc:IJsonDocument, mappingKey:Func<IJsonDocument,'Key>, key: 'Key) = 
+    let finder (k, _) =
+      (doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke) = key
+    (JsonRuntime.GetRecordProperties(doc) |> Array.tryFind finder).IsSome
+
+  /// Try get a value by the key from infered dictionary
+  static member TryGetValueByKeyFromInferedDictionary<'Key, 'Value when 'Key: equality>(doc:IJsonDocument, mappingKey:Func<IJsonDocument,'Key>, mappingValue:Func<IJsonDocument,'Value>, key: 'Key) = 
+    let picker (k, v) =
+      if (doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke) = key then
+        doc.CreateNew(v, k) |> mappingValue.Invoke |> Some
+      else  
+        None
+    JsonRuntime.GetRecordProperties(doc) |> Array.tryPick picker 
+  
+  /// Get a value by the key from infered dictionary
+  static member GetValueByKeyFromInferedDictionary<'Key, 'Value when 'Key: equality>(doc:IJsonDocument, mappingKey:Func<IJsonDocument,'Key>, mappingValue:Func<IJsonDocument,'Value>, key: 'Key) = 
+    match JsonRuntime.TryGetValueByKeyFromInferedDictionary(doc, mappingKey, mappingValue, key) with
+    | Some value -> value
+    | _ ->  key 
+            |> sprintf "The given key '%A' was not present in the dictionary." 
+            |> System.Collections.Generic.KeyNotFoundException 
+            |> raise
+  
+  /// Get keys from infered dictionary
+  static member GetKeysFromInferedDictionary<'Key when 'Key: equality>(doc:IJsonDocument, mappingKey:Func<IJsonDocument,'Key>) = 
+    JsonRuntime.GetRecordProperties(doc) 
+    |> Array.map (fun (k, _) -> doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke)
+  
+  /// Get values from infered dictionary
+  static member GetValuesFromInferedDictionary<'Value>(doc:IJsonDocument, mappingValue:Func<IJsonDocument,'Value>) = 
+    JsonRuntime.GetRecordProperties(doc) 
+    |> Array.map (fun (k, v) -> doc.CreateNew(v, k) |> mappingValue.Invoke)
+
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
     doc.JsonValue.TryGetProperty(name)
@@ -298,6 +348,16 @@ type JsonRuntime =
     let json = 
       properties 
       |> Array.map (fun (k, v:obj) -> k, JsonRuntime.ToJsonValue cultureInfo v)
+      |> JsonValue.Record
+    JsonDocument.Create(json, "")
+
+  // Creates a JsonValue.Record from key*value seq and wraps it in a json document
+  static member CreateRecordFromDictionary<'Key, 'Value when 'Key: equality>(keyValuePairs: ('Key * 'Value) seq, cultureStr, mappingKeyBack: Func<'Key, string>) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let json = 
+      keyValuePairs 
+      |> Seq.map (fun (k, v) -> (k |> mappingKeyBack.Invoke), JsonRuntime.ToJsonValue cultureInfo (v :> obj))
+      |> Seq.toArray
       |> JsonValue.Record
     JsonDocument.Create(json, "")
 

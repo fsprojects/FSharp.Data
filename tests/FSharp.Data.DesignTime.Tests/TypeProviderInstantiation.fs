@@ -44,7 +44,8 @@ type JsonProviderArgs =
       Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string
-      InferTypesFromValues : bool }
+      InferTypesFromValues : bool
+      PreferDictionaries : bool }
 
 type HtmlProviderArgs =
     { Sample : string
@@ -110,7 +111,8 @@ type TypeProviderInstantiation =
                    box x.Encoding
                    box x.ResolutionFolder
                    box x.EmbeddedResource
-                   box x.InferTypesFromValues |]
+                   box x.InferTypesFromValues
+                   box x.PreferDictionaries |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -155,7 +157,8 @@ type TypeProviderInstantiation =
              x.SampleIsList.ToString()
              x.RootName
              x.Culture
-             x.InferTypesFromValues.ToString() ]
+             x.InferTypesFromValues.ToString()
+             x.PreferDictionaries.ToString() ]
         | Html x ->
             ["Html"
              x.Sample
@@ -223,7 +226,8 @@ type TypeProviderInstantiation =
                    Encoding = ""
                    ResolutionFolder = ""
                    EmbeddedResource = ""
-                   InferTypesFromValues = args.[5] |> bool.Parse }
+                   InferTypesFromValues = args.[5] |> bool.Parse
+                   PreferDictionaries = args.[6] |> bool.Parse }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse

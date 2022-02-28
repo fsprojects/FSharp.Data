@@ -26,21 +26,24 @@ type internal JsonGenerationContext =
     JsonValueType : Type
     JsonRuntimeType : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
+    PreferDictionaries: bool
     GenerateConstructors : bool }
 
-  static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache) =
+  static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache, ?preferDictionaries) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
-    JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, true)
+    let preferDictionaries = defaultArg preferDictionaries false
+    JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, true)
 
-  static member Create(cultureStr, tpType, uniqueNiceName, typeCache, generateConstructors) =
+  static member Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       UniqueNiceName = uniqueNiceName 
       IJsonDocumentType = typeof<IJsonDocument>
       JsonValueType = typeof<JsonValue>
       JsonRuntimeType = typeof<JsonRuntime>
-      TypeCache = typeCache 
+      TypeCache = typeCache
+      PreferDictionaries = preferDictionaries
       GenerateConstructors = generateConstructors }
   member x.MakeOptionType(typ:Type) = 
     typedefof<option<_>>.MakeGenericType typ
@@ -291,15 +294,98 @@ module JsonTypeBuilder =
         let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
         makeUnique "JsonValue" |> ignore
 
-        // Add all record fields as properties
-        let members = 
+        let inferedKeyValueType =
+          let aggr = List.fold (StructuralInference.subtypeInfered false) InferedType.Top
+          let dropRecordName infType =
+            match infType with
+            | InferedType.Record (_, fields, opt) -> InferedType.Record (None, fields, opt)
+            | _  -> infType
+
+          if not ctx.PreferDictionaries
+          then None
+          else
+            let infType = 
+              [for prop in props -> StructuralInference.getInferedTypeFromString (TextRuntime.GetCulture ctx.CultureStr) prop.Name None] 
+              |> aggr
+            match infType with
+            | InferedType.Primitive (typ = typ) when typ <> typeof<string> -> 
+              let inferValueType = ([for prop in props -> prop.Type |> dropRecordName] |> aggr).DropOptionality ()
+              (infType, inferValueType) |> Some 
+            | _ -> None
+    
+        match inferedKeyValueType with
+        | Some (inferedKeyType, inferedValueType) ->
+          // Add all record fields as dictionary items
+          let valueName = name + "Value"
+
+          let keyResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true "" inferedKeyType  
+          let valueResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true valueName inferedValueType  
+          let valueConvertedTypeErased = valueResult.ConvertedTypeErased ctx
+
+          let tupleType = Microsoft.FSharp.Reflection.FSharpType.MakeTupleType([|keyResult.ConvertedType; valueResult.ConvertedType|])
+          let itemsSeqType = typedefof<_ seq>.MakeGenericType([|tupleType|])
+          
+          let itemsGetter (Singleton jDoc) = 
+            ctx.JsonRuntimeType?ConvertRecordToDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx)
+
+          let keysGetter (Singleton jDoc) =
+            ctx.JsonRuntimeType?GetKeysFromInferedDictionary (keyResult.ConvertedType) (jDoc, keyResult.ConverterFunc ctx)
+
+          let valuesGetter (Singleton jDoc) =
+            ctx.JsonRuntimeType?GetValuesFromInferedDictionary (valueConvertedTypeErased) (jDoc, valueResult.ConverterFunc ctx)
+
+          let (|Doubleton|) = function [f; s] -> f, s | _ -> failwith "Parameter mismatch"
+          
+          let itemGetter (Doubleton (jDoc, key)) =
+            ctx.JsonRuntimeType?GetValueByKeyFromInferedDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
+
+          let tryFindCode (Doubleton (jDoc, key)) =
+            ctx.JsonRuntimeType?TryGetValueByKeyFromInferedDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
+
+          let containsKeyCode (Doubleton (jDoc, key)) =
+            ctx.JsonRuntimeType?InferedDictionaryContainsKey (keyResult.ConvertedType) (jDoc, keyResult.ConverterFunc ctx, key)
+
+          let countGetter (Singleton jDoc) =
+            <@@ JsonRuntime.GetRecordProperties(%%jDoc).Length @@>
+
+          let isEmptyGetter (Singleton jDoc) =
+            <@@ JsonRuntime.GetRecordProperties(%%jDoc).Length = 0 @@>            
+                   
+          [
+            ProvidedProperty("Items", itemsSeqType, getterCode = itemsGetter)
+            ProvidedProperty("Keys", keyResult.ConvertedType.MakeArrayType(), getterCode = keysGetter) 
+            ProvidedProperty("Values", valueResult.ConvertedType.MakeArrayType(), getterCode = valuesGetter) 
+            ProvidedProperty("Item", valueResult.ConvertedType, getterCode = itemGetter, indexParameters = [ProvidedParameter("key", keyResult.ConvertedType)]) 
+            ProvidedProperty("Count", typeof<int>, getterCode = countGetter)
+            ProvidedProperty("IsEmpty", typeof<bool>, getterCode = isEmptyGetter) ]
+          |> objectTy.AddMembers
+          [
+            ProvidedMethod("TryFind",  [ProvidedParameter("key", keyResult.ConvertedType)], valueResult.ConvertedType |> ctx.MakeOptionType, tryFindCode)
+            ProvidedMethod("ContainsKey",  [ProvidedParameter("key", keyResult.ConvertedType)], typeof<bool>, containsKeyCode) ]
+          |> objectTy.AddMembers
+          if ctx.GenerateConstructors then
+            objectTy.AddMember <| 
+              ProvidedConstructor([ProvidedParameter("items", itemsSeqType)], invokeCode = fun args ->
+                let kvSeq = args.Head
+                let conv (value: Expr) =
+                  let value = ProviderHelpers.some keyResult.ConvertedType value
+                  ConversionsGenerator.getBackConversionQuotation "" ctx.CultureStr keyResult.ConvertedType value :> Expr
+                let convFunc =
+                  ReflectionHelpers.makeDelegate conv keyResult.ConvertedType
+                
+                let cultureStr = ctx.CultureStr
+                ctx.JsonRuntimeType?CreateRecordFromDictionary (keyResult.ConvertedType, valueConvertedTypeErased) (kvSeq, cultureStr, convFunc) )
+          ()
+        | None ->
+          // Add all record fields as properties
+          let members = 
             [for prop in props ->
   
               let propResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)true (*optionalityHandledByParent*)true "" prop.Type
               let propName = prop.Name
               let optionalityHandledByProperty = propResult.ConversionCallingType <> JsonDocument
 
-              let getter = fun (Singleton jDoc) -> 
+              let getter (Singleton jDoc) =
 
                 if optionalityHandledByProperty then 
 
@@ -336,29 +422,30 @@ module JsonTypeBuilder =
 
               let name = makeUnique prop.Name
               prop.Name,
-              ProvidedProperty(name, convertedType, getterCode = getter),
+              [ProvidedProperty(name, convertedType, getterCode = getter)],
               ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
 
-        let names, properties, parameters = List.unzip3 members
-        objectTy.AddMembers properties
+          let names, properties, parameters = List.unzip3 members
+          let properties = properties |> List.concat
+          objectTy.AddMembers properties
+
+          if ctx.GenerateConstructors then
+            objectTy.AddMember <| 
+              ProvidedConstructor(parameters, invokeCode = fun args ->
+                let properties = 
+                    Expr.NewArray(typeof<string * obj>, 
+                                  args 
+                                  |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]; Expr.Coerce(a, typeof<obj>) ]))
+                let cultureStr = ctx.CultureStr
+                <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>)
+          ()
 
         if ctx.GenerateConstructors then
-
-            objectTy.AddMember <| 
-                ProvidedConstructor(parameters, invokeCode = fun args -> 
-                    let properties = 
-                        Expr.NewArray(typeof<string * obj>, 
-                                      args 
-                                      |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]; Expr.Coerce(a, typeof<obj>) ]))
-                    let cultureStr = ctx.CultureStr
-                    <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>)
-
             objectTy.AddMember <| 
                     ProvidedConstructor(
                         [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                         invokeCode = fun (Singleton arg) -> 
                             <@@ JsonDocument.Create((%%arg:JsonValue), "") @@> )
-
         objectTy
 
     | InferedType.Collection (_, types) -> getOrCreateType ctx inferedType <| fun () ->

@@ -757,3 +757,23 @@ let ``Can load different nested payloads`` () =
   payload2.User |> should equal "alice"
   payload2.Role |> should equal "admin"
   payload2.RegisteredSince |> should equal (DateTime(2021, 11, 1))
+
+
+[<Test>]
+let ``Can control dictionary inference`` () =
+    let notinferred = JsonProvider<"Data/DictionaryInference.json", PreferDictionaries=false>.GetSamples().[0]
+
+    notinferred.Rec.``0``   |> should equal 111
+    notinferred.Rec.``1``   |> should equal (Some 222)
+    
+    let inferred = JsonProvider<"Data/DictionaryInference.json", PreferDictionaries=true>.GetSamples().[0]
+    
+    inferred.Rec.Count |> should equal 2
+    inferred.Rec.IsEmpty |> should equal false
+    
+    inferred.Rec.ContainsKey(false) |> should equal true
+    inferred.Rec.[true] |> should equal 222
+    inferred.Rec.TryFind(true) |> should equal <| Some 222
+
+    inferred.Rec.Values |> should equal [|111; 222|]
+    inferred.Rec.Keys   |> should equal [|false; true|]
