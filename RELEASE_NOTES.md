@@ -1,3 +1,8 @@
+### 4.2.8 - Feb 28 2022
+
+* [Add `PreferDictionaries` flag to JSONProvider](https://github.com/fsprojects/FSharp.Data/pull/1430)
+* [Add `JsonProvider.Load(value: JsonValue)`](https://github.com/fsprojects/FSharp.Data/pull/1424)
+
 ### 4.2.7 - Jan 1 2022
 
 * [remove extra newline before endBoundaryStream](https://github.com/fsprojects/FSharp.Data/pull/1421)
