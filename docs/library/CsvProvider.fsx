@@ -168,7 +168,7 @@ meters per second against a value in kilometres per hour.
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
 countries, `,` is already used as the numeric decimal separator, so a semicolon (`;`) is used
-instead to separate CSV columns. The `CsvProvider` has an optional `Separator` static parameter
+instead to separate CSV columns. The `CsvProvider` has an optional `Separators` static parameter
 where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
