@@ -151,6 +151,36 @@ module HtmlRuntime =
                 i <- i + 1                
             i
 
+    let private innerTextExcluding' recurse exclusions n =
+        let exclusions = "style" :: "script" :: exclusions
+        let isAriaHidden (n:HtmlNode) =
+            match n.TryGetAttribute "aria-hidden" with
+            | Some a ->
+                match bool.TryParse(a.Value()) with
+                | true, v -> v
+                | false, _ -> false
+            | None -> false
+        let rec innerText' inRoot n =
+            let exclusions = if inRoot then ["style"; "script"] else exclusions
+            match n with
+            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
+                seq { for e in content do
+                        match e with
+                        | HtmlText(text) -> yield text
+                        | HtmlComment(_) -> yield ""
+                        | elem ->
+                            if recurse then
+                                yield innerText' false elem
+                            else
+                                yield "" }
+                |> String.Concat
+            | HtmlText(text) -> text
+            | _ -> ""
+        innerText' true n
+
+    let private innerTextExcluding exclusions n =
+        innerTextExcluding' true exclusions n
+
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
         let rowSpan cell = 
             max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) 
@@ -183,7 +213,7 @@ module HtmlRuntime =
             for colindex, cell in cells.[rowindex] do
                 let data =
                     let getContents contents = 
-                        contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat |> normalizeWs
+                        contents |> List.map (innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat |> normalizeWs
                     match cell with
                     | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
                     | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
@@ -244,7 +274,7 @@ module HtmlRuntime =
 
         let rows = 
             list.Descendants("li", true)
-            |> Seq.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"] >> normalizeWs)
+            |> Seq.map (innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"] >> normalizeWs)
             |> Seq.toArray
     
         if rows.Length <= 1 then None else

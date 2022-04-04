@@ -142,13 +142,3 @@ let ``Can get direct inner text``() =
 let ``Inner text on a comment should be String.Empty``() =
     let comment = HtmlNode.NewComment "Hello World"
     HtmlNode.innerText comment |> should equal String.Empty
-
-[<Test>]
-let ``Inner text on a style should be String.Empty``() =
-    let comment = HtmlNode.NewElement("style", [HtmlNode.NewText "Hello World"])
-    HtmlNode.innerText comment |> should equal String.Empty
-
-[<Test>]
-let ``Inner text on a script should be String.Empty``() =
-    let comment = HtmlNode.NewElement("script", [HtmlNode.NewText "Hello World"])
-    HtmlNode.innerText comment |> should equal String.Empty
