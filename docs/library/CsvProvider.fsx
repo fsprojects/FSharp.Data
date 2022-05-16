@@ -215,7 +215,7 @@ for r in mortalityNy.Rows do
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains
 rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"../data/AirQuality.csv", Separator=";,", ResolutionFolder=ResolutionFolder>`.
+`CsvProvider<"../data/AirQuality.csv", Separators=";,", ResolutionFolder=ResolutionFolder>`.
 
 ## Missing values
 
