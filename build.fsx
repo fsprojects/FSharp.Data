@@ -52,7 +52,7 @@ let release = ReleaseNotes.load "RELEASE_NOTES.md"
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
 
-Target.create "AssemblyInfo" <| fun _ ->
+Target.create "AssemblyInfo" (fun _ ->
     for file in !! "src/AssemblyInfo*.fs" do
         let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
         let title =
@@ -66,43 +66,49 @@ Target.create "AssemblyInfo" <| fun _ ->
              AssemblyInfo.Description summary
              AssemblyInfo.Version version
              AssemblyInfo.FileVersion version]
+)
 
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target.create "Clean" <| fun _ ->
+Target.create "Clean" (fun _ ->
     seq {
         yield! !!"**/bin"
         yield! !!"**/obj"
     } |> Shell.cleanDirs
+)
 
-Target.create "CleanDocs" <| fun _ ->
+Target.create "CleanDocs" (fun _ ->
     Shell.cleanDirs ["docs/output"]
+)
 
 let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
-Target.create "CleanInternetCaches" <| fun _ ->
+Target.create "CleanInternetCaches" (fun _ ->
     Shell.cleanDirs [ internetCacheFolder @@ "DesignTimeURIs"
                       internetCacheFolder @@ "WorldBankSchema"
                       internetCacheFolder @@ "WorldBankRuntime"]
+)
 
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
-Target.create "Build" <| fun _ ->
+Target.create "Build" (fun _ ->
     "FSharp.Data.sln"
     |>  DotNet.build (fun o ->
             { o with Configuration = DotNet.BuildConfiguration.Release })
+)
 
-Target.create "RunTests" <| fun _ ->
+Target.create "RunTests" (fun _ ->
     "FSharp.Data.sln"
     |>  DotNet.test (fun o ->
             { o with Configuration = DotNet.BuildConfiguration.Release })
+)
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target.create "NuGet" <| fun _ ->
+Target.create "NuGet" (fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
 
@@ -131,6 +137,7 @@ Target.create "NuGet" <| fun _ ->
             MSBuildParams = { p.MSBuildParams with Properties = properties}
         }
     ) "src/FSharp.Data/FSharp.Data.fsproj"
+)
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
@@ -142,7 +149,7 @@ Target.create "GenerateDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Help
 
-Target.create "Help" <| fun _ ->
+Target.create "Help" (fun _ ->
     printfn ""
     printfn "  Please specify the target by calling 'build -t <Target>'"
     printfn ""
@@ -156,6 +163,7 @@ Target.create "Help" <| fun _ ->
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
     printfn ""
+)
 
 Target.create "All" ignore
 

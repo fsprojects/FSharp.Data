@@ -45,33 +45,35 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
        
         let getSpec _ value = 
        
-            let samples = using (IO.logTime "Parsing" sample) <| fun _ ->
+            let samples =
+                use _holder = IO.logTime "Parsing" sample
                 if sampleIsList then
                     JsonDocument.CreateList(new StringReader(value))
                     |> Array.map (fun doc -> doc.JsonValue)
                 else 
                     [| JsonValue.Parse(value) |]
             
-            let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
+            let inferedType =
+                use _holder = IO.logTime "Inference" sample
                 samples
                 |> Array.map (fun sampleJson -> JsonInference.inferType inferTypesFromValues cultureInfo "" sampleJson)
-                |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
+                |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
             
-            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+            use _holder = IO.logTime "TypeGeneration" sample
             
-                let ctx = JsonGenerationContext.Create(cultureStr, tpType, ?preferDictionaries = Some preferDictionaries)
-                let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
-            
-                { GeneratedType = tpType
-                  RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> 
-                      result.Convert <@@ JsonDocument.Create(%reader) @@>
-                  CreateListFromTextReader = Some (fun reader ->
-                      result.Convert <@@ JsonDocument.CreateList(%reader) @@>)
-                  CreateFromTextReaderForSampleList = fun reader ->
-                      result.Convert <@@ JsonDocument.CreateList(%reader) @@>
-                  CreateFromValue = Some (typeof<JsonValue>, fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)
-                       }
+            let ctx = JsonGenerationContext.Create(cultureStr, tpType, ?preferDictionaries = Some preferDictionaries)
+            let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
+        
+            { GeneratedType = tpType
+              RepresentationType = result.ConvertedType
+              CreateFromTextReader = fun reader -> 
+                  result.Convert <@@ JsonDocument.Create(%reader) @@>
+              CreateListFromTextReader = Some (fun reader ->
+                  result.Convert <@@ JsonDocument.CreateList(%reader) @@>)
+              CreateFromTextReaderForSampleList = fun reader ->
+                  result.Convert <@@ JsonDocument.CreateList(%reader) @@>
+              CreateFromValue = Some (typeof<JsonValue>, fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)
+            }
 
         let source =
             if sampleIsList then
@@ -79,7 +81,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
             else
                 Sample sample
 
-        generateType "JSON" source getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
+        generateType "JSON" source getSpec this cfg encodingStr resolutionFolder resource typeName None
        
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

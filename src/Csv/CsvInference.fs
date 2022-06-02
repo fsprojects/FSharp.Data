@@ -50,11 +50,11 @@ let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
-  | Name of string
-  | NameAndUnit of string * Type
-  | Full of PrimitiveInferedProperty
-  | FullByName of PrimitiveInferedProperty * (*originalName*)string
-  | Rename of (*name*)string * (*originalName*)string
+  | Name of name: string
+  | NameAndUnit of name: string * unitOfMeasure: Type
+  | Full of property: PrimitiveInferedProperty
+  | FullByName of property: PrimitiveInferedProperty * originalName: string
+  | Rename of name: string * originalName: string
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
@@ -263,7 +263,7 @@ let internal inferType (headerNamesAndUnits:_[]) schema (rows:seq<_>) inferRows 
         // all the columns types are already set, so all the rows will be the same
         types |> List.head
     else
-        List.reduce (StructuralInference.subtypeInfered ((*allowEmptyValues*)not preferOptionals)) types
+        List.reduce (StructuralInference.subtypeInfered (not preferOptionals)) types
   
   inferedType, schema
 

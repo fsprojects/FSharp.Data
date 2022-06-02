@@ -35,7 +35,7 @@ let rec inferType inferTypesFromValues cultureInfo parentName json =
   | JsonValue.Float f when inferTypesFromValues && inRangeFloat Int64.MinValue Int64.MaxValue f && isIntegerFloat f -> InferedType.Primitive(typeof<int64>, None, false)
   | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false)
   // More interesting types 
-  | JsonValue.Array ar -> StructuralInference.inferCollectionType (*allowEmptyValues*)false (Seq.map (inferType inferTypesFromValues cultureInfo (NameUtils.singularize parentName)) ar)
+  | JsonValue.Array ar -> StructuralInference.inferCollectionType false (Seq.map (inferType inferTypesFromValues cultureInfo (NameUtils.singularize parentName)) ar)
   | JsonValue.Record properties ->
       let name = 
         if String.IsNullOrEmpty parentName 

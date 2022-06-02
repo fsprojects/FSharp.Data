@@ -402,7 +402,7 @@ let getInferedTypeFromSamples samples =
     samples
     |> Array.map XElement.Parse
     |> XmlInference.inferType true culture false false
-    |> Seq.fold (subtypeInfered (*allowEmptyValues*)false) InferedType.Top
+    |> Seq.fold (subtypeInfered false) InferedType.Top
 
 
 let getInferedTypeFromSchema xsd =

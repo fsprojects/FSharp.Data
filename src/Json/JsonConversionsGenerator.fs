@@ -59,11 +59,13 @@ let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingType
       getConversionQuotation missingValuesStr cultureStr field.InferedType value
     match field.TypeWrapper, canPassAllConversionCallingTypes with
     | TypeWrapper.None, true ->
-        wrapInLetIfNeeded value <| fun (varExpr:Expr<JsonValueOptionAndPath>) ->
+        wrapInLetIfNeeded value (fun (varExpr:Expr<JsonValueOptionAndPath>) ->
           typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path @>, convert <@ (%varExpr).JsonOpt @>, <@ (%varExpr).JsonOpt @>)
+        )
     | TypeWrapper.None, false ->
-        wrapInLetIfNeeded value <| fun (varExpr:Expr<IJsonDocument>) ->
+        wrapInLetIfNeeded value (fun (varExpr:Expr<IJsonDocument>) ->
           typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path() @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>)
+        )
     | TypeWrapper.Option, true ->
         convert <@ (%%value:JsonValue option) @>
     | TypeWrapper.Option, false ->

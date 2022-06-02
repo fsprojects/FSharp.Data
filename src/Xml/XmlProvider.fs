@@ -50,62 +50,63 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
        
             if schema <> "" then
        
-                let schemaSet = using (IO.logTime "Parsing" sample) <| fun _ ->
+                let schemaSet =
+                    use _holder = IO.logTime "Parsing" sample
                     XmlSchema.parseSchema resolutionFolder value
 
                 let inferedType = 
-                     using (IO.logTime "Inference" sample) <| fun _ ->
-                        schemaSet
-                        |> XsdParsing.getElements 
-                        |> List.ofSeq
-                        |> XsdInference.inferElements
+                    use _holder = IO.logTime "Inference" sample
+                    schemaSet
+                    |> XsdParsing.getElements 
+                    |> List.ofSeq
+                    |> XsdInference.inferElements
 
-                using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+                use _holder = IO.logTime "TypeGeneration" sample
               
+                let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+                let result = XmlTypeBuilder.generateXmlType ctx inferedType
+                
+                { GeneratedType = tpType
+                  RepresentationType = result.ConvertedType
+                  CreateFromTextReader = fun reader -> 
+                      result.Converter <@@ XmlElement.Create(%reader) @@>
+                  CreateListFromTextReader = None
+                  CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
+                      <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@>
+                  CreateFromValue = None
+                }
+
+
+            else
+       
+                    let samples = 
+                        use _holder = IO.logTime "Parsing" sample
+                        if sampleIsList then
+                            XmlElement.CreateList(new StringReader(value))
+                            |> Array.map (fun doc -> doc.XElement)
+                        else
+                            [| XDocument.Parse(value).Root |]
+
+                    let inferedType = 
+                        use _holder = IO.logTime "Inference" sample
+                        samples
+                        |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) false globalInference
+                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+        
+                    use _holder = IO.logTime "TypeGeneration" sample
+          
                     let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
                     let result = XmlTypeBuilder.generateXmlType ctx inferedType
-                  
+            
                     { GeneratedType = tpType
                       RepresentationType = result.ConvertedType
                       CreateFromTextReader = fun reader -> 
-                              result.Converter <@@ XmlElement.Create(%reader) @@>
+                          result.Converter <@@ XmlElement.Create(%reader) @@>
                       CreateListFromTextReader = None
-                      CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
-                          <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@>
+                      CreateFromTextReaderForSampleList = fun reader ->
+                          result.Converter <@@ XmlElement.CreateList(%reader) @@>
                       CreateFromValue = None
-                           }
-
-
-                else
-       
-                    let samples = 
-                        using (IO.logTime "Parsing" sample) <| fun _ ->
-                            if sampleIsList then
-                                XmlElement.CreateList(new StringReader(value))
-                                |> Array.map (fun doc -> doc.XElement)
-                            else
-                                [| XDocument.Parse(value).Root |]
-
-                    let inferedType = 
-                        using (IO.logTime "Inference" sample) <| fun _ ->
-                            samples
-                            |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) (*allowEmptyValues*)false globalInference
-                            |> Array.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
-        
-                    using (IO.logTime "TypeGeneration" sample) <| fun _ ->
-          
-                        let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
-                        let result = XmlTypeBuilder.generateXmlType ctx inferedType
-              
-                        { GeneratedType = tpType
-                          RepresentationType = result.ConvertedType
-                          CreateFromTextReader = fun reader -> 
-                              result.Converter <@@ XmlElement.Create(%reader) @@>
-                          CreateListFromTextReader = None
-                          CreateFromTextReaderForSampleList = fun reader ->
-                              result.Converter <@@ XmlElement.CreateList(%reader) @@>
-                          CreateFromValue = None
-                               }
+                    }
 
         let source =
             if schema <> "" then

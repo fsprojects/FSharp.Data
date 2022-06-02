@@ -1748,35 +1748,38 @@ type Http private() =
             else
                 HttpEncodings.PostDefaultEncoding
 
-        let body = body |> Option.map (fun body ->
+        let body =
+            match body with 
+            | None -> None
+            | Some body ->
 
-            let defaultContentType, (bytes: Encoding -> Stream) =
-                match body with
-                | TextRequest text -> HttpContentTypes.Text, (fun e -> new MemoryStream(e.GetBytes(text)) :> _)
-                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
-                | FormValues values ->
-                    let bytes (e:Encoding) =
-                        [ for k, v in values -> Http.EncodeFormData k + "=" + Http.EncodeFormData v ]
-                        |> String.concat "&"
-                        |> e.GetBytes
-                    HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
-                | Multipart (boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
+                let defaultContentType, (bytes: Encoding -> Stream) =
+                    match body with
+                    | TextRequest text -> HttpContentTypes.Text, (fun e -> new MemoryStream(e.GetBytes(text)) :> _)
+                    | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
+                    | FormValues values ->
+                        let bytes (e:Encoding) =
+                            [ for k, v in values -> Http.EncodeFormData k + "=" + Http.EncodeFormData v ]
+                            |> String.concat "&"
+                            |> e.GetBytes
+                        HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
+                    | Multipart (boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
 
-            // Set default content type if it is not specified by the user
-            let encoding =
-                if not hasContentType then
-                    req.ContentType <- defaultContentType
+                // Set default content type if it is not specified by the user
+                let encoding =
+                    if not hasContentType then
+                        req.ContentType <- defaultContentType
 
-                getEncoding req.ContentType
+                    getEncoding req.ContentType
 
-            bytes encoding)
+                Some (bytes encoding)
 
         match timeout with
         | Some timeout -> req.Timeout <- timeout
         | None -> ()
 
         // Send the request and get the response
-        augmentWebExceptionsWithDetails <| fun () -> async {
+        augmentWebExceptionsWithDetails (fun () -> async {
 
             let req =
                 match customizeHttpRequest with
@@ -1809,7 +1812,7 @@ type Http private() =
             let stream = resp.GetResponseStream()
 
             return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType characterSet responseEncodingOverride cookies headers stream
-        }
+        })
 
     /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including
@@ -1831,7 +1834,7 @@ type Http private() =
                 [<Optional>] ?customizeHttpRequest,
                 [<Optional>] ?timeout
             ) =
-        Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
+        Http.InnerRequest(url, toHttpResponse false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors=silentCookieErrors,
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -1855,7 +1858,7 @@ type Http private() =
                 [<Optional>] ?timeout
             ) =
         async {
-            let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors = silentCookieErrors,
+            let! response = Http.InnerRequest(url, toHttpResponse true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?silentCookieErrors = silentCookieErrors,
                                               ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?timeout = timeout)
             return
                 match response.Body with

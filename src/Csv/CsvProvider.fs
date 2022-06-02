@@ -54,7 +54,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         
         let getSpec (extension:string) value = 
           
-            use sampleCsv = using (IO.logTime "Parsing" sample) <| fun _ ->
+            use sampleCsv = 
+                use _holder = IO.logTime "Parsing" sample
                 let separators = 
                     if String.IsNullOrEmpty separators && extension.ToLowerInvariant() = ".tsv"
                     then "\t" else separators
@@ -72,11 +73,12 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
             
             let separators = sampleCsv.Separators
             
-            let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
+            let inferredFields = 
+                use _holder = IO.logTime "Inference" sample
                 sampleCsv.InferColumnTypes(inferRows, TextRuntime.GetMissingValues missingValuesStr, TextRuntime.GetCulture cultureStr, schema,
                                            assumeMissingValues, preferOptionals, ProviderHelpers.unitsOfMeasureProvider)
             
-            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+            use _holder = IO.logTime "TypeGeneration" sample
             
             let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
                 inferredFields 
@@ -91,22 +93,21 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                 | None -> <@@ None: string[] option @@> 
                 | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
             
-            let ctor = 
-                ProvidedConstructor(
-                    [ ProvidedParameter("rows", paramType) ], 
-                    invokeCode = (fun (Singleton paramValue) ->
-                      let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
-                      Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
+            let ctorCode (Singleton paramValue: Expr list) =
+                let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
+                Expr.Let(rowToStringArrayVar, rowToStringArray, body)
+            let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], invokeCode = ctorCode)
             csvType.AddMember(ctor) 
             
+            let parseRowsCode (Singleton text: Expr list) =
+                let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
+                Expr.Let(stringArrayToRowVar, stringArrayToRow, body)
             let parseRows = 
                 ProvidedMethod("ParseRows", 
                     [ProvidedParameter("text", typeof<string>)], 
                     rowType.MakeArrayType(), 
                     isStatic = true,
-                    invokeCode = fun (Singleton text) ->         
-                      let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
-                      Expr.Let(stringArrayToRowVar, stringArrayToRow, body))
+                    invokeCode = parseRowsCode)
             csvType.AddMember parseRows
             
             { GeneratedType = csvType

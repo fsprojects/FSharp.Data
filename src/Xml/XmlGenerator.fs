@@ -120,7 +120,7 @@ module internal XmlTypeBuilder =
 
                 let cultureStr = ctx.CultureStr
                 let ctx = JsonGenerationContext.Create(cultureStr, ctx.ProvidedType, ctx.UniqueNiceName, ctx.JsonTypeCache)
-                let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true "" typ          
+                let result = JsonTypeBuilder.generateJsonType ctx false true "" typ          
                 
                 let optional = optional || forceOptional
                 let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
@@ -198,18 +198,21 @@ module internal XmlTypeBuilder =
             let cultureStr = ctx.CultureStr
 
             for nameWithNS, param in parameters do
-                let ctor = ProvidedConstructor([param], invokeCode = fun (Singleton arg) ->
+                let ctorCode (Singleton arg: Expr list) =
                     if nameWithNS = "" then
                         arg
                     else
                         let arg = Expr.Coerce(arg, typeof<obj>)
-                        <@@ XmlRuntime.CreateValue(nameWithNS, %%arg, cultureStr) @@>)
+                        <@@ XmlRuntime.CreateValue(nameWithNS, %%arg, cultureStr) @@>
+                let ctor =
+                    ProvidedConstructor([param], ctorCode)
                 objectTy.AddMember ctor
 
-            objectTy.AddMember <| 
-              ProvidedConstructor(
-                  [ProvidedParameter("xElement",typeof<XElement>)], 
-                  invokeCode = fun (Singleton arg) -> <@@ XmlElement.Create(%%arg:XElement) @@>)
+            let ctorCode (Singleton arg: Expr list) =
+                  <@@ XmlElement.Create(%%arg:XElement) @@>
+            let ctor =
+              ProvidedConstructor([ProvidedParameter("xElement",typeof<XElement>)], ctorCode)
+            objectTy.AddMember ctor
 
             { ConvertedType = objectTy
               Converter = id }
@@ -278,10 +281,12 @@ module internal XmlTypeBuilder =
                                         attrVal |> Expr.Cast |> conv)
 
                                 let typ, convBack = ctx.ConvertValueBack <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, false, unit)
-                                choiceTy.AddMember <|
+                                let valueCode (Singleton arg: Expr list) =
+                                    arg |> convBack |> ProviderHelpers.some typeof<string>
+                                let valueCtor =
                                     let parameter = ProvidedParameter("value", typ)
-                                    ProvidedConstructor([parameter], invokeCode = fun (Singleton arg) -> 
-                                        arg |> convBack |> ProviderHelpers.some typeof<string> )
+                                    ProvidedConstructor([parameter], invokeCode = valueCode)
+                                choiceTy.AddMember valueCtor
 
                             | _ -> failwithf "generateXmlType: A choice type of an attribute can only contain primitive types, got %A" typ
 
@@ -396,8 +401,7 @@ module internal XmlTypeBuilder =
                 let parameters = match primitiveParam with
                                  | Some primitiveParam -> attrParameters @ [primitiveParam] @ childElemParameters
                                  | None -> attrParameters @ childElemParameters
-                objectTy.AddMember <|                
-                    ProvidedConstructor(parameters, invokeCode = fun args -> 
+                let ctorCode (args: Expr list) =
                         let attributes = 
                             Expr.NewArray(typeof<string * obj>, 
                                           args 
@@ -422,7 +426,8 @@ module internal XmlTypeBuilder =
 
                         let cultureStr = ctx.CultureStr
                         <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
-                       )
+                let ctor = ProvidedConstructor(parameters, invokeCode = ctorCode)
+                objectTy.AddMember ctor
             
             if primitiveElemParameters.Length = 0 then
                 createConstrutor None
@@ -430,11 +435,12 @@ module internal XmlTypeBuilder =
                 for primitiveParam in primitiveElemParameters do
                     createConstrutor (Some primitiveParam)
 
-            objectTy.AddMember <| 
-              ProvidedConstructor(
-                  [ProvidedParameter("xElement", typeof<XElement>)], 
-                  invokeCode = fun (Singleton arg) -> 
-                      <@@ XmlElement.Create(%%arg:XElement) @@>)
+            let ctorCode (Singleton arg: Expr list) =
+                <@@ XmlElement.Create(%%arg:XElement) @@>
+            let ctorParams = [ProvidedParameter("xElement", typeof<XElement>)]
+            let ctor =
+              ProvidedConstructor(ctorParams, ctorCode)
+            objectTy.AddMember ctor
 
             { ConvertedType = objectTy 
               Converter = id }

@@ -60,13 +60,14 @@ type internal UriResolver =
 let private logLock = obj()
 let mutable private indentation = 0
 
-let private appendToLogMultiple logFile lines = lock logLock <| fun () ->
-    let path = __SOURCE_DIRECTORY__ + "/../../" + logFile
-    use stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)
-    use writer = new StreamWriter(stream)
-    for (line:string) in lines do
-        writer.WriteLine(line.Replace("\r", null).Replace("\n","\\n"))
-    writer.Flush()
+let private appendToLogMultiple logFile lines =
+    lock logLock (fun () ->
+        let path = __SOURCE_DIRECTORY__ + "/../../" + logFile
+        use stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)
+        use writer = new StreamWriter(stream)
+        for (line:string) in lines do
+            writer.WriteLine(line.Replace("\r", null).Replace("\n","\\n"))
+        writer.Flush())
 
 let private appendToLog logFile line = 
     appendToLogMultiple logFile [line]
@@ -168,7 +169,7 @@ let watchForChanges path (owner, onChange) =
 
     let watcher = 
 
-        lock watchers <| fun () -> 
+        lock watchers (fun () -> 
 
             match watchers.TryGetValue(path) with
             | true, watcher ->
@@ -184,12 +185,14 @@ let watchForChanges path (owner, onChange) =
                 watcher.Subscribe(owner, onChange)
                 watchers.Add(path, watcher)
                 watcher
+        )
     
     { new IDisposable with
         member __.Dispose() =
-            lock watchers <| fun () ->
+            lock watchers (fun () ->
                 if watcher.Unsubscribe(owner) then
-                    watchers.Remove(path) |> ignore 
+                    watchers.Remove(path) |> ignore
+            )
     }
             
 /// Opens a stream to the uri using the uriResolver resolution rules
@@ -221,21 +224,21 @@ let internal asyncRead (uriResolver:UriResolver) formatName encodingStr (uri:Uri
         return new StreamReader(file, encoding) :> TextReader
     }, Some path
 
-let private withUri uri f =
+let private withUri uri =
   match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
   | false, _ -> failwithf "Invalid uri: %s" uri
-  | true, uri -> f uri
+  | true, uri -> uri
 
 /// Returns a TextReader for the uri using the runtime resolution rules
 let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
-  withUri uri <| fun uri ->
-    let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
-                                      defaultResolutionFolder, resolutionFolder)
-    asyncRead resolver formatName encodingStr uri |> fst
+  let uri = withUri uri
+  let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
+                                    defaultResolutionFolder, resolutionFolder)
+  asyncRead resolver formatName encodingStr uri |> fst
 
 /// Returns a TextReader for the uri using the designtime resolution rules
 let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
-  withUri uri <| fun uri ->
-    let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
-    asyncRead resolver formatName encodingStr uri |> fst
+  let uri = withUri uri
+  let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
+  asyncRead resolver formatName encodingStr uri |> fst
 

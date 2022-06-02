@@ -9,8 +9,8 @@ open System.Runtime.InteropServices
 open FSharp.Data
 open FSharp.Data.Runtime
 
-[<Extension>]
 /// Extension methods with conversions from strings to other types
+[<Extension>]
 type StringExtensions =
 
   [<Extension>]
@@ -38,7 +38,7 @@ type StringExtensions =
   static member AsFloat(x:String, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) = 
     let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-    match TextConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
+    match TextConversions.AsFloat missingValues false cultureInfo x with
     | Some f -> f
     | _ -> failwithf "Not a float: %s" x
   
@@ -75,8 +75,8 @@ type StringExtensions =
     | Some g -> g
     | _ -> failwithf "Not a guid: %s" x
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Provides the dynamic operator for getting column values by name from CSV rows
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module CsvExtensions =
   
   /// Get the value of a column by name from a CSV row

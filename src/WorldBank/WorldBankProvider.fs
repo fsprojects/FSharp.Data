@@ -30,7 +30,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous, addAttributes) = 
 
-        ProviderHelpers.getOrCreateProvidedType cfg this worldBankTypeName <| fun () ->
+      ProviderHelpers.getOrCreateProvidedType cfg this worldBankTypeName (fun () ->
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  
@@ -152,27 +152,28 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                           ( topic.Name, topicType, 
                             getterCode = (fun (Singleton arg) -> <@@ ((%%arg : TopicCollection<Topic>) :> ITopicCollection).GetTopic(topicIdVal) @@>))
                     if not (String.IsNullOrEmpty topic.Description) then prop.AddXmlDoc(topic.Description)
-                    yield prop ])
+                    prop ])
             serviceTypesType.AddMember t
             t
 
         let worldBankDataServiceType =
             let t = ProvidedTypeDefinition("WorldBankDataService", Some typeof<WorldBankData>, hideObjectMethods = true, nonNullable = true)
             t.AddMembersDelayed (fun () -> 
-                [ yield ProvidedProperty("Countries", countriesType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
-                  yield ProvidedProperty("Regions", regionsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
-                  yield ProvidedProperty("Topics", topicsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetTopics() @@>)) ])
+                [ ProvidedProperty("Countries", countriesType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
+                  ProvidedProperty("Regions", regionsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
+                  ProvidedProperty("Topics", topicsType,  getterCode = (fun (Singleton arg) -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetTopics() @@>)) ])
             serviceTypesType.AddMember t
             t
 
         resTy.AddMembersDelayed (fun () -> 
             [ let urlVal = defaultServiceUrl
               let sourcesVal = sources |> String.concat ";"
-              yield ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, isStatic=true,
-                                       invokeCode = (fun _ -> <@@ WorldBankData(urlVal, sourcesVal) @@>)) 
+              let gdcCode _ = <@@ WorldBankData(urlVal, sourcesVal) @@>
+              ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, isStatic=true, invokeCode = gdcCode)
             ])
 
         resTy
+      )
 
     // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
     let defaultSources = [ "World Development Indicators"; "Global Financial Development" ]

@@ -36,10 +36,12 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpec _ value = 
 
-            let doc = using (IO.logTime "Parsing" sample) <| fun _ ->
+            let doc = 
+                use _holder = IO.logTime "Parsing" sample
                 HtmlDocument.Parse value
 
-            let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
+            let htmlType =
+                use _holder = IO.logTime "Inference" sample
                 let inferenceParameters : HtmlInference.Parameters = 
                     { MissingValues = TextRuntime.GetMissingValues missingValuesStr
                       CultureInfo = TextRuntime.GetCulture cultureStr
@@ -49,7 +51,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
                 |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr)
 
-            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+            use _holder = IO.logTime "TypeGeneration" sample
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
@@ -59,7 +61,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromValue = None
                }
 
-        generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName (*maxNumberOfRows*)None
+        generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 
