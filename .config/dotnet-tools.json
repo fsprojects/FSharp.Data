@@ -3,21 +3,27 @@
   "isRoot": true,
   "tools": {
     "fsdocs-tool": {
-      "version": "12.0.0",
+      "version": "15.0.0",
       "commands": [
         "fsdocs"
       ]
     },
     "fake-cli": {
-      "version": "5.20.4-alpha.1642",
+      "version": "5.22.0",
       "commands": [
         "fake"
       ]
     },
     "paket": {
-      "version": "6.0.0-beta8",
+      "version": "7.1.5",
       "commands": [
         "paket"
+      ]
+    },
+    "fantomas": {
+      "version": "5.0.0-alpha-008",
+      "commands": [
+        "fantomas"
       ]
     }
   }
