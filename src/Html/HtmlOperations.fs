@@ -234,32 +234,23 @@ module HtmlNode =
         let classesToLookFor = cssClass.Split [|' '|]
         classesToLookFor |> Array.forall (fun cssClass -> presentClasses |> Array.exists ((=) cssClass))
 
-    let private innerTextExcluding' recurse exclusions n = 
-        let exclusions = "style" :: "script" :: exclusions
-        let isAriaHidden (n:HtmlNode) = 
-            match tryGetAttribute "aria-hidden" n with
-            | Some a -> 
-                match bool.TryParse(a.Value()) with
-                | true, v -> v
-                | false, _ -> false 
-            | None -> false
-        let rec innerText' inRoot n =
-            let exclusions = if inRoot then ["style"; "script"] else exclusions
+    let private innerTextExcluding' recurse exclusions n =
+        let rec innerText' n =
             match n with
-            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
+            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions ->
                 seq { for e in content do
                         match e with
                         | HtmlText(text) -> yield text
                         | HtmlComment(_) -> yield ""
-                        | elem -> 
+                        | elem ->
                             if recurse then
-                                yield innerText' false elem 
+                                yield innerText' elem
                             else
                                 yield "" }
                 |> String.Concat
             | HtmlText(text) -> text
             | _ -> ""
-        innerText' true n
+        innerText' n
 
     let innerTextExcluding exclusions n =
         innerTextExcluding' true exclusions n
