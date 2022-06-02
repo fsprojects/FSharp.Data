@@ -14,20 +14,25 @@ open System.Text
 
 [<StructuredFormatDisplay("{Columns}")>]
 /// Represents a CSV row.
-type CsvRow(parent:CsvFile, columns:string[]) =
+type CsvRow(parent: CsvFile, columns: string[]) =
 
-  /// The columns of the row
-  member __.Columns = columns
-  
-  /// Gets a column by index
-  member __.GetColumn index = columns.[index]
-  /// Gets a column by name
-  member __.GetColumn columnName = columns.[parent.GetColumnIndex columnName]  
+    /// The columns of the row
+    member __.Columns = columns
 
-  /// Gets a column by index
-  member __.Item with get index = columns.[index]
-  /// Gets a column by name
-  member __.Item with get columnName = columns.[parent.GetColumnIndex columnName]
+    /// Gets a column by index
+    member __.GetColumn index = columns.[index]
+
+    /// Gets a column by name
+    member __.GetColumn columnName =
+        columns.[parent.GetColumnIndex columnName]
+
+    /// Gets a column by index
+    member __.Item
+        with get index = columns.[index]
+
+    /// Gets a column by name
+    member __.Item
+        with get columnName = columns.[parent.GetColumnIndex columnName]
 
 /// <summary>
 /// Represents a CSV file. The lines are read on demand from <c>reader</c>.
@@ -38,77 +43,195 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// (or the first row if headers are not present) will be ignored.
 /// The first <c>skipRows</c> lines will be skipped.
 /// </summary>
-and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) as this =
-  inherit CsvFile<CsvRow>(
-    Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
-    Func<_,_>(fun row -> row.Columns),
-    readerFunc, 
-    defaultArg separators "", 
-    defaultArg quote '"', 
-    defaultArg hasHeaders true, 
-    defaultArg ignoreErrors false,
-    defaultArg skipRows 0)
+and CsvFile
+    private
+    (
+        readerFunc: Func<TextReader>,
+        [<Optional>] ?separators,
+        [<Optional>] ?quote,
+        [<Optional>] ?hasHeaders,
+        [<Optional>] ?ignoreErrors,
+        [<Optional>] ?skipRows
+    ) as this =
+    inherit CsvFile<CsvRow>
+        (
+            Func<_, _, _>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
+            Func<_, _>(fun row -> row.Columns),
+            readerFunc,
+            defaultArg separators "",
+            defaultArg quote '"',
+            defaultArg hasHeaders true,
+            defaultArg ignoreErrors false,
+            defaultArg skipRows 0
+        )
 
-  let headerDic = 
-    match this.Headers with
-    | Some headers ->
-        headers
-        |> Seq.mapi (fun index header -> header, index)
-        |> dict
-    | None -> [] |> dict
-    
-  /// Returns the index of the column with the given name
-  member __.GetColumnIndex columnName = headerDic.[columnName]
+    let headerDic =
+        match this.Headers with
+        | Some headers ->
+            headers
+            |> Seq.mapi (fun index header -> header, index)
+            |> dict
+        | None -> [] |> dict
 
-  /// Returns the index of the column with the given name, or returns None if no column is found
-  member __.TryGetColumnIndex columnName = 
-    match headerDic.TryGetValue columnName with
-    | true, index -> Some index
-    | false, _ -> None
+    /// Returns the index of the column with the given name
+    member __.GetColumnIndex columnName = headerDic.[columnName]
 
-  /// Parses the specified CSV content
-  static member Parse(text, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) = 
-    let readerFunc = Func<_>(fun () -> new StringReader(text) :> TextReader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows)
+    /// Returns the index of the column with the given name, or returns None if no column is found
+    member __.TryGetColumnIndex columnName =
+        match headerDic.TryGetValue columnName with
+        | true, index -> Some index
+        | false, _ -> None
 
-  /// Loads CSV from the specified stream
-  static member Load(stream:Stream, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) = 
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () -> 
-      if firstTime.Value then firstTime := false
-      else stream.Position <- 0L
-      new StreamReader(stream) :> TextReader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows)
+    /// Parses the specified CSV content
+    static member Parse
+        (
+            text,
+            [<Optional>] ?separators,
+            [<Optional>] ?quote,
+            [<Optional>] ?hasHeaders,
+            [<Optional>] ?ignoreErrors,
+            [<Optional>] ?skipRows
+        ) =
+        let readerFunc = Func<_>(fun () -> new StringReader(text) :> TextReader)
 
-  /// Loads CSV from the specified reader
-  static member Load(reader:TextReader, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows) = 
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () ->  
-      if firstTime.Value then firstTime := false
-      elif reader :? StreamReader then
-        let sr = reader :?> StreamReader
-        sr.BaseStream.Position <- 0L
-        sr.DiscardBufferedData()
-      else invalidOp "The underlying source stream is not re-entrant. Use the Cache method to cache the data."
-      reader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows)
+        new CsvFile(
+            readerFunc,
+            ?separators = separators,
+            ?quote = quote,
+            ?hasHeaders = hasHeaders,
+            ?ignoreErrors = ignoreErrors,
+            ?skipRows = skipRows
+        )
 
-  /// Loads CSV from the specified uri
-  static member Load(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding) = 
-    CsvFile.AsyncLoad(uri, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows, ?encoding=encoding) |> Async.RunSynchronously
+    /// Loads CSV from the specified stream
+    static member Load
+        (
+            stream: Stream,
+            [<Optional>] ?separators,
+            [<Optional>] ?quote,
+            [<Optional>] ?hasHeaders,
+            [<Optional>] ?ignoreErrors,
+            [<Optional>] ?skipRows
+        ) =
+        let firstTime = ref true
 
-  /// Loads CSV from the specified uri asynchronously
-  static member AsyncLoad(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors, [<Optional>] ?skipRows, [<Optional>] ?encoding) = async {
-    let separators = defaultArg separators ""
-    let separators = 
-        if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase)
-        then "\t" else separators
-    let encoding = defaultArg encoding Encoding.UTF8
-    let! reader = asyncReadTextAtRuntime false "" "" "CSV" encoding.WebName uri
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () ->  
-      if firstTime.Value then firstTime := false; reader
-      else asyncReadTextAtRuntime false "" "" "CSV" encoding.WebName uri |> Async.RunSynchronously)
-    return new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors, ?skipRows=skipRows)
-  }
+        let readerFunc =
+            Func<_>(fun () ->
+                if firstTime.Value then
+                    firstTime := false
+                else
+                    stream.Position <- 0L
 
+                new StreamReader(stream) :> TextReader)
+
+        new CsvFile(
+            readerFunc,
+            ?separators = separators,
+            ?quote = quote,
+            ?hasHeaders = hasHeaders,
+            ?ignoreErrors = ignoreErrors,
+            ?skipRows = skipRows
+        )
+
+    /// Loads CSV from the specified reader
+    static member Load
+        (
+            reader: TextReader,
+            [<Optional>] ?separators,
+            [<Optional>] ?quote,
+            [<Optional>] ?hasHeaders,
+            [<Optional>] ?ignoreErrors,
+            [<Optional>] ?skipRows
+        ) =
+        let firstTime = ref true
+
+        let readerFunc =
+            Func<_>(fun () ->
+                if firstTime.Value then
+                    firstTime := false
+                elif reader :? StreamReader then
+                    let sr = reader :?> StreamReader
+                    sr.BaseStream.Position <- 0L
+                    sr.DiscardBufferedData()
+                else
+                    invalidOp "The underlying source stream is not re-entrant. Use the Cache method to cache the data."
+
+                reader)
+
+        new CsvFile(
+            readerFunc,
+            ?separators = separators,
+            ?quote = quote,
+            ?hasHeaders = hasHeaders,
+            ?ignoreErrors = ignoreErrors,
+            ?skipRows = skipRows
+        )
+
+    /// Loads CSV from the specified uri
+    static member Load
+        (
+            uri: string,
+            [<Optional>] ?separators,
+            [<Optional>] ?quote,
+            [<Optional>] ?hasHeaders,
+            [<Optional>] ?ignoreErrors,
+            [<Optional>] ?skipRows,
+            [<Optional>] ?encoding
+        ) =
+        CsvFile.AsyncLoad(
+            uri,
+            ?separators = separators,
+            ?quote = quote,
+            ?hasHeaders = hasHeaders,
+            ?ignoreErrors = ignoreErrors,
+            ?skipRows = skipRows,
+            ?encoding = encoding
+        )
+        |> Async.RunSynchronously
+
+    /// Loads CSV from the specified uri asynchronously
+    static member AsyncLoad
+        (
+            uri: string,
+            [<Optional>] ?separators,
+            [<Optional>] ?quote,
+            [<Optional>] ?hasHeaders,
+            [<Optional>] ?ignoreErrors,
+            [<Optional>] ?skipRows,
+            [<Optional>] ?encoding
+        ) =
+        async {
+            let separators = defaultArg separators ""
+
+            let separators =
+                if
+                    String.IsNullOrEmpty separators
+                    && uri.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase)
+                then
+                    "\t"
+                else
+                    separators
+
+            let encoding = defaultArg encoding Encoding.UTF8
+            let! reader = asyncReadTextAtRuntime false "" "" "CSV" encoding.WebName uri
+            let firstTime = ref true
+
+            let readerFunc =
+                Func<_>(fun () ->
+                    if firstTime.Value then
+                        firstTime := false
+                        reader
+                    else
+                        asyncReadTextAtRuntime false "" "" "CSV" encoding.WebName uri
+                        |> Async.RunSynchronously)
+
+            return
+                new CsvFile(
+                    readerFunc,
+                    separators,
+                    ?quote = quote,
+                    ?hasHeaders = hasHeaders,
+                    ?ignoreErrors = ignoreErrors,
+                    ?skipRows = skipRows
+                )
+        }

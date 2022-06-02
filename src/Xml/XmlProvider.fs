@@ -16,20 +16,27 @@ open FSharp.Data.Runtime.StructuralTypes
 #nowarn "10001"
 
 [<TypeProvider>]
-type public XmlProvider(cfg:TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
-  
+type public XmlProvider(cfg: TypeProviderConfig) as this =
+    inherit DisposableTypeProviderForNamespaces
+        (
+            cfg,
+            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
+        )
+
     // Generate namespace and type 'FSharp.Data.XmlProvider'
     do AssemblyResolver.init ()
     let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
-    let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods=true, nonNullable=true)
-  
-    let buildTypes (typeName:string) (args:obj[]) =
-  
+
+    let xmlProvTy =
+        ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods = true, nonNullable = true)
+
+    let buildTypes (typeName: string) (args: obj[]) =
+
         // Generate the required type
-        let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
-       
+        let tpType =
+            ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods = true, nonNullable = true)
+
         let sample = args.[0] :?> string
         let sampleIsList = args.[1] :?> bool
         let globalInference = args.[2] :?> bool
@@ -39,98 +46,114 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         let resource = args.[6] :?> string
         let inferTypesFromValues = args.[7] :?> bool
         let schema = args.[8] :?> string
-       
+
         if schema <> "" then
             if sample <> "" then
                 failwith "When the Schema parameter is used, the Sample parameter cannot be used"
+
             if sampleIsList then
                 failwith "When the Schema parameter is used, the SampleIsList parameter must be set to false"
 
         let getSpec _ value =
-       
+
             if schema <> "" then
-       
+
                 let schemaSet =
                     use _holder = IO.logTime "Parsing" sample
                     XmlSchema.parseSchema resolutionFolder value
 
-                let inferedType = 
+                let inferedType =
                     use _holder = IO.logTime "Inference" sample
+
                     schemaSet
-                    |> XsdParsing.getElements 
+                    |> XsdParsing.getElements
                     |> List.ofSeq
                     |> XsdInference.inferElements
 
                 use _holder = IO.logTime "TypeGeneration" sample
-              
-                let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
+
+                let ctx =
+                    XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")
+
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
-                
+
                 { GeneratedType = tpType
                   RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> 
-                      result.Converter <@@ XmlElement.Create(%reader) @@>
+                  CreateFromTextReader = fun reader -> result.Converter <@@ XmlElement.Create(%reader) @@>
                   CreateListFromTextReader = None
-                  CreateFromTextReaderForSampleList = fun reader -> // hack: this will actually parse the schema
-                      <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@>
-                  CreateFromValue = None
-                }
+                  CreateFromTextReaderForSampleList =
+                    fun reader -> // hack: this will actually parse the schema
+                        <@@ XmlSchema.parseSchemaFromTextReader resolutionFolder %reader @@>
+                  CreateFromValue = None }
 
 
             else
-       
-                    let samples = 
-                        use _holder = IO.logTime "Parsing" sample
-                        if sampleIsList then
-                            XmlElement.CreateList(new StringReader(value))
-                            |> Array.map (fun doc -> doc.XElement)
-                        else
-                            [| XDocument.Parse(value).Root |]
 
-                    let inferedType = 
-                        use _holder = IO.logTime "Inference" sample
-                        samples
-                        |> XmlInference.inferType inferTypesFromValues (TextRuntime.GetCulture cultureStr) false globalInference
-                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
-        
-                    use _holder = IO.logTime "TypeGeneration" sample
-          
-                    let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")  
-                    let result = XmlTypeBuilder.generateXmlType ctx inferedType
-            
-                    { GeneratedType = tpType
-                      RepresentationType = result.ConvertedType
-                      CreateFromTextReader = fun reader -> 
-                          result.Converter <@@ XmlElement.Create(%reader) @@>
-                      CreateListFromTextReader = None
-                      CreateFromTextReaderForSampleList = fun reader ->
-                          result.Converter <@@ XmlElement.CreateList(%reader) @@>
-                      CreateFromValue = None
-                    }
+                let samples =
+                    use _holder = IO.logTime "Parsing" sample
+
+                    if sampleIsList then
+                        XmlElement.CreateList(new StringReader(value))
+                        |> Array.map (fun doc -> doc.XElement)
+                    else
+                        [| XDocument.Parse(value).Root |]
+
+                let inferedType =
+                    use _holder = IO.logTime "Inference" sample
+
+                    samples
+                    |> XmlInference.inferType
+                        inferTypesFromValues
+                        (TextRuntime.GetCulture cultureStr)
+                        false
+                        globalInference
+                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+
+                use _holder = IO.logTime "TypeGeneration" sample
+
+                let ctx =
+                    XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")
+
+                let result = XmlTypeBuilder.generateXmlType ctx inferedType
+
+                { GeneratedType = tpType
+                  RepresentationType = result.ConvertedType
+                  CreateFromTextReader = fun reader -> result.Converter <@@ XmlElement.Create(%reader) @@>
+                  CreateListFromTextReader = None
+                  CreateFromTextReaderForSampleList =
+                    fun reader -> result.Converter <@@ XmlElement.CreateList(%reader) @@>
+                  CreateFromValue = None }
 
         let source =
-            if schema <> "" then
-                Schema schema
-            elif sampleIsList then
-                SampleList sample
-            else
-                Sample sample
-       
-        generateType (if schema <> "" then "XSD" else "XML") source getSpec this cfg encodingStr resolutionFolder resource typeName None
-  
-    // Add static parameter that specifies the API we want to get (compile-time) 
-    let parameters = 
+            if schema <> "" then Schema schema
+            elif sampleIsList then SampleList sample
+            else Sample sample
+
+        generateType
+            (if schema <> "" then "XSD" else "XML")
+            source
+            getSpec
+            this
+            cfg
+            encodingStr
+            resolutionFolder
+            resource
+            typeName
+            None
+
+    // Add static parameter that specifies the API we want to get (compile-time)
+    let parameters =
         [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
-          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true) 
+          ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true)
           ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "") ]
-  
-    let helpText = 
+
+    let helpText =
         """<summary>Typed representation of a XML file.</summary>
            <param name='Sample'>Location of a XML sample file or a string containing a sample XML document.</param>
            <param name='SampleIsList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>
@@ -143,10 +166,10 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
            <param name='InferTypesFromValues'>If true, turns on additional type inference from values. 
               (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans. The XmlProvider also infers string values as JSON.)</param>
            <param name='Schema'>Location of a schema file or a string containing xsd.</param>"""
-  
-  
+
+
     do xmlProvTy.AddXmlDoc helpText
     do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
-  
+
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ xmlProvTy ])

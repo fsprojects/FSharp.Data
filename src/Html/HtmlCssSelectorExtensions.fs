@@ -10,15 +10,14 @@ module CssSelectorExtensions =
     type CssSelectorExtensions =
         /// Gets descendants matched by Css selector
         [<Extension>]
-        static member CssSelect (doc, selector) = 
+        static member CssSelect(doc, selector) =
             HtmlNode.Select (doc |> HtmlDocument.elements) selector
 
         /// Gets descendants matched by Css selector
         [<Extension>]
-        static member CssSelect (nodes, selector) = 
+        static member CssSelect(nodes, selector) =
             HtmlNode.Select (nodes |> List.ofSeq) selector
 
         /// Gets descendants matched by Css selector
         [<Extension>]
-        static member CssSelect (node, selector) = 
-            HtmlNode.cssSelect node selector
+        static member CssSelect(node, selector) = HtmlNode.cssSelect node selector

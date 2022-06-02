@@ -22,7 +22,9 @@ open Fake.Core.TargetOperators
 open Fake.Tools.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
+
+let (!!) includes =
+    (!!includes).SetBaseDirectory __SOURCE_DIRECTORY__
 
 // --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
@@ -31,11 +33,15 @@ let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
 let project = "FSharp.Data"
 let authors = "Tomas Petricek;Gustavo Guerra;Colin Bull;fsprojects contributors"
 let summary = "Library of F# type providers and data access tools"
-let description = """
+
+let description =
+    """
   The FSharp.Data package contains type providers and utilities to access
   common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
   contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
-let tags = "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
+
+let tags =
+    "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
 
 let gitOwner = "fsprojects"
 let gitHome = "https://github.com/" + gitOwner
@@ -54,56 +60,54 @@ let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 Target.create "AssemblyInfo" (fun _ ->
     for file in !! "src/AssemblyInfo*.fs" do
-        let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
+        let replace (oldValue: string) newValue (str: string) = str.Replace(oldValue, newValue)
+
         let title =
             Path.GetFileNameWithoutExtension file
             |> replace "AssemblyInfo" "FSharp.Data"
-        let versionSuffix =".0"
+
+        let versionSuffix = ".0"
         let version = release.AssemblyVersion + versionSuffix
-        AssemblyInfoFile.createFSharp file
-           [ AssemblyInfo.Title title
-             AssemblyInfo.Product project
-             AssemblyInfo.Description summary
-             AssemblyInfo.Version version
-             AssemblyInfo.FileVersion version]
-)
+
+        AssemblyInfoFile.createFSharp
+            file
+            [ AssemblyInfo.Title title
+              AssemblyInfo.Product project
+              AssemblyInfo.Description summary
+              AssemblyInfo.Version version
+              AssemblyInfo.FileVersion version ])
 
 // --------------------------------------------------------------------------------------
 // Clean build results
 
 Target.create "Clean" (fun _ ->
     seq {
-        yield! !!"**/bin"
-        yield! !!"**/obj"
-    } |> Shell.cleanDirs
-)
+        yield! !! "**/bin"
+        yield! !! "**/obj"
+    }
+    |> Shell.cleanDirs)
 
-Target.create "CleanDocs" (fun _ ->
-    Shell.cleanDirs ["docs/output"]
-)
+Target.create "CleanDocs" (fun _ -> Shell.cleanDirs [ "docs/output" ])
 
-let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
+let internetCacheFolder =
+    Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
 Target.create "CleanInternetCaches" (fun _ ->
-    Shell.cleanDirs [ internetCacheFolder @@ "DesignTimeURIs"
-                      internetCacheFolder @@ "WorldBankSchema"
-                      internetCacheFolder @@ "WorldBankRuntime"]
-)
+    Shell.cleanDirs
+        [ internetCacheFolder @@ "DesignTimeURIs"
+          internetCacheFolder @@ "WorldBankSchema"
+          internetCacheFolder @@ "WorldBankRuntime" ])
 
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
 Target.create "Build" (fun _ ->
     "FSharp.Data.sln"
-    |>  DotNet.build (fun o ->
-            { o with Configuration = DotNet.BuildConfiguration.Release })
-)
+    |> DotNet.build (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }))
 
 Target.create "RunTests" (fun _ ->
     "FSharp.Data.sln"
-    |>  DotNet.test (fun o ->
-            { o with Configuration = DotNet.BuildConfiguration.Release })
-)
+    |> DotNet.test (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }))
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -112,39 +116,42 @@ Target.create "NuGet" (fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
 
-    let properties = [
-        ("Version", release.NugetVersion)
-        ("Authors", authors)
-        ("PackageProjectUrl", packageProjectUrl)
-        ("PackageTags", tags)
-        ("RepositoryType", repositoryType)
-        ("RepositoryUrl", repositoryUrl)
-        ("PackageLicenseExpression", license)
-        ("PackageReleaseNotes", releaseNotes)
-        ("Summary", summary)
-        ("PackageDescription", description)
-        ("EnableSourceLink", "true")
-        ("PublishRepositoryUrl", "true")
-        ("EmbedUntrackedSources", "true")
-        ("IncludeSymbols", "true")
-        ("SymbolPackageFormat", "snupkg")
-    ]
+    let properties =
+        [ ("Version", release.NugetVersion)
+          ("Authors", authors)
+          ("PackageProjectUrl", packageProjectUrl)
+          ("PackageTags", tags)
+          ("RepositoryType", repositoryType)
+          ("RepositoryUrl", repositoryUrl)
+          ("PackageLicenseExpression", license)
+          ("PackageReleaseNotes", releaseNotes)
+          ("Summary", summary)
+          ("PackageDescription", description)
+          ("EnableSourceLink", "true")
+          ("PublishRepositoryUrl", "true")
+          ("EmbedUntrackedSources", "true")
+          ("IncludeSymbols", "true")
+          ("SymbolPackageFormat", "snupkg") ]
 
-    DotNet.pack (fun p ->
-        { p with
-            Configuration = DotNet.BuildConfiguration.Release
-            OutputPath = Some "bin"
-            MSBuildParams = { p.MSBuildParams with Properties = properties}
-        }
-    ) "src/FSharp.Data/FSharp.Data.fsproj"
-)
+    DotNet.pack
+        (fun p ->
+            { p with
+                Configuration = DotNet.BuildConfiguration.Release
+                OutputPath = Some "bin"
+                MSBuildParams = { p.MSBuildParams with Properties = properties } })
+        "src/FSharp.Data/FSharp.Data.fsproj")
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 Target.create "GenerateDocs" (fun _ ->
     Shell.cleanDir ".fsdocs"
-    DotNet.exec id "fsdocs" ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version " + release.NugetVersion) |> ignore
-)
+
+    DotNet.exec
+        id
+        "fsdocs"
+        ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+         + release.NugetVersion)
+    |> ignore)
 
 // --------------------------------------------------------------------------------------
 // Help
@@ -162,13 +169,51 @@ Target.create "Help" (fun _ ->
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
-    printfn ""
-)
+    printfn "")
+
+let sourceFiles =
+    !! "src/**/*.fs" ++ "src/**/*.fsi" ++ "build.fsx"
+    -- "src/**/obj/**/*.fs"
+    -- "src/AssemblyInfo*.fs"
+
+Target.create "Format" (fun _ ->
+    let result =
+        sourceFiles
+        |> Seq.map (sprintf "\"%s\"")
+        |> String.concat " "
+        |> DotNet.exec id "fantomas"
+
+    if not result.OK then
+        printfn "Errors while formatting all files: %A" result.Messages)
+
+Target.create "CheckFormat" (fun _ ->
+    let result =
+        sourceFiles
+        |> Seq.map (sprintf "\"%s\"")
+        |> String.concat " "
+        |> sprintf "%s --check"
+        |> DotNet.exec id "fantomas"
+
+    if result.ExitCode = 0 then
+        Trace.log "No files need formatting"
+    elif result.ExitCode = 99 then
+        failwith "Some files need formatting, run `dotnet fake build -t Format` to format them"
+    else
+        Trace.logf "Errors while formatting: %A" result.Errors
+        failwith "Unknown errors while formatting")
 
 Target.create "All" ignore
 
-"Clean" ==> "AssemblyInfo" ==> "Build"
-"Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
+"Clean"
+==> "AssemblyInfo"
+==> "CheckFormat"
+==> "Build"
+
+"Build"
+==> "CleanDocs"
+==> "GenerateDocs"
+==> "All"
+
 "Build" ==> "NuGet" ==> "All"
 "Build" ==> "All"
 "Build" ==> "RunTests" ==> "All"
