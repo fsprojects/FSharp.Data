@@ -1,4 +1,4 @@
-frameworks: net5.0, netstandard2.0
+frameworks: net6.0, netstandard2.0
 source https://api.nuget.org/v3/index.json
 
 # These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.
@@ -46,7 +46,7 @@ group Fake
 	nuget Microsoft.Build.Utilities.Core   16.9
 
 group Test
-    frameworks: net5.0
+    frameworks: net6.0
     source https://api.nuget.org/v3/index.json
 
     nuget FSharp.Core 5.0.1
