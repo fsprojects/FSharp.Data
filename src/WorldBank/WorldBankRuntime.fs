@@ -259,13 +259,7 @@ module Implementation =
         member internal __.GetDataAsync(countryOrRegionCode, indicatorCode) =
             async {
                 let! data =
-                    getData
-                        [ "countries"
-                          countryOrRegionCode
-                          "indicators"
-                          indicatorCode ]
-                        [ "date", "" ]
-                        "date"
+                    getData [ "countries"; countryOrRegionCode; "indicators"; indicatorCode ] [ "date", "" ] "date"
 
                 return
                     seq {

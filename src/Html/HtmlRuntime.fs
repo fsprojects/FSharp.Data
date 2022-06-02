@@ -272,15 +272,7 @@ module HtmlRuntime =
                         let data =
                             let getContents contents =
                                 contents
-                                |> List.map (
-                                    innerTextExcluding
-                                        [ "table"
-                                          "ul"
-                                          "ol"
-                                          "dl"
-                                          "sup"
-                                          "sub" ]
-                                )
+                                |> List.map (innerTextExcluding [ "table"; "ul"; "ol"; "dl"; "sup"; "sub" ])
                                 |> String.Concat
                                 |> normalizeWs
 
@@ -362,13 +354,7 @@ module HtmlRuntime =
         let rows =
             list.Descendants("li", true)
             |> Seq.map (
-                innerTextExcluding
-                    [ "table"
-                      "ul"
-                      "ol"
-                      "dl"
-                      "sup"
-                      "sub" ]
+                innerTextExcluding [ "table"; "ul"; "ol"; "dl"; "sup"; "sub" ]
                 >> normalizeWs
             )
             |> Seq.toArray

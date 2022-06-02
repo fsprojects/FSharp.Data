@@ -572,9 +572,7 @@ module internal XmlTypeBuilder =
                             |> Seq.take attrParameters.Length
                             |> Seq.toList
                             |> List.mapi (fun i a ->
-                                Expr.NewTuple
-                                    [ Expr.Value attrNames.[i]
-                                      Expr.Coerce(a, typeof<obj>) ])
+                                Expr.NewTuple [ Expr.Value attrNames.[i]; Expr.Coerce(a, typeof<obj>) ])
                         )
 
                     let elements =
@@ -587,16 +585,12 @@ module internal XmlTypeBuilder =
                         )
                         |> Seq.toList
                         |> List.mapi (fun i a ->
-                            Expr.NewTuple
-                                [ Expr.Value childElemNames.[i]
-                                  Expr.Coerce(a, typeof<obj>) ])
+                            Expr.NewTuple [ Expr.Value childElemNames.[i]; Expr.Coerce(a, typeof<obj>) ])
 
                     let elements =
                         match primitiveParam with
                         | Some _ ->
-                            Expr.NewTuple
-                                [ Expr.Value ""
-                                  Expr.Coerce(args.[attrParameters.Length], typeof<obj>) ]
+                            Expr.NewTuple [ Expr.Value ""; Expr.Coerce(args.[attrParameters.Length], typeof<obj>) ]
                             :: elements
                         | None -> elements
 

@@ -400,8 +400,7 @@ module JsonTypeBuilder =
 
                     let tupleType =
                         Microsoft.FSharp.Reflection.FSharpType.MakeTupleType(
-                            [| keyResult.ConvertedType
-                               valueResult.ConvertedType |]
+                            [| keyResult.ConvertedType; valueResult.ConvertedType |]
                         )
 
                     let itemsSeqType = typedefof<_ seq>.MakeGenericType ([| tupleType |])
@@ -566,9 +565,7 @@ module JsonTypeBuilder =
                                     typeof<string * obj>,
                                     args
                                     |> List.mapi (fun i a ->
-                                        Expr.NewTuple
-                                            [ Expr.Value names.[i]
-                                              Expr.Coerce(a, typeof<obj>) ])
+                                        Expr.NewTuple [ Expr.Value names.[i]; Expr.Coerce(a, typeof<obj>) ])
                                 )
 
                             let cultureStr = ctx.CultureStr

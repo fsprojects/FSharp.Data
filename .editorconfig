@@ -13,6 +13,7 @@ insert_final_newline = true
 trim_trailing_whitespace = false
 
 [*.fs]
+fsharp_max_array_or_list_width=80
 fsharp_max_array_or_list_number_of_items=5
 fsharp_max_if_then_else_short_width=60
 fsharp_max_dot_get_expression_width=80
