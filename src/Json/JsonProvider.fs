@@ -16,86 +16,96 @@ open FSharp.Data.Runtime.StructuralTypes
 #nowarn "10001"
 
 [<TypeProvider>]
-type public JsonProvider(cfg:TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
-  
+type public JsonProvider(cfg: TypeProviderConfig) as this =
+    inherit DisposableTypeProviderForNamespaces
+        (
+            cfg,
+            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
+        )
+
     // Generate namespace and type 'FSharp.Data.JsonProvider'
     do AssemblyResolver.init ()
     let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
-    let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods=true, nonNullable=true)
-  
-    let buildTypes (typeName:string) (args:obj[]) =
-  
+
+    let jsonProvTy =
+        ProvidedTypeDefinition(asm, ns, "JsonProvider", None, hideObjectMethods = true, nonNullable = true)
+
+    let buildTypes (typeName: string) (args: obj[]) =
+
         // Generate the required type
-        let tpType = ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods=true, nonNullable=true)
-       
+        let tpType =
+            ProvidedTypeDefinition(asm, ns, typeName, None, hideObjectMethods = true, nonNullable = true)
+
         let sample = args.[0] :?> string
         let sampleIsList = args.[1] :?> bool
         let rootName = args.[2] :?> string
-        let rootName = if String.IsNullOrWhiteSpace rootName then "Root" else NameUtils.singularize rootName
+
+        let rootName =
+            if String.IsNullOrWhiteSpace rootName then
+                "Root"
+            else
+                NameUtils.singularize rootName
+
         let cultureStr = args.[3] :?> string
         let encodingStr = args.[4] :?> string
         let resolutionFolder = args.[5] :?> string
         let resource = args.[6] :?> string
         let inferTypesFromValues = args.[7] :?> bool
         let preferDictionaries = args.[8] :?> bool
-       
+
         let cultureInfo = TextRuntime.GetCulture cultureStr
-       
-        let getSpec _ value = 
-       
+
+        let getSpec _ value =
+
             let samples =
                 use _holder = IO.logTime "Parsing" sample
+
                 if sampleIsList then
                     JsonDocument.CreateList(new StringReader(value))
                     |> Array.map (fun doc -> doc.JsonValue)
-                else 
+                else
                     [| JsonValue.Parse(value) |]
-            
+
             let inferedType =
                 use _holder = IO.logTime "Inference" sample
+
                 samples
                 |> Array.map (fun sampleJson -> JsonInference.inferType inferTypesFromValues cultureInfo "" sampleJson)
                 |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
-            
+
             use _holder = IO.logTime "TypeGeneration" sample
-            
-            let ctx = JsonGenerationContext.Create(cultureStr, tpType, ?preferDictionaries = Some preferDictionaries)
+
+            let ctx =
+                JsonGenerationContext.Create(cultureStr, tpType, ?preferDictionaries = Some preferDictionaries)
+
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
-        
+
             { GeneratedType = tpType
               RepresentationType = result.ConvertedType
-              CreateFromTextReader = fun reader -> 
-                  result.Convert <@@ JsonDocument.Create(%reader) @@>
-              CreateListFromTextReader = Some (fun reader ->
-                  result.Convert <@@ JsonDocument.CreateList(%reader) @@>)
-              CreateFromTextReaderForSampleList = fun reader ->
-                  result.Convert <@@ JsonDocument.CreateList(%reader) @@>
-              CreateFromValue = Some (typeof<JsonValue>, fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)
-            }
+              CreateFromTextReader = fun reader -> result.Convert <@@ JsonDocument.Create(%reader) @@>
+              CreateListFromTextReader = Some(fun reader -> result.Convert <@@ JsonDocument.CreateList(%reader) @@>)
+              CreateFromTextReaderForSampleList = fun reader -> result.Convert <@@ JsonDocument.CreateList(%reader) @@>
+              CreateFromValue =
+                Some(typeof<JsonValue>, (fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)) }
 
-        let source =
-            if sampleIsList then
-                SampleList sample
-            else
-                Sample sample
+        let source = if sampleIsList then SampleList sample else Sample sample
 
         generateType "JSON" source getSpec this cfg encodingStr resolutionFolder resource typeName None
-       
-    // Add static parameter that specifies the API we want to get (compile-time) 
-    let parameters = 
+
+    // Add static parameter that specifies the API we want to get (compile-time)
+    let parameters =
         [ ProvidedStaticParameter("Sample", typeof<string>)
-          ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false) 
-          ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root") 
-          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
-          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
+          ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root")
+          ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true)
           ProvidedStaticParameter("PreferDictionaries", typeof<bool>, parameterDefaultValue = false) ]
-  
-    let helpText = 
+
+    let helpText =
         """<summary>Typed representation of a JSON document.</summary>
            <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document.</param>
            <param name='SampleIsList'>If true, sample should be a list of individual samples for the inference.</param>
@@ -108,9 +118,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
            <param name='InferTypesFromValues'>If true, turns on additional type inference from values. 
               (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans.)</param>
            <param name='PreferDictionaries'>If true, json record is considered as a dictionary, if the names of all the its fields are infered (by type inference rules) into the same non-string primitive type.</param>"""
-  
+
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)
-  
+
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ jsonProvTy ])

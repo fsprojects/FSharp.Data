@@ -14,16 +14,22 @@ open FSharp.Data.Runtime.BaseTypes
 #nowarn "10001"
 
 [<TypeProvider>]
-type public HtmlProvider(cfg:TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap=[ "FSharp.Data.DesignTime", "FSharp.Data" ])
-    
+type public HtmlProvider(cfg: TypeProviderConfig) as this =
+    inherit DisposableTypeProviderForNamespaces
+        (
+            cfg,
+            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
+        )
+
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
     do AssemblyResolver.init ()
     let asm = System.Reflection.Assembly.GetExecutingAssembly()
     let ns = "FSharp.Data"
-    let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods=true, nonNullable=true)
-    
-    let buildTypes (typeName:string) (args:obj[]) =
+
+    let htmlProvTy =
+        ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods = true, nonNullable = true)
+
+    let buildTypes (typeName: string) (args: obj[]) =
 
         let sample = args.[0] :?> string
         let preferOptionals = args.[1] :?> bool
@@ -34,19 +40,21 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let resolutionFolder = args.[6] :?> string
         let resource = args.[7] :?> string
 
-        let getSpec _ value = 
+        let getSpec _ value =
 
-            let doc = 
+            let doc =
                 use _holder = IO.logTime "Parsing" sample
                 HtmlDocument.Parse value
 
             let htmlType =
                 use _holder = IO.logTime "Inference" sample
-                let inferenceParameters : HtmlInference.Parameters = 
+
+                let inferenceParameters: HtmlInference.Parameters =
                     { MissingValues = TextRuntime.GetMissingValues missingValuesStr
                       CultureInfo = TextRuntime.GetCulture cultureStr
                       UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
-                      PreferOptionals  = preferOptionals }
+                      PreferOptionals = preferOptionals }
+
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
                 |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr)
@@ -55,39 +63,40 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>
               CreateListFromTextReader = None
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable"
-              CreateFromValue = None
-               }
+              CreateFromValue = None }
 
         generateType "HTML" (Sample sample) getSpec this cfg encodingStr resolutionFolder resource typeName None
 
-    // Add static parameter that specifies the API we want to get (compile-time) 
-    let parameters = 
-        [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")           
+    // Add static parameter that specifies the API we want to get (compile-time)
+    let parameters =
+        [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("IncludeLayoutTables", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "") 
-          ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
+          ProvidedStaticParameter("Encoding", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "") ]
-  
-    let helpText = 
+
+    let helpText =
         """<summary>Typed representation of an HTML file.</summary>
            <param name='Sample'>Location of an HTML sample file or a string containing a sample HTML document.</param>
            <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, <c>double.NaN</c> or <c>""</c> for missing values. Defaults to false.</param>
            <param name='IncludeLayoutTables'>Includes tables that are potentially layout tables (with cellpadding=0 and cellspacing=0 attributes)</param>
-           <param name='MissingValues'>The set of strings recogized as missing values. Defaults to <c>""" + String.Join(",", TextConversions.DefaultMissingValues) + """</c>.</param>
+           <param name='MissingValues'>The set of strings recogized as missing values. Defaults to <c>"""
+        + String.Join(",", TextConversions.DefaultMissingValues)
+        + """</c>.</param>
            <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
            <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <c>charset</c> is specified in the <c>Content-Type</c> response header.</param>
            <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>
            <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource 
               (e.g. 'MyCompany.MyAssembly, resource_name.html'). This is useful when exposing types generated by the type provider.</param>"""
-  
+
     do htmlProvTy.AddXmlDoc helpText
     do htmlProvTy.DefineStaticParameters(parameters, buildTypes)
-  
+
     // Register the main type with F# compiler
     do this.AddNamespace(ns, [ htmlProvTy ])

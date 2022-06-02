@@ -13,13 +13,15 @@ open FSharp.Core.CompilerServices
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 
-let mutable private initialized = false    
+let mutable private initialized = false
 
-let init () = 
+let init () =
 
     if not initialized then
         initialized <- true
+
         if WebRequest.DefaultWebProxy <> null then
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
+        ProvidedTypes.ProvidedTypeDefinition.Logger
+        := Some FSharp.Data.Runtime.IO.log
