@@ -95,25 +95,10 @@ let typeTag =
 
 let private conversionTable =
     [ typeof<Bit>, [ typeof<Bit0>; typeof<Bit1> ]
-      typeof<bool>,
-      [ typeof<Bit0>
-        typeof<Bit1>
-        typeof<Bit> ]
-      typeof<int>,
-      [ typeof<Bit0>
-        typeof<Bit1>
-        typeof<Bit> ]
-      typeof<int64>,
-      [ typeof<Bit0>
-        typeof<Bit1>
-        typeof<Bit>
-        typeof<int> ]
-      typeof<decimal>,
-      [ typeof<Bit0>
-        typeof<Bit1>
-        typeof<Bit>
-        typeof<int>
-        typeof<int64> ]
+      typeof<bool>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit> ]
+      typeof<int>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit> ]
+      typeof<int64>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int> ]
+      typeof<decimal>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64> ]
       typeof<float>,
       [ typeof<Bit0>
         typeof<Bit1>

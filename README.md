@@ -13,6 +13,11 @@ You can see the version history [here](RELEASE_NOTES.md).
 - Install the .NET SDK specified in the `global.json` file
 - `build.sh -t Build` or `build.cmd -t Build`
 
+## Formatting
+
+    dotnet fake build -t Format
+    dotnet fake build -t CheckFormat
+
 ## Documentation
 
 This library comes with comprehensive documentation. The documentation is 
