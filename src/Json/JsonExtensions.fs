@@ -11,8 +11,8 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Core
 
-[<Extension>]
 /// Extension methods with operations on JSON values
+[<Extension>]
 type JsonExtensions =
 
   /// Get a sequence of key-value pairs representing the properties of an object
@@ -67,7 +67,7 @@ type JsonExtensions =
   [<Extension>] 
   static member AsString(x, [<Optional>] ?cultureInfo) =
     let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
-    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x with
+    match JsonConversions.AsString false cultureInfo x with
     | Some s -> s
     | _ -> failwithf "Not a string: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
 
@@ -100,7 +100,7 @@ type JsonExtensions =
   static member AsFloat(x, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) = 
     let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-    match JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
+    match JsonConversions.AsFloat missingValues false cultureInfo x with
     | Some f -> f
     | _ -> failwithf "Not a float: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
@@ -148,12 +148,12 @@ type JsonExtensions =
   /// Get inner text of an element
   [<Extension>]
   static member InnerText(x) = 
-    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false CultureInfo.InvariantCulture x with
+    match JsonConversions.AsString false CultureInfo.InvariantCulture x with
     | Some str -> str
     | None -> JsonExtensions.AsArray(x) |> Array.map (fun e -> JsonExtensions.InnerText(e)) |> String.Concat
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Provides the dynamic operator for getting a property of a JSON object
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonExtensions =
 
   /// Get a property of a JSON object  
@@ -210,7 +210,7 @@ module Options =
     /// Get the string value of an element (assuming that the value is a scalar)
     member x.AsString(?cultureInfo) =
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
-      JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x
+      JsonConversions.AsString false cultureInfo x
   
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger(?cultureInfo) = 
@@ -231,7 +231,7 @@ module Options =
     member x.AsFloat(?cultureInfo, [<Optional>] ?missingValues) = 
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-      JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)true cultureInfo x
+      JsonConversions.AsFloat missingValues true cultureInfo x
   
     /// Get the boolean value of an element (assuming that the value is a boolean)
     member x.AsBoolean(?cultureInfo) =
@@ -311,7 +311,7 @@ module Options =
     [<Extension>] 
     static member AsString(x, [<Optional>] ?cultureInfo) =
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
-      x |> Option.bind (JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo)
+      x |> Option.bind (JsonConversions.AsString false cultureInfo)
   
     /// Get a number as an integer (assuming that the value fits in integer)
     [<Extension>] 
@@ -336,7 +336,7 @@ module Options =
     static member AsFloat(x, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) = 
       let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
       let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-      x |> Option.bind (JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)true cultureInfo)
+      x |> Option.bind (JsonConversions.AsFloat missingValues true cultureInfo)
   
     /// Get the boolean value of an element (assuming that the value is a boolean)
     [<Extension>] 

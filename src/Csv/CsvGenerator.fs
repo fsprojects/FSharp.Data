@@ -30,13 +30,16 @@ module internal CsvTypeBuilder =
     let fields = inferredFields |> List.mapi (fun index field ->
       let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr field
       let propertyName = NameUtils.capitalizeFirstLetter field.Name
-      { TypeForTuple = typWithoutMeasure
-        ProvidedProperty = ProvidedProperty(propertyName, typ, getterCode = fun (Singleton row) -> 
+      let prop = ProvidedProperty(propertyName, typ, getterCode = fun (Singleton row) -> 
             match inferredFields with 
             | [ _ ] -> row
             | _ -> Expr.TupleGet(row, index))
-        Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>
-        ConvertBack = fun rowVarExpr -> convBack (match inferredFields with [ _ ] -> rowVarExpr | _ -> Expr.TupleGet(rowVarExpr, index))
+      let convert rowVarExpr = conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>
+      let convertBack rowVarExpr = convBack (match inferredFields with [ _ ] -> rowVarExpr | _ -> Expr.TupleGet(rowVarExpr, index))
+      { TypeForTuple = typWithoutMeasure
+        ProvidedProperty = prop
+        Convert = convert
+        ConvertBack = convertBack
         ProvidedParameter = ProvidedParameter(NameUtils.niceCamelName propertyName, typ) } )
 
     // The erased row type will be a tuple of all the field types (without the units of measure).  If there is a single column then it is just the column type.
@@ -48,10 +51,13 @@ module internal CsvTypeBuilder =
     let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, hideObjectMethods = true, nonNullable = true)
 
     let ctor = 
-        ProvidedConstructor([ for field in fields -> field.ProvidedParameter ], invokeCode = fun args -> 
+        let parameters = [ for field in fields -> field.ProvidedParameter ]
+        let invoke args = 
             match args with 
             | [ arg ] -> arg
-            | _ -> Expr.NewTuple(args))
+            | _ -> Expr.NewTuple(args)
+        ProvidedConstructor(parameters, invokeCode = invoke)
+
     rowType.AddMember ctor
     
     // Each property of the generated row type will simply be a tuple get

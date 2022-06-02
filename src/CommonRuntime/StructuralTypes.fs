@@ -88,7 +88,8 @@ type InferedType =
     | Record(name, props, false) -> Record(name, props, true)
     | Json(typ, false) -> Json(typ, true)
     | Collection (order, types) ->
-         Collection (order, Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ) types)
+         let typesR = types |> Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ)
+         Collection (order, typesR)
     | Top -> failwith "EnsuresHandlesMissingValues: unexpected InferedType.Top"
 
   member x.DropOptionality() =

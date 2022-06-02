@@ -26,9 +26,10 @@ module internal HtmlGenerator =
     let private getPropertyName = NameUtils.capitalizeFirstLetter
     
     let private typeNameGenerator() =
-        NameUtils.uniqueGenerator <| fun s ->
+        NameUtils.uniqueGenerator (fun s ->
             HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
+        )
 
     let private createTableType getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
 

@@ -492,27 +492,26 @@ let ``Can parse UTC dates``() =
     let dates = DateJSON.GetSample()
     dates.UtcTime |> should equal (new DateTimeOffset(1997, 7, 16, 19, 50, 30, TimeSpan.Zero)) 
 
-let withCulture (cultureName: string) test = 
+let withCulture (cultureName: string) = 
     let originalCulture = CultureInfo.CurrentCulture;
-    try
-        CultureInfo.CurrentCulture <- CultureInfo cultureName
-        test()
-    finally
-        CultureInfo.CurrentCulture <- originalCulture
+    CultureInfo.CurrentCulture <- CultureInfo cultureName
+    { new IDisposable with 
+        member _.Dispose() = 
+            CultureInfo.CurrentCulture <- originalCulture }
 
 [<Test>]
 let ``Can parse ISO 8601 dates in the correct culture``() =
-    withCulture "zh-CN" <| fun () ->
-        let dates = DateJSON.GetSample()
-        dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
+    use _holder = withCulture "zh-CN"
+    let dates = DateJSON.GetSample()
+    dates.NoTimeZone |> should equal (new DateTime(1997, 7, 16, 19, 20, 30, 00, System.DateTimeKind.Local)) 
 
 [<Test>]
 let ``Can parse ISO 8601 dates in the specified culture``() =
-    withCulture "pt-PT" <| fun () ->
-        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
-        dates.Birthdate.Month |> should equal 1
-        let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
-        dates.Birthdate.Month |> should equal 2
+    use _holder = withCulture "pt-PT"
+    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""">.GetSample()
+    dates.Birthdate.Month |> should equal 1
+    let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
+    dates.Birthdate.Month |> should equal 2
 
 type TimeSpanJSON = JsonProvider<"Data/TimeSpans.json">
 

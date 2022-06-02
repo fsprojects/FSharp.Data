@@ -50,7 +50,7 @@ type TextRuntime =
 
   static member ConvertFloat(cultureStr, missingValuesStr, text) = 
     text |> Option.bind (TextConversions.AsFloat (TextRuntime.GetMissingValues missingValuesStr)
-                                                 (*useNoneForMissingValues*)true 
+                                                 true 
                                                  (TextRuntime.GetCulture cultureStr))
 
   static member ConvertBoolean(text) = 

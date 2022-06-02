@@ -240,7 +240,7 @@ type private JsonParser(jsonText:string) =
         match TextConversions.AsDecimal CultureInfo.InvariantCulture sub with
         | Some x -> JsonValue.Number x
         | _ ->
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false CultureInfo.InvariantCulture sub with
+            match TextConversions.AsFloat [| |] false CultureInfo.InvariantCulture sub with
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
