@@ -117,7 +117,7 @@ type NugetStats =
   HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats().Tables.Table3
+let rawStats = NugetStats().Tables.Table4
 
 // helper function to analyze version numbers from nuget
 let getMinorVersion (v:string) =

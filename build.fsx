@@ -146,12 +146,16 @@ Target.create "NuGet" (fun _ ->
 Target.create "GenerateDocs" (fun _ ->
     Shell.cleanDir ".fsdocs"
 
-    DotNet.exec
-        id
-        "fsdocs"
-        ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
-         + release.NugetVersion)
-    |> ignore)
+    let result =
+        DotNet.exec
+            id
+            "fsdocs"
+            ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+             + release.NugetVersion)
+
+    if not result.OK then
+        printfn "Errors while generating docs: %A" result.Messages
+        failwith "Failed to generate docs")
 
 // --------------------------------------------------------------------------------------
 // Help
