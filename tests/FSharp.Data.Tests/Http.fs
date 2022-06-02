@@ -3,6 +3,8 @@ module FSharp.Data.Tests.Http
 open FsUnit
 open NUnit.Framework
 open System
+open System.IO
+open System.Net
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 open System.Text
@@ -72,18 +74,18 @@ let ``An empty cookie header is parsed correctly`` () =
 
 [<Test>]
 let ``Cookies in CookieContainer are returned`` () =
-    let cookieContainer = System.Net.CookieContainer()
+    let cookieContainer = CookieContainer()
     let someUri = Uri "http://nevermind.com"
-    cookieContainer.Add(someUri, System.Net.Cookie("key", "value"))
+    cookieContainer.Add(someUri, Cookie("key", "value"))
     let header = Map.empty
     let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
     cookies |> should haveCount cookieContainer.Count
 
 [<Test>]
 let ``Cookies in header are added to CookieContainer and returned`` () =
-    let cookieContainer = System.Net.CookieContainer()
+    let cookieContainer = CookieContainer()
     let someUri = Uri "http://nevermind.com"
-    cookieContainer.Add(someUri, System.Net.Cookie("key1", "value1"))
+    cookieContainer.Add(someUri, Cookie("key1", "value1"))
     let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key2=value2"))]
     let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
     cookieContainer.Count |> should equal 2
@@ -91,9 +93,9 @@ let ``Cookies in header are added to CookieContainer and returned`` () =
 
 [<Test>]
 let ``Cookies in header already existing in CookieContainer are added twice, and only new value is returned`` () =
-    let cookieContainer = System.Net.CookieContainer()
+    let cookieContainer = CookieContainer()
     let someUri = Uri "http://nevermind.com"
-    cookieContainer.Add(someUri, System.Net.Cookie("key", "value1"))
+    cookieContainer.Add(someUri, Cookie("key", "value1"))
     let header = Map.ofList [(HttpResponseHeaders.SetCookie, ("key=value2"))]
     let cookies = CookieHandling.getCookiesAndManageCookieContainer someUri someUri header cookieContainer true false
     cookieContainer.Count |> should equal 2
@@ -104,14 +106,14 @@ let ``Cookies in header already existing in CookieContainer are added twice, and
 let ``Cookies with unescaped JSON raise a CookieException (need to avoid cookieContainer parameter or ignoreCookieErrors`` () =
     let uri = Uri "http://nevermind.com"
     let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
-    let cookieContainer = System.Net.CookieContainer()
-    (fun () -> CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true false |> ignore) |> should throw typeof<System.Net.CookieException>
+    let cookieContainer = CookieContainer()
+    (fun () -> CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true false |> ignore) |> should throw typeof<CookieException>
 
 [<Test>]
 let ``Cookies with unescaped JSON is not added in cookieContainer but is still returned when ignoreCookieErrors parameter is true`` () =
     let uri = Uri "http://nevermind.com"
     let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
-    let cookieContainer = System.Net.CookieContainer()
+    let cookieContainer = CookieContainer()
     let cookies = CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer true true
     cookieContainer.Count |> should equal 0
     cookies |> should haveCount 1
@@ -120,20 +122,20 @@ let ``Cookies with unescaped JSON is not added in cookieContainer but is still r
 let ``Cookies is not added in cookieContainer but is still returned when addCookieInCookieContainer parameter is false (deducted from option cookieContainer passed in InnerRequest method)`` () =
     let uri = Uri "http://nevermind.com"
     let header = Map.ofList [(HttpResponseHeaders.SetCookie, "hab={\"echanges\":1,\"notifications\":1,\"messages\":1}")]
-    let cookieContainer = System.Net.CookieContainer()
+    let cookieContainer = CookieContainer()
     let cookies = CookieHandling.getCookiesAndManageCookieContainer uri uri header cookieContainer false false
     cookieContainer.Count |> should equal 0
     cookies |> should haveCount 1
 
 [<Test>]
 let ``Web request's timeout is used`` () =
-    let exc = Assert.Throws<System.Net.WebException> (fun () ->
+    let exc = Assert.Throws<WebException> (fun () ->
         Http.Request("http://httpstat.us/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Timeout argument is used`` () =
-    let exc = Assert.Throws<System.Net.WebException> (fun () ->
+    let exc = Assert.Throws<WebException> (fun () ->
         Http.Request("http://httpstat.us/200?sleep=1000", timeout = 1) |> ignore)
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
@@ -162,7 +164,7 @@ let testFormDataBodySize (size: int) =
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testMultipartFormDataBodySize (size: int) = 
     let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
-    let multipartItem = [ MultipartItem("input", "input.txt", new IO.MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> IO.Stream) ]
+    let multipartItem = [ MultipartItem("input", "input.txt", new MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> Stream) ]
     let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
     Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
@@ -197,10 +199,10 @@ let ``correct multipart content format`` () =
     let numFiles = 2
     let boundary = "**"
     let content = "Text file content"
-    let multiPartItem (content: string) name = MultipartItem(name, name, (new IO.MemoryStream(Encoding.UTF8.GetBytes(content))) :> IO.Stream)
+    let multiPartItem (content: string) name = MultipartItem(name, name, (new MemoryStream(Encoding.UTF8.GetBytes(content))) :> Stream)
     let multiparts = seq {for i in [0..numFiles] -> multiPartItem content (i.ToString()) } 
     let combinedStream = HttpHelpers.writeMultipart boundary multiparts Encoding.UTF8
-    use ms = new IO.MemoryStream()
+    use ms = new MemoryStream()
     combinedStream.CopyTo(ms)
     let str = Encoding.UTF8.GetString(ms.ToArray())
     Console.WriteLine(str)
@@ -230,7 +232,7 @@ let ``CombinedStream cannot seek with None length`` () =
     combinedStream.CanSeek |> should equal false
     
 type nonSeekableStream (b: byte[]) =
-    inherit IO.MemoryStream(b)
+    inherit MemoryStream(b)
     override _.Length with get():Int64 = failwith "Im not seekable"
     override _.CanSeek with get() = false
     
@@ -246,16 +248,18 @@ let ``Non-seekable streams create non-seekable CombinedStream`` () =
 let ``Seekable streams create Seekable CombinedStream`` () =
     let byteLen = 10L
     let result = byteLen + 108L // As no extra /r/n, 2 bytes removed, 108 is headers
-    use ms = new IO.MemoryStream(Array.zeroCreate (int byteLen))
+    use ms = new MemoryStream(Array.zeroCreate (int byteLen))
     let multiparts = [MultipartItem("","", ms)]
     let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
     combinedStream.Length |> should equal result
     combinedStream.CanSeek |> should equal true
     
+#nowarn "44" // Use of deprecated HttpWebRequest
+
 [<Test>]
 let ``HttpWebRequest length is set with seekable streams`` () =
-    use ms = new IO.MemoryStream(Array.zeroCreate 10)
-    let wr = Net.HttpWebRequest.Create("http://x") :?> Net.HttpWebRequest
+    use ms = new MemoryStream(Array.zeroCreate 10)
+    let wr = HttpWebRequest.Create("http://x") :?> HttpWebRequest
     wr.Method <- "POST"
     HttpHelpers.writeBody wr ms |> Async.RunSynchronously
     wr.ContentLength |> should equal 10
@@ -263,7 +267,7 @@ let ``HttpWebRequest length is set with seekable streams`` () =
 [<Test>]
 let ``HttpWebRequest length is not set with non-seekable streams`` () =
     use nonSeekms = new nonSeekableStream(Array.zeroCreate 10)
-    let wr = Net.HttpWebRequest.Create("http://x") :?> Net.HttpWebRequest
+    let wr = HttpWebRequest.Create("http://x") :?> HttpWebRequest
     wr.Method <- "POST"
     HttpHelpers.writeBody wr nonSeekms |> Async.RunSynchronously
     wr.ContentLength |> should equal 0
