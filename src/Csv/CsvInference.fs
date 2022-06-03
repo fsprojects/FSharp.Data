@@ -162,7 +162,7 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
     | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
     | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
-let internal inferCellType preferOptionals missingValues cultureInfo unit (value: string) =
+let internal inferCellType preferOptionals missingValues inferenceMode cultureInfo unit (value: string) =
     // Explicit missing values (NaN, NA, Empty string etc.) will be treated as float unless the preferOptionals is set to true
     if Array.exists (value.Trim() |> (=)) missingValues then
         if preferOptionals then
@@ -173,7 +173,7 @@ let internal inferCellType preferOptionals missingValues cultureInfo unit (value
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
     else
-        getInferedTypeFromString cultureInfo value unit
+        getInferedTypeFromString inferenceMode cultureInfo value unit
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
@@ -282,6 +282,7 @@ let internal inferType
     (rows: seq<_>)
     inferRows
     missingValues
+    inferenceMode
     cultureInfo
     assumeMissingValues
     preferOptionals
@@ -328,7 +329,7 @@ let internal inferType
                         let typ =
                             match schema with
                             | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                            | None -> inferCellType preferOptionals missingValues cultureInfo unit value
+                            | None -> inferCellType preferOptionals missingValues inferenceMode cultureInfo unit value
 
                         { Name = name; Type = typ } ]
 
@@ -420,11 +421,12 @@ let internal inferColumnTypes
     rows
     inferRows
     missingValues
+    inferenceMode
     cultureInfo
     assumeMissingValues
     preferOptionals
     =
-    inferType headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals
+    inferType headerNamesAndUnits schema rows inferRows missingValues inferenceMode cultureInfo assumeMissingValues preferOptionals
     ||> getFields preferOptionals
 
 type CsvFile with
@@ -442,6 +444,7 @@ type CsvFile with
         (
             inferRows,
             missingValues,
+            inferenceMode,
             cultureInfo,
             schema,
             assumeMissingValues,
@@ -460,6 +463,7 @@ type CsvFile with
             (x.Rows |> Seq.map (fun row -> row.Columns))
             inferRows
             missingValues
+            inferenceMode
             cultureInfo
             assumeMissingValues
             preferOptionals

@@ -14,7 +14,8 @@ let getTables includeLayoutTables =
         { MissingValues = TextConversions.DefaultMissingValues
           CultureInfo = CultureInfo.InvariantCulture
           UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
-          PreferOptionals = false }
+          PreferOptionals = false
+          InferenceMode = StructuralInference.InferenceMode'.ValuesOnly }
     HtmlRuntime.getTables (Some parameters) includeLayoutTables
 
 [<Test>]

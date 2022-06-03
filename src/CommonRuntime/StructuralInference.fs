@@ -8,6 +8,46 @@ open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
+/// This is the public inference mode enum with backward compatibility.
+type InferenceMode =
+    /// Used as a default value for backward compatibility with the legacy InferTypesFromValues boolean static parameter.
+    /// The actual behaviour will depend on whether InferTypesFromValues is set to true (default) or false.
+    | BackwardCompatible = 0
+    /// Type everything as strings
+    /// (or the most basic type possible for the value when it's not string, e.g. for json numbers or booleans).
+    | NoInference = 1
+    /// Infer types from values only. Inline schemas are disabled.
+    | ValuesOnly = 2
+    /// Inline schemas types have the same weight as value infered types.
+    | ValuesAndInlineSchemasHints = 3
+    /// Inline schemas types override value infered types. (Value infered types are ignored if an inline schema is present)
+    | ValuesAndInlineSchemasOverrides = 4
+
+/// This is the internal DU representing all the valid cases we support, mapped from the public InferenceMode.
+type InferenceMode' =
+    | NoInference
+    /// Backward compatible mode.
+    | ValuesOnly
+    | ValuesAndInlineSchemasHints
+    | ValuesAndInlineSchemasOverrides
+    /// Converts from the public api enum with backward compat to the internal representation with only valid cases.
+    /// If the user sets InferenceMode manually (to a value other than BackwardCompatible)
+    /// then the legacy InferTypesFromValues is ignored.
+    /// Otherwise (when set to BackwardCompatible), inference mode is set to a compatible value.
+    static member FromPublicApi(inferenceMode: InferenceMode, ?legacyInferTypesFromValues: bool) =
+        match inferenceMode with
+        | InferenceMode.BackwardCompatible ->
+            let legacyInferTypesFromValues = defaultArg legacyInferTypesFromValues true
+
+            match legacyInferTypesFromValues with
+            | true -> InferenceMode'.ValuesOnly
+            | false -> InferenceMode'.NoInference
+        | InferenceMode.NoInference -> InferenceMode'.NoInference
+        | InferenceMode.ValuesOnly -> InferenceMode'.ValuesOnly
+        | InferenceMode.ValuesAndInlineSchemasHints -> InferenceMode'.ValuesAndInlineSchemasHints
+        | InferenceMode.ValuesAndInlineSchemasOverrides -> InferenceMode'.ValuesAndInlineSchemasOverrides
+        | _ -> failwithf "Unexpected inference mode value %A" inferenceMode
+
 
 /// <exclude />
 module internal List =
@@ -296,7 +336,7 @@ module private Helpers =
 
 /// Infers the type of a simple string value
 /// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<TimeSpan>|typeof<string>
-let inferPrimitiveType (cultureInfo: CultureInfo) (value: string) =
+let inferPrimitiveType (inferenceMode: InferenceMode') (cultureInfo: CultureInfo) (value: string) =
 
     // Helper for calling TextConversions.AsXyz functions
     let (|Parse|_|) func value = func cultureInfo value
@@ -325,27 +365,56 @@ let inferPrimitiveType (cultureInfo: CultureInfo) (value: string) =
             || value.IndexOf(getAbbreviatedEraName era, StringComparison.OrdinalIgnoreCase)
                >= 0)
 
-    match value with
-    | "" -> null
-    | Parse TextConversions.AsInteger 0 -> typeof<Bit0>
-    | Parse TextConversions.AsInteger 1 -> typeof<Bit1>
-    | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
-    | Parse TextConversions.AsInteger _ -> typeof<int>
-    | Parse TextConversions.AsInteger64 _ -> typeof<int64>
-    | Parse TextConversions.AsTimeSpan _ -> typeof<TimeSpan>
-    | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) ->
-        typeof<DateTimeOffset>
-    | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
-    | Parse TextConversions.AsDecimal _ -> typeof<decimal>
-    | Parse (TextConversions.AsFloat [||] false) _ -> typeof<float>
-    | Parse asGuid _ -> typeof<Guid>
-    | _ -> typeof<string>
+    let matchValue value =
+        match value with
+        | "" -> Some null
+        | Parse TextConversions.AsInteger 0 -> Some typeof<Bit0>
+        | Parse TextConversions.AsInteger 1 -> Some typeof<Bit1>
+        | ParseNoCulture TextConversions.AsBoolean _ -> Some typeof<bool>
+        | Parse TextConversions.AsInteger _ -> Some typeof<int>
+        | Parse TextConversions.AsInteger64 _ -> Some typeof<int64>
+        | Parse TextConversions.AsTimeSpan _ -> Some typeof<TimeSpan>
+        | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) ->
+            Some typeof<DateTimeOffset>
+        | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> Some typeof<DateTime>
+        | Parse TextConversions.AsDecimal _ -> Some typeof<decimal>
+        | Parse (TextConversions.AsFloat [||] false) _ -> Some typeof<float>
+        | Parse asGuid _ -> Some typeof<Guid>
+        | _ -> None
+
+    let matchInlineSchema useInlineSchemasOverrides value =
+        // TODO properly. The following is just to validate the concept:
+        match value with
+        | "" -> Some null
+        | "date" -> Some typeof<DateTime>
+        | "int" -> Some typeof<int>
+        | "float" -> Some typeof<float>
+        | _ -> None
+
+    let fallbackType = typeof<string>
+
+    match inferenceMode with
+    | InferenceMode'.NoInference -> fallbackType
+    | InferenceMode'.ValuesOnly ->
+        matchValue value
+        |> Option.defaultValue fallbackType
+    | InferenceMode'.ValuesAndInlineSchemasHints ->
+        matchInlineSchema false value
+        |> Option.orElseWith (fun () -> matchValue value)
+        |> Option.defaultValue fallbackType
+    | InferenceMode'.ValuesAndInlineSchemasOverrides ->
+        matchInlineSchema true value
+        |> Option.orElseWith (fun () -> matchValue value)
+        |> Option.defaultValue fallbackType
 
 /// Infers the type of a simple string value
-let getInferedTypeFromString cultureInfo value unit =
-    match inferPrimitiveType cultureInfo value with
-    | null -> InferedType.Null
-    | typ -> InferedType.Primitive(typ, unit, false)
+let getInferedTypeFromString inferenceMode cultureInfo value unit =
+    match inferenceMode with
+    | InferenceMode'.NoInference -> InferedType.Primitive(typeof<string>, None, false)
+    | _ ->
+        match inferPrimitiveType inferenceMode cultureInfo value with
+        | null -> InferedType.Null
+        | typ -> InferedType.Primitive(typ, unit, false)
 
 type IUnitsOfMeasureProvider =
     abstract SI: str: string -> System.Type

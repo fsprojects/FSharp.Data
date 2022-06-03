@@ -164,11 +164,11 @@ type TypeProviderInstantiation =
              x.Sample
              x.PreferOptionals.ToString()
              x.IncludeLayoutTables.ToString()
-             x.Culture]
+             x.Culture ]
         | WorldBank x ->
             ["WorldBank"
              x.Sources
-             x.Asynchronous.ToString()]
+             x.Asynchronous.ToString() ]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder =
