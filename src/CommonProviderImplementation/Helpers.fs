@@ -338,7 +338,7 @@ module internal ProviderHelpers =
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 30.0)
     let private activeDisposeActions = HashSet<_>()
 
-    // Cache generated types for a short time, since VS invokes the TP multiple tiems
+    // Cache generated types for a short time, since VS invokes the TP multiple times
     // Also cache temporarily during partial invalidation since the invalidation of one TP always causes invalidation of all TPs
     let internal getOrCreateProvidedType
         (cfg: TypeProviderConfig)

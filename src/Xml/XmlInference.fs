@@ -60,7 +60,7 @@ let getInferedTypeFromValue inferTypesFromValues cultureInfo (element: XElement)
         InferedType.Primitive(typeof<string>, None, false)
 
 /// Infers type for the element, unifying nodes of the same name
-/// accross the entire document (we first get information based
+/// across the entire document (we first get information based
 /// on just attributes and then use a fixed point)
 let inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues (elements: XElement[]) =
 

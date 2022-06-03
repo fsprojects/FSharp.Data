@@ -190,7 +190,7 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
     | InferedType.Heterogeneous h, other
     | other, InferedType.Heterogeneous h ->
         // Add the other type as another option. We should never add
-        // heterogenous type as an option of other heterogeneous type.
+        // heterogeneous type as an option of other heterogeneous type.
         assert (typeTag other <> InferedTypeTag.Heterogeneous)
         InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues h (Map.ofSeq [ typeTag other, other ]))
 

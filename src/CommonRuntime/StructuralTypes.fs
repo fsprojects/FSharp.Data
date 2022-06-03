@@ -34,6 +34,7 @@ type InferedTypeTag =
     | Number
     | Boolean
     | String
+    /// Allow for support of embedded json in e.g. xml documents
     | Json
     | DateTime
     | TimeSpan

@@ -86,7 +86,7 @@ type public HtmlProvider(cfg: TypeProviderConfig) as this =
            <param name='Sample'>Location of an HTML sample file or a string containing a sample HTML document.</param>
            <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, <c>double.NaN</c> or <c>""</c> for missing values. Defaults to false.</param>
            <param name='IncludeLayoutTables'>Includes tables that are potentially layout tables (with cellpadding=0 and cellspacing=0 attributes)</param>
-           <param name='MissingValues'>The set of strings recogized as missing values. Defaults to <c>"""
+           <param name='MissingValues'>The set of strings recognized as missing values. Defaults to <c>"""
         + String.Join(",", TextConversions.DefaultMissingValues)
         + """</c>.</param>
            <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>

@@ -111,7 +111,7 @@ let private parseTypeAndUnit unitsOfMeasureProvider str =
 
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
-/// If forSchemaOverride is set to true, only Full or Name is returne
+/// If forSchemaOverride is set to true, only Full or Name is returned
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
@@ -424,7 +424,7 @@ type CsvFile with
     /// Infers the types of the columns of a CSV file
     /// </summary>
     /// <param name="inferRows"> - Number of rows to use for inference. If this is zero, all rows are used</param>
-    /// <param name="missingValues"> - The set of strings recogized as missing values</param>
+    /// <param name="missingValues"> - The set of strings recognized as missing values</param>
     /// <param name="cultureInfo"> - The culture used for parsing numbers and dates</param>
     /// <param name="schema"> - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "timespan", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'</param>
     /// <param name="assumeMissingValues"> - Assumes all columns can have missing values</param>

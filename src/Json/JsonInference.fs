@@ -9,7 +9,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
-/// Infer type of a JSON value - this is simple function because most of the
+/// Infer type of a JSON value - this is a simple function because most of the
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
@@ -20,7 +20,7 @@ let rec inferType inferTypesFromValues cultureInfo parentName json =
     let inline isIntegerFloat (v: float) : bool = Math.Round v = v
 
     match json with
-    // Null and primitives without subtyping hiearchies
+    // Null and primitives without subtyping hierarchies
     | JsonValue.Null -> InferedType.Null
     | JsonValue.Boolean _ -> InferedType.Primitive(typeof<bool>, None, false)
     | JsonValue.String s when inferTypesFromValues -> StructuralInference.getInferedTypeFromString cultureInfo s None
