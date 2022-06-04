@@ -321,6 +321,44 @@ let inferCollectionType allowEmptyValues types =
 
     InferedType.Collection(List.map fst groupedTypes, Map.ofList groupedTypes)
 
+type IUnitsOfMeasureProvider =
+    abstract SI: str: string -> System.Type
+    abstract Product: measure1: System.Type * measure2: System.Type -> System.Type
+    abstract Inverse: denominator: System.Type -> System.Type
+
+let defaultUnitsOfMeasureProvider =
+    { new IUnitsOfMeasureProvider with
+        member x.SI(_) : Type = null
+        member x.Product(_, _) = failwith "Not implemented yet"
+        member x.Inverse(_) = failwith "Not implemented yet" }
+
+let private uomTransformations =
+    [ [ "²"; "^2" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(t, t))
+      [ "³"; "^3" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t))
+      [ "^-1" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Inverse(t)) ]
+
+let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
+    let unit =
+        uomTransformations
+        |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
+        |> List.tryPick (fun (suffix, trans) ->
+            if str.EndsWith suffix then
+                let baseUnitStr = str.[.. str.Length - suffix.Length - 1]
+                let baseUnit = provider.SI baseUnitStr
+
+                if baseUnit = null then
+                    None
+                else
+                    baseUnit |> trans provider |> Some
+            else
+                None)
+
+    match unit with
+    | Some _ -> unit
+    | None ->
+        let unit = provider.SI str
+        if unit = null then None else Some unit
+
 [<AutoOpen>]
 module private Helpers =
 
@@ -415,41 +453,3 @@ let getInferedTypeFromString inferenceMode cultureInfo value unit =
         match inferPrimitiveType inferenceMode cultureInfo value with
         | null -> InferedType.Null
         | typ -> InferedType.Primitive(typ, unit, false)
-
-type IUnitsOfMeasureProvider =
-    abstract SI: str: string -> System.Type
-    abstract Product: measure1: System.Type * measure2: System.Type -> System.Type
-    abstract Inverse: denominator: System.Type -> System.Type
-
-let defaultUnitsOfMeasureProvider =
-    { new IUnitsOfMeasureProvider with
-        member x.SI(_) : Type = null
-        member x.Product(_, _) = failwith "Not implemented yet"
-        member x.Inverse(_) = failwith "Not implemented yet" }
-
-let private uomTransformations =
-    [ [ "²"; "^2" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(t, t))
-      [ "³"; "^3" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t))
-      [ "^-1" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Inverse(t)) ]
-
-let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
-    let unit =
-        uomTransformations
-        |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
-        |> List.tryPick (fun (suffix, trans) ->
-            if str.EndsWith suffix then
-                let baseUnitStr = str.[.. str.Length - suffix.Length - 1]
-                let baseUnit = provider.SI baseUnitStr
-
-                if baseUnit = null then
-                    None
-                else
-                    baseUnit |> trans provider |> Some
-            else
-                None)
-
-    match unit with
-    | Some _ -> unit
-    | None ->
-        let unit = provider.SI str
-        if unit = null then None else Some unit
