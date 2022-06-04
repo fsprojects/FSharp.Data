@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.XmlProvider
+module FSharp.Data.Tests.XmlProvider
 
 open System
 open System.Xml.Linq
