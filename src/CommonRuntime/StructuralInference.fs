@@ -8,6 +8,8 @@ open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
+open System.Text.RegularExpressions
+
 /// This is the public inference mode enum with backward compatibility.
 type InferenceMode =
     /// Used as a default value for backward compatibility with the legacy InferTypesFromValues boolean static parameter.
@@ -48,7 +50,11 @@ type InferenceMode' =
         | InferenceMode.ValuesAndInlineSchemasOverrides -> InferenceMode'.ValuesAndInlineSchemasOverrides
         | _ -> failwithf "Unexpected inference mode value %A" inferenceMode
 
-
+let asOption =
+    function
+    | true, x -> Some x
+    | false, _ -> None
+        
 /// <exclude />
 module internal List =
     /// Merge two sequences by pairing elements for which
@@ -62,11 +68,6 @@ module internal List =
         let d1, d2 = dict vals1, dict vals2
         let k1, k2 = set d1.Keys, set d2.Keys
         let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
-
-        let asOption =
-            function
-            | true, v -> Some v
-            | _ -> None
 
         [ for k in keys -> k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
 
@@ -359,10 +360,65 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
         let unit = provider.SI str
         if unit = null then None else Some unit
 
+/// The inferred types may be set explicitly via inline schemas.
+/// This table specifies the mapping from (the names that users can use) to (the types used).
+let nameToType =
+    [ "int", (typeof<int>, TypeWrapper.None)
+      "int64", (typeof<int64>, TypeWrapper.None)
+      "bool", (typeof<bool>, TypeWrapper.None)
+      "float", (typeof<float>, TypeWrapper.None)
+      "decimal", (typeof<decimal>, TypeWrapper.None)
+      "date", (typeof<DateTime>, TypeWrapper.None)
+      "datetimeoffset", (typeof<DateTimeOffset>, TypeWrapper.None)
+      "timespan", (typeof<TimeSpan>, TypeWrapper.None)
+      "guid", (typeof<Guid>, TypeWrapper.None)
+      "string", (typeof<String>, TypeWrapper.None) ]
+    |> dict
+
+let private typeAndUnitRegex =
+    lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+
+/// <summary>
+/// Parses type specification in the schema for a single value.
+/// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
+/// </summary>
+let parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Type * TypeWrapper)>) str =
+    let m = typeAndUnitRegex.Value.Match(str)
+
+    if m.Success then
+        // type<unit> case, both type and unit have to be valid
+        let typ =
+            m.Groups.["type"].Value.TrimEnd().ToLowerInvariant()
+            |> nameToType.TryGetValue
+            |> asOption
+
+        match typ with
+        | None -> None, None
+        | Some typ ->
+            let unitName = m.Groups.["unit"].Value.Trim()
+            let unit = parseUnitOfMeasure unitsOfMeasureProvider unitName
+
+            if unit.IsNone then
+                failwithf "Invalid unit of measure %s" unitName
+            else
+                Some typ, unit
+    else
+        // it is not a full type with unit, so it can be either type or a unit
+        let typ =
+            str.ToLowerInvariant()
+            |> nameToType.TryGetValue
+            |> asOption
+
+        match typ with
+        | Some (typ, typWrapper) ->
+            // Just type
+            Some(typ, typWrapper), None
+        | None ->
+            // Just unit (or nothing)
+            None, parseUnitOfMeasure unitsOfMeasureProvider str
+
 [<AutoOpen>]
 module private Helpers =
-
-    open System.Text.RegularExpressions
 
     let wordRegex = lazy Regex("\\w+", RegexOptions.Compiled)
 

@@ -10,20 +10,12 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 
-/// The schema may be set explicitly. This table specifies the mapping
-/// from the names that users can use to the types used.
-let private nameToType =
-    [ "int", (typeof<int>, TypeWrapper.None)
-      "int64", (typeof<int64>, TypeWrapper.None)
-      "bool", (typeof<bool>, TypeWrapper.None)
-      "float", (typeof<float>, TypeWrapper.None)
-      "decimal", (typeof<decimal>, TypeWrapper.None)
-      "date", (typeof<DateTime>, TypeWrapper.None)
-      "datetimeoffset", (typeof<DateTimeOffset>, TypeWrapper.None)
-      "timespan", (typeof<TimeSpan>, TypeWrapper.None)
-      "guid", (typeof<Guid>, TypeWrapper.None)
-      "string", (typeof<String>, TypeWrapper.None)
-      "int?", (typeof<int>, TypeWrapper.Nullable)
+/// This table specifies the mapping from (the names that users can use) to (the types used).
+/// The table here for the CsvProvider extends the mapping used for inline schemas by adding nullable and optionals.
+let private nameToTypeForCsv =
+    [ for KeyValue(k, v) in StructuralInference.nameToType -> k, v ]
+    @
+    [ "int?", (typeof<int>, TypeWrapper.Nullable)
       "int64?", (typeof<int64>, TypeWrapper.Nullable)
       "bool?", (typeof<bool>, TypeWrapper.Nullable)
       "float?", (typeof<float>, TypeWrapper.Nullable)
@@ -47,9 +39,6 @@ let private nameToType =
 let private nameAndTypeRegex =
     lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
 
-let private typeAndUnitRegex =
-    lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
-
 let private overrideByNameRegex =
     lazy
         Regex(
@@ -65,56 +54,13 @@ type private SchemaParseResult =
     | FullByName of property: PrimitiveInferedProperty * originalName: string
     | Rename of name: string * originalName: string
 
-let private asOption =
-    function
-    | true, x -> Some x
-    | false, _ -> None
-
-/// <summary>
-/// Parses type specification in the schema for a single column.
-/// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
-/// </summary>
-let private parseTypeAndUnit unitsOfMeasureProvider str =
-    let m = typeAndUnitRegex.Value.Match(str)
-
-    if m.Success then
-        // type<unit> case, both type and unit have to be valid
-        let typ =
-            m.Groups.["type"].Value.TrimEnd().ToLowerInvariant()
-            |> nameToType.TryGetValue
-            |> asOption
-
-        match typ with
-        | None -> None, None
-        | Some typ ->
-            let unitName = m.Groups.["unit"].Value.Trim()
-            let unit = StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider unitName
-
-            if unit.IsNone then
-                failwithf "Invalid unit of measure %s" unitName
-            else
-                Some typ, unit
-    else
-        // it is not a full type with unit, so it can be either type or a unit
-        let typ =
-            str.ToLowerInvariant()
-            |> nameToType.TryGetValue
-            |> asOption
-
-        match typ with
-        | Some (typ, typWrapper) ->
-            // Just type
-            Some(typ, typWrapper), None
-        | None ->
-            // Just unit (or nothing)
-            None, StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider str
-
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
 /// If forSchemaOverride is set to true, only Full or Name is returned
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
+    let parseTypeAndUnit = StructuralInference.parseTypeAndUnit unitsOfMeasureProvider nameToTypeForCsv
     let name, typ, unit, isOverrideByName, originalName =
         let m = overrideByNameRegex.Value.Match str
 
@@ -123,7 +69,7 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
             let originalName = m.Groups.["name"].Value.TrimEnd()
             let newName = m.Groups.["newName"].Value.Trim()
             let typeAndUnit = m.Groups.["type"].Value.Trim()
-            let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
+            let typ, unit = parseTypeAndUnit typeAndUnit
 
             if typ.IsNone && typeAndUnit <> "" then
                 failwithf "Invalid type: %s" typeAndUnit
@@ -136,11 +82,11 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
                 // name (type|measure|type<measure>)
                 let name = m.Groups.["name"].Value.TrimEnd()
                 let typeAndUnit = m.Groups.["type"].Value.Trim()
-                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
+                let typ, unit = parseTypeAndUnit typeAndUnit
                 name, typ, unit, false, ""
             elif forSchemaOverride then
                 // type|type<measure>
-                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider str
+                let typ, unit = parseTypeAndUnit str
 
                 match typ, unit with
                 | None, _ -> str, None, None, false, ""
@@ -173,7 +119,7 @@ let internal inferCellType preferOptionals missingValues inferenceMode cultureIn
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
     else
-        getInferedTypeFromString inferenceMode cultureInfo value unit
+        StructuralInference.getInferedTypeFromString inferenceMode cultureInfo value unit
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
@@ -452,7 +398,7 @@ type CsvFile with
             [<Optional>] ?unitsOfMeasureProvider
         ) =
         let unitsOfMeasureProvider =
-            defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
+            defaultArg unitsOfMeasureProvider StructuralInference.defaultUnitsOfMeasureProvider
 
         let headerNamesAndUnits, schema =
             parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
