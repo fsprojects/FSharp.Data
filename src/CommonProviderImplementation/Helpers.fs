@@ -22,9 +22,9 @@ open ProviderImplementation.ProvidedTypes
 // ----------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
-module internal PrimitiveInferedPropertyExtensions =
+module internal PrimitiveInferedValueExtensions =
 
-    type PrimitiveInferedProperty with
+    type PrimitiveInferedValue with
 
         member x.TypeWithMeasure =
             match x.UnitOfMeasure with

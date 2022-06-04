@@ -1,4 +1,4 @@
-﻿// ----------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 // Conversions from string to various primitive types
 // ----------------------------------------------------------------------------------------------
 
@@ -48,10 +48,9 @@ type JsonConversionCallingType =
 
 /// Creates a function that takes Expr<JsonValue option> and converts it to
 /// an expression of other type - the type is specified by `field`
-let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field: PrimitiveInferedProperty) =
+let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field: PrimitiveInferedValue) =
 
     assert (field.TypeWithMeasure = field.RuntimeType)
-    assert (field.Name = "")
 
     let returnType =
         match field.TypeWrapper with

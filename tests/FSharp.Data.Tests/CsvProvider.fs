@@ -635,5 +635,5 @@ let ``InferColumnTypes shall infer empty string as Double``() =
   let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/emptyMissingValue.csv"))
   let types = csv.InferColumnTypes(2,[|""|],System.Globalization.CultureInfo.GetCultureInfo(""), null, false, false)
   let expected = "Double"
-  let actual = types.[3].InferedType.Name
+  let actual = types.[3].Value.InferedType.Name
   actual |> should equal expected
