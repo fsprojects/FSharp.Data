@@ -192,6 +192,15 @@ type Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
 
+/// Represents a transformation of a type
+[<RequireQualifiedAccess>]
+type TypeWrapper =
+    /// No transformation will be made to the type
+    | None
+    /// The type T will be converter to type T option
+    | Option
+    /// The type T will be converter to type Nullable<T>
+    | Nullable
 /// Represents type information about a primitive property (used mainly in the CSV provider)
 /// This type captures the type, unit of measure and handling of missing values (if we
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
@@ -219,12 +228,3 @@ type PrimitiveInferedProperty =
     static member Create(name, typ, optional, unit) =
         PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), unit)
 
-/// Represents a transformation of a type
-[<RequireQualifiedAccess>]
-type TypeWrapper =
-    /// No transformation will be made to the type
-    | None
-    /// The type T will be converter to type T option
-    | Option
-    /// The type T will be converter to type Nullable<T>
-    | Nullable
