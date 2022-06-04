@@ -59,6 +59,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
             if sampleIsList then
                 failwith "When the Schema parameter is used, the SampleIsList parameter must be set to false"
 
+        let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
+
         let getSpec _ value =
 
             if schema <> "" then
@@ -78,7 +80,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "TypeGeneration" sample
 
                 let ctx =
-                    XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")
+                    XmlGenerationContext.Create(
+                        unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, globalInference || schema <> "")
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
@@ -108,6 +111,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
 
                     samples
                     |> XmlInference.inferType
+                        unitsOfMeasureProvider
                         inferenceMode
                         (TextRuntime.GetCulture cultureStr)
                         false
@@ -117,7 +121,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "TypeGeneration" sample
 
                 let ctx =
-                    XmlGenerationContext.Create(cultureStr, tpType, globalInference || schema <> "")
+                    XmlGenerationContext.Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, globalInference || schema <> "")
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
@@ -179,6 +183,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               | ValuesOnly -> Types of values are inferred from the Sample. Inline schema support is disabled. This is the default.
               | ValuesAndInlineSchemasHints -> Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&lt;type&gt; or typeof{type} or typeof&lt;type&lt;measure&gt;&gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>datetimeoffset</c>, <c>timespan</c>, <c>guid</c> and <c>string</c>.
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
+              Note inline schemas are not used from Xsd documents.
            </param>"""
 
 

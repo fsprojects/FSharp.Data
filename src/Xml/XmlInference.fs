@@ -19,17 +19,17 @@ open FSharp.Data.Runtime.StructuralTypes
 
 /// Generates record fields for all attributes
 
-let private getAttributes inferenceMode cultureInfo (element: XElement) =
+let private getAttributes unitsOfMeasureProvider inferenceMode cultureInfo (element: XElement) =
     [ for attr in element.Attributes() do
           if attr.Name.Namespace.NamespaceName
              <> "http://www.w3.org/2000/xmlns/"
              && attr.Name.ToString() <> "xmlns" then
               yield
                   { Name = attr.Name.ToString()
-                    Type = getInferedTypeFromString inferenceMode cultureInfo attr.Value None } ]
+                    Type = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo attr.Value None } ]
 
-let getInferedTypeFromValue inferenceMode cultureInfo (element: XElement) =
-    let typ = getInferedTypeFromString inferenceMode cultureInfo (element.Value) None
+let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (element: XElement) =
+    let typ = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo (element.Value) None
 
     match inferenceMode with
     // Embedded json is not parsed when InferenceMode is NoInference
@@ -47,7 +47,7 @@ let getInferedTypeFromValue inferenceMode cultureInfo (element: XElement) =
                 | JsonValue.Array _) as json ->
                     let jsonType =
                         json
-                        |> JsonInference.inferType inferenceMode cultureInfo element.Name.LocalName
+                        |> JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo element.Name.LocalName
 
                     InferedType.Json(jsonType, optional)
                 | _ -> typ
@@ -58,7 +58,7 @@ let getInferedTypeFromValue inferenceMode cultureInfo (element: XElement) =
 /// Infers type for the element, unifying nodes of the same name
 /// across the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType inferenceMode cultureInfo allowEmptyValues (elements: XElement[]) =
+let inferGlobalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues (elements: XElement[]) =
 
     // Initial state contains types with attributes but all
     // children are ignored (bodies are based on just body values)
@@ -78,7 +78,7 @@ let inferGlobalType inferenceMode cultureInfo allowEmptyValues (elements: XEleme
             // Get attributes for all `name` named elements
             let attributes =
                 elements
-                |> Seq.map (getAttributes inferenceMode cultureInfo)
+                |> Seq.map (getAttributes unitsOfMeasureProvider inferenceMode cultureInfo)
                 |> Seq.reduce (unionRecordTypes allowEmptyValues)
 
             // Get type of body based on primitive values only
@@ -88,7 +88,7 @@ let inferGlobalType inferenceMode cultureInfo allowEmptyValues (elements: XEleme
                            not e.HasElements
                            && not (String.IsNullOrEmpty(e.Value))
                        then
-                           yield getInferedTypeFromValue inferenceMode cultureInfo e |]
+                           yield getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo e |]
                 |> Array.fold (subtypeInfered allowEmptyValues) InferedType.Top
 
             let body = { Name = ""; Type = bodyType }
@@ -133,10 +133,10 @@ let inferGlobalType inferenceMode cultureInfo allowEmptyValues (elements: XEleme
 
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
-let rec inferLocalType inferenceMode cultureInfo allowEmptyValues (element: XElement) =
+let rec inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues (element: XElement) =
     let props =
         [ // Generate record fields for attributes
-          yield! getAttributes inferenceMode cultureInfo element
+          yield! getAttributes unitsOfMeasureProvider inferenceMode cultureInfo element
 
           // If it has children, add collection content
           let children = element.Elements()
@@ -145,13 +145,13 @@ let rec inferLocalType inferenceMode cultureInfo allowEmptyValues (element: XEle
               let collection =
                   inferCollectionType
                       allowEmptyValues
-                      (Seq.map (inferLocalType inferenceMode cultureInfo allowEmptyValues) children)
+                      (Seq.map (inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues) children)
 
               yield { Name = ""; Type = collection }
 
           // If it has value, add primitive content
           elif not (String.IsNullOrEmpty element.Value) then
-              let primitive = getInferedTypeFromValue inferenceMode cultureInfo element
+              let primitive = getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo element
               yield { Name = ""; Type = primitive } ]
 
     InferedType.Record(Some(element.Name.ToString()), props, false)
@@ -159,8 +159,8 @@ let rec inferLocalType inferenceMode cultureInfo allowEmptyValues (element: XEle
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType inferenceMode cultureInfo allowEmptyValues globalInference (elements: XElement[]) =
+let inferType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues globalInference (elements: XElement[]) =
     if globalInference then
-        inferGlobalType inferenceMode cultureInfo allowEmptyValues elements
+        inferGlobalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues elements
     else
-        Array.map (inferLocalType inferenceMode cultureInfo allowEmptyValues) elements
+        Array.map (inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues) elements

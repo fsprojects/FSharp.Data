@@ -29,18 +29,18 @@ type internal JsonGenerationContext =
       TypeCache: Dictionary<InferedType, ProvidedTypeDefinition>
       PreferDictionaries: bool
       GenerateConstructors: bool
-      InferenceMode: InferenceMode' }
+      InferenceMode: InferenceMode'
+      UnitsOfMeasureProvider: IUnitsOfMeasureProvider }
 
-    static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache, ?preferDictionaries, ?inferenceMode) =
+    static member Create(cultureStr, tpType, unitsOfMeasureProvider, inferenceMode, ?uniqueNiceName, ?typeCache, ?preferDictionaries) =
         let uniqueNiceName =
             defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
 
         let typeCache = defaultArg typeCache (Dictionary())
         let preferDictionaries = defaultArg preferDictionaries false
-        let inferenceMode = defaultArg inferenceMode (InferenceMode'.ValuesOnly)
-        JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, true, inferenceMode)
+        JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, true, inferenceMode, unitsOfMeasureProvider)
 
-    static member Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, generateConstructors, inferenceMode) =
+    static member Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, generateConstructors, inferenceMode, unitsOfMeasureProvider) =
         { CultureStr = cultureStr
           TypeProviderType = tpType
           UniqueNiceName = uniqueNiceName
@@ -50,7 +50,8 @@ type internal JsonGenerationContext =
           TypeCache = typeCache
           PreferDictionaries = preferDictionaries
           GenerateConstructors = generateConstructors
-          InferenceMode = inferenceMode }
+          InferenceMode = inferenceMode
+          UnitsOfMeasureProvider = unitsOfMeasureProvider }
 
     member x.MakeOptionType(typ: Type) =
         typedefof<option<_>>.MakeGenericType typ
@@ -378,6 +379,7 @@ module JsonTypeBuilder =
                         let infType =
                             [ for prop in props ->
                                   StructuralInference.getInferedTypeFromString
+                                      ctx.UnitsOfMeasureProvider
                                       ctx.InferenceMode
                                       (TextRuntime.GetCulture ctx.CultureStr)
                                       prop.Name

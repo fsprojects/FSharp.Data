@@ -30,6 +30,7 @@ let inferColumns parameters (headerNamesAndUnits: _[]) rows =
         parameters.CultureInfo
         assumeMissingValues
         parameters.PreferOptionals
+        parameters.UnitsOfMeasureProvider
 
 let inferHeaders parameters (rows: string[][]) =
     if rows.Length <= 2 then
@@ -66,7 +67,7 @@ let inferListType parameters (values: string[]) =
                 else
                     InferedType.Primitive(typeof<float>, None, false)
             else
-                getInferedTypeFromString parameters.InferenceMode parameters.CultureInfo value None
+                getInferedTypeFromString parameters.UnitsOfMeasureProvider parameters.InferenceMode parameters.CultureInfo value None
 
         values
         |> Array.map inferedtype

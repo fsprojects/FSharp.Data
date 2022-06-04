@@ -14,7 +14,7 @@ open FSharp.Data.Runtime.StructuralInference
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
-let rec inferType inferenceMode cultureInfo parentName json =
+let rec inferType unitsOfMeasureProvider inferenceMode cultureInfo parentName json =
     let inline inRangeDecimal lo hi (v: decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
     let inline inRangeFloat lo hi (v: float) : bool = (v >= float lo) && (v <= float hi)
     let inline isIntegerDecimal (v: decimal) : bool = Math.Round v = v
@@ -32,7 +32,7 @@ let rec inferType inferenceMode cultureInfo parentName json =
     | JsonValue.Null -> InferedType.Null
     | JsonValue.Boolean _ -> InferedType.Primitive(typeof<bool>, None, false)
     | JsonValue.String s ->
-        StructuralInference.getInferedTypeFromString inferenceMode cultureInfo s None
+        StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo s None
     // For numbers, we test if it is integer and if it fits in smaller range
     | JsonValue.Number 0M when shouldInferNonStringFromValue -> InferedType.Primitive(typeof<Bit0>, None, false)
     | JsonValue.Number 1M when shouldInferNonStringFromValue -> InferedType.Primitive(typeof<Bit1>, None, false)
@@ -66,7 +66,7 @@ let rec inferType inferenceMode cultureInfo parentName json =
     | JsonValue.Array ar ->
         StructuralInference.inferCollectionType
             false
-            (Seq.map (inferType inferenceMode cultureInfo (NameUtils.singularize parentName)) ar)
+            (Seq.map (inferType unitsOfMeasureProvider inferenceMode cultureInfo (NameUtils.singularize parentName)) ar)
     | JsonValue.Record properties ->
         let name =
             if String.IsNullOrEmpty parentName then
@@ -76,7 +76,7 @@ let rec inferType inferenceMode cultureInfo parentName json =
 
         let props =
             [ for propName, value in properties ->
-                  let t = inferType inferenceMode cultureInfo propName value
+                  let t = inferType unitsOfMeasureProvider inferenceMode cultureInfo propName value
                   { Name = propName; Type = t } ]
 
         InferedType.Record(name, props, false)

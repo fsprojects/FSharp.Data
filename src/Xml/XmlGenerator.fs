@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // XML type provider - generate code for accessing inferred elements
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -13,6 +13,7 @@ open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open FSharp.Data.Runtime.StructuralInference
 
 // --------------------------------------------------------------------------------------
 
@@ -21,17 +22,21 @@ open ProviderImplementation.QuotationBuilder
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
     { CultureStr: string
+      UnitsOfMeasureProvider: IUnitsOfMeasureProvider
+      InferenceMode: InferenceMode'
       ProvidedType: ProvidedTypeDefinition
       // to nameclash type names
       UniqueNiceName: string -> string
       UnifyGlobally: bool
       XmlTypeCache: Dictionary<InferedType, XmlGenerationResult>
       JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition> }
-    static member Create(cultureStr, tpType, unifyGlobally) =
+    static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
         uniqueNiceName "XElement" |> ignore
 
         { CultureStr = cultureStr
+          UnitsOfMeasureProvider = unitsOfMeasureProvider
+          InferenceMode = inferenceMode
           ProvidedType = tpType
           UniqueNiceName = uniqueNiceName
           UnifyGlobally = unifyGlobally
@@ -141,7 +146,8 @@ module internal XmlTypeBuilder =
                   let cultureStr = ctx.CultureStr
 
                   let ctx =
-                      JsonGenerationContext.Create(cultureStr, ctx.ProvidedType, ctx.UniqueNiceName, ctx.JsonTypeCache)
+                      JsonGenerationContext.Create(
+                        cultureStr, ctx.ProvidedType, ctx.UnitsOfMeasureProvider, ctx.InferenceMode,  ctx.UniqueNiceName, ctx.JsonTypeCache)
 
                   let result = JsonTypeBuilder.generateJsonType ctx false true "" typ
 

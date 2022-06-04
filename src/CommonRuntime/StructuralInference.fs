@@ -375,12 +375,25 @@ let nameToType =
       "string", (typeof<String>, TypeWrapper.None) ]
     |> dict
 
+// type<unit} or type{unit> is valid while it shouldn't, but well...
 let private typeAndUnitRegex =
-    lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+    lazy Regex(@"^(?<type>.+)(<|{)(?<unit>.+)(>|})$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+
+/// Matches a value of the form "typeof<value>" where the nested value is of the form "type<unit>" or just "type".
+/// ({} instead of <> is allowed so it can be used in xml)
+let private validInlineSchema =
+    lazy
+        Regex(
+            @"^typeof(<|{)"
+            + @"(?<typeDefinition>(?<typeOrUnit>[^<>{}\s]+)|(?<typeAndUnit>[^<>{}\s]+(<|{)[^<>{}\s]+(>|})))"
+            + @"(>|})$",
+            RegexOptions.Compiled
+        )
 
 /// <summary>
 /// Parses type specification in the schema for a single value.
 /// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
+/// type{measure} is also supported to ease definition in xml values.
 /// </summary>
 let parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Type * TypeWrapper)>) str =
     let m = typeAndUnitRegex.Value.Match(str)
@@ -428,9 +441,12 @@ module private Helpers =
         |> Seq.choose (fun (x: Match) -> TextConversions.AsInteger CultureInfo.InvariantCulture x.Value)
         |> Seq.length
 
-/// Infers the type of a simple string value
+/// Infers the type of a string value
 /// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<TimeSpan>|typeof<string>
-let inferPrimitiveType (inferenceMode: InferenceMode') (cultureInfo: CultureInfo) (value: string) =
+/// with the desiredUnit applied,
+/// or a value parsed from an inline schema.
+/// (For inline schemas, the unit parsed from the schema takes precedence over desiredUnit when present)
+let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (inferenceMode: InferenceMode') (cultureInfo: CultureInfo) (value: string) (desiredUnit: Type option) =
 
     // Helper for calling TextConversions.AsXyz functions
     let (|Parse|_|) func value = func cultureInfo value
@@ -460,32 +476,51 @@ let inferPrimitiveType (inferenceMode: InferenceMode') (cultureInfo: CultureInfo
                >= 0)
 
     let matchValue value =
+        let makePrimitive typ = Some (InferedType.Primitive(typ, desiredUnit, false))
         match value with
-        | "" -> Some null
-        | Parse TextConversions.AsInteger 0 -> Some typeof<Bit0>
-        | Parse TextConversions.AsInteger 1 -> Some typeof<Bit1>
-        | ParseNoCulture TextConversions.AsBoolean _ -> Some typeof<bool>
-        | Parse TextConversions.AsInteger _ -> Some typeof<int>
-        | Parse TextConversions.AsInteger64 _ -> Some typeof<int64>
-        | Parse TextConversions.AsTimeSpan _ -> Some typeof<TimeSpan>
+        | "" -> Some InferedType.Null
+        | Parse TextConversions.AsInteger 0 -> makePrimitive typeof<Bit0>
+        | Parse TextConversions.AsInteger 1 -> makePrimitive typeof<Bit1>
+        | ParseNoCulture TextConversions.AsBoolean _ -> makePrimitive typeof<bool>
+        | Parse TextConversions.AsInteger _ -> makePrimitive typeof<int>
+        | Parse TextConversions.AsInteger64 _ -> makePrimitive typeof<int64>
+        | Parse TextConversions.AsTimeSpan _ -> makePrimitive typeof<TimeSpan>
         | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) ->
-            Some typeof<DateTimeOffset>
-        | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> Some typeof<DateTime>
-        | Parse TextConversions.AsDecimal _ -> Some typeof<decimal>
-        | Parse (TextConversions.AsFloat [||] false) _ -> Some typeof<float>
-        | Parse asGuid _ -> Some typeof<Guid>
+            makePrimitive typeof<DateTimeOffset>
+        | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> makePrimitive typeof<DateTime>
+        | Parse TextConversions.AsDecimal _ -> makePrimitive typeof<decimal>
+        | Parse (TextConversions.AsFloat [||] false) _ -> makePrimitive typeof<float>
+        | Parse asGuid _ -> makePrimitive typeof<Guid>
         | _ -> None
 
+    /// Parses values looking like "typeof<int> or typeof<int<metre>>" and returns the appropriate type.
     let matchInlineSchema useInlineSchemasOverrides value =
-        // TODO properly. The following is just to validate the concept:
+        // TODO: use useInlineSchemasOverrides and implement inline schemas overrides properly...
         match value with
-        | "" -> Some null
-        | "date" -> Some typeof<DateTime>
-        | "int" -> Some typeof<int>
-        | "float" -> Some typeof<float>
-        | _ -> None
+        | "" -> Some InferedType.Null
+        | nonEmptyValue ->
+            // Validates that it looks like an inline schema before trying to extract the type and unit:
+            let m = validInlineSchema.Value.Match(nonEmptyValue)
+            match m.Success with
+            | false -> None
+            | true ->
+                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider nameToType m.Groups.["typeDefinition"].Value
+                let unit =
+                    if unit.IsNone
+                    then desiredUnit
+                    else unit
+                match typ, unit with
+                | None, _ -> None
+                | Some (typ, typeWrapper), unit ->
+                    match typeWrapper with
+                    | TypeWrapper.None -> Some (InferedType.Primitive(typ, unit, false))
+                    // To keep it simple and prevent weird situations (and preserve backward compat),
+                    // only structural inference can create optional types.
+                    // Optional types in inline schemas are not allowed.
+                    | TypeWrapper.Option -> failwith "Option types are not allowed in inline schemas."
+                    | TypeWrapper.Nullable -> failwith "Nullable types are not allowed in inline schemas."
 
-    let fallbackType = typeof<string>
+    let fallbackType = InferedType.Primitive(typeof<string>, None, false)
 
     match inferenceMode with
     | InferenceMode'.NoInference -> fallbackType
@@ -502,10 +537,5 @@ let inferPrimitiveType (inferenceMode: InferenceMode') (cultureInfo: CultureInfo
         |> Option.defaultValue fallbackType
 
 /// Infers the type of a simple string value
-let getInferedTypeFromString inferenceMode cultureInfo value unit =
-    match inferenceMode with
-    | InferenceMode'.NoInference -> InferedType.Primitive(typeof<string>, None, false)
-    | _ ->
-        match inferPrimitiveType inferenceMode cultureInfo value with
-        | null -> InferedType.Null
-        | typ -> InferedType.Primitive(typ, unit, false)
+let getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
+    inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo value unit

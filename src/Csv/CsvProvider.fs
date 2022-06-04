@@ -56,6 +56,8 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
         // This provider already has a schema mechanism, so let's disable inline schemas.
         let inferenceMode = InferenceMode'.ValuesOnly
 
+        let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
+
         if sample = "" then
             if schema = "" then
                 failwith "When the Sample parameter is not specified, the Schema parameter must be provided"
@@ -110,7 +112,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                     schema,
                     assumeMissingValues,
                     preferOptionals,
-                    ProviderHelpers.unitsOfMeasureProvider
+                    unitsOfMeasureProvider
                 )
 
             use _holder = IO.logTime "TypeGeneration" sample

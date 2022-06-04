@@ -60,6 +60,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
 
         let cultureInfo = TextRuntime.GetCulture cultureStr
+        let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
         let getSpec _ value =
 
@@ -76,13 +77,15 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "Inference" sample
 
                 samples
-                |> Array.map (fun sampleJson -> JsonInference.inferType inferenceMode cultureInfo "" sampleJson)
+                |> Array.map (fun sampleJson ->
+                    JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
                 |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
 
             use _holder = IO.logTime "TypeGeneration" sample
 
             let ctx =
-                JsonGenerationContext.Create(cultureStr, tpType, ?preferDictionaries = Some preferDictionaries)
+                JsonGenerationContext.Create(
+                    cultureStr, tpType, unitsOfMeasureProvider, inferenceMode, ?preferDictionaries = Some preferDictionaries)
 
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
 

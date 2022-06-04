@@ -108,7 +108,7 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
     | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
     | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
-let internal inferCellType preferOptionals missingValues inferenceMode cultureInfo unit (value: string) =
+let internal inferCellType unitsOfMeasureProvider preferOptionals missingValues inferenceMode cultureInfo unit (value: string) =
     // Explicit missing values (NaN, NA, Empty string etc.) will be treated as float unless the preferOptionals is set to true
     if Array.exists (value.Trim() |> (=)) missingValues then
         if preferOptionals then
@@ -119,7 +119,7 @@ let internal inferCellType preferOptionals missingValues inferenceMode cultureIn
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
     else
-        StructuralInference.getInferedTypeFromString inferenceMode cultureInfo value unit
+        StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
@@ -232,6 +232,7 @@ let internal inferType
     cultureInfo
     assumeMissingValues
     preferOptionals
+    unitsOfMeasureProvider
     =
 
     // If we have no data, generate one empty row with empty strings,
@@ -275,7 +276,7 @@ let internal inferType
                         let typ =
                             match schema with
                             | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                            | None -> inferCellType preferOptionals missingValues inferenceMode cultureInfo unit value
+                            | None -> inferCellType unitsOfMeasureProvider preferOptionals missingValues inferenceMode cultureInfo unit value
 
                         { Name = name; Type = typ } ]
 
@@ -371,8 +372,19 @@ let internal inferColumnTypes
     cultureInfo
     assumeMissingValues
     preferOptionals
+    unitsOfMeasureProvider
     =
-    inferType headerNamesAndUnits schema rows inferRows missingValues inferenceMode cultureInfo assumeMissingValues preferOptionals
+    inferType
+        headerNamesAndUnits
+        schema
+        rows
+        inferRows
+        missingValues
+        inferenceMode
+        cultureInfo
+        assumeMissingValues
+        preferOptionals
+        unitsOfMeasureProvider
     ||> getFields preferOptionals
 
 type CsvFile with
@@ -395,10 +407,8 @@ type CsvFile with
             schema,
             assumeMissingValues,
             preferOptionals,
-            [<Optional>] ?unitsOfMeasureProvider
+            unitsOfMeasureProvider
         ) =
-        let unitsOfMeasureProvider =
-            defaultArg unitsOfMeasureProvider StructuralInference.defaultUnitsOfMeasureProvider
 
         let headerNamesAndUnits, schema =
             parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
@@ -413,3 +423,4 @@ type CsvFile with
             cultureInfo
             assumeMissingValues
             preferOptionals
+            unitsOfMeasureProvider
