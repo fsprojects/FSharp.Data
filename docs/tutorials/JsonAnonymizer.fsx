@@ -68,18 +68,25 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
   let randomize (str:string) =
       String(str.ToCharArray() |> Array.map getRandomChar)
 
+  let isType testType typ =
+    match typ with
+    | Runtime.StructuralTypes.InferedType.Primitive (typ, _, _, _) -> typ = testType
+    | _ -> false
+
   let rec anonymize json =
       match json with
       | JsonValue.String s when valuesToSkip.Contains s -> json
       | JsonValue.String s ->
           let typ =
             Runtime.StructuralInference.inferPrimitiveType
-              CultureInfo.InvariantCulture s
+              Runtime.StructuralInference.defaultUnitsOfMeasureProvider
+              Runtime.StructuralInference.InferenceMode'.ValuesOnly
+              CultureInfo.InvariantCulture s None
 
-          ( if typ = typeof<Guid> then Guid.NewGuid().ToString()
-            elif typ = typeof<Runtime.StructuralTypes.Bit0> ||
-              typ = typeof<Runtime.StructuralTypes.Bit1> then s
-            elif typ = typeof<DateTime> then s
+          ( if typ |> isType typeof<Guid> then Guid.NewGuid().ToString()
+            elif typ |> isType typeof<Runtime.StructuralTypes.Bit0> ||
+              typ |> isType typeof<Runtime.StructuralTypes.Bit1> then s
+            elif typ |> isType typeof<DateTime> then s
             else
               let prefix, s =
                 if s.StartsWith "http://" then
@@ -92,9 +99,11 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
       | JsonValue.Number d ->
           let typ =
             Runtime.StructuralInference.inferPrimitiveType
-              CultureInfo.InvariantCulture (d.ToString())
-          if typ = typeof<Runtime.StructuralTypes.Bit0> ||
-            typ = typeof<Runtime.StructuralTypes.Bit1> then json
+              Runtime.StructuralInference.defaultUnitsOfMeasureProvider
+              Runtime.StructuralInference.InferenceMode'.ValuesOnly
+              CultureInfo.InvariantCulture (d.ToString()) None
+          if typ |> isType typeof<Runtime.StructuralTypes.Bit0> ||
+            typ |> isType typeof<Runtime.StructuralTypes.Bit1> then json
           else d.ToString() |> randomize |> Decimal.Parse |> JsonValue.Number
       | JsonValue.Float f ->
           f.ToString()
