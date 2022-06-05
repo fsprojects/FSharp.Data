@@ -255,7 +255,7 @@ module XsdInference =
 
     let nil =
         { InferedProperty.Name = "{http://www.w3.org/2001/XMLSchema-instance}nil"
-          Type = InferedType.Primitive(typeof<bool>, None, true) }
+          Type = InferedType.Primitive(typeof<bool>, None, true, false) }
 
     type InferenceContext = System.Collections.Generic.Dictionary<XsdComplexType, InferedProperty>
 
@@ -268,7 +268,7 @@ module XsdInference =
         else
             match elm.Type with
             | SimpleType typeCode ->
-                let ty = InferedType.Primitive(getType typeCode, None, elm.IsNillable)
+                let ty = InferedType.Primitive(getType typeCode, None, elm.IsNillable, false)
                 let prop = { InferedProperty.Name = ""; Type = ty }
                 let props = if elm.IsNillable then [ prop; nil ] else [ prop ]
                 InferedType.Record(name, props, optional = false)
@@ -292,13 +292,13 @@ module XsdInference =
             cty.Attributes
             |> List.map (fun (name, typeCode, optional) ->
                 { Name = formatName name
-                  Type = InferedType.Primitive(getType typeCode, None, optional) })
+                  Type = InferedType.Primitive(getType typeCode, None, optional, false) })
 
         match cty.Contents with
         | SimpleContent typeCode ->
             let body =
                 { InferedProperty.Name = ""
-                  Type = InferedType.Primitive(getType typeCode, None, false) }
+                  Type = InferedType.Primitive(getType typeCode, None, false, false) }
 
             body :: attrs
         | ComplexContent xsdParticle ->
@@ -371,4 +371,4 @@ module XsdInference =
             elms
             |> List.map (fun elm -> InferedTypeTag.Record(getElementName elm), inferElementType ctx elm)
             |> Map.ofList
-            |> InferedType.Heterogeneous
+            |> (fun x -> InferedType.Heterogeneous(x, false))

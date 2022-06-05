@@ -65,7 +65,7 @@ let inferListType parameters (values: string[]) =
                 if parameters.PreferOptionals then
                     InferedType.Null
                 else
-                    InferedType.Primitive(typeof<float>, None, false)
+                    InferedType.Primitive(typeof<float>, None, false, false)
             else
                 getInferedTypeFromString parameters.UnitsOfMeasureProvider parameters.InferenceMode parameters.CultureInfo value None
 

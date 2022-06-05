@@ -177,7 +177,12 @@ let private subtypePrimitives typ1 typ2 =
 /// Active pattern that calls `subtypePrimitives` on two primitive types
 let private (|SubtypePrimitives|_|) allowEmptyValues =
     function
-    | InferedType.Primitive (t1, u1, o1), InferedType.Primitive (t2, u2, o2) ->
+    // When a type should override the other, make sure we preserve optionality
+    // (so that null and inline schemas are always considered at the same level of importance)
+    | InferedType.Primitive (t, u, o1, true), InferedType.Primitive (_, _, o2, false)
+    | InferedType.Primitive (_, _, o2, false), InferedType.Primitive (t, u, o1, true) -> Some(t, u, o1 || o2, true)
+    | InferedType.Primitive (t1, u1, o1, x1), InferedType.Primitive (t2, u2, o2, x2) ->
+
         // Re-annotate with the unit, if it is the same one
         match subtypePrimitives t1 t2 with
         | Some t ->
@@ -190,7 +195,8 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
                     && InferedType.CanHaveEmptyValues t
                 )
 
-            Some(t, unit, optional)
+            assert (x1 = x2) // The other cases should be handled above.
+            Some(t, unit, optional, x1)
         | _ -> None
     | _ -> None
 
@@ -216,10 +222,13 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
         InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
     | InferedType.Json (t1, o1), InferedType.Json (t2, o2) ->
         InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
-    | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 ->
-        InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
+    | InferedType.Heterogeneous (t1, o1), InferedType.Heterogeneous (t2, o2) ->
+        InferedType.Heterogeneous(
+            let map, containsOptional = unionHeterogeneousTypes allowEmptyValues t1 t2
+            map |> Map.ofList, containsOptional || o1 || o2
+        )
     | InferedType.Collection (o1, t1), InferedType.Collection (o2, t2) ->
-        InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2)
+        InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2 |> Map.ofList)
 
     // Top type can be merged with anything else
     | t, InferedType.Top
@@ -227,33 +236,90 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
     // Merging with Null type will make a type optional if it's not already
     | t, InferedType.Null
     | InferedType.Null, t -> t.EnsuresHandlesMissingValues allowEmptyValues
+
     // Heterogeneous can be merged with any type
-    | InferedType.Heterogeneous h, other
-    | other, InferedType.Heterogeneous h ->
+    | InferedType.Heterogeneous (h, o), other
+    | other, InferedType.Heterogeneous (h, o) ->
         // Add the other type as another option. We should never add
         // heterogeneous type as an option of other heterogeneous type.
         assert (typeTag other <> InferedTypeTag.Heterogeneous)
-        InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues h (Map.ofSeq [ typeTag other, other ]))
+
+        let tagMerged, containsOptional =
+            unionHeterogeneousTypes allowEmptyValues h (Map.ofSeq [ typeTag other, other ])
+
+        let containsOptional = containsOptional || o
+
+        // When other is a primitive infered from an inline schema in overriding mode,
+        // try to replace the heterogeneous type with the overriding primitive:
+        match other with
+        | InferedType.Primitive (_, _, _, true) ->
+            let primitiveOverrides, nonPrimitives =
+                let primitiveOverrides, nonPrimitives = ResizeArray(), ResizeArray()
+                tagMerged
+                |> List.iter (fun (tag, typ) ->
+                    match typ with
+                    | InferedType.Primitive (_, _, _, true) -> primitiveOverrides.Add(tag, typ)
+                    | InferedType.Primitive (_, _, _, false) -> () // We don't need to track normal primitives
+                    | _ -> nonPrimitives.Add(tag, typ))
+                primitiveOverrides |> List.ofSeq,
+                nonPrimitives |> List.ofSeq
+
+            // For all the following cases, if there is at least one overriding primitive,
+            // normal primitives are discarded.
+            match primitiveOverrides, nonPrimitives with
+            // No overriding primitives. Just return the heterogeneous type.
+            | [], _ -> InferedType.Heterogeneous(tagMerged |> Map.ofList, containsOptional)
+            // If there is a single overriding primitive and no non-primitive,
+            // return only this overriding primitive (and take care to reestablish optionality if needed).
+            | [ (_, singlePrimitive) ], [] ->
+                match singlePrimitive with
+                | InferedType.Primitive (t, u, o, x) -> InferedType.Primitive(t, u, o || containsOptional, x)
+                | _ -> failwith "There should be only primitive types here."
+            // If there are non primitives, keep the heterogeneous type.
+            | [ singlePrimitive ], nonPrimitives ->
+                InferedType.Heterogeneous(singlePrimitive :: nonPrimitives |> Map.ofList, containsOptional)
+            // If there are more than one overriding primitive, also keep the heterogeneous type
+            | primitives, nonPrimitives ->
+                InferedType.Heterogeneous(primitives @ nonPrimitives |> Map.ofList, containsOptional)
+
+        | _otherType -> InferedType.Heterogeneous(tagMerged |> Map.ofList, containsOptional)
 
     // Otherwise the types are incompatible so we build a new heterogeneous type
     | t1, t2 ->
         let h1, h2 = Map.ofSeq [ typeTag t1, t1 ], Map.ofSeq [ typeTag t2, t2 ]
-        InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues h1 h2)
+
+        InferedType.Heterogeneous(
+            let map, containsOptional = unionHeterogeneousTypes allowEmptyValues h1 h2
+            map |> Map.ofList, containsOptional
+        )
+
+// debug: change the function to return `result`,
+// and paste the following in a debug tracepoint before returning the result:
+// {ot1f}\nAND\n{ot2f}\nGIVES\n{resultf}\n
+//let ot1f, ot2f, resultf = sprintf "%A" ot1, sprintf "%A"  ot2, sprintf "%A" result
+//ot1f |> ignore
+//ot2f |> ignore
+//resultf |> ignore
 
 /// Given two heterogeneous types, get a single type that can represent all the
 /// types that the two heterogeneous types can.
-/// Heterogeneous types already handle optionality on their own, so we drop
-/// optionality from all its inner types
 and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
+    let mutable containsOptional = false
+
     List.pairBy (fun (KeyValue (k, _)) -> k) cases1 cases2
     |> List.map (fun (tag, fst, snd) ->
         match tag, fst, snd with
         | tag, Some (KeyValue (_, t)), None
-        | tag, None, Some (KeyValue (_, t)) -> tag, t.DropOptionality()
+        | tag, None, Some (KeyValue (_, t)) ->
+            let typ, wasOptional = t.GetDropOptionality()
+            containsOptional <- containsOptional || wasOptional
+            tag, typ
         | tag, Some (KeyValue (_, t1)), Some (KeyValue (_, t2)) ->
-            tag, (subtypeInfered allowEmptyValues t1 t2).DropOptionality()
-        | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-    |> Map.ofList
+            let typ, wasOptional = (subtypeInfered allowEmptyValues t1 t2).GetDropOptionality()
+            containsOptional <- containsOptional || wasOptional
+            tag, typ
+        | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None"),
+    containsOptional
 
 /// A collection can contain multiple types - in that case, we do keep
 /// the multiplicity for each different type tag to generate better types
@@ -282,8 +348,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
             let t = subtypeInfered allowEmptyValues t1 t2
             let t = if m <> Single then t.DropOptionality() else t
             tag, (m, t)
-        | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-    |> Map.ofList
+        | _ -> failwith "unionCollectionTypes: pairBy returned None, None")
 
 and unionCollectionOrder order1 order2 =
     order1
@@ -476,7 +541,7 @@ let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (infere
                >= 0)
 
     let matchValue value =
-        let makePrimitive typ = Some (InferedType.Primitive(typ, desiredUnit, false))
+        let makePrimitive typ = Some (InferedType.Primitive(typ, desiredUnit, false, false))
         match value with
         | "" -> Some InferedType.Null
         | Parse TextConversions.AsInteger 0 -> makePrimitive typeof<Bit0>
@@ -495,7 +560,6 @@ let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (infere
 
     /// Parses values looking like "typeof<int> or typeof<int<metre>>" and returns the appropriate type.
     let matchInlineSchema useInlineSchemasOverrides value =
-        // TODO: use useInlineSchemasOverrides and implement inline schemas overrides properly...
         match value with
         | "" -> Some InferedType.Null
         | nonEmptyValue ->
@@ -513,14 +577,14 @@ let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (infere
                 | None, _ -> None
                 | Some (typ, typeWrapper), unit ->
                     match typeWrapper with
-                    | TypeWrapper.None -> Some (InferedType.Primitive(typ, unit, false))
+                    | TypeWrapper.None -> Some(InferedType.Primitive(typ, unit, false, useInlineSchemasOverrides))
                     // To keep it simple and prevent weird situations (and preserve backward compat),
                     // only structural inference can create optional types.
                     // Optional types in inline schemas are not allowed.
                     | TypeWrapper.Option -> failwith "Option types are not allowed in inline schemas."
                     | TypeWrapper.Nullable -> failwith "Nullable types are not allowed in inline schemas."
 
-    let fallbackType = InferedType.Primitive(typeof<string>, None, false)
+    let fallbackType = InferedType.Primitive(typeof<string>, None, false, false)
 
     match inferenceMode with
     | InferenceMode'.NoInference -> fallbackType

@@ -114,7 +114,7 @@ let internal inferCellType unitsOfMeasureProvider preferOptionals missingValues 
         if preferOptionals then
             InferedType.Null
         else
-            InferedType.Primitive(typeof<float>, unit, false)
+            InferedType.Primitive(typeof<float>, unit, false, false)
     // If there's only whitespace between commas, treat it as a missing value and not as a string
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
@@ -325,7 +325,7 @@ let internal getFields preferOptionals inferedType schema =
                         field.Name, field.Name
 
                 match field.Type with
-                | InferedType.Primitive (typ, unit, optional) ->
+                | InferedType.Primitive (typ, unit, optional, _) ->
 
                     // Transform the types as described above
                     let typ, typWrapper =

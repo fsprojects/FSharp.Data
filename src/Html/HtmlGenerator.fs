@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // HTML type provider - generate code for accessing inferred elements
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -132,7 +132,7 @@ module internal HtmlGenerator =
 
         let listItemType, conv =
             match columns with
-            | InferedType.Primitive (typ, _, optional) ->
+            | InferedType.Primitive (typ, _, optional, _) ->
                 let typ, _, conv, _convBack =
                     ConversionsGenerator.convertStringValue
                         missingValuesStr
@@ -194,7 +194,7 @@ module internal HtmlGenerator =
 
             let listItemType, conv =
                 match columns with
-                | StructuralTypes.InferedType.Primitive (typ, _, optional) ->
+                | StructuralTypes.InferedType.Primitive (typ, _, optional, _) ->
                     let typ, _, conv, _convBack =
                         ConversionsGenerator.convertStringValue
                             missingValuesStr
