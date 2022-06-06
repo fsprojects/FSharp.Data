@@ -155,7 +155,8 @@ type TypeProviderInstantiation =
              x.Global.ToString()
              x.Culture
              x.InferTypesFromValues.ToString()
-             x.Schema ]
+             x.Schema
+             x.InferenceMode.ToString() ]
         | Json x ->
             ["Json"
              x.Sample
@@ -163,7 +164,8 @@ type TypeProviderInstantiation =
              x.RootName
              x.Culture
              x.InferTypesFromValues.ToString()
-             x.PreferDictionaries.ToString() ]
+             x.PreferDictionaries.ToString()
+             x.InferenceMode.ToString() ]
         | Html x ->
             ["Html"
              x.Sample
@@ -223,7 +225,7 @@ type TypeProviderInstantiation =
                   EmbeddedResource = "" 
                   InferTypesFromValues = args.[5] |> bool.Parse
                   Schema = args.[6]
-                  InferenceMode = InferenceMode.BackwardCompatible }
+                  InferenceMode = args.[7] |> InferenceMode.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -234,7 +236,7 @@ type TypeProviderInstantiation =
                    EmbeddedResource = ""
                    InferTypesFromValues = args.[5] |> bool.Parse
                    PreferDictionaries = args.[6] |> bool.Parse
-                   InferenceMode = InferenceMode.BackwardCompatible }
+                   InferenceMode = args.[7] |> InferenceMode.Parse }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse

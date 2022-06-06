@@ -1,0 +1,123 @@
+class XmlProvider : obj
+    static member AsyncGetSample: () -> XmlProvider+Locations async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "SampleAzureServiceManagement.xml"), f)
+
+    static member AsyncLoad: uri:string -> XmlProvider+Locations async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
+
+    static member GetSample: () -> XmlProvider+Locations
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "SampleAzureServiceManagement.xml")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+Locations
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Locations
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+Locations
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+Locations
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+Locations : FDR.BaseTypes.XmlElement
+    new : locations:XmlProvider+XmlProvider+Location[] -> XmlProvider+Locations
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}Locations", 
+                            [| |], 
+                            [| ("{http://schemas.microsoft.com/windowsazure}Location",
+                                (locations :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Locations
+    XmlElement.Create(xElement)
+
+    member Locations: XmlProvider+XmlProvider+Location[] with get
+    XmlRuntime.ConvertArray(this, "{http://schemas.microsoft.com/windowsazure}Location", new Func<_,_>(id)))
+
+
+class XmlProvider+Location : FDR.BaseTypes.XmlElement
+    new : name:string -> displayName:string -> availableServices:string[] -> computeCapabilities:XmlProvider+ComputeCapabilities -> XmlProvider+Location
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}Location", 
+                            [| |], 
+                            [| ("{http://schemas.microsoft.com/windowsazure}Name",
+                                (name :> obj))
+                               ("{http://schemas.microsoft.com/windowsazure}DisplayName",
+                                (displayName :> obj))
+                               ("{http://schemas.microsoft.com/windowsazure}AvailableServices|{http://schemas.microsoft.com/windowsazure}AvailableService",
+                                (availableServices :> obj))
+                               ("{http://schemas.microsoft.com/windowsazure}ComputeCapabilities",
+                                (computeCapabilities :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Location
+    XmlElement.Create(xElement)
+
+    member AvailableServices: string[] with get
+    XmlRuntime.ConvertArray(this, "{http://schemas.microsoft.com/windowsazure}AvailableServices|{http://schemas.microsoft.com/windowsazure}AvailableService", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                                                                                               let value = XmlRuntime.TryGetValue(t)
+                                                                                                                                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member ComputeCapabilities: XmlProvider+ComputeCapabilities with get
+    XmlRuntime.GetChild(this, "{http://schemas.microsoft.com/windowsazure}ComputeCapabilities")
+
+    member DisplayName: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://schemas.microsoft.com/windowsazure}DisplayName"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://schemas.microsoft.com/windowsazure}Name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XmlProvider+ComputeCapabilities : FDR.BaseTypes.XmlElement
+    new : webWorkerRoleSizes:XmlProvider+WebWorkerRoleSizes -> virtualMachinesRoleSizes:XmlProvider+VirtualMachinesRoleSizes -> XmlProvider+ComputeCapabilities
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}ComputeCapabilities", 
+                            [| |], 
+                            [| ("{http://schemas.microsoft.com/windowsazure}WebWorkerRoleSizes",
+                                (webWorkerRoleSizes :> obj))
+                               ("{http://schemas.microsoft.com/windowsazure}VirtualMachinesRoleSizes",
+                                (virtualMachinesRoleSizes :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+ComputeCapabilities
+    XmlElement.Create(xElement)
+
+    member VirtualMachinesRoleSizes: XmlProvider+VirtualMachinesRoleSizes with get
+    XmlRuntime.GetChild(this, "{http://schemas.microsoft.com/windowsazure}VirtualMachinesRoleSizes")
+
+    member WebWorkerRoleSizes: XmlProvider+WebWorkerRoleSizes with get
+    XmlRuntime.GetChild(this, "{http://schemas.microsoft.com/windowsazure}WebWorkerRoleSizes")
+
+
+class XmlProvider+VirtualMachinesRoleSizes : FDR.BaseTypes.XmlElement
+    new : roleSizes:string[] -> XmlProvider+VirtualMachinesRoleSizes
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}VirtualMachinesRoleSizes", 
+                            [| |], 
+                            [| ("{http://schemas.microsoft.com/windowsazure}RoleSize",
+                                (roleSizes :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+VirtualMachinesRoleSizes
+    XmlElement.Create(xElement)
+
+    member RoleSizes: string[] with get
+    XmlRuntime.ConvertArray(this, "{http://schemas.microsoft.com/windowsazure}RoleSize", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                          let value = XmlRuntime.TryGetValue(t)
+                                                                                                          TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
+class XmlProvider+WebWorkerRoleSizes : FDR.BaseTypes.XmlElement
+    new : roleSizes:string[] -> XmlProvider+WebWorkerRoleSizes
+    XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}WebWorkerRoleSizes", 
+                            [| |], 
+                            [| ("{http://schemas.microsoft.com/windowsazure}RoleSize",
+                                (roleSizes :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+WebWorkerRoleSizes
+    XmlElement.Create(xElement)
+
+    member RoleSizes: string[] with get
+    XmlRuntime.ConvertArray(this, "{http://schemas.microsoft.com/windowsazure}RoleSize", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                          let value = XmlRuntime.TryGetValue(t)
+                                                                                                          TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
