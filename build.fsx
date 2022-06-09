@@ -55,6 +55,8 @@ let license = "Apache-2.0"
 // Read release notes & version info from RELEASE_NOTES.md
 let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
+let isCI = Environment.GetEnvironmentVariable("CI") <> null
+
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
 
@@ -106,8 +108,16 @@ Target.create "Build" (fun _ ->
     |> DotNet.build (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }))
 
 Target.create "RunTests" (fun _ ->
-    "FSharp.Data.sln"
-    |> DotNet.test (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }))
+    let setParams (o: DotNet.TestOptions) =
+        { o with
+            Configuration = DotNet.BuildConfiguration.Release
+            Logger =
+                if isCI then
+                    Some "GitHubActions"
+                else
+                    None }
+
+    "FSharp.Data.sln" |> DotNet.test setParams)
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
