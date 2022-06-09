@@ -55,3 +55,4 @@ group Test
     nuget NUnit3TestAdapter
     nuget FsUnit  4.0.4
     nuget FsCheck 2.15.1
+    nuget GitHubActionsTestLogger

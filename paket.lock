@@ -345,6 +345,8 @@ NUGET
       FSharp.Core (>= 4.3.4)
       NETStandard.Library (>= 2.0.3)
       NUnit (>= 3.13 < 4.0)
+    GitHubActionsTestLogger (2.0)
+      Microsoft.TestPlatform.ObjectModel (>= 17.2)
     Microsoft.CodeCoverage (17.2)
     Microsoft.NET.Test.Sdk (17.2)
       Microsoft.CodeCoverage (>= 17.2)
