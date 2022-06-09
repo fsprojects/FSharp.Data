@@ -160,3 +160,30 @@ let ``Stringifing parsed string returns the same string (UNICODE)`` () =
     let jsonConverted = jsonValue.ToString(JsonSaveOptions.DisableFormatting)
     Assert.AreNotEqual(input, jsonConverted) // this now has the escaped value
     Assert.AreEqual(unescape input, jsonConverted)
+
+[<Test>]
+let ``Single line is skipped`` () =
+    let input =
+        """//
+        {
+            "test": true // x
+        }
+        //"""
+    let inputWithoutComment = """{"test": true}"""
+    let jsonValue = JsonValue.Parse input
+    let jsonValueWithoutComment = JsonValue.Parse inputWithoutComment
+    Assert.AreEqual(jsonValueWithoutComment, jsonValue)
+
+let ``Multiline comment is skipped`` () =
+    let input =
+        """/**/
+        {"test": true}
+        /**//**/ /**/ //
+        /* {
+                "test": true
+            }
+        */"""
+    let inputWithoutComment = """{"test": true}"""
+    let jsonValue = JsonValue.Parse input
+    let jsonValueWithoutComment = JsonValue.Parse inputWithoutComment
+    Assert.AreEqual(jsonValueWithoutComment, jsonValue)
