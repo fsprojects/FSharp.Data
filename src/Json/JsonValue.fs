@@ -199,14 +199,20 @@ type private JsonParser(jsonText: string) =
 
                 if i < s.Length && s.[i] = '/' then
                     i <- i + 1
+
                     while i < s.Length && (s.[i] <> '\r' && s.[i] <> '\n') do
                         i <- i + 1
                 else if i < s.Length && s.[i] = '*' then
                     i <- i + 1
-                    while i + 1 < s.Length && s.[i] <> '*' && s.[i + 1] <> '/' do
+
+                    while i + 1 < s.Length
+                          && s.[i] <> '*'
+                          && s.[i + 1] <> '/' do
                         i <- i + 1
+
                     ensure (i + 1 < s.Length && s.[i] = '*' && s.[i + 1] = '/')
                     i <- i + 2
+
                 true
 
             else
@@ -214,8 +220,10 @@ type private JsonParser(jsonText: string) =
 
         let skipWhitespace () =
             let initialI = i
+
             while i < s.Length && Char.IsWhiteSpace s.[i] do
                 i <- i + 1
+
             initialI <> i // return true if some whitespace was skipped
 
         if skipWhitespace () || skipComment () then
