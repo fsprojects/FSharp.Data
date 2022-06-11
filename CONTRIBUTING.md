@@ -33,7 +33,7 @@ Type providers consist of two components:
    (that are mapped to runtime components by the compiler).
 
 We need a _runtime component_ for .NET Standard 2.0 (netstandard2.0). We also need a _design time_
-component for each, to be able to to host the type provider in .NET Core-based tooling.
+component for each, to be able to host the type provider in .NET Core-based tooling.
 
 The _runtime_ components are in the following project:
 
@@ -68,7 +68,7 @@ of files, typically like this:
    the common API in `StructureInference.fs`.
 
  * `JsonGenerator.fs` - implements code that generates provided types, adds properties
-   and methods etc. This uses the information infered by inference and it generates
+   and methods etc. This uses the information inferred by inference and it generates
    calls to the runtime components.
 
  * `JsonProvider.fs` - entry point that defines static properties of the type provider,
@@ -79,7 +79,11 @@ between _runtime_ and _design-time_ components, so you'll find at least two file
 
 ### Debugging
 
-To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application, rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them. This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio. You'll also see in the console output the complete dump of the generated types and expressions. This is also the process used for the signature tests.
+To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application,
+rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them.  
+This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio.  
+You'll also see in the console output the complete dump of the generated types and expressions.  
+This is also the process used for the signature tests.
 
 ## Documentation
 

@@ -1,5 +1,5 @@
 # Auto detect text files and perform LF normalization
-* text=auto
+* text=auto eol=lf
 
 # Custom for Visual Studio
 *.cs     text diff=csharp
@@ -22,6 +22,8 @@
 *.RTF diff=astextplain
 
 *.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
 
 *.png binary
 *.exe binary

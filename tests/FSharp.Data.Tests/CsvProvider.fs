@@ -7,6 +7,7 @@ open System.IO
 open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 open FSharp.Data.Runtime.CsvInference
+open System.Globalization
 
 let [<Literal>] simpleCsv = """
   Column1,Column2,Column3
@@ -141,9 +142,17 @@ let ``Infers type of an emtpy CSV file`` () =
   let expected : string array = [||]
   actual |> should equal expected
 
+[<Literal>]
+let norwayCultureName = "nb-NO"
+
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="fr-FR">.GetSample()
+  let targetCulture = CultureInfo(norwayCultureName)
+  // Make sure assumptions about the culture hold:
+  targetCulture.DateTimeFormat.DateSeparator |> should equal "."
+  targetCulture.DateTimeFormat.TimeSeparator |> should equal ":" // See https://github.com/fsprojects/FSharp.Data/issues/767
+  targetCulture.NumberFormat.NumberDecimalSeparator |> should equal ","
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture=norwayCultureName>.GetSample()
   let row = csv.Rows |> Seq.head
   (row.Dato, row.USD) |> should equal (DateTime(2013, 2, 7), "5.4970")
 

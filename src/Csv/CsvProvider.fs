@@ -73,7 +73,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
 
                 let value =
                     if sample = "" then
-                        // synthetize sample from the schema
+                        // synthesize sample from the schema
                         use reader = new StringReader(value)
 
                         let schemaStr =
@@ -235,7 +235,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
            <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</param>
            <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, <c>double.NaN</c> or <c>""</c> for missing values. Defaults to false.</param>
            <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to <c>"</c>.</param>
-           <param name='MissingValues'>The set of strings recogized as missing values specified as a comma-separated string (e.g., "NA,N/A"). Defaults to <c>"""
+           <param name='MissingValues'>The set of strings recognized as missing values specified as a comma-separated string (e.g., "NA,N/A"). Defaults to <c>"""
         + String.Join(",", TextConversions.DefaultMissingValues)
         + """</c>.</param>
            <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.</param>

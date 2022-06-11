@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Helper operations for converting converting string values to other types
 // --------------------------------------------------------------------------------------
 
@@ -86,8 +86,8 @@ type TextConversions private () =
     static member val private DefaultRemovableAdornerCharacters =
         Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners
 
-    //This removes any adorners that might otherwise casue the inference to infer string. A notable a change is
-    //Currency Symbols are now treated as an Adorner like a '%' sign thus are now independant
+    //This removes any adorners that might otherwise cause the inference to infer string. A notable a change is
+    //Currency Symbols are now treated as an Adorner like a '%' sign thus are now independent
     //of the culture. Which is probably better since we have lots of scenarios where we want to
     //consume values prefixed with € or $ but in a different culture.
     static member private RemoveAdorners(value: string) =
@@ -157,7 +157,7 @@ type TextConversions private () =
             | x -> x
 
     static member AsDateTimeOffset cultureInfo (text: string) =
-        // get TimeSpan presentation from 4-digt integers like 0000 or -0600
+        // get TimeSpan presentation from 4-digit integers like 0000 or -0600
         let getTimeSpanFromHourMin (hourMin: int) =
             let hr = (hourMin / 100) |> float |> TimeSpan.FromHours
             let min = (hourMin % 100) |> float |> TimeSpan.FromMinutes
@@ -202,7 +202,7 @@ module internal UnicodeHelper =
     // used http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF as a guide below
     let getUnicodeSurrogatePair num =
         // only code points U+010000 to U+10FFFF supported
-        // for coversion to UTF16 surrogate pair
+        // for conversion to UTF16 surrogate pair
         let codePoint = num - 0x010000u
         let HIGH_TEN_BIT_MASK = 0xFFC00u // 1111|1111|1100|0000|0000
         let LOW_TEN_BIT_MASK = 0x003FFu // 0000|0000|0011|1111|1111
