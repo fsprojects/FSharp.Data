@@ -13,27 +13,26 @@ open FSharp.Data.Runtime.StructuralInference
 /// This table specifies the mapping from (the names that users can use) to (the types used).
 /// The table here for the CsvProvider extends the mapping used for inline schemas by adding nullable and optionals.
 let private nameToTypeForCsv =
-    [ for KeyValue(k, v) in StructuralInference.nameToType -> k, v ]
-    @
-    [ "int?", (typeof<int>, TypeWrapper.Nullable)
-      "int64?", (typeof<int64>, TypeWrapper.Nullable)
-      "bool?", (typeof<bool>, TypeWrapper.Nullable)
-      "float?", (typeof<float>, TypeWrapper.Nullable)
-      "decimal?", (typeof<decimal>, TypeWrapper.Nullable)
-      "date?", (typeof<DateTime>, TypeWrapper.Nullable)
-      "datetimeoffset?", (typeof<DateTimeOffset>, TypeWrapper.Nullable)
-      "timespan?", (typeof<TimeSpan>, TypeWrapper.Nullable)
-      "guid?", (typeof<Guid>, TypeWrapper.Nullable)
-      "int option", (typeof<int>, TypeWrapper.Option)
-      "int64 option", (typeof<int64>, TypeWrapper.Option)
-      "bool option", (typeof<bool>, TypeWrapper.Option)
-      "float option", (typeof<float>, TypeWrapper.Option)
-      "decimal option", (typeof<decimal>, TypeWrapper.Option)
-      "date option", (typeof<DateTime>, TypeWrapper.Option)
-      "datetimeoffset option", (typeof<DateTimeOffset>, TypeWrapper.Option)
-      "timespan option", (typeof<TimeSpan>, TypeWrapper.Option)
-      "guid option", (typeof<Guid>, TypeWrapper.Option)
-      "string option", (typeof<string>, TypeWrapper.Option) ]
+    [ for KeyValue (k, v) in StructuralInference.nameToType -> k, v ]
+    @ [ "int?", (typeof<int>, TypeWrapper.Nullable)
+        "int64?", (typeof<int64>, TypeWrapper.Nullable)
+        "bool?", (typeof<bool>, TypeWrapper.Nullable)
+        "float?", (typeof<float>, TypeWrapper.Nullable)
+        "decimal?", (typeof<decimal>, TypeWrapper.Nullable)
+        "date?", (typeof<DateTime>, TypeWrapper.Nullable)
+        "datetimeoffset?", (typeof<DateTimeOffset>, TypeWrapper.Nullable)
+        "timespan?", (typeof<TimeSpan>, TypeWrapper.Nullable)
+        "guid?", (typeof<Guid>, TypeWrapper.Nullable)
+        "int option", (typeof<int>, TypeWrapper.Option)
+        "int64 option", (typeof<int64>, TypeWrapper.Option)
+        "bool option", (typeof<bool>, TypeWrapper.Option)
+        "float option", (typeof<float>, TypeWrapper.Option)
+        "decimal option", (typeof<decimal>, TypeWrapper.Option)
+        "date option", (typeof<DateTime>, TypeWrapper.Option)
+        "datetimeoffset option", (typeof<DateTimeOffset>, TypeWrapper.Option)
+        "timespan option", (typeof<TimeSpan>, TypeWrapper.Option)
+        "guid option", (typeof<Guid>, TypeWrapper.Option)
+        "string option", (typeof<string>, TypeWrapper.Option) ]
     |> dict
 
 let private nameAndTypeRegex =
@@ -60,7 +59,9 @@ type private SchemaParseResult =
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
-    let parseTypeAndUnit = StructuralInference.parseTypeAndUnit unitsOfMeasureProvider nameToTypeForCsv
+    let parseTypeAndUnit =
+        StructuralInference.parseTypeAndUnit unitsOfMeasureProvider nameToTypeForCsv
+
     let name, typ, unit, isOverrideByName, originalName =
         let m = overrideByNameRegex.Value.Match str
 
@@ -108,7 +109,15 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
     | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
     | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
-let internal inferCellType unitsOfMeasureProvider preferOptionals missingValues inferenceMode cultureInfo unit (value: string) =
+let internal inferCellType
+    unitsOfMeasureProvider
+    preferOptionals
+    missingValues
+    inferenceMode
+    cultureInfo
+    unit
+    (value: string)
+    =
     // Explicit missing values (NaN, NA, Empty string etc.) will be treated as float unless the preferOptionals is set to true
     if Array.exists (value.Trim() |> (=)) missingValues then
         if preferOptionals then
@@ -276,7 +285,15 @@ let internal inferType
                         let typ =
                             match schema with
                             | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                            | None -> inferCellType unitsOfMeasureProvider preferOptionals missingValues inferenceMode cultureInfo unit value
+                            | None ->
+                                inferCellType
+                                    unitsOfMeasureProvider
+                                    preferOptionals
+                                    missingValues
+                                    inferenceMode
+                                    cultureInfo
+                                    unit
+                                    value
 
                         { Name = name; Type = typ } ]
 

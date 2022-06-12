@@ -29,25 +29,30 @@ let private getAttributes unitsOfMeasureProvider inferenceMode cultureInfo (elem
                     Type = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo attr.Value None } ]
 
 let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (element: XElement) =
-    let typ = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo (element.Value) None
+    let typ =
+        getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo (element.Value) None
 
     match inferenceMode with
     // Embedded json is not parsed when InferenceMode is NoInference
     | InferenceMode'.NoInference -> typ
-    |_ ->
+    | _ ->
         match typ with
         | InferedType.Primitive (t, _, optional, _) when
             t = typeof<string>
             && let v = (element.Value).TrimStart() in
-                v.StartsWith "{" || v.StartsWith "["
+               v.StartsWith "{" || v.StartsWith "["
             ->
             try
-                match JsonValue.Parse (element.Value) with
+                match JsonValue.Parse(element.Value) with
                 | (JsonValue.Record _
                 | JsonValue.Array _) as json ->
                     let jsonType =
                         json
-                        |> JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo element.Name.LocalName
+                        |> JsonInference.inferType
+                            unitsOfMeasureProvider
+                            inferenceMode
+                            cultureInfo
+                            element.Name.LocalName
 
                     InferedType.Json(jsonType, optional)
                 | _ -> typ
@@ -145,13 +150,17 @@ let rec inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmp
               let collection =
                   inferCollectionType
                       allowEmptyValues
-                      (Seq.map (inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues) children)
+                      (Seq.map
+                          (inferLocalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues)
+                          children)
 
               yield { Name = ""; Type = collection }
 
           // If it has value, add primitive content
           elif not (String.IsNullOrEmpty element.Value) then
-              let primitive = getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo element
+              let primitive =
+                  getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo element
+
               yield { Name = ""; Type = primitive } ]
 
     InferedType.Record(Some(element.Name.ToString()), props, false)

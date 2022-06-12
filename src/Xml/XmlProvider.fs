@@ -81,7 +81,12 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
 
                 let ctx =
                     XmlGenerationContext.Create(
-                        unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, globalInference || schema <> "")
+                        unitsOfMeasureProvider,
+                        inferenceMode,
+                        cultureStr,
+                        tpType,
+                        globalInference || schema <> ""
+                    )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
@@ -121,7 +126,13 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "TypeGeneration" sample
 
                 let ctx =
-                    XmlGenerationContext.Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, globalInference || schema <> "")
+                    XmlGenerationContext.Create(
+                        unitsOfMeasureProvider,
+                        inferenceMode,
+                        cultureStr,
+                        tpType,
+                        globalInference || schema <> ""
+                    )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
@@ -161,7 +172,11 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true)
           ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("InferenceMode", typeof<InferenceMode>, parameterDefaultValue = InferenceMode.BackwardCompatible) ]
+          ProvidedStaticParameter(
+              "InferenceMode",
+              typeof<InferenceMode>,
+              parameterDefaultValue = InferenceMode.BackwardCompatible
+          ) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>

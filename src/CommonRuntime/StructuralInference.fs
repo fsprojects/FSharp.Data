@@ -54,7 +54,7 @@ let asOption =
     function
     | true, x -> Some x
     | false, _ -> None
-        
+
 /// <exclude />
 module internal List =
     /// Merge two sequences by pairing elements for which
@@ -228,7 +228,11 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
             map |> Map.ofList, containsOptional || o1 || o2
         )
     | InferedType.Collection (o1, t1), InferedType.Collection (o2, t2) ->
-        InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2 |> Map.ofList)
+        InferedType.Collection(
+            unionCollectionOrder o1 o2,
+            unionCollectionTypes allowEmptyValues t1 t2
+            |> Map.ofList
+        )
 
     // Top type can be merged with anything else
     | t, InferedType.Top
@@ -255,14 +259,15 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
         | InferedType.Primitive (_, _, _, true) ->
             let primitiveOverrides, nonPrimitives =
                 let primitiveOverrides, nonPrimitives = ResizeArray(), ResizeArray()
+
                 tagMerged
                 |> List.iter (fun (tag, typ) ->
                     match typ with
                     | InferedType.Primitive (_, _, _, true) -> primitiveOverrides.Add(tag, typ)
                     | InferedType.Primitive (_, _, _, false) -> () // We don't need to track normal primitives
                     | _ -> nonPrimitives.Add(tag, typ))
-                primitiveOverrides |> List.ofSeq,
-                nonPrimitives |> List.ofSeq
+
+                primitiveOverrides |> List.ofSeq, nonPrimitives |> List.ofSeq
 
             // For all the following cases, if there is at least one overriding primitive,
             // normal primitives are discarded.
@@ -511,7 +516,13 @@ module private Helpers =
 /// with the desiredUnit applied,
 /// or a value parsed from an inline schema.
 /// (For inline schemas, the unit parsed from the schema takes precedence over desiredUnit when present)
-let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (inferenceMode: InferenceMode') (cultureInfo: CultureInfo) (value: string) (desiredUnit: Type option) =
+let inferPrimitiveType
+    (unitsOfMeasureProvider: IUnitsOfMeasureProvider)
+    (inferenceMode: InferenceMode')
+    (cultureInfo: CultureInfo)
+    (value: string)
+    (desiredUnit: Type option)
+    =
 
     // Helper for calling TextConversions.AsXyz functions
     let (|Parse|_|) func value = func cultureInfo value
@@ -541,7 +552,9 @@ let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (infere
                >= 0)
 
     let matchValue value =
-        let makePrimitive typ = Some (InferedType.Primitive(typ, desiredUnit, false, false))
+        let makePrimitive typ =
+            Some(InferedType.Primitive(typ, desiredUnit, false, false))
+
         match value with
         | "" -> Some InferedType.Null
         | Parse TextConversions.AsInteger 0 -> makePrimitive typeof<Bit0>
@@ -565,14 +578,15 @@ let inferPrimitiveType (unitsOfMeasureProvider: IUnitsOfMeasureProvider) (infere
         | nonEmptyValue ->
             // Validates that it looks like an inline schema before trying to extract the type and unit:
             let m = validInlineSchema.Value.Match(nonEmptyValue)
+
             match m.Success with
             | false -> None
             | true ->
-                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider nameToType m.Groups.["typeDefinition"].Value
-                let unit =
-                    if unit.IsNone
-                    then desiredUnit
-                    else unit
+                let typ, unit =
+                    parseTypeAndUnit unitsOfMeasureProvider nameToType m.Groups.["typeDefinition"].Value
+
+                let unit = if unit.IsNone then desiredUnit else unit
+
                 match typ, unit with
                 | None, _ -> None
                 | Some (typ, typeWrapper), unit ->

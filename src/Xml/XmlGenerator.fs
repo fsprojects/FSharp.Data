@@ -147,7 +147,13 @@ module internal XmlTypeBuilder =
 
                   let ctx =
                       JsonGenerationContext.Create(
-                        cultureStr, ctx.ProvidedType, ctx.UnitsOfMeasureProvider, ctx.InferenceMode,  ctx.UniqueNiceName, ctx.JsonTypeCache)
+                          cultureStr,
+                          ctx.ProvidedType,
+                          ctx.UnitsOfMeasureProvider,
+                          ctx.InferenceMode,
+                          ctx.UniqueNiceName,
+                          ctx.JsonTypeCache
+                      )
 
                   let result = JsonTypeBuilder.generateJsonType ctx false true "" typ
 

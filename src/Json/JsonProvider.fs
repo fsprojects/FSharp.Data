@@ -85,7 +85,12 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
 
             let ctx =
                 JsonGenerationContext.Create(
-                    cultureStr, tpType, unitsOfMeasureProvider, inferenceMode, ?preferDictionaries = Some preferDictionaries)
+                    cultureStr,
+                    tpType,
+                    unitsOfMeasureProvider,
+                    inferenceMode,
+                    ?preferDictionaries = Some preferDictionaries
+                )
 
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
 
@@ -112,7 +117,11 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("InferTypesFromValues", typeof<bool>, parameterDefaultValue = true)
           ProvidedStaticParameter("PreferDictionaries", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("InferenceMode", typeof<InferenceMode>, parameterDefaultValue = InferenceMode.BackwardCompatible) ]
+          ProvidedStaticParameter(
+              "InferenceMode",
+              typeof<InferenceMode>,
+              parameterDefaultValue = InferenceMode.BackwardCompatible
+          ) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
