@@ -295,8 +295,8 @@ let ``Infers units of measure correctly``() =
       ||> CsvInference.getFields false
       |> List.map (fun field ->
           field.Name,
-          field.RuntimeType,
-          prettyTypeName field.TypeWithMeasure)
+          field.Value.RuntimeType,
+          prettyTypeName field.Value.TypeWithMeasure)
 
     let propString =  "String(metre)"      , typeof<string>  , "string"
     let propFloat =   "Float"              , typeof<float>   , "float<meter>"
@@ -319,9 +319,9 @@ let ``Inference schema override by column name``() =
     ||> CsvInference.getFields false
     |> List.map (fun field ->
         field.Name,
-        field.RuntimeType,
-        prettyTypeName field.TypeWithMeasure,
-        field.TypeWrapper)
+        field.Value.RuntimeType,
+        prettyTypeName field.Value.TypeWithMeasure,
+        field.Value.TypeWrapper)
 
   let col1 = "A"       , typeof<int>    , "int<second>", TypeWrapper.None
   let col2 = "B"       , typeof<decimal>, "decimal"    , TypeWrapper.Nullable
@@ -342,9 +342,9 @@ let ``Inference schema override by parameter``() =
     ||> CsvInference.getFields false
     |> List.map (fun field ->
         field.Name,
-        field.RuntimeType,
-        prettyTypeName field.TypeWithMeasure,
-        field.TypeWrapper)
+        field.Value.RuntimeType,
+        prettyTypeName field.Value.TypeWithMeasure,
+        field.Value.TypeWrapper)
 
   let col1 = "Column1" , typeof<float>, "float"        , TypeWrapper.None
   let col2 = "Foo"     , typeof<int>  , "int"          , TypeWrapper.None

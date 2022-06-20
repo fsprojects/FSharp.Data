@@ -192,33 +192,6 @@ type Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
 
-/// Represents type information about a primitive property (used mainly in the CSV provider)
-/// This type captures the type, unit of measure and handling of missing values (if we
-/// infer that the value may be missing, we can generate option<T> or nullable<T>)
-type PrimitiveInferedProperty =
-    { Name: string
-      InferedType: Type
-      RuntimeType: Type
-      UnitOfMeasure: Type option
-      TypeWrapper: TypeWrapper }
-    static member Create(name, typ, typWrapper, unit) =
-        let runtimeTyp =
-            if typ = typeof<Bit> then
-                typeof<bool>
-            elif typ = typeof<Bit0> || typ = typeof<Bit1> then
-                typeof<int>
-            else
-                typ
-
-        { Name = name
-          InferedType = typ
-          RuntimeType = runtimeTyp
-          UnitOfMeasure = unit
-          TypeWrapper = typWrapper }
-
-    static member Create(name, typ, optional, unit) =
-        PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), unit)
-
 /// Represents a transformation of a type
 [<RequireQualifiedAccess>]
 type TypeWrapper =
@@ -228,3 +201,43 @@ type TypeWrapper =
     | Option
     /// The type T will be converter to type Nullable<T>
     | Nullable
+    static member FromOption optional =
+        if optional then TypeWrapper.Option else TypeWrapper.None
+
+/// Represents type information about a primitive value (used mainly in the CSV provider)
+/// This type captures the type, unit of measure and handling of missing values (if we
+/// infer that the value may be missing, we can generate option<T> or nullable<T>)
+type PrimitiveInferedValue =
+    { InferedType: Type
+      RuntimeType: Type
+      UnitOfMeasure: Type option
+      TypeWrapper: TypeWrapper }
+    static member Create(typ, typWrapper, unit) =
+        let runtimeTyp =
+            if typ = typeof<Bit> then
+                typeof<bool>
+            elif typ = typeof<Bit0> || typ = typeof<Bit1> then
+                typeof<int>
+            else
+                typ
+
+        { InferedType = typ
+          RuntimeType = runtimeTyp
+          UnitOfMeasure = unit
+          TypeWrapper = typWrapper }
+
+    static member Create(typ, optional, unit) =
+        PrimitiveInferedValue.Create(typ, TypeWrapper.FromOption optional, unit)
+
+/// Represents type information about a primitive property (used mainly in the CSV provider)
+/// This type captures the type, unit of measure and handling of missing values (if we
+/// infer that the value may be missing, we can generate option<T> or nullable<T>)
+type PrimitiveInferedProperty =
+    { Name: string
+      Value: PrimitiveInferedValue }
+    static member Create(name, typ, (typWrapper: TypeWrapper), unit) =
+        { Name = name
+          Value = PrimitiveInferedValue.Create(typ, typWrapper, unit) }
+
+    static member Create(name, typ, optional, unit) =
+        PrimitiveInferedProperty.Create(name, typ, TypeWrapper.FromOption optional, unit)

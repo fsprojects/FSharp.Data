@@ -263,7 +263,8 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
                 match parseResult with
                 | SchemaParseResult.Name name -> makeUnique name, None
                 | SchemaParseResult.NameAndUnit (name, unit) ->
-                    // store the original header because the inferred type might not support units of measure
+                    // store the original header because the inferred type might not support units of measure.
+                    // format: schemaDefinition \n schemaName
                     (makeUnique item) + "\n" + (makeUnique name), Some unit
                 | SchemaParseResult.Full prop ->
                     let prop = { prop with Name = makeUnique prop.Name }
@@ -367,6 +368,14 @@ let internal getFields preferOptionals inferedType schema =
             match Array.get schema index with
             | Some prop -> prop
             | None ->
+                let schemaCompleteDefinition, schemaName =
+                    let split = field.Name.Split('\n')
+
+                    if split.Length > 1 then
+                        split.[0], split.[1]
+                    else
+                        field.Name, field.Name
+
                 match field.Type with
                 | InferedType.Primitive (typ, unit, optional) ->
 
@@ -394,15 +403,14 @@ let internal getFields preferOptionals inferedType schema =
                         match unit with
                         | Some unit ->
                             if StructuralInference.supportsUnitsOfMeasure typ then
-                                typ, Some unit, field.Name.Split('\n').[1]
+                                typ, Some unit, schemaName
                             else
-                                typ, None, field.Name.Split('\n').[0]
-                        | _ -> typ, None, field.Name.Split('\n').[0]
+                                typ, None, schemaCompleteDefinition
+                        | _ -> typ, None, schemaCompleteDefinition
 
                     PrimitiveInferedProperty.Create(name, typ, typWrapper, unit)
 
-                | _ ->
-                    PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>, preferOptionals, None))
+                | _ -> PrimitiveInferedProperty.Create(schemaCompleteDefinition, typeof<string>, preferOptionals, None))
 
     | _ -> failwithf "inferFields: Expected record type, got %A" inferedType
 

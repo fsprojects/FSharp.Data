@@ -300,7 +300,7 @@ module JsonTypeBuilder =
         | InferedType.Primitive (inferedType, unit, optional) ->
 
             let typ, conv, conversionCallingType =
-                PrimitiveInferedProperty.Create("", inferedType, optional, unit)
+                PrimitiveInferedValue.Create(inferedType, optional, unit)
                 |> convertJsonValue "" ctx.CultureStr canPassAllConversionCallingTypes
 
             { ConvertedType = typ

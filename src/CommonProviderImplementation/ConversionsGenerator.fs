@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
 // Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
 //
 // Conversions from string to various primitive types
@@ -68,6 +68,8 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
 /// Creates a function that takes Expr<string option> and converts it to
 /// an expression of other type - the type is specified by `field`
 let convertStringValue missingValuesStr cultureStr (field: PrimitiveInferedProperty) =
+    let fieldName = field.Name
+    let field = field.Value
 
     let returnType =
         match field.TypeWrapper with
@@ -92,7 +94,7 @@ let convertStringValue missingValuesStr cultureStr (field: PrimitiveInferedPrope
             let varExpr = Expr.Cast<string option>(Expr.Var var)
 
             let body =
-                typeof<TextRuntime>?GetNonOptionalValue field.RuntimeType (field.Name, convert varExpr, varExpr)
+                typeof<TextRuntime>?GetNonOptionalValue field.RuntimeType (fieldName, convert varExpr, varExpr)
 
             Expr.Let(var, value, body)
         | TypeWrapper.Option -> convert value

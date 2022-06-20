@@ -1145,13 +1145,14 @@ type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd>
 
 open System.Xml.Schema
 
-let isValid xmlSchemaSet =
+let isValid xmlSchemaSet displayErrorMessage =
     fun (xml: XElement) ->
         try
             XDocument(xml).Validate(xmlSchemaSet, validationEventHandler = null)
             true
         with :? XmlSchemaException as e ->
-            printfn "%s/n%O" e.Message xml
+            if displayErrorMessage then
+                printfn "%s/n%O" e.Message xml
             false
 
 [<Test>]
@@ -1187,7 +1188,7 @@ let ``simple types are formatted properly``() =
         double = System.Double.PositiveInfinity)
 
     let schema = SimpleTypes.GetSchema()
-    let isValid = isValid schema
+    let isValid = isValid schema true
     isValid simpleValues.XElement |> should equal true
     isValid minValues.XElement |> should equal true
     isValid maxValues.XElement |> should equal true
@@ -1205,15 +1206,17 @@ let ``time is omitted when zero``() =
         decimal = 0M,
         double = System.Double.NaN)
 
-    let isValid = isValid schema
+    let isValidWithMsg = isValid schema true
+    // Don't display the error message each time when we expect to see it:
+    let isValidWithoutMsg = isValid schema false
 
     let validXml = System.DateTime(2018, 8, 29) |> simpleValues
-    isValid validXml.XElement |> should equal true
+    isValidWithMsg validXml.XElement |> should equal true
     validXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29"
 
     let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
-    isValid invalidXml.XElement |> should equal false
+    isValidWithoutMsg invalidXml.XElement |> should equal false
     invalidXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29T05:30:56.0000000"
 
