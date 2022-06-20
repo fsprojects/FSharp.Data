@@ -8,17 +8,78 @@ open System.Net
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 open System.Text
+open System.Threading.Tasks
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Http
+open System.Net.NetworkInformation
+
+type ITestHttpServer =
+    inherit IDisposable
+    abstract member BaseAddress: string
+    abstract member WorkerTask: Task
+
+let startHttpLocalServer() =
+    let app = WebApplication.CreateBuilder().Build()
+    app.Map("/{status}", (fun (ctx: HttpContext) ->
+        async {
+            match ctx.Request.RouteValues.TryGetValue("status") with
+            | true, (:? string as status) ->
+                let status = status |> int
+
+                match ctx.Request.Query.TryGetValue("sleep") with
+                | true, values when values.Count = 1 ->
+                    let value = values[0] |> int
+                    do! Async.Sleep value
+                | _ -> ()
+
+                if ctx.Request.Body <> null then
+                    let buffer = Array.create 8192 (byte 0)
+                    let mutable read = -1
+                    while read <> 0 do
+                        let! x = ctx.Request.Body.ReadAsync(buffer, 0, 8192) |> Async.AwaitTask
+                        read <- x
+
+                Results.StatusCode(status).ExecuteAsync(ctx)
+                |> Async.AwaitTask
+                |> ignore
+            | _ -> failwith "Unexpected request."
+                
+        } |> Async.StartAsTask :> Task
+        )) |> ignore
+
+    let freePort =
+        let mutable port = 55555 // base listener port for the tests
+        while
+            IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
+            |> Array.map (fun x -> x.Port)
+            |> Array.contains port do
+                port <- port + 1
+        port
+
+    let baseAddress = $"http://localhost:{freePort}"
+
+    let workerTask = app.RunAsync(baseAddress)
+    printfn $"Started local http server with address {baseAddress}"
+
+    { new ITestHttpServer with
+        member this.Dispose() =
+            app.StopAsync() |> Async.AwaitTask |> ignore
+            printfn $"Stopped local http server with address {baseAddress}"
+        member this.WorkerTask = workerTask
+        member this.BaseAddress = baseAddress }
 
 [<Test>]
 let ``Don't throw exceptions on http error`` () =
-    let response = Http.Request("http://httpstat.us/401", silentHttpErrors = true)
+    use localServer = startHttpLocalServer()
+    let response = Http.Request(localServer.BaseAddress + "/401", silentHttpErrors = true)
     response.StatusCode |> should equal 401
 
 [<Test>]
 let ``Throw exceptions on http error`` () =
+    use localServer = startHttpLocalServer()
     let exceptionThrown =
         try
-            Http.RequestString("http://api.themoviedb.org/3/search/movie") |> ignore
+            Http.RequestString(localServer.BaseAddress + "/401") |> ignore
             false
         with e ->
             true
@@ -129,20 +190,25 @@ let ``Cookies is not added in cookieContainer but is still returned when addCook
 
 [<Test>]
 let ``Web request's timeout is used`` () =
+    use localServer = startHttpLocalServer()
     let exc = Assert.Throws<WebException> (fun () ->
-        Http.Request("http://httpstat.us/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+        Http.Request(localServer.BaseAddress + "/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
+
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Timeout argument is used`` () =
+    use localServer = startHttpLocalServer()
     let exc = Assert.Throws<WebException> (fun () ->
-        Http.Request("http://httpstat.us/200?sleep=1000", timeout = 1) |> ignore)
+        Http.Request(localServer.BaseAddress + "/200?sleep=1000", timeout = 1) |> ignore)
+
     Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
 
 [<Test>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
+    use localServer = startHttpLocalServer()
     let response =
-        Http.Request("http://httpstat.us/401?sleep=1000", silentHttpErrors = true,
+        Http.Request(localServer.BaseAddress + "/401?sleep=1000", silentHttpErrors = true,
             customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
 
     response.StatusCode |> should equal 401
@@ -156,18 +222,20 @@ let testFormDataSizesInBytes = [
 ]
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
-let testFormDataBodySize (size: int) = 
+let testFormDataBodySize (size: int) =
+    use localServer = startHttpLocalServer()
     let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
     let body = FormValues([("input", bodyString)])
-    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url= localServer.BaseAddress + "/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
-let testMultipartFormDataBodySize (size: int) = 
+let testMultipartFormDataBodySize (size: int) =
+    use localServer = startHttpLocalServer()
     let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
     let multipartItem = [ MultipartItem("input", "input.txt", new MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> Stream) ]
     let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
-    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url="http://httpstat.us/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url= localServer.BaseAddress + "/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test>]
 let ``escaping of url parameters`` () =
