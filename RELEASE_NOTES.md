@@ -13,14 +13,6 @@
 * Some medium refactoring and little fixes by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1450
 * Fix http tests by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1451
 
-#### New Contributors
-* @kleink made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1438
-* @LiteracyFanatic made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1435
-* @nojaf made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1441
-* @mlaily made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1448
-
-**Full Changelog**: https://github.com/fsprojects/FSharp.Data/compare/4.2.8...4.2.9
-
 ### 4.2.8 - Feb 28 2022
 
 * [Add `PreferDictionaries` flag to JSONProvider](https://github.com/fsprojects/FSharp.Data/pull/1430)
