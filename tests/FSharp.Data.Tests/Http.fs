@@ -194,7 +194,7 @@ let ``Web request's timeout is used`` () =
     let exc = Assert.Throws<WebException> (fun () ->
         Http.Request(localServer.BaseAddress + "/200?sleep=1000", customizeHttpRequest = (fun req -> req.Timeout <- 1; req)) |> ignore)
 
-    Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
+    exc.Status |> should equal WebExceptionStatus.Timeout
 
 [<Test>]
 let ``Timeout argument is used`` () =
@@ -202,7 +202,7 @@ let ``Timeout argument is used`` () =
     let exc = Assert.Throws<WebException> (fun () ->
         Http.Request(localServer.BaseAddress + "/200?sleep=1000", timeout = 1) |> ignore)
 
-    Assert.AreEqual(typeof<TimeoutException>, exc.InnerException.GetType())
+    exc.Status |> should equal WebExceptionStatus.Timeout
 
 [<Test>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
