@@ -1,3 +1,26 @@
+### 4.2.9 - Jun 26 2022
+
+* Typo fix, the parameter is plural ("Separators") by @nhirschey in https://github.com/fsprojects/FSharp.Data/pull/1433
+* Typo fix, the parameter is plural ("Separators"). by @kleink in https://github.com/fsprojects/FSharp.Data/pull/1438
+* Remove restrictions for getting innerText by @LiteracyFanatic in https://github.com/fsprojects/FSharp.Data/pull/1435
+* pre-clean some code before applying fantomas by @dsyme in https://github.com/fsprojects/FSharp.Data/pull/1442
+* update to .net 6 by @dsyme in https://github.com/fsprojects/FSharp.Data/pull/1443
+* Format all code by @nojaf in https://github.com/fsprojects/FSharp.Data/pull/1441
+* formatting: wider lists by @dsyme in https://github.com/fsprojects/FSharp.Data/pull/1444
+* fix docs by @dsyme in https://github.com/fsprojects/FSharp.Data/pull/1446
+* add GithubActionsTestLogger and use it in CI builds by @baronfel in https://github.com/fsprojects/FSharp.Data/pull/1449
+* Skip json comments by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1448
+* Some medium refactoring and little fixes by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1450
+* Fix http tests by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1451
+
+#### New Contributors
+* @kleink made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1438
+* @LiteracyFanatic made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1435
+* @nojaf made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1441
+* @mlaily made their first contribution in https://github.com/fsprojects/FSharp.Data/pull/1448
+
+**Full Changelog**: https://github.com/fsprojects/FSharp.Data/compare/4.2.8...4.2.9
+
 ### 4.2.8 - Feb 28 2022
 
 * [Add `PreferDictionaries` flag to JSONProvider](https://github.com/fsprojects/FSharp.Data/pull/1430)
