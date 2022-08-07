@@ -190,6 +190,85 @@ e.g. to annotate each sample when using multiple ones.
 *)
 
 (**
+## Type inference hints / inline schemas
+
+Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)
+
+This feature is disabled by default and has to be explicitly enabled with the `InferenceMode`
+static parameter.
+
+Let's consider an example where this can be useful:
+
+*)
+
+type AmbiguousEntity =
+    JsonProvider<Sample = """
+        { "code":"000", "length":"0" }
+        { "code":"123", "length":"42" }
+        { "code":"4E5", "length":"1.83" }
+        """,
+        SampleIsList = true>
+let code = (AmbiguousEntity.GetSamples()[1]).Code
+let length = (AmbiguousEntity.GetSamples()[1]).Length
+
+(*** include-fsi-merged-output ***)
+
+(**
+In the previous example, `Code` is inferred as a `float`,
+even though it looks more like it should be a `string`.
+(`4E5` is interpreted as an exponential float notation instead of a string)
+
+Now let's enable inline schemas:
+*)
+
+open FSharp.Data.Runtime.StructuralInference
+
+type AmbiguousEntity2 =
+    JsonProvider<Sample = """
+        { "code":"typeof<string>", "length":"typeof<float<metre>>" }
+        { "code":"123", "length":"42" }
+        { "code":"4E5", "length":"1.83" }
+        """,
+        SampleIsList = true,
+        InferenceMode = InferenceMode.ValuesAndInlineSchemasOverrides>
+let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
+
+(*** include-fsi-merged-output ***)
+
+(**
+With the `ValuesAndInlineSchemasOverrides` inference mode, the `typeof<string>` inline schema
+takes priority over the type inferred from other values.
+`Code` is now a `string`, as we wanted it to be!
+
+Note that an alternative to obtain the same result would have been to replace all the `Code` values
+in the samples with unambiguous string values. (But this can be very cumbersome, especially with big samples)
+
+If we had used the `ValuesAndInlineSchemasHints` inference mode instead, our inline schema
+would have had the same precedence as the types inferred from other values, and `Code`
+would have been inferred as a choice between either a number or a string,
+exactly as if we had added another sample with an unambiguous string value for `Code`.
+
+You can use either angle brackets `<>` or curly brackets `{}` when defining inline schemas.
+
+### Units of measure
+
+Inline schemas also enable support for units of measure.
+
+In the previous example, the `Length` property is now inferred as a `float`
+with the `metre` unit of measure (from the default SI units).
+
+Warning: units of measures are discarded when merged with types without a unit or with a different unit.  
+As mentioned previously, with the `ValuesAndInlineSchemasHints` inference mode,
+inline schemas types are merged with other inferred types with the same precedence.
+Since values-inferred types never have units, inline-schemas-inferred types will lose their
+unit if the sample contains other values...
+
+*)
+
+(**
 
 ## Loading WorldBank data
 
