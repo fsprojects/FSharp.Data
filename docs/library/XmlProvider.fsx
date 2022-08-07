@@ -27,13 +27,16 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 
 This article demonstrates how to use the XML Type Provider to access XML documents
 in a statically typed way. We first look at how the structure is inferred and then
-demonstrate the provider by parsing a RSS feed.
+demonstrate the provider by parsing an RSS feed.
 
 The XML Type Provider provides statically typed access to XML documents.
 It takes a sample document as an input (or document containing a root XML node with
 multiple child nodes that are used as samples). The generated type can then be used
-to read files with the same structure. If the loaded file does not match the structure
-of the sample, a runtime error may occur (but only when accessing e.g. non-existing element).
+to read files with the same structure
+
+If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present)
+
 Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
 relying on samples.
 
@@ -287,7 +290,7 @@ the lower level APIs.
 (**
 ## Bringing in Some Async Action
 
-Let's go one step further and assume here a sligthly contrived but certainly plausible example where
+Let's go one step further and assume here a slightly contrived but certainly plausible example where
 we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background
 and then post each link over (for example) a message queue.
 
@@ -310,7 +313,7 @@ let cacheJanitor() = async {
 (**
 ## Reading RSS feeds
 
-To conclude this introduction with a more interesting example, let's look how to parse a
+To conclude this introduction with a more interesting example, let's look how to parse an
 RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
 the type provider:
 *)

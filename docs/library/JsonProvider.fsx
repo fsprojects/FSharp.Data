@@ -31,9 +31,10 @@ demonstrate the provider by parsing data from WorldBank and Twitter.
 
 The JSON Type Provider provides statically typed access to JSON documents.
 It takes a sample document as an input (or a document containing a JSON array of samples).
-The generated type can then be used to read files with the same structure. If the
-loaded file does not match the structure of the sample, a runtime error may occur
-(but only when accessing e.g. non-existing element).
+The generated type can then be used to read files with the same structure.
+
+If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present).
 
 ## Introducing the provider
 
@@ -168,7 +169,7 @@ object, we would have a `GetSample` method instead.
 #### More complex object type on root level
 
 If you want the root type to be an object type, not an array, but
-you need more samples at root level, you can use the SampleIsList parameter.
+you need more samples at root level, you can use the `SampleIsList` parameter.
 Applied to the previous example this would be:
 
 *)
@@ -180,6 +181,13 @@ type People2 = JsonProvider<"""
 let person = People2.Parse("""{ "name":"Gustavo" }""")
 
 (*** include-fsi-merged-output ***)
+
+(**
+Note that starting with version 4.2.9 of this package, JSON comments are supported
+(Comments are either single-line and start with `//` or multi-line when wrapped in `/*` and `*/`).
+This is not a standard feature of JSON, but it can be really convenient,
+e.g. to annotate each sample when using multiple ones.
+*)
 
 (**
 
@@ -278,7 +286,7 @@ The `RetweetCount` and `Text` properties may be also missing, so we also access 
 ## Getting and creating GitHub issues
 
 In this example we will now also create JSON in addition to consuming it.
-Let's start by listing the 5 most recently updated open issues in the FSharp.Data repo.
+Let's start by listing the 5 most recently updated open issues in the FSharp.Data repository.
 
 *)
 
