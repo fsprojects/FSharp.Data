@@ -7,6 +7,7 @@ open System.IO
 open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 open FSharp.Data.Runtime.CsvInference
+open FSharp.Data.Runtime
 open System.Globalization
 
 let [<Literal>] simpleCsv = """
@@ -633,7 +634,7 @@ let ``Parses timespan less than min as string`` () =
 [<Test>]
 let ``InferColumnTypes shall infer empty string as Double``() =
   let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/emptyMissingValue.csv"))
-  let types = csv.InferColumnTypes(2,[|""|],System.Globalization.CultureInfo.GetCultureInfo(""), null, false, false)
+  let types = csv.InferColumnTypes(2,[|""|], StructuralInference.InferenceMode'.ValuesOnly, System.Globalization.CultureInfo.GetCultureInfo(""), null, false, false, StructuralInference.defaultUnitsOfMeasureProvider)
   let expected = "Double"
   let actual = types.[3].Value.InferedType.Name
   actual |> should equal expected

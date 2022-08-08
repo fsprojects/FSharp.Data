@@ -13,6 +13,7 @@ open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.JsonConversionsGenerator
 open ProviderImplementation.ProvidedTypes
+open FSharp.Data.Runtime.StructuralInference
 
 #nowarn "10001"
 
@@ -27,17 +28,48 @@ type internal JsonGenerationContext =
       JsonRuntimeType: Type
       TypeCache: Dictionary<InferedType, ProvidedTypeDefinition>
       PreferDictionaries: bool
-      GenerateConstructors: bool }
+      GenerateConstructors: bool
+      InferenceMode: InferenceMode'
+      UnitsOfMeasureProvider: IUnitsOfMeasureProvider }
 
-    static member Create(cultureStr, tpType, ?uniqueNiceName, ?typeCache, ?preferDictionaries) =
+    static member Create
+        (
+            cultureStr,
+            tpType,
+            unitsOfMeasureProvider,
+            inferenceMode,
+            ?uniqueNiceName,
+            ?typeCache,
+            ?preferDictionaries
+        ) =
         let uniqueNiceName =
             defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
 
         let typeCache = defaultArg typeCache (Dictionary())
         let preferDictionaries = defaultArg preferDictionaries false
-        JsonGenerationContext.Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, true)
 
-    static member Create(cultureStr, tpType, uniqueNiceName, typeCache, preferDictionaries, generateConstructors) =
+        JsonGenerationContext.Create(
+            cultureStr,
+            tpType,
+            uniqueNiceName,
+            typeCache,
+            preferDictionaries,
+            true,
+            inferenceMode,
+            unitsOfMeasureProvider
+        )
+
+    static member Create
+        (
+            cultureStr,
+            tpType,
+            uniqueNiceName,
+            typeCache,
+            preferDictionaries,
+            generateConstructors,
+            inferenceMode,
+            unitsOfMeasureProvider
+        ) =
         { CultureStr = cultureStr
           TypeProviderType = tpType
           UniqueNiceName = uniqueNiceName
@@ -46,7 +78,9 @@ type internal JsonGenerationContext =
           JsonRuntimeType = typeof<JsonRuntime>
           TypeCache = typeCache
           PreferDictionaries = preferDictionaries
-          GenerateConstructors = generateConstructors }
+          GenerateConstructors = generateConstructors
+          InferenceMode = inferenceMode
+          UnitsOfMeasureProvider = unitsOfMeasureProvider }
 
     member x.MakeOptionType(typ: Type) =
         typedefof<option<_>>.MakeGenericType typ
@@ -81,10 +115,10 @@ module JsonTypeBuilder =
         // normalize properties of the inferedType which don't affect code generation
         let rec normalize topLevel =
             function
-            | InferedType.Heterogeneous map ->
+            | InferedType.Heterogeneous (map, _) ->
                 map
                 |> Map.map (fun _ inferedType -> normalize false inferedType)
-                |> InferedType.Heterogeneous
+                |> (fun x -> InferedType.Heterogeneous(x, false))
             | InferedType.Collection (order, types) ->
                 InferedType.Collection(
                     order,
@@ -98,10 +132,12 @@ module JsonTypeBuilder =
                           Type = normalize false inferedType })
                 // optional only affects the parent, so at top level always set to true regardless of the actual value
                 InferedType.Record(None, props, optional || topLevel)
-            | InferedType.Primitive (typ, unit, optional) when typ = typeof<Bit0> || typ = typeof<Bit1> ->
-                InferedType.Primitive(typeof<int>, unit, optional)
-            | InferedType.Primitive (typ, unit, optional) when typ = typeof<Bit> ->
-                InferedType.Primitive(typeof<bool>, unit, optional)
+            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when
+                typ = typeof<Bit0> || typ = typeof<Bit1>
+                ->
+                InferedType.Primitive(typeof<int>, unit, optional, shouldOverrideOnMerge)
+            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when typ = typeof<Bit> ->
+                InferedType.Primitive(typeof<bool>, unit, optional, shouldOverrideOnMerge)
             | x -> x
 
         let inferedType = normalize true inferedType
@@ -169,7 +205,7 @@ module JsonTypeBuilder =
                     | InferedMultiplicity.OptionalSingle
                     | InferedMultiplicity.Single ->
                         match inferedType with
-                        | InferedType.Primitive (typ, _, _) ->
+                        | InferedType.Primitive (typ, _, _, _) ->
                             if typ = typeof<int>
                                || typ = typeof<Bit0>
                                || typ = typeof<Bit1> then
@@ -297,7 +333,7 @@ module JsonTypeBuilder =
 
         match inferedType with
 
-        | InferedType.Primitive (inferedType, unit, optional) ->
+        | InferedType.Primitive (inferedType, unit, optional, _) ->
 
             let typ, conv, conversionCallingType =
                 PrimitiveInferedValue.Create(inferedType, optional, unit)
@@ -374,6 +410,8 @@ module JsonTypeBuilder =
                         let infType =
                             [ for prop in props ->
                                   StructuralInference.getInferedTypeFromString
+                                      ctx.UnitsOfMeasureProvider
+                                      ctx.InferenceMode
                                       (TextRuntime.GetCulture ctx.CultureStr)
                                       prop.Name
                                       None ]
@@ -619,7 +657,7 @@ module JsonTypeBuilder =
                                 (result.ConvertedTypeErased ctx)
                                 (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)))
 
-        | InferedType.Heterogeneous types ->
+        | InferedType.Heterogeneous (types, _) ->
             getOrCreateType ctx inferedType (fun () ->
 
                 // Generate a choice type that always calls `TryGetValueByTypeTag`

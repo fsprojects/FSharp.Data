@@ -6,6 +6,7 @@ open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProvidedTypesTesting
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.StructuralInference
 
 type CsvProviderArgs =
     { Sample : string
@@ -34,7 +35,8 @@ type XmlProviderArgs =
       ResolutionFolder : string
       EmbeddedResource : string 
       InferTypesFromValues : bool
-      Schema : string }
+      Schema : string
+      InferenceMode: InferenceMode }
 
 type JsonProviderArgs =
     { Sample : string
@@ -45,7 +47,8 @@ type JsonProviderArgs =
       ResolutionFolder : string
       EmbeddedResource : string
       InferTypesFromValues : bool
-      PreferDictionaries : bool }
+      PreferDictionaries : bool
+      InferenceMode: InferenceMode }
 
 type HtmlProviderArgs =
     { Sample : string
@@ -101,7 +104,8 @@ type TypeProviderInstantiation =
                    box x.ResolutionFolder
                    box x.EmbeddedResource
                    box x.InferTypesFromValues
-                   box x.Schema |] 
+                   box x.Schema
+                   box x.InferenceMode |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -112,7 +116,8 @@ type TypeProviderInstantiation =
                    box x.ResolutionFolder
                    box x.EmbeddedResource
                    box x.InferTypesFromValues
-                   box x.PreferDictionaries |]
+                   box x.PreferDictionaries
+                   box x.InferenceMode |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -150,7 +155,8 @@ type TypeProviderInstantiation =
              x.Global.ToString()
              x.Culture
              x.InferTypesFromValues.ToString()
-             x.Schema ]
+             x.Schema
+             x.InferenceMode.ToString() ]
         | Json x ->
             ["Json"
              x.Sample
@@ -158,17 +164,18 @@ type TypeProviderInstantiation =
              x.RootName
              x.Culture
              x.InferTypesFromValues.ToString()
-             x.PreferDictionaries.ToString() ]
+             x.PreferDictionaries.ToString()
+             x.InferenceMode.ToString() ]
         | Html x ->
             ["Html"
              x.Sample
              x.PreferOptionals.ToString()
              x.IncludeLayoutTables.ToString()
-             x.Culture]
+             x.Culture ]
         | WorldBank x ->
             ["WorldBank"
              x.Sources
-             x.Asynchronous.ToString()]
+             x.Asynchronous.ToString() ]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder =
@@ -217,7 +224,8 @@ type TypeProviderInstantiation =
                   ResolutionFolder = ""
                   EmbeddedResource = "" 
                   InferTypesFromValues = args.[5] |> bool.Parse
-                  Schema = args.[6] }
+                  Schema = args.[6]
+                  InferenceMode = args.[7] |> InferenceMode.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -227,7 +235,8 @@ type TypeProviderInstantiation =
                    ResolutionFolder = ""
                    EmbeddedResource = ""
                    InferTypesFromValues = args.[5] |> bool.Parse
-                   PreferDictionaries = args.[6] |> bool.Parse }
+                   PreferDictionaries = args.[6] |> bool.Parse
+                   InferenceMode = args.[7] |> InferenceMode.Parse }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse

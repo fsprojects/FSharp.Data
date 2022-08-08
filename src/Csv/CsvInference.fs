@@ -10,45 +10,33 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 
-/// The schema may be set explicitly. This table specifies the mapping
-/// from the names that users can use to the types used.
-let private nameToType =
-    [ "int", (typeof<int>, TypeWrapper.None)
-      "int64", (typeof<int64>, TypeWrapper.None)
-      "bool", (typeof<bool>, TypeWrapper.None)
-      "float", (typeof<float>, TypeWrapper.None)
-      "decimal", (typeof<decimal>, TypeWrapper.None)
-      "date", (typeof<DateTime>, TypeWrapper.None)
-      "datetimeoffset", (typeof<DateTimeOffset>, TypeWrapper.None)
-      "timespan", (typeof<TimeSpan>, TypeWrapper.None)
-      "guid", (typeof<Guid>, TypeWrapper.None)
-      "string", (typeof<String>, TypeWrapper.None)
-      "int?", (typeof<int>, TypeWrapper.Nullable)
-      "int64?", (typeof<int64>, TypeWrapper.Nullable)
-      "bool?", (typeof<bool>, TypeWrapper.Nullable)
-      "float?", (typeof<float>, TypeWrapper.Nullable)
-      "decimal?", (typeof<decimal>, TypeWrapper.Nullable)
-      "date?", (typeof<DateTime>, TypeWrapper.Nullable)
-      "datetimeoffset?", (typeof<DateTimeOffset>, TypeWrapper.Nullable)
-      "timespan?", (typeof<TimeSpan>, TypeWrapper.Nullable)
-      "guid?", (typeof<Guid>, TypeWrapper.Nullable)
-      "int option", (typeof<int>, TypeWrapper.Option)
-      "int64 option", (typeof<int64>, TypeWrapper.Option)
-      "bool option", (typeof<bool>, TypeWrapper.Option)
-      "float option", (typeof<float>, TypeWrapper.Option)
-      "decimal option", (typeof<decimal>, TypeWrapper.Option)
-      "date option", (typeof<DateTime>, TypeWrapper.Option)
-      "datetimeoffset option", (typeof<DateTimeOffset>, TypeWrapper.Option)
-      "timespan option", (typeof<TimeSpan>, TypeWrapper.Option)
-      "guid option", (typeof<Guid>, TypeWrapper.Option)
-      "string option", (typeof<string>, TypeWrapper.Option) ]
+/// This table specifies the mapping from (the names that users can use) to (the types used).
+/// The table here for the CsvProvider extends the mapping used for inline schemas by adding nullable and optionals.
+let private nameToTypeForCsv =
+    [ for KeyValue (k, v) in StructuralInference.nameToType -> k, v ]
+    @ [ "int?", (typeof<int>, TypeWrapper.Nullable)
+        "int64?", (typeof<int64>, TypeWrapper.Nullable)
+        "bool?", (typeof<bool>, TypeWrapper.Nullable)
+        "float?", (typeof<float>, TypeWrapper.Nullable)
+        "decimal?", (typeof<decimal>, TypeWrapper.Nullable)
+        "date?", (typeof<DateTime>, TypeWrapper.Nullable)
+        "datetimeoffset?", (typeof<DateTimeOffset>, TypeWrapper.Nullable)
+        "timespan?", (typeof<TimeSpan>, TypeWrapper.Nullable)
+        "guid?", (typeof<Guid>, TypeWrapper.Nullable)
+        "int option", (typeof<int>, TypeWrapper.Option)
+        "int64 option", (typeof<int64>, TypeWrapper.Option)
+        "bool option", (typeof<bool>, TypeWrapper.Option)
+        "float option", (typeof<float>, TypeWrapper.Option)
+        "decimal option", (typeof<decimal>, TypeWrapper.Option)
+        "date option", (typeof<DateTime>, TypeWrapper.Option)
+        "datetimeoffset option", (typeof<DateTimeOffset>, TypeWrapper.Option)
+        "timespan option", (typeof<TimeSpan>, TypeWrapper.Option)
+        "guid option", (typeof<Guid>, TypeWrapper.Option)
+        "string option", (typeof<string>, TypeWrapper.Option) ]
     |> dict
 
 let private nameAndTypeRegex =
     lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
-
-let private typeAndUnitRegex =
-    lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
 
 let private overrideByNameRegex =
     lazy
@@ -65,56 +53,15 @@ type private SchemaParseResult =
     | FullByName of property: PrimitiveInferedProperty * originalName: string
     | Rename of name: string * originalName: string
 
-let private asOption =
-    function
-    | true, x -> Some x
-    | false, _ -> None
-
-/// <summary>
-/// Parses type specification in the schema for a single column.
-/// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
-/// </summary>
-let private parseTypeAndUnit unitsOfMeasureProvider str =
-    let m = typeAndUnitRegex.Value.Match(str)
-
-    if m.Success then
-        // type<unit> case, both type and unit have to be valid
-        let typ =
-            m.Groups.["type"].Value.TrimEnd().ToLowerInvariant()
-            |> nameToType.TryGetValue
-            |> asOption
-
-        match typ with
-        | None -> None, None
-        | Some typ ->
-            let unitName = m.Groups.["unit"].Value.Trim()
-            let unit = StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider unitName
-
-            if unit.IsNone then
-                failwithf "Invalid unit of measure %s" unitName
-            else
-                Some typ, unit
-    else
-        // it is not a full type with unit, so it can be either type or a unit
-        let typ =
-            str.ToLowerInvariant()
-            |> nameToType.TryGetValue
-            |> asOption
-
-        match typ with
-        | Some (typ, typWrapper) ->
-            // Just type
-            Some(typ, typWrapper), None
-        | None ->
-            // Just unit (or nothing)
-            None, StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider str
-
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
 /// If forSchemaOverride is set to true, only Full or Name is returned
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
+    let parseTypeAndUnit =
+        StructuralInference.parseTypeAndUnit unitsOfMeasureProvider nameToTypeForCsv
+
     let name, typ, unit, isOverrideByName, originalName =
         let m = overrideByNameRegex.Value.Match str
 
@@ -123,7 +70,7 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
             let originalName = m.Groups.["name"].Value.TrimEnd()
             let newName = m.Groups.["newName"].Value.Trim()
             let typeAndUnit = m.Groups.["type"].Value.Trim()
-            let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
+            let typ, unit = parseTypeAndUnit typeAndUnit
 
             if typ.IsNone && typeAndUnit <> "" then
                 failwithf "Invalid type: %s" typeAndUnit
@@ -136,11 +83,11 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
                 // name (type|measure|type<measure>)
                 let name = m.Groups.["name"].Value.TrimEnd()
                 let typeAndUnit = m.Groups.["type"].Value.Trim()
-                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
+                let typ, unit = parseTypeAndUnit typeAndUnit
                 name, typ, unit, false, ""
             elif forSchemaOverride then
                 // type|type<measure>
-                let typ, unit = parseTypeAndUnit unitsOfMeasureProvider str
+                let typ, unit = parseTypeAndUnit str
 
                 match typ, unit with
                 | None, _ -> str, None, None, false, ""
@@ -162,18 +109,26 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
     | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
     | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
-let internal inferCellType preferOptionals missingValues cultureInfo unit (value: string) =
+let internal inferCellType
+    unitsOfMeasureProvider
+    preferOptionals
+    missingValues
+    inferenceMode
+    cultureInfo
+    unit
+    (value: string)
+    =
     // Explicit missing values (NaN, NA, Empty string etc.) will be treated as float unless the preferOptionals is set to true
     if Array.exists (value.Trim() |> (=)) missingValues then
         if preferOptionals then
             InferedType.Null
         else
-            InferedType.Primitive(typeof<float>, unit, false)
+            InferedType.Primitive(typeof<float>, unit, false, false)
     // If there's only whitespace between commas, treat it as a missing value and not as a string
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
     else
-        getInferedTypeFromString cultureInfo value unit
+        StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
@@ -282,9 +237,11 @@ let internal inferType
     (rows: seq<_>)
     inferRows
     missingValues
+    inferenceMode
     cultureInfo
     assumeMissingValues
     preferOptionals
+    unitsOfMeasureProvider
     =
 
     // If we have no data, generate one empty row with empty strings,
@@ -328,7 +285,15 @@ let internal inferType
                         let typ =
                             match schema with
                             | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                            | None -> inferCellType preferOptionals missingValues cultureInfo unit value
+                            | None ->
+                                inferCellType
+                                    unitsOfMeasureProvider
+                                    preferOptionals
+                                    missingValues
+                                    inferenceMode
+                                    cultureInfo
+                                    unit
+                                    value
 
                         { Name = name; Type = typ } ]
 
@@ -377,7 +342,7 @@ let internal getFields preferOptionals inferedType schema =
                         field.Name, field.Name
 
                 match field.Type with
-                | InferedType.Primitive (typ, unit, optional) ->
+                | InferedType.Primitive (typ, unit, optional, _) ->
 
                     // Transform the types as described above
                     let typ, typWrapper =
@@ -420,11 +385,23 @@ let internal inferColumnTypes
     rows
     inferRows
     missingValues
+    inferenceMode
     cultureInfo
     assumeMissingValues
     preferOptionals
+    unitsOfMeasureProvider
     =
-    inferType headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals
+    inferType
+        headerNamesAndUnits
+        schema
+        rows
+        inferRows
+        missingValues
+        inferenceMode
+        cultureInfo
+        assumeMissingValues
+        preferOptionals
+        unitsOfMeasureProvider
     ||> getFields preferOptionals
 
 type CsvFile with
@@ -442,14 +419,13 @@ type CsvFile with
         (
             inferRows,
             missingValues,
+            inferenceMode,
             cultureInfo,
             schema,
             assumeMissingValues,
             preferOptionals,
-            [<Optional>] ?unitsOfMeasureProvider
+            unitsOfMeasureProvider
         ) =
-        let unitsOfMeasureProvider =
-            defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
 
         let headerNamesAndUnits, schema =
             parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
@@ -460,6 +436,8 @@ type CsvFile with
             (x.Rows |> Seq.map (fun row -> row.Columns))
             inferRows
             missingValues
+            inferenceMode
             cultureInfo
             assumeMissingValues
             preferOptionals
+            unitsOfMeasureProvider

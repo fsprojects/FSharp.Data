@@ -1,4 +1,4 @@
-﻿/// Structural inference for HTML tables
+/// Structural inference for HTML tables
 module FSharp.Data.Runtime.HtmlInference
 
 open System
@@ -11,7 +11,8 @@ type Parameters =
     { MissingValues: string[]
       CultureInfo: CultureInfo
       UnitsOfMeasureProvider: IUnitsOfMeasureProvider
-      PreferOptionals: bool }
+      PreferOptionals: bool
+      InferenceMode: InferenceMode' }
 
 let inferColumns parameters (headerNamesAndUnits: _[]) rows =
 
@@ -25,9 +26,11 @@ let inferColumns parameters (headerNamesAndUnits: _[]) rows =
         rows
         inferRows
         parameters.MissingValues
+        parameters.InferenceMode
         parameters.CultureInfo
         assumeMissingValues
         parameters.PreferOptionals
+        parameters.UnitsOfMeasureProvider
 
 let inferHeaders parameters (rows: string[][]) =
     if rows.Length <= 2 then
@@ -62,9 +65,14 @@ let inferListType parameters (values: string[]) =
                 if parameters.PreferOptionals then
                     InferedType.Null
                 else
-                    InferedType.Primitive(typeof<float>, None, false)
+                    InferedType.Primitive(typeof<float>, None, false, false)
             else
-                getInferedTypeFromString parameters.CultureInfo value None
+                getInferedTypeFromString
+                    parameters.UnitsOfMeasureProvider
+                    parameters.InferenceMode
+                    parameters.CultureInfo
+                    value
+                    None
 
         values
         |> Array.map inferedtype

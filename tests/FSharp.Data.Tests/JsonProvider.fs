@@ -776,3 +776,77 @@ let ``Can control dictionary inference`` () =
 
     inferred.Rec.Values |> should equal [|111; 222|]
     inferred.Rec.Keys   |> should equal [|false; true|]
+
+open FSharp.Data.Runtime.StructuralInference
+open FSharp.Data.UnitSystems.SI.UnitNames
+
+[<Literal>]
+let ambiguousJsonWithInlineSchemas = """
+[
+    { "Code": "typeof<string>", "Enabled": true,  "Date": "typeof<string>",      "Length": "typeof<float<metre>>", "Obj": { "X": "typeof<int>" } },
+    { "Code": "123",            "Enabled": true,  "Date": "2022-06-11",          "Length": 1.83,                   "Obj": { "X": "0" } },
+    { "Code": "000",            "Enabled": false,                                                                  "Obj": null },
+    { "Code": "4E5",            "Enabled": true,  "Date": "2022-06-12T01:02:03", "Length": 2.00,                   "Obj": { "X": "1" } }
+]
+"""
+
+type InlineSchemasJsonDefaultInference = JsonProvider<ambiguousJsonWithInlineSchemas, SampleIsList = true>
+type InlineSchemasJsonNoInference = JsonProvider<ambiguousJsonWithInlineSchemas, SampleIsList = true, InferenceMode = InferenceMode.NoInference>
+type InlineSchemasJsonInlineSchemasHints = JsonProvider<ambiguousJsonWithInlineSchemas, SampleIsList = true, InferenceMode = InferenceMode.ValuesAndInlineSchemasHints>
+type InlineSchemasJsonInlineSchemasOverrides = JsonProvider<ambiguousJsonWithInlineSchemas, SampleIsList = true, InferenceMode = InferenceMode.ValuesAndInlineSchemasOverrides>
+
+[<Test>]
+let ``Inline schemas are disabled by default and are recognized as strings`` () =
+    // For backward compat, inline schemas are disabled by default.
+    let sample = InlineSchemasJsonDefaultInference.GetSamples()
+    sample[1].Code.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Code.Number.GetType() |> should equal (typeof<float option>)
+    sample[1].Enabled.GetType() |> should equal (typeof<bool>)
+    sample[1].Date.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Date.DateTime.GetType() |> should equal (typeof<DateTime option>)
+    sample[1].Length.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Length.Number.GetType() |> should equal (typeof<decimal option>)
+    sample[1].Obj.Value.X.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Obj.Value.X.Number.GetType() |> should equal (typeof<bool option>) // (There is probably a little but here. The property should be called Boolean)
+
+[<Test>]
+let ``"No inference" mode disables type inference`` () =
+    let sample = InlineSchemasJsonNoInference.GetSamples()
+    sample[1].Code.GetType() |> should equal (typeof<string>)
+    sample[1].Enabled.GetType() |> should equal (typeof<bool>) // bool is a json type so it's detected even when inference is disabled.
+    sample[1].Date.GetType() |> should equal (typeof<string option>)
+    sample[1].Length.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Length.Number.GetType() |> should equal (typeof<decimal option>) // number is also a json type so it's detected as well.
+    sample[1].Obj.Value.X.GetType() |> should equal (typeof<string>)
+
+[<Test>]
+let ``Inline schemas as hints add new types to the value-based inference`` () =
+    let sample = InlineSchemasJsonInlineSchemasHints.GetSamples()
+    // Same as with only value inference because the inline schemas define string types:
+    sample[1].Code.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Code.Number.GetType() |> should equal (typeof<float option>)
+    sample[1].Enabled.GetType() |> should equal (typeof<bool>)
+    sample[1].Date.String.GetType() |> should equal (typeof<string option>)
+    sample[1].Date.DateTime.GetType() |> should equal (typeof<DateTime option>)
+    // This one is inferred as a float instead of a decimal.
+    // We specified a unit but it cannot be reconciled with other values that don't have it so it's ignored.
+    sample[1].Length.GetType() |> should equal (typeof<float option>)
+    // This one is now inferred as an int and not a bool:
+    sample[1].Obj.Value.X.GetType() |> should equal (typeof<int>)
+
+[<Test>]
+let ``Inline schemas as overrides replace value-based inference when present`` () =
+    let sample = InlineSchemasJsonInlineSchemasOverrides.GetSamples()
+    // We know the Code property can contain letters even though our sample only contain numbers,
+    // so we added an overriding inline schema.
+    // With the inline schema, the value is no longer inferred as maybe a float:
+    sample[1].Code.GetType() |> should equal (typeof<string>)
+    // Value inference is still used when there is no inline schema:
+    sample[1].Enabled.GetType() |> should equal (typeof<bool>)
+    // Let's say we want to parse dates ourselves, so we want the provider to always give us strings:
+    sample[1].Date.GetType() |> should equal (typeof<string option>)
+    // We now have a unit!
+    sample[1].Length.GetType() |> should equal (typeof<float<metre> option>)
+    sample[1].Obj.Value.X.GetType() |> should equal (typeof<int>)
+    // (Note the types in the inline schemas are automatically transformed to options as needed
+    // when another node does not define any value for the given property)

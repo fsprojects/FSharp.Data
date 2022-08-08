@@ -14,6 +14,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.CsvInference
 open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
+open FSharp.Data.Runtime.StructuralInference
 
 // --------------------------------------------------------------------------------------
 
@@ -51,6 +52,11 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
         let encodingStr = args.[13] :?> string
         let resolutionFolder = args.[14] :?> string
         let resource = args.[15] :?> string
+
+        // This provider already has a schema mechanism, so let's disable inline schemas.
+        let inferenceMode = InferenceMode'.ValuesOnly
+
+        let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
         if sample = "" then
             if schema = "" then
@@ -101,11 +107,12 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                 sampleCsv.InferColumnTypes(
                     inferRows,
                     TextRuntime.GetMissingValues missingValuesStr,
+                    inferenceMode,
                     TextRuntime.GetCulture cultureStr,
                     schema,
                     assumeMissingValues,
                     preferOptionals,
-                    ProviderHelpers.unitsOfMeasureProvider
+                    unitsOfMeasureProvider
                 )
 
             use _holder = IO.logTime "TypeGeneration" sample
@@ -227,7 +234,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
            <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document.</param>
            <param name='Separators'>Column delimiter(s). Defaults to <c>,</c>.</param>
            <param name='InferRows'>Number of rows to use for inference. Defaults to <c>1000</c>. If this is zero, all rows are used.</param>
-           <param name='Schema'>Optional column types, in a comma separated list. Valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>guid</c>, <c>string</c>, <c>int?</c>, <c>int64?</c>, <c>bool?</c>, <c>float?</c>, <c>decimal?</c>, <c>date?</c>, <c>guid?</c>, <c>int option</c>, <c>int64 option</c>, <c>bool option</c>, <c>float option</c>, <c>decimal option</c>, <c>date option</c>, <c>guid option</c> and <c>string option</c>.
+           <param name='Schema'>Optional column types, in a comma separated list. Valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>datetimeoffset</c>, <c>timespan</c>, <c>guid</c>, <c>string</c>, <c>int?</c>, <c>int64?</c>, <c>bool?</c>, <c>float?</c>, <c>decimal?</c>, <c>date?</c>, <c>datetimeoffset?</c>, <c>timespan?</c>, <c>guid?</c>, <c>int option</c>, <c>int64 option</c>, <c>bool option</c>, <c>float option</c>, <c>decimal option</c>, <c>date option</c>, <c>datetimeoffset option</c>, <c>timespan option</c>, <c>guid option</c> and <c>string option</c>.
            You can also specify a unit and the name of the column like this: <c>Name (type&lt;unit&gt;)</c>, or you can override only the name. If you don't want to specify all the columns, you can reference the columns by name like this: <c>ColumnName=type</c>.</param>
            <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line.</param>
            <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.</param>

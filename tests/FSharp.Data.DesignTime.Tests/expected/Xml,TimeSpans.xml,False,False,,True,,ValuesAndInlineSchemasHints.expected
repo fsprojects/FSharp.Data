@@ -1,0 +1,64 @@
+class XmlProvider : obj
+    static member AsyncGetSample: () -> XmlProvider+TimeSpans async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "TimeSpans.xml"), f)
+
+    static member AsyncLoad: uri:string -> XmlProvider+TimeSpans async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
+
+    static member GetSample: () -> XmlProvider+TimeSpans
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "TimeSpans.xml")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+TimeSpans
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+TimeSpans
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+TimeSpans
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+TimeSpans
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+TimeSpans : FDR.BaseTypes.XmlElement
+    new : positiveWithDayWithFraction:System.TimeSpan -> positiveWithoutDayWithoutFraction:System.TimeSpan -> negativeWithDayWithFraction:System.TimeSpan -> timespanOneTickGreaterThanMaxValue:string -> timespanOneTickLessThanMinValue:string -> XmlProvider+TimeSpans
+    XmlRuntime.CreateRecord("TimeSpans", 
+                            [| |], 
+                            [| ("positiveWithDayWithFraction",
+                                (positiveWithDayWithFraction :> obj))
+                               ("positiveWithoutDayWithoutFraction",
+                                (positiveWithoutDayWithoutFraction :> obj))
+                               ("negativeWithDayWithFraction",
+                                (negativeWithDayWithFraction :> obj))
+                               ("timespanOneTickGreaterThanMaxValue",
+                                (timespanOneTickGreaterThanMaxValue :> obj))
+                               ("timespanOneTickLessThanMinValue",
+                                (timespanOneTickLessThanMinValue :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+TimeSpans
+    XmlElement.Create(xElement)
+
+    member NegativeWithDayWithFraction: System.TimeSpan with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "negativeWithDayWithFraction"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertTimeSpan("", value), value)
+
+    member PositiveWithDayWithFraction: System.TimeSpan with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "positiveWithDayWithFraction"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertTimeSpan("", value), value)
+
+    member PositiveWithoutDayWithoutFraction: System.TimeSpan with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "positiveWithoutDayWithoutFraction"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertTimeSpan("", value), value)
+
+    member TimespanOneTickGreaterThanMaxValue: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "timespanOneTickGreaterThanMaxValue"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member TimespanOneTickLessThanMinValue: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "timespanOneTickLessThanMinValue"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+

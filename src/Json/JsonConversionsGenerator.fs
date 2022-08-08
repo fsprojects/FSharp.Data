@@ -50,13 +50,12 @@ type JsonConversionCallingType =
 /// an expression of other type - the type is specified by `field`
 let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field: PrimitiveInferedValue) =
 
-    assert (field.TypeWithMeasure = field.RuntimeType)
 
     let returnType =
         match field.TypeWrapper with
-        | TypeWrapper.None -> field.RuntimeType
-        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.RuntimeType
-        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.RuntimeType
+        | TypeWrapper.None -> field.TypeWithMeasure
+        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.TypeWithMeasure
+        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.TypeWithMeasure
 
     let wrapInLetIfNeeded (value: Expr) getBody =
         match value with

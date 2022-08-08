@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // XML type provider - generate code for accessing inferred elements
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
@@ -13,6 +13,7 @@ open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open FSharp.Data.Runtime.StructuralInference
 
 // --------------------------------------------------------------------------------------
 
@@ -21,17 +22,21 @@ open ProviderImplementation.QuotationBuilder
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
     { CultureStr: string
+      UnitsOfMeasureProvider: IUnitsOfMeasureProvider
+      InferenceMode: InferenceMode'
       ProvidedType: ProvidedTypeDefinition
       // to nameclash type names
       UniqueNiceName: string -> string
       UnifyGlobally: bool
       XmlTypeCache: Dictionary<InferedType, XmlGenerationResult>
       JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition> }
-    static member Create(cultureStr, tpType, unifyGlobally) =
+    static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
         uniqueNiceName "XElement" |> ignore
 
         { CultureStr = cultureStr
+          UnitsOfMeasureProvider = unitsOfMeasureProvider
+          InferenceMode = inferenceMode
           ProvidedType = tpType
           UniqueNiceName = uniqueNiceName
           UnifyGlobally = unifyGlobally
@@ -75,7 +80,7 @@ module internal XmlTypeBuilder =
         match inferedProp with
         | { Type = (InferedType.Primitive _ | InferedType.Json _) as typ } -> Some([ typ ], [])
         | { Type = InferedType.Collection (order, types) } -> Some([], inOrder order types)
-        | { Type = InferedType.Heterogeneous cases } ->
+        | { Type = InferedType.Heterogeneous (cases, _) } ->
             let collections, others =
                 Map.toList cases
                 |> List.partition (fst >> (=) InferedTypeTag.Collection)
@@ -89,12 +94,12 @@ module internal XmlTypeBuilder =
         | { Type = InferedType.Top } -> Some([], [])
         | _ -> None
 
-    /// Succeeds when type is a heterogeneous type containing recors
+    /// Succeeds when type is a heterogeneous type containing records
     /// If the type is heterogeneous, but contains other things, exception
     /// is thrown (this is unexpected, because XML elements are always records)
     let (|HeterogeneousRecords|_|) inferedType =
         match inferedType with
-        | InferedType.Heterogeneous cases ->
+        | InferedType.Heterogeneous (cases, _) ->
             let records =
                 cases
                 |> List.ofSeq
@@ -122,7 +127,7 @@ module internal XmlTypeBuilder =
                       (StructuralInference.typeTag primitive).NiceName
 
               match primitive with
-              | InferedType.Primitive (typ, unit, optional) ->
+              | InferedType.Primitive (typ, unit, optional, _) ->
 
                   let optional = optional || forceOptional
                   let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
@@ -141,7 +146,14 @@ module internal XmlTypeBuilder =
                   let cultureStr = ctx.CultureStr
 
                   let ctx =
-                      JsonGenerationContext.Create(cultureStr, ctx.ProvidedType, ctx.UniqueNiceName, ctx.JsonTypeCache)
+                      JsonGenerationContext.Create(
+                          cultureStr,
+                          ctx.ProvidedType,
+                          ctx.UnitsOfMeasureProvider,
+                          ctx.InferenceMode,
+                          ctx.UniqueNiceName,
+                          ctx.JsonTypeCache
+                      )
 
                   let result = JsonTypeBuilder.generateJsonType ctx false true "" typ
 
@@ -323,7 +335,7 @@ module internal XmlTypeBuilder =
                           createMember typ conv
 
                       match attr.Type with
-                      | InferedType.Heterogeneous types ->
+                      | InferedType.Heterogeneous (types, _) ->
 
                           // If the attribute has multiple possible type (e.g. "bool|int") then we generate
                           // a choice type that is erased to 'option<string>' (for simplicity, assuming that
@@ -344,7 +356,7 @@ module internal XmlTypeBuilder =
                                   failwithf "generateXmlType: Type shouldn't be optional: %A" typ
 
                               match typ with
-                              | InferedType.Primitive (primTyp, unit, false) ->
+                              | InferedType.Primitive (primTyp, unit, false, _) ->
 
                                   let typ, conv =
                                       ctx.ConvertValue
@@ -384,7 +396,7 @@ module internal XmlTypeBuilder =
 
                           createMember choiceTy (fun x -> x :> Expr)
 
-                      | InferedType.Primitive (typ, unit, optional) -> createPrimitiveMember typ unit optional
+                      | InferedType.Primitive (typ, unit, optional, _) -> createPrimitiveMember typ unit optional
                       | InferedType.Null -> createPrimitiveMember typeof<string> None false
 
                       | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type ]
