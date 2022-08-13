@@ -1,3 +1,7 @@
+### 4.2.10 - Aug 12 2022
+
+* Implement "inline schemas": ability to add type hints into the type providers' source documents by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1447
+
 ### 4.2.9 - Jun 26 2022
 
 * Typo fix, the parameter is plural ("Separators") by @nhirschey in https://github.com/fsprojects/FSharp.Data/pull/1433
