@@ -53,7 +53,7 @@ The Elexon - BM Reports website provides market data about the U.K's current pow
     2014-01-14,4,-61.000,52576.000,-53454.500,18.000,-24.158,0.000,0.000,18.000,-24.158
 
 
-Usually with HTML files headers are demarked by using the <th> tag, however in this file this is not the case, so the provider assumes that the
+Usually with HTML files headers are demarked by using the `<th>` tag, however in this file this is not the case, so the provider assumes that the
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness.
 *)
 
@@ -65,7 +65,7 @@ type F1_2017 = HtmlProvider<"../data/2017_F1.htm", ResolutionFolder=ResolutionFo
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
 Each type's name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these
-entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flatterned out into a list.
+entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flattened out into a list.
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)

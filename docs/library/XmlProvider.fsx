@@ -27,13 +27,16 @@ Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x
 
 This article demonstrates how to use the XML Type Provider to access XML documents
 in a statically typed way. We first look at how the structure is inferred and then
-demonstrate the provider by parsing a RSS feed.
+demonstrate the provider by parsing an RSS feed.
 
 The XML Type Provider provides statically typed access to XML documents.
 It takes a sample document as an input (or document containing a root XML node with
 multiple child nodes that are used as samples). The generated type can then be used
-to read files with the same structure. If the loaded file does not match the structure
-of the sample, a runtime error may occur (but only when accessing e.g. non-existing element).
+to read files with the same structure
+
+If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present)
+
 Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
 relying on samples.
 
@@ -125,7 +128,86 @@ for v in Test.GetSample().Values do
 The type provider generates a property `Values` that returns an array with the
 values - as the `<value>` nodes do not contain any attributes or children, they
 are turned into `int` values and so the `Values` property returns just `int[]`!
+*)
 
+(**
+## Type inference hints / inline schemas
+
+Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)
+
+This feature is disabled by default and has to be explicitly enabled with the `InferenceMode`
+static parameter.
+
+Let's consider an example where this can be useful:
+
+*)
+
+type AmbiguousEntity =
+    XmlProvider<Sample = """
+        <Entity Code="000" Length="0"/>
+        <Entity Code="123" Length="42"/>
+        <Entity Code="4E5" Length="1.83"/>
+        """,
+        SampleIsList = true>
+let code = (AmbiguousEntity.GetSamples()[1]).Code
+let length = (AmbiguousEntity.GetSamples()[1]).Length
+
+(*** include-fsi-merged-output ***)
+
+(**
+In the previous example, `Code` is inferred as a `float`,
+even though it looks more like it should be a `string`.
+(`4E5` is interpreted as an exponential float notation instead of a string)
+
+Now let's enable inline schemas:
+*)
+
+open FSharp.Data.Runtime.StructuralInference
+
+type AmbiguousEntity2 =
+    XmlProvider<Sample = """
+        <Entity Code="typeof{string}" Length="typeof{float{metre}}"/>
+        <Entity Code="123" Length="42"/>
+        <Entity Code="4E5" Length="1.83"/>
+        """,
+        SampleIsList = true,
+        InferenceMode = InferenceMode.ValuesAndInlineSchemasOverrides>
+let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
+
+(*** include-fsi-merged-output ***)
+
+(**
+With the `ValuesAndInlineSchemasOverrides` inference mode, the `typeof{string}` inline schema
+takes priority over the type inferred from other values.
+`Code` is now a `string`, as we wanted it to be!
+
+Note that an alternative to obtain the same result would have been to replace all the `Code` values
+in the samples with unambiguous string values. (But this can be very cumbersome, especially with big samples)
+
+If we had used the `ValuesAndInlineSchemasHints` inference mode instead, our inline schema
+would have had the same precedence as the types inferred from other values, and `Code`
+would have been inferred as a choice between either a number or a string,
+exactly as if we had added another sample with an unambiguous string value for `Code`.
+
+### Units of measure
+
+Inline schemas also enable support for units of measure.
+
+In the previous example, the `Length` property is now inferred as a `float`
+with the `metre` unit of measure (from the default SI units).
+
+Warning: units of measures are discarded when merged with types without a unit or with a different unit.  
+As mentioned previously, with the `ValuesAndInlineSchemasHints` inference mode,
+inline schemas types are merged with other inferred types with the same precedence.
+Since values-inferred types never have units, inline-schemas-inferred types will lose their
+unit if the sample contains other values...
+
+*)
+
+(**
 ## Processing philosophers
 
 In this section we look at an example that demonstrates how the type provider works
@@ -287,7 +369,7 @@ the lower level APIs.
 (**
 ## Bringing in Some Async Action
 
-Let's go one step further and assume here a sligthly contrived but certainly plausible example where
+Let's go one step further and assume here a slightly contrived but certainly plausible example where
 we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background
 and then post each link over (for example) a message queue.
 
@@ -310,7 +392,7 @@ let cacheJanitor() = async {
 (**
 ## Reading RSS feeds
 
-To conclude this introduction with a more interesting example, let's look how to parse a
+To conclude this introduction with a more interesting example, let's look how to parse an
 RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
 the type provider:
 *)
@@ -644,6 +726,8 @@ but this happens only implicitly).
 Focusing on element shapes let us generate a type that should be essentially the same as one
 inferred from a significant set of valid samples. This allows a smooth transition (replacing `Sample` with `Schema`)
 when a schema becomes available.
+
+Note that inline schemas (values of the form `typeof{...}`) are not supported inside XSD documents.
 
 ## Related articles
 
