@@ -1,0 +1,201 @@
+Game,Bat1,Bat2,Runs,Wkts,Conceded,Caught,Stumped,,Opposition,Ground,StartDate
+1,15,DNB,15,0,25,0,0,,v Pakistan,Karachi,11/15/1989
+2,59,8,67,-,-,1,0,,v Pakistan,Faisalabad,11/23/1989
+3,41,-,41,-,-,0,0,,v Pakistan,Lahore,12/1/89
+4,35,57,92,-,-,0,0,,v Pakistan,Sialkot,12/9/89
+5,0,24,24,-,-,0,0,,v New Zealand,Christchurch,2/2/90
+6,88,-,88,-,-,0,0,,v New Zealand,Napier,2/9/90
+7,5,DNB,5,-,-,1,0,,v New Zealand,Auckland,2/22/1990
+8,10,27,37,-,-,1,0,,v England,Lord's,7/26/1990
+9,68,119*,187,-,-,2,0,,v England,Manchester,8/9/90
+10,21,-,21,-,-,0,0,,v England,The Oval,8/23/1990
+11,11,-,11,-,-,0,0,,v Sri Lanka,Chandigarh,11/23/1990
+12,16,7,23,0,13,0,0,,v Australia,Brisbane,11/29/1991
+13,15,40,55,0,16,2,0,,v Australia,Melbourne,12/26/1991
+14,148*,-,148,1,2,1,0,,v Australia,Sydney,1/2/92
+15,6,17,23,2,54,1,0,,v Australia,Adelaide,1/25/1992
+16,114,5,119,0,9,1,0,,v Australia,Perth,2/1/92
+17,0,-,0,0,8,0,0,,v Zimbabwe,Harare,10/18/1992
+18,11,-,11,0,3,2,0,,v South Africa,Durban,11/13/1992
+19,111,1,112,0,2,1,0,,v South Africa,Johannesburg,11/26/1992
+20,6,0,6,1,9,0,0,,v South Africa,Port Elizabeth,12/26/1992
+21,73,DNB,73,-,-,1,0,,v South Africa,Cape Town,1/2/93
+22,50,9*,59,-,-,1,0,,v England,Kolkata,1/29/1993
+23,165,-,165,0,9,2,0,,v England,Chennai,2/11/93
+24,78,-,78,-,-,1,0,,v England,Mumbai,2/19/1993
+25,62,-,62,0,11,0,0,,v Zimbabwe,Delhi,3/13/1993
+26,TDNB,-,-,-,-,0,0,,v Sri Lanka,Kandy,7/17/1993
+27,28,104*,132,-,-,0,0,,v Sri Lanka,Colombo (SSC),7/27/1993
+28,71,-,71,0,4,3,0,,v Sri Lanka,Colombo (PSS),8/4/93
+29,142,-,142,-,-,0,0,,v Sri Lanka,Lucknow,1/18/1994
+30,96,-,96,-,-,2,0,,v Sri Lanka,Bangalore,1/26/1994
+31,6,-,6,0,7,0,0,,v Sri Lanka,Ahmedabad,2/8/94
+32,43,11*,54,-,-,0,0,,v New Zealand,Hamilton,3/19/1994
+33,34,85,119,0,9,3,0,,v West Indies,Mumbai,11/18/1994
+34,179,54,233,-,-,2,0,,v West Indies,Nagpur,12/1/94
+35,40,10,50,0,10,0,0,,v West Indies,Mohali,12/10/1994
+36,4,0*,4,-,-,3,0,,v New Zealand,Bangalore,10/18/1995
+37,52*,-,52,-,-,-,-,,v New Zealand,Chennai,10/25/1995
+38,2,-,2,-,-,0,0,,v New Zealand,Cuttack,11/8/95
+39,24,122,146,-,-,0,0,,v England,Birmingham,6/6/96
+40,31,-,31,0,1,2,0,,v England,Lord's,6/20/1996
+41,177,74,251,0,28,0,0,,v England,Nottingham,7/4/96
+42,10,0,10,-,-,0,0,,v Australia,Delhi,10/10/1996
+43,42,7,49,-,-,0,0,,v South Africa,Ahmedabad,11/20/1996
+44,18,2,20,-,-,0,0,,v South Africa,Kolkata,11/27/1996
+45,61,36,97,-,-,1,0,,v South Africa,Kanpur,12/8/96
+46,15,4,19,0,0,2,0,,v South Africa,Durban,12/26/1996
+47,169,9,178,-,-,1,0,,v South Africa,Cape Town,1/2/97
+48,35,9,44,0,18,0,0,,v South Africa,Johannesburg,1/16/1997
+49,7,15*,22,0,9,1,0,,v West Indies,Kingston,3/6/97
+50,88,-,88,-,-,0,0,,v West Indies,Port of Spain,3/14/1997
+51,92,4,96,-,-,3,0,,v West Indies,Bridgetown,3/27/1997
+52,DNB,-,-,-,-,1,0,,v West Indies,St John's,4/4/97
+53,83,-,83,-,-,0,0,,v West Indies,Georgetown,4/17/1997
+54,143,-,143,0,2,0,0,,v Sri Lanka,Colombo (RPS),8/2/97
+55,139,8,147,-,-,1,0,,v Sri Lanka,Colombo (SSC),8/9/97
+56,23,-,23,-,-,1,0,,v Sri Lanka,Mohali,11/19/1997
+57,15,-,15,-,-,-,-,,v Sri Lanka,Nagpur,11/26/1997
+58,148,13,161,0,0,1,0,,v Sri Lanka,Mumbai,12/3/97
+59,4,155*,159,-,-,1,0,,v Australia,Chennai,3/6/98
+60,79,-,79,0,6,0,0,,v Australia,Kolkata,3/18/1998
+61,177,31,208,1,41,1,0,,v Australia,Bangalore,3/25/1998
+62,34,7,41,-,-,0,0,,v Zimbabwe,Harare,10/7/98
+63,47,113,160,2,15,1,0,,v New Zealand,Wellington,12/26/1998
+64,67,DNB,67,2,53,0,0,,v New Zealand,Hamilton,1/2/99
+65,0,136,136,3,45,0,0,,v Pakistan,Chennai,1/28/1999
+66,6,29,35,-,-,0,0,,v Pakistan,Delhi,2/4/99
+67,0,9,9,1,18,0,0,,v Pakistan,Kolkata,2/16/1999
+68,53,124*,177,0,16,0,0,,v Sri Lanka,Colombo (SSC),2/24/1999
+69,18,126*,144,0,11,0,0,,v New Zealand,Mohali,10/10/1999
+70,15,44*,59,-,-,2,0,,v New Zealand,Kanpur,10/22/1999
+71,217,15,232,0,19,0,0,,v New Zealand,Ahmedabad,10/29/1999
+72,61,0,61,0,12,0,0,,v Australia,Adelaide,12/10/1999
+73,116,52,168,-,-,0,0,,v Australia,Melbourne,12/26/1999
+74,45,4,49,1,34,0,0,,v Australia,Sydney,1/2/00
+75,97,8,105,3,14,0,0,,v South Africa,Mumbai,2/24/2000
+76,21,20,41,0,33,2,0,,v South Africa,Bangalore,3/2/00
+77,18,DNB,18,1,34,0,0,,v Bangladesh,Dhaka,11/10/2000
+78,122,39,161,1,61,1,0,,v Zimbabwe,Delhi,11/18/2000
+79,201*,-,201,0,26,2,0,,v Zimbabwe,Nagpur,11/25/2000
+80,76,65,141,0,35,1,0,,v Australia,Mumbai,2/27/2001
+81,10,10,20,3,38,0,0,,v Australia,Kolkata,3/11/01
+82,126,17,143,0,78,0,0,,v Australia,Chennai,3/18/2001
+83,74,36*,110,0,23,0,0,,v Zimbabwe,Bulawayo,6/7/01
+84,20,69,89,1,26,0,0,,v Zimbabwe,Harare,6/15/2001
+85,155,15,170,0,27,0,0,,v South Africa,Bloemfontein,11/3/01
+86,1,22*,23,1,32,0,0,,v South Africa,Port Elizabeth,11/16/2001
+87,88,DNB,88,0,4,0,0,,v England,Mohali,12/3/01
+88,103,26,129,1,27,3,0,,v England,Ahmedabad,12/11/2001
+89,90,-,90,0,19,1,0,,v England,Bangalore,12/19/2001
+90,176,-,176,0,11,1,0,,v Zimbabwe,Nagpur,2/21/2002
+91,36,42,78,0,6,1,0,,v Zimbabwe,Delhi,2/28/2002
+92,79,-,79,0,18,0,0,,v West Indies,Georgetown,4/11/02
+93,117,0,117,0,6,1,0,,v West Indies,Port of Spain,4/19/2002
+94,0,8,8,0,8,1,0,,v West Indies,Bridgetown,5/2/02
+95,0,-,0,2,107,0,0,,v West Indies,St John's,5/10/02
+96,41,86,127,-,-,0,0,,v West Indies,Kingston,5/18/2002
+97,16,12,28,0,14,1,0,,v England,Lord's,7/25/2002
+98,34,92,126,0,15,0,0,,v England,Nottingham,8/8/02
+99,193,-,193,-,-,0,0,,v England,Leeds,8/22/2002
+100,54,-,54,0,4,0,0,,v England,The Oval,9/5/02
+101,35,-,35,0,2,1,0,,v West Indies,Mumbai,10/9/02
+102,43,16*,59,-,-,1,0,,v West Indies,Chennai,10/17/2002
+103,36,176,212,0,33,0,0,,v West Indies,Kolkata,10/30/2002
+104,8,51,59,-,-,0,0,,v New Zealand,Wellington,12/12/2002
+105,9,32,41,-,-,1,0,,v New Zealand,Hamilton,12/19/2002
+106,8,7,15,0,45,0,0,,v New Zealand,Ahmedabad,10/8/03
+107,55,1,56,1,55,0,0,,v New Zealand,Mohali,10/16/2003
+108,0,DNB,0,0,9,0,0,,v Australia,Brisbane,12/4/03
+109,1,37,38,2,39,0,0,,v Australia,Adelaide,12/12/2003
+110,0,44,44,1,57,2,0,,v Australia,Melbourne,12/26/2003
+111,241*,60*,301,0,36,1,0,,v Australia,Sydney,1/2/04
+112,194*,-,194,2,59,1,0,,v Pakistan,Multan,3/28/2004
+113,2,8,10,1,38,0,0,,v Pakistan,Lahore,4/5/04
+114,1,-,1,1,1,0,0,,v Pakistan,Rawalpindi,4/13/2004
+115,8,2,10,0,41,0,0,,v Australia,Nagpur,10/26/2004
+116,5,55,60,-,-,1,0,,v Australia,Mumbai,11/3/04
+117,3,-,3,0,54,0,0,,v South Africa,Kanpur,11/20/2004
+118,20,32*,52,0,8,0,0,,v South Africa,Kolkata,11/28/2004
+119,248*,-,248,-,-,2,0,,v Bangladesh,Dhaka,12/10/2004
+120,36,-,36,1,39,0,0,,v Bangladesh,Chittagong,12/17/2004
+121,94,DNB,94,0,30,0,0,,v Pakistan,Mohali,3/8/05
+122,52,52,104,-,-,2,0,,v Pakistan,Kolkata,3/16/2005
+123,41,16,57,1,76,0,0,,v Pakistan,Bangalore,3/24/2005
+124,22,-,22,-,-,0,0,,v Sri Lanka,Chennai,12/2/05
+125,109,16,125,0,6,0,0,,v Sri Lanka,Delhi,12/10/2005
+126,23,19,42,0,13,0,0,,v Sri Lanka,Ahmedabad,12/18/2005
+127,DNB,-,-,0,16,0,0,,v Pakistan,Lahore,1/13/2006
+128,14,DNB,14,-,-,1,0,,v Pakistan,Faisalabad,1/21/2006
+129,23,26,49,0,40,3,0,,v Pakistan,Karachi,1/29/2006
+130,16,28*,44,0,11,0,0,,v England,Nagpur,3/1/06
+131,4,DNB,4,-,-,0,0,,v England,Mohali,3/9/06
+132,1,34,35,-,-,1,0,,v England,Mumbai,3/18/2006
+133,44,14,58,-,-,1,0,,v South Africa,Johannesburg,12/15/2006
+134,63,0,63,-,-,2,0,,v South Africa,Durban,12/26/2006
+135,64,14,78,1,33,0,0,,v South Africa,Cape Town,1/2/07
+136,101,31,132,1,22,2,0,,v Bangladesh,Chittagong,5/18/2007
+137,122*,-,122,2,35,2,0,,v Bangladesh,Dhaka,5/25/2007
+138,37,16,53,0,10,1,0,,v England,Lord's,7/19/2007
+139,91,1,92,0,38,2,0,,v England,Nottingham,7/27/2007
+140,82,1,83,1,104,1,0,,v England,The Oval,8/9/07
+141,1,56*,57,0,8,0,0,,v Pakistan,Delhi,11/22/2007
+142,82,DNB,82,0,39,0,0,,v Pakistan,Kolkata,11/30/2007
+143,62,15,77,0,4,2,0,,v Australia,Melbourne,12/26/2007
+144,154*,12,166,0,20,3,0,,v Australia,Sydney,1/2/08
+145,71,13,84,-,-,0,0,,v Australia,Perth,1/16/2008
+146,153,13,166,0,6,0,0,,v Australia,Adelaide,1/24/2008
+147,0,-,0,-,-,0,0,,v South Africa,Chennai,3/26/2008
+148,27,12,39,-,-,0,0,,v Sri Lanka,Colombo (SSC),7/23/2008
+149,5,31,36,-,-,0,0,,v Sri Lanka,Galle,7/31/2008
+150,6,14,20,-,-,0,0,,v Sri Lanka,Colombo (PSS),8/8/08
+151,13,49,62,-,-,0,0,,v Australia,Bangalore,10/9/08
+152,88,10*,98,-,-,1,0,,v Australia,Mohali,10/17/2008
+153,68,47,115,0,2,0,0,,v Australia,Delhi,10/29/2008
+154,109,12,121,0,13,1,0,,v Australia,Nagpur,11/6/08
+155,37,103*,140,-,-,0,0,,v England,Chennai,12/11/2008
+156,11,5,16,-,-,0,0,,v England,Mohali,12/19/2008
+157,160,DNB,160,-,-,1,0,,v New Zealand,Hamilton,3/18/2009
+158,49,64,113,-,-,1,0,,v New Zealand,Napier,3/26/2009
+159,62,9,71,2,45,0,0,,v New Zealand,Wellington,4/3/09
+160,4,100*,104,0,20,1,0,,v Sri Lanka,Ahmedabad,11/16/2009
+161,40,-,40,0,6,1,0,,v Sri Lanka,Kanpur,11/24/2009
+162,53,-,53,-,-,0,0,,v Sri Lanka,Mumbai (BS),12/2/09
+163,105*,16,121,-,-,0,0,,v Bangladesh,Chittagong,1/17/2010
+164,143,DNB,143,-,-,0,0,,v Bangladesh,Dhaka,1/24/2010
+165,7,100,107,-,-,0,0,,v South Africa,Nagpur,2/6/10
+166,106,-,106,0,1,0,0,,v South Africa,Kolkata,2/14/2010
+167,8,84,92,-,-,1,0,,v Sri Lanka,Galle,7/18/2010
+168,203,-,203,-,-,0,0,,v Sri Lanka,Colombo (SSC),7/26/2010
+169,41,54,95,-,-,1,0,,v Sri Lanka,Colombo (PSS),8/3/10
+170,98,38,136,-,-,0,0,,v Australia,Mohali,10/1/10
+171,214,53*,267,-,-,0,0,,v Australia,Bangalore,10/9/10
+172,40,12,52,0,16,0,0,,v New Zealand,Ahmedabad,11/4/10
+173,13,DNB,13,0,7,0,0,,v New Zealand,Hyderabad (Deccan),11/12/2010
+174,61,-,61,-,-,0,0,,v New Zealand,Nagpur,11/20/2010
+175,36,111*,147,0,51,0,0,,v South Africa,Centurion,12/16/2010
+176,13,6,19,0,6,0,0,,v South Africa,Durban,12/26/2010
+177,146,14*,160,1,9,0,0,,v South Africa,Cape Town,1/2/11
+178,34,12,46,-,-,0,0,,v England,Lord's,7/21/2011
+179,16,56,72,-,-,1,0,,v England,Nottingham,7/29/2011
+180,1,40,41,0,17,1,0,,v England,Birmingham,8/10/11
+181,23,91,114,0,11,0,0,,v England,The Oval,8/18/2011
+182,7,76,83,-,-,0,0,,v West Indies,Delhi,11/6/11
+183,38,-,38,-,-,0,0,,v West Indies,Kolkata,11/14/2011
+184,94,3,97,0,29,2,0,,v West Indies,Mumbai,11/22/2011
+185,73,32,105,-,-,0,0,,v Australia,Melbourne,12/26/2011
+186,41,80,121,-,-,2,0,,v Australia,Sydney,1/3/12
+187,15,8,23,-,-,0,0,,v Australia,Perth,1/13/2012
+188,25,13,38,-,-,1,0,,v Australia,Adelaide,1/24/2012
+189,19,-,19,0,6,0,0,,v New Zealand,Hyderabad (Deccan),8/23/2012
+190,17,27,44,-,-,0,0,,v New Zealand,Bangalore,8/31/2012
+191,13,DNB,13,0,8,1,0,,v England,Ahmedabad,11/15/2012
+192,8,8,16,-,-,0,0,,v England,Mumbai,11/23/2012
+193,76,5,81,-,-,0,0,,v England,Kolkata,12/5/12
+194,2,-,2,-,-,0,0,,v England,Nagpur,12/13/2012
+195,81,13*,94,-,-,1,0,,v Australia,Chennai,2/22/2013
+196,7,-,7,-,-,0,0,,v Australia,Hyderabad (Deccan),3/2/13
+197,37,21,58,0,2,0,0,,v Australia,Mohali,3/14/2013
+198,32,1,33,-,-,0,0,,v Australia,Delhi,3/22/2013
+199,10,-,10,1,23,0,0,,v West Indies,Kolkata,11/6/13
+200,74,-,74,-,-,0,0,,v West Indies,Mumbai,11/14/2013

@@ -252,6 +252,13 @@ type TypeProviderInstantiation =
         | _ -> failwithf "Unknown: %s" args.[0]
 
     static member GetRuntimeAssemblyRefs platform =
-        match platform with
-        | NetStandard20 -> Targets.DotNetStandard20FSharpRefs()
+        let (++) a b = Path.Combine(a, b)
+        #if DEBUG
+        let build = "Debug"
+        #else
+        let build = "Release"
+        #endif
+
+        let extraRef2 = __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "src" ++ "FSharp.Data" ++ "bin" ++ build ++ "netstandard2.0" ++ "FSharp.Data.Core.dll"
+        [extraRef2] @ Targets.DotNetStandard20FSharpRefs()
 

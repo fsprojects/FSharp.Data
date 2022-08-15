@@ -18,19 +18,15 @@ let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.T
 let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
 let assemblyName = "FSharp.Data.dll"
 
-let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
+let dump signatureOnly ignoreOutput saveToFileSystem (inst:TypeProviderInstantiation) =
     let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
-    let runtimeAssembly =
-        match platform with
-        | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
-    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
+    let runtimeAssembly = root ++ "netstandard2.0" ++ assemblyName
+    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs ()
     inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
     |> Console.WriteLine
 
 let dumpAll inst =
-    dump false false NetStandard20 false inst
-//    dump false false NetStandard16 false inst
-//    dump false false NetStandard20 false inst
+    dump false false false inst
 
 let parameters : HtmlInference.Parameters = 
     { MissingValues = TextConversions.DefaultMissingValues
@@ -105,4 +101,4 @@ let testCases =
     |> Array.map (TypeProviderInstantiation.Parse >> snd)
 
 for testCase in testCases do
-    dump false false NetStandard20 true testCase
+    dump false false true testCase

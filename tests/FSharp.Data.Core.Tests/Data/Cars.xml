@@ -1,0 +1,7 @@
+﻿<Samples> 
+    <ArrayOfCar>
+      <Car><Type>Audi</Type></Car>
+      <Car><Type>BMW</Type></Car>
+    </ArrayOfCar>
+    <Car><Type>Trabant</Type></Car>
+</Samples>
