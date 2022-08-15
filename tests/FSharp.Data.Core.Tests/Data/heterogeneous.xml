@@ -1,6 +1,0 @@
-  <test>
-    <options><node set="wales.css" /></options>
-    <options><node set="true" /></options>
-    <options><node set="42" /></options>
-    <options><node /></options>
-  </test>

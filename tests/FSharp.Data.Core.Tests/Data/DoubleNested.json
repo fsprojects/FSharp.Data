@@ -1,6 +1,0 @@
-﻿{
-	"main": {
-		"title": "example",
-		"nested": { "nestedTitle": "sub" }
-		}
-}

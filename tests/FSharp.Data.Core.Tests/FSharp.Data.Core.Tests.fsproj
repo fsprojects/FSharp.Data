@@ -14,7 +14,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Data/**/*.*">
+    <EmbeddedResource Include="../FSharp.Data.Tests/Data/**/*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />

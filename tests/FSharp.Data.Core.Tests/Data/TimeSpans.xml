@@ -1,7 +1,0 @@
-﻿<TimeSpans>
-  <positiveWithDayWithFraction>1:3:16:50.5</positiveWithDayWithFraction>
-  <positiveWithoutDayWithoutFraction>00:30:00</positiveWithoutDayWithoutFraction>
-  <negativeWithDayWithFraction>-1:3:16:50.5</negativeWithDayWithFraction>
-  <timespanOneTickGreaterThanMaxValue>10675199.02:48:05.4775808</timespanOneTickGreaterThanMaxValue>
-  <timespanOneTickLessThanMinValue>-10675199.02:48:05.4775809</timespanOneTickLessThanMinValue>
-</TimeSpans>

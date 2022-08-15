@@ -1,8 +1,0 @@
-﻿{
-	"main": {
-		  "firstName": "John",
-		  "lastName": "Doe",
-		  "age": 25,
-		  "isCool": true
-		}
-}

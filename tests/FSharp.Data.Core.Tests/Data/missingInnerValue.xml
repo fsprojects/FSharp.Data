@@ -1,6 +1,0 @@
-        <root>
-            <child a="1">
-                <inner c="foo" />
-            </child>
-            <child b="some"></child>
-        </root>
