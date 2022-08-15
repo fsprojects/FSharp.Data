@@ -6,6 +6,7 @@ index: 4
 ---
 *)
 (*** condition: prepare ***)
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
