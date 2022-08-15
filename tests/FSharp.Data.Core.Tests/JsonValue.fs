@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.JsonValue
+module FSharp.Data.Core.Tests.JsonValue
 
 open NUnit.Framework
 open System

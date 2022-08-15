@@ -19,7 +19,7 @@
     <PackageReference Include="NUnit" Version="3.13.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Core\FSharp.Data.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

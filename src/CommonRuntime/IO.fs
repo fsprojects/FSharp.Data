@@ -1,4 +1,4 @@
-﻿/// Helper functions called from the generated code for working with files
+/// Helper functions called from the generated code for working with files
 module FSharp.Data.Runtime.IO
 
 open System
@@ -113,7 +113,7 @@ let internal logTime category (instance: string) =
     s.Start()
 
     { new IDisposable with
-        member __.Dispose() =
+        member _.Dispose() =
             s.Stop()
             Interlocked.Decrement &indentation |> ignore
             log (sprintf "Finished %s [%dms]" category s.ElapsedMilliseconds)
@@ -126,11 +126,11 @@ let internal logTime category (instance: string) =
 
 let internal dummyDisposable =
     { new IDisposable with
-        member __.Dispose() = () }
+        member _.Dispose() = () }
 
-let inline internal log (_: string) = ()
-let inline internal logWithStackTrace (_: string) = ()
-let inline internal logTime (_: string) (_: string) = dummyDisposable
+let internal log (_: string) = ()
+let internal logWithStackTrace (_: string) = ()
+let internal logTime (_: string) (_: string) = dummyDisposable
 
 #endif
 
@@ -165,9 +165,9 @@ type private FileWatcher(path) =
         watcher.Renamed.Add(checkForChanges "renamed")
         watcher.Deleted.Add(checkForChanges "deleted")
 
-    member __.Subscribe(name, action) = subscriptions.Add(name, action)
+    member _.Subscribe(name, action) = subscriptions.Add(name, action)
 
-    member __.Unsubscribe(name) =
+    member _.Unsubscribe(name) =
         if subscriptions.Remove(name) then
             log (sprintf "Unsubscribed %s from %s watcher" name path)
 
@@ -205,7 +205,7 @@ let watchForChanges path (owner, onChange) =
                 watcher)
 
     { new IDisposable with
-        member __.Dispose() =
+        member _.Dispose() =
             lock watchers (fun () ->
                 if watcher.Unsubscribe(owner) then
                     watchers.Remove(path) |> ignore) }

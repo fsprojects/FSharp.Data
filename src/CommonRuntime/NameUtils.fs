@@ -2,7 +2,6 @@
 module FSharp.Data.Runtime.NameUtils
 
 open System
-open System.Globalization
 open System.Collections.Generic
 open FSharp.Data.Runtime
 

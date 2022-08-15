@@ -1,8 +1,8 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Tests for a utility that generates nice PascalCase and camelCase names for members
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.Tests.NameUtils
+module FSharp.Data.Core.Tests.NameUtils
 
 open FsUnit
 open NUnit.Framework

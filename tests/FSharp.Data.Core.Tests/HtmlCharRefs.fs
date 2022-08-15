@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.HtmlCharRefs
+module FSharp.Data.Core.Tests.HtmlCharRefs
 
 open NUnit.Framework
 open FsUnit
@@ -8,7 +8,7 @@ open FSharp.Data.HtmlNode
 open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
-    JsonValue.Load(__SOURCE_DIRECTORY__ + "/Data/charrefs.json")?items.AsArray()
+    JsonValue.Load(__SOURCE_DIRECTORY__ + "/../FSharp.Data.Tests/Data/charrefs.json")?items.AsArray()
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 [<Test>]

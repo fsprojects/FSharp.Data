@@ -122,7 +122,7 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
           |> Array.map anonymize
           |> JsonValue.Array
 
-  member __.Anonymize json = anonymize json
+  member _.Anonymize json = anonymize json
 
 let json = JsonValue.Load (__SOURCE_DIRECTORY__ + "../../data/TwitterStream.json")
 printfn "%O" json

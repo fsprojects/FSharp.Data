@@ -14,19 +14,21 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Data/**/*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Compile Include="CsvProvider.fs" />
-    <Compile Include="XmlProvider.fs" />
-    <Compile Include="JsonProvider.fs" />
-    <Compile Include="WorldBankProvider.fs" />
-    <Compile Include="HtmlProvider.fs" />
-    <Compile Include="HtmlProviderList.fs" />
+    <Compile Include="Http.fs" />
+    <Compile Include="NameUtils.fs" />
+    <Compile Include="TextConversions.fs" />
+    <Compile Include="JsonValue.fs" />
+    <Compile Include="JsonParserProperties.fs" />
+    <Compile Include="JsonConversions.fs" />
+    <Compile Include="CsvReader.fs" />
+    <Compile Include="HtmlCharRefs.fs" />
+    <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlCssSelectors.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Core\FSharp.Data.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

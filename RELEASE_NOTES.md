@@ -1,3 +1,8 @@
+### 5.0.1 - Aug 15 2022
+
+* There are now two packages - FSharp.Data.Core and FSharp.Data.  The first does not include the type providers.
+  (Future revisions may split into `FSharp.Data.Json.Core`, `FSharp.Data.Html.Core` and so on).
+
 ### 4.2.10 - Aug 12 2022
 
 * Implement "inline schemas": ability to add type hints into the type providers' source documents by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1447

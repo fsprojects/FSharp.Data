@@ -2,7 +2,6 @@
 namespace FSharp.Data
 
 open System
-open System.ComponentModel
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
@@ -10,233 +9,6 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open System.Runtime.InteropServices
 open System.Collections.Generic
-
-// --------------------------------------------------------------------------------------
-
-/// <summary>Represents an HTML attribute. The name is always normalized to lowercase</summary>
-/// <namespacedoc>
-///   <summary>Contains the primary types for the FSharp.Data package.</summary>
-/// </namespacedoc>
-///
-type HtmlAttribute =
-
-    internal
-    | HtmlAttribute of name: string * value: string
-
-    /// <summary>
-    /// Creates an html attribute
-    /// </summary>
-    /// <param name="name">The name of the attribute</param>
-    /// <param name="value">The value of the attribute</param>
-    static member New(name: string, value: string) =
-        HtmlAttribute(name.ToLowerInvariant(), value)
-
-[<StructuredFormatDisplay("{_Print}")>]
-/// Represents an HTML node. The names of elements are always normalized to lowercase
-type HtmlNode =
-
-    internal
-    | HtmlElement of name: string * attributes: HtmlAttribute list * elements: HtmlNode list
-    | HtmlText of content: string
-    | HtmlComment of content: string
-    | HtmlCData of content: string
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    static member NewElement(name: string) =
-        HtmlElement(name.ToLowerInvariant(), [], [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    static member NewElement(name: string, attrs: seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name: string, children: seq<_>) =
-        HtmlElement(name.ToLowerInvariant(), [], List.ofSeq children)
-
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name: string, attrs: seq<_>, children: seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, List.ofSeq children)
-
-    /// <summary>
-    /// Creates a text content element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewText content = HtmlText(content)
-
-    /// <summary>
-    /// Creates a comment element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewComment content = HtmlComment(content)
-
-    /// <summary>
-    /// Creates a CData element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewCData content = HtmlCData(content)
-
-    override x.ToString() =
-        let isVoidElement =
-            let set =
-                [| "area"
-                   "base"
-                   "br"
-                   "col"
-                   "command"
-                   "embed"
-                   "hr"
-                   "img"
-                   "input"
-                   "keygen"
-                   "link"
-                   "meta"
-                   "param"
-                   "source"
-                   "track"
-                   "wbr" |]
-                |> Set.ofArray
-
-            fun name -> Set.contains name set
-
-        let rec serialize (sb: StringBuilder) indentation canAddNewLine html =
-            let append (str: string) = sb.Append str |> ignore
-
-            let appendEndTag name =
-                append "</"
-                append name
-                append ">"
-
-            let newLine plus =
-                sb.AppendLine() |> ignore
-                String(' ', indentation + plus) |> append
-
-            match html with
-            | HtmlElement (name, attributes, elements) ->
-                let onlyText =
-                    elements
-                    |> List.forall (function
-                        | HtmlText _ -> true
-                        | _ -> false)
-
-                if canAddNewLine && not onlyText then newLine 0
-                append "<"
-                append name
-
-                for HtmlAttribute (name, value) in attributes do
-                    append " "
-                    append name
-                    append "=\""
-                    append value
-                    append "\""
-
-                if isVoidElement name then
-                    append " />"
-                elif elements.IsEmpty then
-                    append ">"
-                    appendEndTag name
-                else
-                    append ">"
-                    if not onlyText then newLine 2
-                    let mutable canAddNewLine = false
-
-                    for element in elements do
-                        serialize sb (indentation + 2) canAddNewLine element
-                        canAddNewLine <- true
-
-                    if not onlyText then newLine 0
-                    appendEndTag name
-            | HtmlText str -> append str
-            | HtmlComment str ->
-                append "<!--"
-                append str
-                append "-->"
-            | HtmlCData str ->
-                append "<![CDATA["
-                append str
-                append "]]>"
-
-        let sb = StringBuilder()
-        serialize sb 0 false x |> ignore
-        sb.ToString()
-
-    /// <exclude />
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
-                               10001,
-                               IsHidden = true,
-                               IsError = false)>]
-    member x._Print =
-        let str = x.ToString()
-
-        if str.Length > 512 then
-            str.Substring(0, 509) + "..."
-        else
-            str
-
-[<StructuredFormatDisplay("{_Print}")>]
-/// Represents an HTML document
-type HtmlDocument =
-    internal
-    | HtmlDocument of docType: string * elements: HtmlNode list
-
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="docType">The document type specifier string</param>
-    /// <param name="children">The child elements of this document</param>
-    static member New(docType, children: seq<_>) =
-        HtmlDocument(docType, List.ofSeq children)
-
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="children">The child elements of this document</param>
-    static member New(children: seq<_>) = HtmlDocument("", List.ofSeq children)
-
-    override x.ToString() =
-        match x with
-        | HtmlDocument (docType, elements) ->
-            (if String.IsNullOrEmpty docType then
-                 ""
-             else
-                 "<!DOCTYPE " + docType + ">" + Environment.NewLine)
-            + (elements
-               |> List.map (fun x -> x.ToString())
-               |> String.Concat)
-
-    /// <exclude />
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
-                               10001,
-                               IsHidden = true,
-                               IsError = false)>]
-    member x._Print =
-        let str = x.ToString()
-
-        if str.Length > 512 then
-            str.Substring(0, 509) + "..."
-        else
-            str
-
 
 // --------------------------------------------------------------------------------------
 
@@ -1244,19 +1016,19 @@ module internal HtmlParser =
                     (dt, tokens, content)
                 else
                     let _, elements, expectedTagEnd, parentTagName, name, attributes = callstack.Pop()
-                    let e = HtmlElement(name, attributes, content)
+                    let e = HtmlNode.HtmlElement(name, attributes, content)
                     parse' dt (e :: elements) expectedTagEnd parentTagName tokens
 
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
             | Tag (_, "br", []) :: rest ->
-                let t = HtmlText Environment.NewLine
+                let t = HtmlNode.HtmlText Environment.NewLine
                 parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Tag (true, name, attributes) :: rest ->
-                let e = HtmlElement(name, attributes, [])
+                let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag (false, name, attributes) :: rest when canNotHaveChildren name ->
-                let e = HtmlElement(name, attributes, [])
+                let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag (_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
                 // insert missing </tr> </td> or </th> when starting new row/cell/header
@@ -1291,20 +1063,20 @@ module internal HtmlParser =
                     // ignore this token
                     parse' docType elements expectedTagEnd parentTagName rest
                 else
-                    let t = HtmlText(a + b)
+                    let t = HtmlNode.HtmlText(a + b)
                     parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Text cont :: rest ->
                 if cont = "" then
                     // ignore this token
                     parse' docType elements expectedTagEnd parentTagName rest
                 else
-                    let t = HtmlText cont
+                    let t = HtmlNode.HtmlText cont
                     parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Comment cont :: rest ->
-                let c = HtmlComment cont
+                let c = HtmlNode.HtmlComment cont
                 parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | CData cont :: rest ->
-                let c = HtmlCData cont
+                let c = HtmlNode.HtmlCData cont
                 parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | EOF :: _ -> recursiveReturn (docType, [], List.rev elements)
             | [] -> recursiveReturn (docType, [], List.rev elements)
@@ -1326,44 +1098,46 @@ module internal HtmlParser =
     /// All br tags will be replaced by newlines
     let parseFragment reader = parse reader |> snd
 
-// --------------------------------------------------------------------------------------
+[<AutoOpen>]
+module HtmlAutoOpens =
+    // --------------------------------------------------------------------------------------
 
-type HtmlDocument with
+    type HtmlDocument with
 
-    /// Parses the specified HTML string
-    static member Parse(text) =
-        use reader = new StringReader(text)
-        HtmlParser.parseDocument reader
+        /// Parses the specified HTML string
+        static member Parse(text) =
+            use reader = new StringReader(text)
+            HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified stream
-    static member Load(stream: Stream) =
-        use reader = new StreamReader(stream)
-        HtmlParser.parseDocument reader
+        /// Loads HTML from the specified stream
+        static member Load(stream: Stream) =
+            use reader = new StreamReader(stream)
+            HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified reader
-    static member Load(reader: TextReader) = HtmlParser.parseDocument reader
+        /// Loads HTML from the specified reader
+        static member Load(reader: TextReader) = HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri: string, [<Optional>] ?encoding) =
-        async {
-            let encoding = defaultArg encoding Encoding.UTF8
-            let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
-            return HtmlParser.parseDocument reader
-        }
+        /// Loads HTML from the specified uri asynchronously
+        static member AsyncLoad(uri: string, [<Optional>] ?encoding) =
+            async {
+                let encoding = defaultArg encoding Encoding.UTF8
+                let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
+                return HtmlParser.parseDocument reader
+            }
 
-    /// Loads HTML from the specified uri
-    static member Load(uri: string, [<Optional>] ?encoding) =
-        HtmlDocument.AsyncLoad(uri, ?encoding = encoding)
-        |> Async.RunSynchronously
+        /// Loads HTML from the specified uri
+        static member Load(uri: string, [<Optional>] ?encoding) =
+            HtmlDocument.AsyncLoad(uri, ?encoding = encoding)
+            |> Async.RunSynchronously
 
-type HtmlNode with
+    type HtmlNode with
 
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member Parse(text) =
-        use reader = new StringReader(text)
-        HtmlParser.parseFragment reader
+        /// Parses the specified HTML string to a list of HTML nodes
+        static member Parse(text) =
+            use reader = new StringReader(text)
+            HtmlParser.parseFragment reader
 
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member ParseRooted(rootName, text) =
-        use reader = new StringReader(text)
-        HtmlElement(rootName, [], HtmlParser.parseFragment reader)
+        /// Parses the specified HTML string to a list of HTML nodes
+        static member ParseRooted(rootName, text) =
+            use reader = new StringReader(text)
+            HtmlNode.HtmlElement(rootName, [], HtmlParser.parseFragment reader)

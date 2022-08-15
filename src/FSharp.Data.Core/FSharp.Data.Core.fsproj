@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OtherFlags>--warnon:1182 --nowarn:10001</OtherFlags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageIcon>logo.png</PackageIcon>
+    <PublicSign>false</PublicSign>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\keyfile.snk</AssemblyOriginatorKeyFile>
+    <!-- always have tailcalls on for design time compiler add-in to allow repo to compile in DEBUG, see https://github.com/fsprojects/FSharp.Data/issues/1410 -->
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Net\Http.fs" />
+    <Compile Include="..\CommonRuntime\IO.fs" />
+    <Compile Include="..\CommonRuntime\TextConversions.fs" />
+    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
+    <Compile Include="..\CommonRuntime\NameUtils.fs" />
+    <Compile Include="..\CommonRuntime\Caching.fs" />
+    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
+    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
+    <Compile Include="..\Json\JsonValue.fs" />
+    <Compile Include="..\Json\JsonConversions.fs" />
+    <Compile Include="..\Json\JsonExtensions.fs" />
+    <Compile Include="..\Json\JsonDocument.fs" />
+    <Compile Include="..\Json\JsonRuntime.fs" />
+    <Compile Include="..\Json\JsonInference.fs" />
+    <Compile Include="..\Xml\XmlRuntime.fs" />
+    <Compile Include="..\Xml\XmlExtensions.fs" />
+    <Compile Include="..\Xml\XmlInference.fs" />
+    <Compile Include="..\Xml\XsdInference.fs" />
+    <Compile Include="..\Csv\CsvRuntime.fs" />
+    <Compile Include="..\Csv\CsvFile.fs" />
+    <Compile Include="..\Csv\CsvExtensions.fs" />
+    <Compile Include="..\Csv\CsvInference.fs" />
+    <Compile Include="..\Html\HtmlCssSelectors.fs" />
+    <Compile Include="..\Html\HtmlCharRefs.fs" />
+    <Compile Include="..\Html\HtmlNode.fs" />
+    <Compile Include="..\Html\HtmlParser.fs" />
+    <Compile Include="..\Html\HtmlOperations.fs" />
+    <Compile Include="..\Html\HtmlCssSelectorExtensions.fs" />
+    <Compile Include="..\Html\HtmlActivePatterns.fs" />
+    <Compile Include="..\Html\HtmlInference.fs" />
+    <Compile Include="..\Html\HtmlRuntime.fs" />
+    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="..\AssemblyInfo.Core.fs" />
+    <Compile Include="InternalsVisibleTo.fs" />
+    <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

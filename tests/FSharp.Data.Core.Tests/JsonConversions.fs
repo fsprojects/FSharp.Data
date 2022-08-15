@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.JsonConversions
+module FSharp.Data.Core.Tests.JsonConversions
 
 open NUnit.Framework
 open FsUnit

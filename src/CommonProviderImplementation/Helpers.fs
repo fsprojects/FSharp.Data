@@ -103,21 +103,21 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
             use _holder = logTime "DisposingEvent" (sprintf "%O [%d]" x id)
             dispose None)
 
-    member __.Id = id
+    member _.Id = id
 
-    member __.SetFileToWatch(fullTypeName, path) =
+    member _.SetFileToWatch(fullTypeName, path) =
         lock filesToWatch (fun () -> filesToWatch.[fullTypeName] <- path)
 
-    member __.GetFileToWath(fullTypeName) =
+    member _.GetFileToWath(fullTypeName) =
         lock filesToWatch (fun () ->
             match filesToWatch.TryGetValue(fullTypeName) with
             | true, path -> Some path
             | _ -> None)
 
-    member __.AddDisposeAction action =
+    member _.AddDisposeAction action =
         lock disposeActions (fun () -> disposeActions.Add action)
 
-    member __.InvalidateOneType typeName =
+    member _.InvalidateOneType typeName =
         (use _holder = logTime "InvalidateOneType" (sprintf "%s in %O [%d]" typeName x id)
          dispose (Some typeName)
          log (sprintf "Calling invalidate for %O [%d]" x id))
@@ -743,5 +743,6 @@ module internal ProviderHelpers =
 
             spec.GeneratedType)
 
+[<assembly: InternalsVisibleToAttribute("FSharp.Data.Tests")>]
 [<assembly: InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
 do ()

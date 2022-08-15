@@ -36,7 +36,7 @@ let summary = "Library of F# type providers and data access tools"
 
 let description =
     """
-  The FSharp.Data package contains type providers and utilities to access
+  The FSharp.Data.Core and FSharp.Data packages contain type providers and utilities to access
   common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
   contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 
@@ -120,9 +120,9 @@ Target.create "RunTests" (fun _ ->
     "FSharp.Data.sln" |> DotNet.test setParams)
 
 // --------------------------------------------------------------------------------------
-// Build a NuGet package
+// Build packages
 
-Target.create "NuGet" (fun _ ->
+Target.create "Pack" (fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
 
@@ -142,6 +142,14 @@ Target.create "NuGet" (fun _ ->
           ("EmbedUntrackedSources", "true")
           ("IncludeSymbols", "true")
           ("SymbolPackageFormat", "snupkg") ]
+
+    DotNet.pack
+        (fun p ->
+            { p with
+                Configuration = DotNet.BuildConfiguration.Release
+                OutputPath = Some "bin"
+                MSBuildParams = { p.MSBuildParams with Properties = properties } })
+        "src/FSharp.Data.Core/FSharp.Data.Core.fsproj"
 
     DotNet.pack
         (fun p ->
@@ -178,7 +186,7 @@ Target.create "Help" (fun _ ->
     printfn "  * Build"
     printfn "  * RunTests"
     printfn "  * GenerateDocs"
-    printfn "  * NuGet (creates package only, doesn't publish)"
+    printfn "  * Pack (creates package only, doesn't publish)"
     printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
@@ -228,7 +236,7 @@ Target.create "All" ignore
 ==> "GenerateDocs"
 ==> "All"
 
-"Build" ==> "NuGet" ==> "All"
+"Build" ==> "Pack" ==> "All"
 "Build" ==> "All"
 "Build" ==> "RunTests" ==> "All"
 

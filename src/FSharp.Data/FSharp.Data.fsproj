@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OtherFlags>--warnon:1182</OtherFlags>
+    <OtherFlags>--warnon:1182 --nowarn:10001</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageIcon>logo.png</PackageIcon>
@@ -16,45 +16,19 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Net\Http.fs" />
-    <Compile Include="..\CommonRuntime\IO.fs" />
-    <Compile Include="..\CommonRuntime\Caching.fs" />
-    <Compile Include="..\CommonRuntime\TextConversions.fs" />
-    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
-    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
-    <Compile Include="..\CommonRuntime\NameUtils.fs" />
-    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
-    <Compile Include="..\Json\JsonValue.fs" />
-    <Compile Include="..\Json\JsonConversions.fs" />
-    <Compile Include="..\Json\JsonExtensions.fs" />
-    <Compile Include="..\Json\JsonRuntime.fs" />
-    <Compile Include="..\Xml\XmlRuntime.fs" />
-    <Compile Include="..\Csv\CsvRuntime.fs" />
-    <Compile Include="..\Csv\CsvFile.fs" />
-    <Compile Include="..\Csv\CsvExtensions.fs" />
-    <Compile Include="..\Csv\CsvInference.fs" />
-    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
-    <Compile Include="..\Html\HtmlCssSelectors.fs" />
-    <Compile Include="..\Html\HtmlCharRefs.fs" />
-    <Compile Include="..\Html\HtmlParser.fs" />
-    <Compile Include="..\Html\HtmlOperations.fs" />
-    <Compile Include="..\Html\HtmlCssSelectorExtensions.fs" />
-    <Compile Include="..\Html\HtmlInference.fs" />
-    <Compile Include="..\Html\HtmlRuntime.fs" />
-    <Compile Include="..\Html\HtmlActivePatterns.fs" />
     <Compile Include="..\AssemblyInfo.fs" />
     <Compile Include="..\Runtime.fs" />
-      <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj">
       <IsFSharpDesignTimeProvider>true</IsFSharpDesignTimeProvider>
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="..\FSharp.Data.Core\FSharp.Data.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.7.2" />
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -35,13 +35,13 @@ Type providers consist of two components:
 We need a _runtime component_ for .NET Standard 2.0 (netstandard2.0). We also need a _design time_
 component for each, to be able to host the type provider in .NET Core-based tooling.
 
-The _runtime_ components are in the following project:
+The _core_ runtime components are in the following project:
+
+ * **FSharp.Data.Core**
+ 
+The type provider design-time components are in the following project:
 
  * **FSharp.Data**
- 
-The _design time_ components are in the following project:
-
- * **FSharp.Data.DesignTime**
  
 ### Type provider structure
 
@@ -76,14 +76,6 @@ of files, typically like this:
 
 The WorldBank provider is different. It doesn't need inference, but it still distinguishes
 between _runtime_ and _design-time_ components, so you'll find at least two files (and possibly some additional helpers).
-
-### Debugging
-
-To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application,
-rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them.  
-This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio.  
-You'll also see in the console output the complete dump of the generated types and expressions.  
-This is also the process used for the signature tests.
 
 ## Documentation
 

@@ -3,7 +3,6 @@ module FSharp.Data.Runtime.CsvInference
 
 open System
 open System.IO
-open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime

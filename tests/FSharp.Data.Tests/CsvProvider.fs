@@ -6,8 +6,8 @@ open System
 open System.IO
 open FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
-open FSharp.Data.Runtime.CsvInference
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.CsvInference
 open System.Globalization
 
 let [<Literal>] simpleCsv = """
