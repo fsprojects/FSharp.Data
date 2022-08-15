@@ -10,14 +10,14 @@ index: 5
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -45,9 +45,11 @@ to parse strings formatted using JSON as follows:
 *)
 
 let info =
-  JsonValue.Parse("""
+    JsonValue.Parse(
+        """
     { "name": "Tomas", "born": 1985,
-      "siblings": [ "Jan", "Alexander" ] } """)
+      "siblings": [ "Jan", "Alexander" ] } """
+    )
 
 (*** include-fsi-merged-output ***)
 
@@ -103,7 +105,7 @@ printfn "%s (%d)" (info?name.AsString()) (info?born.AsInteger())
 
 // Print names of all siblings
 for sib in info?siblings do
-  printfn "%s" (sib.AsString())
+    printfn "%s" (sib.AsString())
 
 (*** include-fsi-merged-output ***)
 
@@ -142,11 +144,10 @@ let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 asynchronous version available too: *)
 
 let wbReq =
-  "http://api.worldbank.org/country/cz/indicator/" +
-  "GC.DOD.TOTL.GD.ZS?format=json"
+    "http://api.worldbank.org/country/cz/indicator/"
+    + "GC.DOD.TOTL.GD.ZS?format=json"
 
-let valueAsync =
-  JsonValue.AsyncLoad(wbReq)
+let valueAsync = JsonValue.AsyncLoad(wbReq)
 
 (*** include-fsi-merged-output ***)
 
@@ -159,15 +160,12 @@ match value with
 | JsonValue.Array [| info; data |] ->
     // Print overall information
     let page, pages, total = info?page, info?pages, info?total
-    printfn
-      "Showing page %d of %d. Total records %d"
-      (page.AsInteger()) (pages.AsInteger()) (total.AsInteger())
+    printfn "Showing page %d of %d. Total records %d" (page.AsInteger()) (pages.AsInteger()) (total.AsInteger())
 
     // Print every non-null data point
     for record in data do
-      if record?value <> JsonValue.Null then
-        printfn "%d: %f" (record?date.AsInteger())
-                         (record?value.AsFloat())
+        if record?value <> JsonValue.Null then
+            printfn "%d: %f" (record?date.AsInteger()) (record?value.AsFloat())
 | _ -> printfn "failed"
 
 (*** include-fsi-merged-output ***)

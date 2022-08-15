@@ -95,4 +95,3 @@ type JsonDocument =
         | [| JsonValue.Array array |] -> array
         | array -> array
         |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
-

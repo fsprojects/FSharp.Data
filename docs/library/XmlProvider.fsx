@@ -10,14 +10,14 @@ index: 4
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects.github.io/FSharp.Data/main?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -48,6 +48,7 @@ is located in the `../../bin` directory, we can load it in F# Interactive as fol
 `XDocument` type internally): *)
 
 #r "System.Xml.Linq.dll"
+
 open FSharp.Data
 
 (**
@@ -99,7 +100,9 @@ all, what if a node contains some value, but also has some attributes?
 *)
 
 type Detailed = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
-let info = Detailed.Parse("""<author><name full="false">Thomas Kuhn</name></author>""")
+
+let info =
+    Detailed.Parse("""<author><name full="false">Thomas Kuhn</name></author>""")
 
 printfn "%s (full=%b)" info.Name.Value info.Name.Full
 
@@ -122,7 +125,7 @@ contains multiple `<value>` nodes (note that if we leave out the parameter to th
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
 for v in Test.GetSample().Values do
-   printfn "%d" v
+    printfn "%d" v
 
 (**
 The type provider generates a property `Values` that returns an array with the
@@ -145,12 +148,12 @@ Let's consider an example where this can be useful:
 *)
 
 type AmbiguousEntity =
-    XmlProvider<Sample = """
+    XmlProvider<Sample="""
         <Entity Code="000" Length="0"/>
         <Entity Code="123" Length="42"/>
         <Entity Code="4E5" Length="1.83"/>
-        """,
-        SampleIsList = true>
+        """, SampleIsList=true>
+
 let code = (AmbiguousEntity.GetSamples()[1]).Code
 let length = (AmbiguousEntity.GetSamples()[1]).Length
 
@@ -167,13 +170,12 @@ Now let's enable inline schemas:
 open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
-    XmlProvider<Sample = """
+    XmlProvider<Sample="""
         <Entity Code="typeof{string}" Length="typeof{float{metre}}"/>
         <Entity Code="123" Length="42"/>
         <Entity Code="4E5" Length="1.83"/>
-        """,
-        SampleIsList = true,
-        InferenceMode = InferenceMode.ValuesAndInlineSchemasOverrides>
+        """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
+
 let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
 let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
 
@@ -199,7 +201,7 @@ Inline schemas also enable support for units of measure.
 In the previous example, the `Length` property is now inferred as a `float`
 with the `metre` unit of measure (from the default SI units).
 
-Warning: units of measures are discarded when merged with types without a unit or with a different unit.  
+Warning: units of measures are discarded when merged with types without a unit or with a different unit.
 As mentioned previously, with the `ValuesAndInlineSchemasHints` inference mode,
 inline schemas types are merged with other inferred types with the same precedence.
 Since values-inferred types never have units, inline-schemas-inferred types will lose their
@@ -225,7 +227,8 @@ At runtime, we use the generated type provider to parse the following string
 one of the `author` nodes also contains a `died` attribute):
 *)
 
-let authors = """
+let authors =
+    """
   <authors topic="Philosophy of Mathematics">
     <author name="Bertrand Russell" />
     <author name="Ludwig Wittgenstein" born="1889" />
@@ -245,6 +248,7 @@ type Authors = XmlProvider<"../data/Writers.xml", ResolutionFolder=ResolutionFol
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
+
 for author in topic.Authors do
     printf " - %s" author.Name
     author.Born |> Option.iter (printf " (%d)")
@@ -297,11 +301,12 @@ that takes `Html.Div` and acts as follows:
 *)
 
 /// Prints the content of a <div> element
-let rec printDiv (div:Html.Div) =
-  div.Spans |> Seq.iter (printfn "%s")
-  div.Divs |> Seq.iter printDiv
-  if div.Spans.Length = 0 && div.Divs.Length = 0 then
-      div.Value |> Option.iter (printfn "%s")
+let rec printDiv (div: Html.Div) =
+    div.Spans |> Seq.iter (printfn "%s")
+    div.Divs |> Seq.iter printDiv
+
+    if div.Spans.Length = 0 && div.Divs.Length = 0 then
+        div.Value |> Option.iter (printfn "%s")
 
 // Print the root <div> element with all children
 printDiv html
@@ -355,7 +360,7 @@ let data = Census.Load("https://api.census.gov/data.xml")
 
 let apiLinks =
     data.Datasets
-    |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
+    |> Array.map (fun ds -> ds.Title, ds.Distribution.AccessUrl)
     |> Array.truncate 10
 
 (*** include-fsi-merged-output ***)
@@ -376,16 +381,19 @@ and then post each link over (for example) a message queue.
 This is where `AsyncLoad` comes into play:
 *)
 
-let enqueue (title,apiUrl) =
-  // do the real message enqueueing here instead of
-  printfn "%s -> %s" title apiUrl
+let enqueue (title, apiUrl) =
+    // do the real message enqueueing here instead of
+    printfn "%s -> %s" title apiUrl
 
 // helper task which gets scheduled on some background thread somewhere...
-let cacheJanitor() = async {
-  let! reloadData = Census.AsyncLoad("https://api.census.gov/data.xml")
-  reloadData.Datasets |> Array.map (fun ds -> ds.Title,ds.Distribution.AccessUrl)
-                      |> Array.iter enqueue
-}
+let cacheJanitor () =
+    async {
+        let! reloadData = Census.AsyncLoad("https://api.census.gov/data.xml")
+
+        reloadData.Datasets
+        |> Array.map (fun ds -> ds.Title, ds.Distribution.AccessUrl)
+        |> Array.iter enqueue
+    }
 
 (*** include-fsi-merged-output ***)
 
@@ -419,7 +427,7 @@ printfn "%s" blog.Channel.Title
 
 // Get all item nodes and print title with link
 for item in blog.Channel.Items do
-  printfn " - %s (%s)" item.Title item.Link
+    printfn " - %s (%s)" item.Title item.Link
 
 (*** include-fsi-merged-output ***)
 
@@ -432,7 +440,8 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 *)
 
 [<Literal>]
-let customersXmlSample = """
+let customersXmlSample =
+    """
   <Customers>
     <Customer name="ACME">
       <Order Number="A012345">
@@ -455,7 +464,8 @@ and you want to transform it into something like this:
 *)
 
 [<Literal>]
-let orderLinesXmlSample = """
+let orderLinesXmlSample =
+    """
   <OrderLines>
     <OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1"/>
     <OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2"/>
@@ -471,15 +481,11 @@ type InputXml = XmlProvider<customersXmlSample>
 type OutputXml = XmlProvider<orderLinesXmlSample>
 
 let orderLines =
-  OutputXml.OrderLines [|
-    for customer in InputXml.GetSample().Customers do
-      for order in customer.Orders do
-        for line in order.OrderLines do
-          yield OutputXml.OrderLine
-                  ( customer.Name,
-                    order.Number,
-                    line.Item,
-                    line.Quantity ) |]
+    OutputXml.OrderLines
+        [| for customer in InputXml.GetSample().Customers do
+               for order in customer.Orders do
+                   for line in order.OrderLines do
+                       yield OutputXml.OrderLine(customer.Name, order.Number, line.Item, line.Quantity) |]
 
 (*** include-fsi-merged-output ***)
 
@@ -492,7 +498,8 @@ The value of the parameter can be either the name of a schema file or plain text
 like in the following example:
 *)
 
-type Person = XmlProvider<Schema = """
+type Person =
+    XmlProvider<Schema="""
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:element name="person">
@@ -505,7 +512,9 @@ type Person = XmlProvider<Schema = """
     </xs:element>
   </xs:schema>""">
 
-let turing = Person.Parse """
+let turing =
+    Person.Parse
+        """
   <person>
     <surname>Turing</surname>
     <birthDate>1912-06-23</birthDate>
@@ -529,7 +538,7 @@ When the file includes other schema files, the `ResolutionFolder` parameter can 
 The uri may also refer to online resources:
 *)
 
-type RssXsd = XmlProvider<Schema = "https://www.w3schools.com/xml/note.xsd">
+type RssXsd = XmlProvider<Schema="https://www.w3schools.com/xml/note.xsd">
 
 (**
 
@@ -537,7 +546,8 @@ The schema is expected to define a root element (a global element with complex t
 In case of multiple root elements:
 *)
 
-type TwoRoots = XmlProvider<Schema = """
+type TwoRoots =
+    XmlProvider<Schema="""
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:element name="root1">
@@ -560,15 +570,15 @@ the provided type has an optional property for each alternative:
 *)
 
 let e1 = TwoRoots.Parse "<root1 foo='aa' fow='2' />"
+
 match e1.Root1, e1.Root2 with
-| Some x, None ->
-    printfn "Foo = %s and Fow = %A" x.Foo x.Fow
+| Some x, None -> printfn "Foo = %s and Fow = %A" x.Foo x.Fow
 | _ -> failwith "Unexpected"
 
 let e2 = TwoRoots.Parse "<root2 bar='aa' baz='2017-12-22' />"
+
 match e2.Root1, e2.Root2 with
-| None, Some x ->
-    printfn "Bar = %s and Baz = %O" x.Bar x.Baz
+| None, Some x -> printfn "Bar = %s and Baz = %O" x.Bar x.Baz
 | _ -> failwith "Unexpected"
 
 (*** include-fsi-merged-output ***)
@@ -583,7 +593,8 @@ The following xsd defines `foo` as a sequence made of an arbitrary number
 of `bar` elements followed by a single `baz` element.
 *)
 
-type FooSequence = XmlProvider<Schema = """
+type FooSequence =
+    XmlProvider<Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
@@ -600,7 +611,9 @@ type FooSequence = XmlProvider<Schema = """
 here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar`and `baz` elements, where the former is an array in order to hold multiple elements:
 *)
 
-let fooSequence = FooSequence.Parse """
+let fooSequence =
+    FooSequence.Parse
+        """
 <foo>
     <bar>42</bar>
     <bar>43</bar>
@@ -614,7 +627,8 @@ printfn "%d" fooSequence.Baz.Year // 1957
 (**
 Instead of a sequence we may have a `choice`:
 *)
-type FooChoice = XmlProvider<Schema = """
+type FooChoice =
+    XmlProvider<Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
@@ -636,12 +650,15 @@ in type providers) but also preferred because it improves discoverability:
 intellisense can show both alternatives. There is a lack of precision but this is not the main goal.
 *)
 
-let fooChoice = FooChoice.Parse """
+let fooChoice =
+    FooChoice.Parse
+        """
 <foo>
   <baz>1957-08-13</baz>
 </foo>"""
 
 printfn "%d items" fooChoice.Bars.Length // 0 items
+
 match fooChoice.Baz with
 | Some date -> printfn "%d" date.Year // 1957
 | None -> ()
@@ -659,7 +676,8 @@ XML Schema provides various extensibility mechanisms. The following example
 is a terse summary mixing substitution groups with abstract recursive definitions.
 *)
 
-type Prop = XmlProvider<Schema = """
+type Prop =
+    XmlProvider<Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="Formula" abstract="true"/>
@@ -673,7 +691,9 @@ type Prop = XmlProvider<Schema = """
         </xs:element>
     </xs:schema>""">
 
-let formula = Prop.Parse """
+let formula =
+    Prop.Parse
+        """
     <And>
         <Prop>p1</Prop>
         <And>

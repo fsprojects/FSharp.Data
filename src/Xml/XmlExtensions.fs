@@ -66,4 +66,3 @@ module XElementExtensions =
                 headers = headers,
                 httpMethod = httpMethod
             )
-

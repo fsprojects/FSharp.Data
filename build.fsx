@@ -141,7 +141,8 @@ Target.create "Pack" (fun _ ->
           ("PublishRepositoryUrl", "true")
           ("EmbedUntrackedSources", "true")
           ("IncludeSymbols", "true")
-          ("SymbolPackageFormat", "snupkg") ]
+          //("SymbolPackageFormat", "snupkg")
+          ]
 
     DotNet.pack
         (fun p ->
@@ -149,15 +150,7 @@ Target.create "Pack" (fun _ ->
                 Configuration = DotNet.BuildConfiguration.Release
                 OutputPath = Some "bin"
                 MSBuildParams = { p.MSBuildParams with Properties = properties } })
-        "src/FSharp.Data.Core/FSharp.Data.Core.fsproj"
-
-    DotNet.pack
-        (fun p ->
-            { p with
-                Configuration = DotNet.BuildConfiguration.Release
-                OutputPath = Some "bin"
-                MSBuildParams = { p.MSBuildParams with Properties = properties } })
-        "src/FSharp.Data/FSharp.Data.fsproj")
+        "FSharp.Data.sln")
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation

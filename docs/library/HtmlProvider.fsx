@@ -10,14 +10,14 @@ index: 2
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -70,12 +70,11 @@ The `Load` method allows reading the data from a file or web resource. We could 
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
 let url =
-  "https://en.wikipedia.org/wiki/" +
-    "2017_FIA_Formula_One_World_Championship"
+    "https://en.wikipedia.org/wiki/"
+    + "2017_FIA_Formula_One_World_Championship"
 
 // Download the latest market depth information
-let f1Calendar =
-  F1_2017.Load(url).Tables.``Season calendar``
+let f1Calendar = F1_2017.Load(url).Tables.``Season calendar``
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -86,8 +85,7 @@ let date = firstRow.Date
 
 // Print the bid / offer volumes for each row
 for row in f1Calendar.Rows do
-  printfn "Race, round %A is hosted at %A on %A"
-    row.Round row.``Grand Prix`` row.Date
+    printfn "Race, round %A is hosted at %A on %A" row.Round row.``Grand Prix`` row.Date
 
 (*** include-fsi-merged-output ***)
 
@@ -113,24 +111,30 @@ Note that we're using the live URL as the sample, so we can just use the default
 
 
 // Configure the type provider
-type NugetStats =
-  HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
+type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
 let rawStats = NugetStats().Tables.Table4
 
 // helper function to analyze version numbers from nuget
-let getMinorVersion (v:string) =
-  System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
+let getMinorVersion (v: string) =
+    System
+        .Text
+        .RegularExpressions
+        .Regex(
+            @"\d.\d"
+        )
+        .Match(
+        v
+    )
+        .Value
 
 // group by minor version and calculate download count
 let stats =
-  rawStats.Rows
-  |> Seq.groupBy (fun r ->
-      getMinorVersion r.Version)
-  |> Seq.map (fun (k, xs) ->
-      k, xs |> Seq.sumBy (fun x -> x.Downloads))
-  |> Seq.toArray
+    rawStats.Rows
+    |> Seq.groupBy (fun r -> getMinorVersion r.Version)
+    |> Seq.map (fun (k, xs) -> k, xs |> Seq.sumBy (fun x -> x.Downloads))
+    |> Seq.toArray
 
 (*** include-fsi-merged-output ***)
 
@@ -143,22 +147,23 @@ This sample shows some more screen scraping from Wikipedia:
 *)
 
 (*** define-output:doctorWhoChart ***)
-let [<Literal>] DrWho =
-  "https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)"
+[<Literal>]
+let DrWho =
+    "https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)"
 
 let doctorWho = new HtmlProvider<DrWho>()
 
 // Get the average number of viewers for each doctor's series run
 let viewersByDoctor =
-  doctorWho.Tables.``Season 1 (1963-1964) Edit``.Rows
-  |> Seq.groupBy (fun season -> season.``Directed by``)
-  |> Seq.map (fun (doctor, seasons) ->
-      let averaged =
-        seasons
-        |> Seq.averageBy (fun season ->
-            season.``UK viewers (millions)``)
-      doctor, averaged)
-  |> Seq.toArray
+    doctorWho.Tables.``Season 1 (1963-1964) Edit``.Rows
+    |> Seq.groupBy (fun season -> season.``Directed by``)
+    |> Seq.map (fun (doctor, seasons) ->
+        let averaged =
+            seasons
+            |> Seq.averageBy (fun season -> season.``UK viewers (millions)``)
+
+        doctor, averaged)
+    |> Seq.toArray
 
 
 (*** include-fsi-merged-output ***)

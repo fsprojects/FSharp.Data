@@ -10,14 +10,14 @@ index: 4
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -52,11 +52,15 @@ Then we can , for example, use the direct descendants selector to select another
 id `ires`. The CSS selector to do so is `div#search > div#ires`:
 *)
 let links =
-  doc.CssSelect("div#search > div#ires div.g > div.s div.kv cite")
-  |> List.map (fun n ->
-      match n.InnerText() with
-      | t when (t.StartsWith("https://") || t.StartsWith("http://"))-> t
-      | t -> "http://" + t )
+    doc.CssSelect("div#search > div#ires div.g > div.s div.kv cite")
+    |> List.map (fun n ->
+        match n.InnerText() with
+        | t when
+            (t.StartsWith("https://")
+             || t.StartsWith("http://"))
+            ->
+            t
+        | t -> "http://" + t)
 
 (*** include-fsi-merged-output ***)
 
@@ -87,8 +91,8 @@ let doc2 = HtmlDocument.Load(fsys)
 
 let books =
     doc2.CssSelect("div.g h3.r a")
-    |> List.map(fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
-    |> List.filter(fun (title, href) -> title.Contains("F#"))
+    |> List.map (fun a -> a.InnerText().Trim(), a.AttributeValue("href"))
+    |> List.filter (fun (title, href) -> title.Contains("F#"))
 
 (*** include-fsi-merged-output ***)
 
@@ -103,7 +107,9 @@ You can also refer to the table below for a complete list of supported selectors
 
 Finds all links with an english hreflang attribute.
 *)
-let englishDoc = HtmlDocument.Parse("""
+let englishDoc =
+    HtmlDocument.Parse(
+        """
   <!doctype html>
   <html lang="en">
   <body>
@@ -111,10 +117,10 @@ let englishDoc = HtmlDocument.Parse("""
     <a href="example.html" hreflang="en-UK">Some other text</a>
     <a href="example.html" hreflang="english">will not be outlined</a>
   </body>
-  </html>""")
+  </html>"""
+    )
 
-let englishLinks =
-  englishDoc.CssSelect("a[hreflang|=en]")
+let englishLinks = englishDoc.CssSelect("a[hreflang|=en]")
 
 (*** include-fsi-merged-output ***)
 (**
@@ -122,7 +128,9 @@ let englishLinks =
 
 Finds all inputs with a name containing "man". This includes results where "man" is a substring:
 *)
-let manDoc = HtmlDocument.Parse("""
+let manDoc =
+    HtmlDocument.Parse(
+        """
   <!doctype html>
   <html lang="en">
   <body>
@@ -134,10 +142,10 @@ let manDoc = HtmlDocument.Parse("""
     <input name="man">
     <input name="newsletter">
   </body>
-  </html>""")
+  </html>"""
+    )
 
-let manElems =
-  manDoc.CssSelect("input[name*='man']")
+let manElems = manDoc.CssSelect("input[name*='man']")
 
 (*** include-fsi-merged-output ***)
 (**
@@ -145,8 +153,7 @@ let manElems =
 
 Finds all inputs with a name containing the word "man". This requires a whitespace around the word:
 *)
-let manWordElems =
-  manDoc.CssSelect("input[name~='man']")
+let manWordElems = manDoc.CssSelect("input[name~='man']")
 
 (*** include-fsi-merged-output ***)
 
@@ -155,8 +162,7 @@ let manWordElems =
 
 Finds all inputs with a name ending with "man".
 *)
-let manEndElemes =
-  manDoc.CssSelect("input[name$='man']")
+let manEndElemes = manDoc.CssSelect("input[name$='man']")
 
 (*** include-fsi-merged-output ***)
 
@@ -166,8 +172,7 @@ let manEndElemes =
 Finds all inputs with a name equal to "man".
 *)
 
-let manEqElemes =
-  manDoc.CssSelect("input[name='man']")
+let manEqElemes = manDoc.CssSelect("input[name='man']")
 
 (*** include-fsi-merged-output ***)
 
@@ -176,8 +181,7 @@ let manEqElemes =
 
 Finds all inputs with a name different to "man".
 *)
-let notManElems =
-  manDoc.CssSelect("input[name!='man']")
+let notManElems = manDoc.CssSelect("input[name!='man']")
 
 (*** include-fsi-merged-output ***)
 
@@ -187,8 +191,7 @@ let notManElems =
 Finds all inputs with a name starting with "man".
 *)
 
-let manStartElems =
-  manDoc.CssSelect("input[name^='man']")
+let manStartElems = manDoc.CssSelect("input[name^='man']")
 
 (*** include-fsi-merged-output ***)
 
@@ -198,7 +201,9 @@ let manStartElems =
 There are some syntax shortcuts to find forms controls.
 *)
 
-let htmlForm = HtmlDocument.Parse("""
+let htmlForm =
+    HtmlDocument.Parse(
+        """
   <!doctype html>
   <html>
   <body>
@@ -221,7 +226,8 @@ let htmlForm = HtmlDocument.Parse("""
     </fieldset>
   </form>
   </body>
-  </html>""")
+  </html>"""
+    )
 
 (**
 You can use `:prop` to find CSS elements with the specified value of the `type` attribute
@@ -331,4 +337,3 @@ Selector name|Status|specification
 [1] :root Selector seems to be useless in our case because with the HTML parser the root is always the html node.
 
 *)
-

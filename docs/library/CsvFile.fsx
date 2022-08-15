@@ -10,14 +10,14 @@ index: 2
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -48,12 +48,14 @@ points to a live CSV file on the Yahoo finance web site:
 *)
 
 // Download the stock prices
-let msft = CsvFile.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
+let msft =
+    CsvFile
+        .Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv")
+        .Cache()
 
 // Print the prices in the HLOC format
 for row in msft.Rows |> Seq.truncate 10 do
-  printfn "HLOC: (%s, %s, %s)"
-    (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
+    printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (*** include-fsi-merged-output ***)
 (**
@@ -92,8 +94,7 @@ The following example shows how to process the sample previous CSV sample using 
 open FSharp.Data.CsvExtensions
 
 for row in msft.Rows |> Seq.truncate 10 do
-  printfn "HLOC: (%f, %M, %O)"
-    (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
+    printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (*** include-fsi-merged-output ***)
 
@@ -108,7 +109,8 @@ separator and quote characters when saving.
 *)
 
 // Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:
-msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
+msft
+    .Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
     .Truncate(10)
     .SaveToString('\t')
 

@@ -10,14 +10,14 @@ index: 3
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -57,11 +57,10 @@ which in this case is the url that the search result is pointing to, and additio
 we are looking at.
 *)
 let links =
-    results.Descendants ["a"]
+    results.Descendants [ "a" ]
     |> Seq.choose (fun x ->
-           x.TryGetAttribute("href")
-           |> Option.map (fun a -> x.InnerText(), a.Value())
-    )
+        x.TryGetAttribute("href")
+        |> Option.map (fun a -> x.InnerText(), a.Value()))
     |> Seq.truncate 10
     |> Seq.toList
 
@@ -78,8 +77,13 @@ and `Seq.map`.
 let searchResults =
     links
     |> List.filter (fun (name, url) ->
-                    name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
-    |> List.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
+        name <> "Cached"
+        && name <> "Similar"
+        && url.StartsWith("/url?"))
+    |> List.map (fun (name, url) ->
+        name,
+        url
+            .Substring(0, url.IndexOf("&sa="))
+            .Replace("/url?q=", ""))
 
 (*** include-fsi-merged-output ***)
-

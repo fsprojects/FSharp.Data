@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <IsPackable>false</IsPackable>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DefineConstants>IS_DESIGNTIME;NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>--warnon:1182</OtherFlags>
