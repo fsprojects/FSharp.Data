@@ -1,5 +1,5 @@
 /// Implements type inference for unstructured documents like XML or JSON
-module internal FSharp.Data.Runtime.StructuralInference
+module FSharp.Data.Runtime.StructuralInference
 
 open System
 open System.Diagnostics
@@ -26,7 +26,7 @@ type InferenceMode =
     | ValuesAndInlineSchemasOverrides = 4
 
 /// This is the internal DU representing all the valid cases we support, mapped from the public InferenceMode.
-type InferenceMode' =
+type internal InferenceMode' =
     | NoInference
     /// Backward compatible mode.
     | ValuesOnly
@@ -50,7 +50,7 @@ type InferenceMode' =
         | InferenceMode.ValuesAndInlineSchemasOverrides -> InferenceMode'.ValuesAndInlineSchemasOverrides
         | _ -> failwithf "Unexpected inference mode value %A" inferenceMode
 
-let asOption =
+let internal asOption =
     function
     | true, x -> Some x
     | false, _ -> None
@@ -93,11 +93,11 @@ let private primitiveTypes =
     @ numericTypes
 
 /// Checks whether a type supports unit of measure
-let supportsUnitsOfMeasure typ = List.exists ((=) typ) numericTypes
+let internal supportsUnitsOfMeasure typ = List.exists ((=) typ) numericTypes
 
 /// Returns a tag of a type - a tag represents a 'kind' of type
 /// (essentially it describes the different bottom types we have)
-let typeTag inferredType =
+let internal typeTag inferredType =
     match inferredType with
     | InferedType.Record (name = n) -> InferedTypeTag.Record n
     | InferedType.Collection _ -> InferedTypeTag.Collection
@@ -214,7 +214,7 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
 /// The contract that should hold about the function is that given two types with the
 /// same `InferedTypeTag`, the result also has the same `InferedTypeTag`.
 ///
-let rec subtypeInfered allowEmptyValues ot1 ot2 =
+let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
     match ot1, ot2 with
     // Subtype of matching types or one of equal types
     | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
@@ -355,7 +355,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
             tag, (m, t)
         | _ -> failwith "unionCollectionTypes: pairBy returned None, None")
 
-and unionCollectionOrder order1 order2 =
+and internal unionCollectionOrder order1 order2 =
     order1
     @ (order2
        |> List.filter (fun x -> not (List.exists ((=) x) order1)))
@@ -363,7 +363,7 @@ and unionCollectionOrder order1 order2 =
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
-and unionRecordTypes allowEmptyValues t1 t2 =
+and internal unionRecordTypes allowEmptyValues t1 t2 =
     List.pairBy (fun (p: InferedProperty) -> p.Name) t1 t2
     |> List.map (fun (name, fst, snd) ->
         match fst, snd with
@@ -381,7 +381,7 @@ and unionRecordTypes allowEmptyValues t1 t2 =
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
-let inferCollectionType allowEmptyValues types =
+let internal inferCollectionType allowEmptyValues types =
     let groupedTypes =
         types
         |> Seq.groupBy typeTag
@@ -392,12 +392,12 @@ let inferCollectionType allowEmptyValues types =
 
     InferedType.Collection(List.map fst groupedTypes, Map.ofList groupedTypes)
 
-type IUnitsOfMeasureProvider =
+type internal IUnitsOfMeasureProvider =
     abstract SI: str: string -> System.Type
     abstract Product: measure1: System.Type * measure2: System.Type -> System.Type
     abstract Inverse: denominator: System.Type -> System.Type
 
-let defaultUnitsOfMeasureProvider =
+let internal defaultUnitsOfMeasureProvider =
     { new IUnitsOfMeasureProvider with
         member x.SI(_) : Type = null
         member x.Product(_, _) = failwith "Not implemented yet"
@@ -408,7 +408,7 @@ let private uomTransformations =
       [ "³"; "^3" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t))
       [ "^-1" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Inverse(t)) ]
 
-let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
+let internal parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
     let unit =
         uomTransformations
         |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
@@ -432,7 +432,7 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
 
 /// The inferred types may be set explicitly via inline schemas.
 /// This table specifies the mapping from (the names that users can use) to (the types used).
-let nameToType =
+let internal nameToType =
     [ "int", (typeof<int>, TypeWrapper.None)
       "int64", (typeof<int64>, TypeWrapper.None)
       "bool", (typeof<bool>, TypeWrapper.None)
@@ -465,7 +465,7 @@ let private validInlineSchema =
 /// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
 /// type{measure} is also supported to ease definition in xml values.
 /// </summary>
-let parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Type * TypeWrapper)>) str =
+let internal parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Type * TypeWrapper)>) str =
     let m = typeAndUnitRegex.Value.Match(str)
 
     if m.Success then
@@ -516,7 +516,7 @@ module private Helpers =
 /// with the desiredUnit applied,
 /// or a value parsed from an inline schema.
 /// (For inline schemas, the unit parsed from the schema takes precedence over desiredUnit when present)
-let inferPrimitiveType
+let internal inferPrimitiveType
     (unitsOfMeasureProvider: IUnitsOfMeasureProvider)
     (inferenceMode: InferenceMode')
     (cultureInfo: CultureInfo)
@@ -615,5 +615,5 @@ let inferPrimitiveType
         |> Option.defaultValue fallbackType
 
 /// Infers the type of a simple string value
-let getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
+let internal getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
     inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo value unit
