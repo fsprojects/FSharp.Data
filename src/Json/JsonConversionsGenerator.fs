@@ -48,7 +48,12 @@ type internal JsonConversionCallingType =
 
 /// Creates a function that takes Expr<JsonValue option> and converts it to
 /// an expression of other type - the type is specified by `field`
-let internal convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field: PrimitiveInferedValue) =
+let internal convertJsonValue
+    missingValuesStr
+    cultureStr
+    canPassAllConversionCallingTypes
+    (field: PrimitiveInferedValue)
+    =
 
 
     let returnType =

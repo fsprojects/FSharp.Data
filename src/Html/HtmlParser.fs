@@ -195,10 +195,10 @@ module internal HtmlParser =
                 x.HasFormattedParent <- x.HasFormattedParent || x.IsFormattedTag
 
             x.InsertionMode <-
-               if x.IsScriptTag && (not isEnd) then
-                   ScriptMode
-               else
-                   DefaultMode
+                if x.IsScriptTag && (not isEnd) then
+                    ScriptMode
+                else
+                    DefaultMode
 
             x.CurrentTag <- CharList.Empty
             x.Attributes <- []

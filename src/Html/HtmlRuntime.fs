@@ -31,16 +31,17 @@ type HtmlTableCell =
 
 /// Representation of an HTML table cell
 type HtmlTable
-        internal (
-            name: string,
-            headerNamesAndUnits: (string * Type option)[] option, // always set at designtime, never at runtime
-            inferedProperties: PrimitiveInferedProperty list option, // sometimes set at designtime, never at runtime
-            hasHeaders: bool option, // always set at designtime, never at runtime
-            rows: string[][],
-            html: HtmlNode
-        ) =
+    internal
+    (
+        name: string,
+        headerNamesAndUnits: (string * Type option)[] option,  // always set at designtime, never at runtime
+        inferedProperties: PrimitiveInferedProperty list option,  // sometimes set at designtime, never at runtime
+        hasHeaders: bool option,  // always set at designtime, never at runtime
+        rows: string[][],
+        html: HtmlNode
+    ) =
     member _.Name = name
- 
+
     // always set at designtime, never at runtime
     member internal _.HeaderNamesAndUnits = headerNamesAndUnits
 
@@ -48,9 +49,9 @@ type HtmlTable
     member internal _.InferedProperties = inferedProperties
 
     member _.HasHeaders = hasHeaders // always set at designtime, never at runtime
- 
+
     member _.Rows = rows
- 
+
     member _.Html = html
 
     override _.ToString() =
