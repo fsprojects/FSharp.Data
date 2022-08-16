@@ -72,14 +72,14 @@ let ``Inference of numbers with empty values`` () =
 
   let row = rows.[0]
 
-  let f1:float = row.Float1
-  let f2:float = row.Float2
-  let f3:float = row.Float3
-  let f4:float = row.Float4
-  let i:Nullable<int> = row.Int
-  let f5:float = row.Float5
-  let f6:float = row.Float6
-  let d:option<DateTime> = row.Date
+  let _f1:float = row.Float1
+  let _f2:float = row.Float2
+  let _f3:float = row.Float3
+  let _f4:float = row.Float4
+  let _i:Nullable<int> = row.Int
+  let _f5:float = row.Float5
+  let _f6:float = row.Float6
+  let _d:option<DateTime> = row.Date
 
   let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, (None: DateTime option)
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
@@ -343,9 +343,9 @@ let ``Uses UTF8 for sample file when encoding not specified``() =
 
 [<Test>]
 let ``Disposing CsvProvider shouldn't throw``() =
-    let csv =
+    let _csv =
         use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
-        csv.Rows |> Seq.iter (fun x -> ())
+        csv.Rows |> Seq.iter (fun _ -> ())
     ()
 
 [<Test>]

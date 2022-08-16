@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OtherFlags>--warnon:1182 --nowarn:10001</OtherFlags>
+    <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:10001</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageIcon>logo.png</PackageIcon>
