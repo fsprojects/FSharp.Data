@@ -30,18 +30,33 @@ type HtmlTableCell =
         | Cell (_, d) -> d
 
 /// Representation of an HTML table cell
-type HtmlTable =
-    { Name: string
-      HeaderNamesAndUnits: (string * Type option)[] option // always set at designtime, never at runtime
-      InferedProperties: PrimitiveInferedProperty list option // sometimes set at designtime, never at runtime
-      HasHeaders: bool option // always set at designtime, never at runtime
-      Rows: string[][]
-      Html: HtmlNode }
+type HtmlTable
+        internal (
+            name: string,
+            headerNamesAndUnits: (string * Type option)[] option, // always set at designtime, never at runtime
+            inferedProperties: PrimitiveInferedProperty list option, // sometimes set at designtime, never at runtime
+            hasHeaders: bool option, // always set at designtime, never at runtime
+            rows: string[][],
+            html: HtmlNode
+        ) =
+    member _.Name = name
+ 
+    // always set at designtime, never at runtime
+    member internal _.HeaderNamesAndUnits = headerNamesAndUnits
 
-    override x.ToString() =
+    // sometimes set at designtime, never at runtime
+    member internal _.InferedProperties = inferedProperties
+
+    member _.HasHeaders = hasHeaders // always set at designtime, never at runtime
+ 
+    member _.Rows = rows
+ 
+    member _.Html = html
+
+    override _.ToString() =
         let sb = StringBuilder()
-        sb.AppendLine x.Name |> ignore
-        let data = array2D x.Rows
+        sb.AppendLine name |> ignore
+        let data = array2D rows
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
         let widths = Array.zeroCreate columns
@@ -90,10 +105,11 @@ type HtmlDefinitionList =
         sb.ToString()
 
 /// Representation of an HTML table, list, or definition list
-type HtmlObject =
+type HtmlObjectDescription =
     | Table of HtmlTable
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
+
     member x.Name =
         match x with
         | Table t -> t.Name
@@ -280,13 +296,13 @@ module HtmlRuntime =
                             | HtmlElement ("th", _, contents) -> Cell(true, getContents contents)
                             | _ -> Empty
 
-                        let col_i = ref colindex
+                        let mutable col_i = colindex
 
-                        while !col_i < res.[rowindex].Length
-                              && res.[rowindex].[!col_i] <> Empty do
-                            incr (col_i)
+                        while col_i < res.[rowindex].Length
+                              && res.[rowindex].[col_i] <> Empty do
+                            col_i <- col_i + 1
 
-                        for j in [ !col_i .. (!col_i + colSpan cell - 1) ] do
+                        for j in [ col_i .. (col_i + colSpan cell - 1) ] do
                             for i in [ rowindex .. (rowindex + rowSpan cell - 1) ] do
                                 if i < rows.Length && j < numberOfColumns then
                                     res.[i].[j] <- data
@@ -340,12 +356,7 @@ module HtmlRuntime =
 
                 let rows = res |> Array.map (Array.map (fun x -> x.Data))
 
-                { Name = name
-                  HeaderNamesAndUnits = headerNamesAndUnits
-                  InferedProperties = inferedProperties
-                  HasHeaders = hasHeaders
-                  Rows = rows
-                  Html = table }
+                HtmlTable(name, headerNamesAndUnits, inferedProperties, hasHeaders, rows, table)
                 |> Some
 
     let private parseList makeUnique index (list: HtmlNode, parents: HtmlNode list) =
@@ -406,7 +417,7 @@ module HtmlRuntime =
               Html = definitionList }
             |> Some
 
-    let getTables inferenceParameters includeLayoutTables (doc: HtmlDocument) =
+    let internal getTables inferenceParameters includeLayoutTables (doc: HtmlDocument) =
         let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
 
         let tableElements =
@@ -438,7 +449,7 @@ module HtmlRuntime =
         |> List.mapi (parseDefinitionList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
-    let getHtmlObjects inferenceParameters includeLayoutTables (doc: HtmlDocument) =
+    let internal getHtmlObjects inferenceParameters includeLayoutTables (doc: HtmlDocument) =
         Seq.concat
             [ doc
               |> getTables inferenceParameters includeLayoutTables

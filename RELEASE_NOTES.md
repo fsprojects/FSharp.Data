@@ -1,7 +1,12 @@
 ### 5.0.1 - Aug 15 2022
 
-* There are now two packages - FSharp.Data.Core and FSharp.Data.  The first does not include the type providers.
-  (Future revisions may split into `FSharp.Data.Json.Core`, `FSharp.Data.Html.Core` and so on).
+* There are now multiple packages
+  * FSharp.Data -- includes everything
+    * FSharp.Data.Http -- http types/helpers
+    * FSharp.Data.Csv.Core -- csv types/helpers
+    * FSharp.Data.Json.Core -- json types/helpers
+    * FSharp.Data.Html.Core -- html types/helpers
+    * FSharp.Data.Xml.Core -- xml types/helpers
 
 ### 4.2.10 - Aug 12 2022
 

@@ -1,4 +1,4 @@
-module FSharp.Data.Core.Tests.HtmlCssSelectors
+module FSharp.Data.Tests.HtmlCssSelectors
 
 open NUnit.Framework
 open FsUnit

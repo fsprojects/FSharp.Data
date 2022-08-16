@@ -93,20 +93,20 @@ module internal HtmlParser =
             | CDATAMode -> "cdata"
 
     type HtmlState =
-        { Attributes: (CharList * CharList) list ref
-          CurrentTag: CharList ref
-          Content: CharList ref
-          HasFormattedParent: bool ref
-          InsertionMode: InsertionMode ref
-          Tokens: HtmlToken list ref
+        { mutable Attributes: (CharList * CharList) list
+          mutable CurrentTag: CharList
+          mutable Content: CharList
+          mutable HasFormattedParent: bool
+          mutable InsertionMode: InsertionMode
+          mutable Tokens: HtmlToken list
           Reader: TextReader }
         static member Create(reader: TextReader) =
-            { Attributes = ref []
-              CurrentTag = ref CharList.Empty
-              Content = ref CharList.Empty
-              HasFormattedParent = ref false
-              InsertionMode = ref DefaultMode
-              Tokens = ref []
+            { Attributes = []
+              CurrentTag = CharList.Empty
+              Content = CharList.Empty
+              HasFormattedParent = false
+              InsertionMode = DefaultMode
+              Tokens = []
               Reader = reader }
 
         member x.Pop() = x.Reader.Read() |> ignore
@@ -116,30 +116,28 @@ module internal HtmlParser =
             [| 0 .. (count - 1) |]
             |> Array.map (fun _ -> x.Reader.ReadChar())
 
-        member x.Contents = (!x.Content).ToString()
-        member x.ContentLength = (!x.Content).Length
+        member x.Contents = x.Content.ToString()
+        member x.ContentLength = x.Content.Length
 
         member x.NewAttribute() =
-            x.Attributes
-            := (CharList.Empty, CharList.Empty)
-               :: (!x.Attributes)
+            x.Attributes <- (CharList.Empty, CharList.Empty) :: x.Attributes
 
         member x.ConsAttrName() =
-            match !x.Attributes with
+            match x.Attributes with
             | [] ->
                 x.NewAttribute()
                 x.ConsAttrName()
             | (h, _) :: _ -> h.Cons(Char.ToLowerInvariant(x.Reader.ReadChar()))
 
-        member x.CurrentTagName() = (!x.CurrentTag).ToString().Trim()
+        member x.CurrentTagName() = x.CurrentTag.ToString().Trim()
 
         member x.CurrentAttrName() =
-            match !x.Attributes with
+            match x.Attributes with
             | [] -> String.Empty
             | (h, _) :: _ -> h.ToString()
 
         member x.ConsAttrValue(c) =
-            match !x.Attributes with
+            match x.Attributes with
             | [] ->
                 x.NewAttribute()
                 x.ConsAttrValue(c)
@@ -148,7 +146,7 @@ module internal HtmlParser =
         member x.ConsAttrValue() = x.ConsAttrValue(x.Reader.ReadChar())
 
         member x.GetAttributes() =
-            !x.Attributes
+            x.Attributes
             |> List.choose (fun (key, value) ->
                 if key.Length > 0 then
                     Some
@@ -158,12 +156,12 @@ module internal HtmlParser =
             |> List.rev
 
         member x.EmitSelfClosingTag() =
-            let name = (!x.CurrentTag).ToString().Trim()
+            let name = x.CurrentTag.ToString().Trim()
             let result = Tag(true, name, x.GetAttributes())
-            x.CurrentTag := CharList.Empty
-            x.InsertionMode := DefaultMode
-            x.Attributes := []
-            x.Tokens := result :: !x.Tokens
+            x.CurrentTag <- CharList.Empty
+            x.InsertionMode <- DefaultMode
+            x.Attributes <- []
+            x.Tokens <- result :: x.Tokens
 
         member x.IsFormattedTag =
             match x.CurrentTagName().ToLower() with
@@ -177,7 +175,7 @@ module internal HtmlParser =
             | _ -> false
 
         member x.EmitTag(isEnd) =
-            let name = (!x.CurrentTag).ToString().Trim()
+            let name = x.CurrentTag.ToString().Trim()
 
             let result =
                 if isEnd then
@@ -192,38 +190,37 @@ module internal HtmlParser =
             // pre is the only default formatted tag, nested pres are not
             // allowed in the spec.
             if x.IsFormattedTag then
-                x.HasFormattedParent := not isEnd
+                x.HasFormattedParent <- not isEnd
             else
-                x.HasFormattedParent
-                := !x.HasFormattedParent || x.IsFormattedTag
+                x.HasFormattedParent <- x.HasFormattedParent || x.IsFormattedTag
 
-            x.InsertionMode
-            := if x.IsScriptTag && (not isEnd) then
+            x.InsertionMode <-
+               if x.IsScriptTag && (not isEnd) then
                    ScriptMode
                else
                    DefaultMode
 
-            x.CurrentTag := CharList.Empty
-            x.Attributes := []
-            x.Tokens := result :: !x.Tokens
+            x.CurrentTag <- CharList.Empty
+            x.Attributes <- []
+            x.Tokens <- result :: x.Tokens
 
         member x.EmitToAttributeValue() =
-            assert (!x.InsertionMode = InsertionMode.CharRefMode)
-            let content = (!x.Content).ToString() |> HtmlCharRefs.substitute
+            assert (x.InsertionMode = InsertionMode.CharRefMode)
+            let content = x.Content.ToString() |> HtmlCharRefs.substitute
 
             for c in content.ToCharArray() do
                 x.ConsAttrValue c
 
-            x.Content := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.Content <- CharList.Empty
+            x.InsertionMode <- DefaultMode
 
         member x.Emit() : unit =
             let result =
-                let content = (!x.Content).ToString()
+                let content = x.Content.ToString()
 
-                match !x.InsertionMode with
+                match x.InsertionMode with
                 | DefaultMode ->
-                    if !x.HasFormattedParent then
+                    if x.HasFormattedParent then
                         Text content
                     else
                         let normalizedContent = wsRegex.Value.Replace(content, " ")
@@ -238,24 +235,24 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData(content.Replace("<![CDATA[", "").Replace("]]>", ""))
 
-            x.Content := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.Content <- CharList.Empty
+            x.InsertionMode <- DefaultMode
 
             match result with
             | Text t when String.IsNullOrEmpty(t) -> ()
-            | _ -> x.Tokens := result :: !x.Tokens
+            | _ -> x.Tokens <- result :: x.Tokens
 
-        member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
-        member x.Cons(char) = (!x.Content).Cons(char)
-        member x.Cons(char) = Array.iter ((!x.Content).Cons) char
+        member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
+        member x.Cons(char) = x.Content.Cons(char)
+        member x.Cons(char) = Array.iter (x.Content.Cons) char
         member x.Cons(char: string) = x.Cons(char.ToCharArray())
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
             | TextParser.Whitespace _ -> ()
-            | a -> (!x.CurrentTag).Cons(Char.ToLowerInvariant a)
+            | a -> x.CurrentTag.Cons(Char.ToLowerInvariant a)
 
-        member x.ClearContent() = (!x.Content).Clear()
+        member x.ClearContent() = x.Content.Clear()
 
     // Tokenises a stream into a sequence of HTML tokens.
     let private tokenise reader =
@@ -269,15 +266,15 @@ module internal HtmlParser =
                 else
                     state.Pop()
                     tagOpen state
-            | TextParser.EndOfFile _ -> state.Tokens := EOF :: !state.Tokens
+            | TextParser.EndOfFile _ -> state.Tokens <- EOF :: state.Tokens
             | '&' ->
                 if state.ContentLength > 0 then
                     state.Emit()
                 else
-                    state.InsertionMode := CharRefMode
+                    state.InsertionMode <- CharRefMode
                     charRef state
             | _ ->
-                match !state.InsertionMode with
+                match state.InsertionMode with
                 | DefaultMode ->
                     state.Cons()
                     data state
@@ -541,7 +538,7 @@ module internal HtmlParser =
             | '>' ->
                 state.Cons([| '<'; '/' |])
                 state.Cons(state.CurrentTagName())
-                (!state.CurrentTag).Clear()
+                state.CurrentTag.Clear()
                 script state
             | TextParser.Letter _ ->
                 state.ConsTag()
@@ -598,7 +595,7 @@ module internal HtmlParser =
             | _ ->
                 state.Cons([| '<'; '/' |])
                 state.Cons(state.CurrentTagName())
-                (!state.CurrentTag).Clear()
+                state.CurrentTag.Clear()
                 script state
 
         and charRef state =
@@ -635,7 +632,7 @@ module internal HtmlParser =
         and bogusComment state =
             let rec bogusComment' (state: HtmlState) =
                 let exitBogusComment state =
-                    state.InsertionMode := CommentMode
+                    state.InsertionMode <- CommentMode
                     state.Emit()
 
                 match state.Peek() with
@@ -667,10 +664,10 @@ module internal HtmlParser =
                 cData (i + 1) state
             | '>' when i = 2 ->
                 state.Cons()
-                state.InsertionMode := CDATAMode
+                state.InsertionMode <- CDATAMode
                 state.Emit()
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CDATAMode
+                state.InsertionMode <- CDATAMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -680,7 +677,7 @@ module internal HtmlParser =
             match state.Peek() with
             | '>' ->
                 state.Pop()
-                state.InsertionMode := DocTypeMode
+                state.InsertionMode <- DocTypeMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -692,7 +689,7 @@ module internal HtmlParser =
                 state.Pop()
                 commentEndDash state
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -704,7 +701,7 @@ module internal HtmlParser =
                 state.Pop()
                 commentEndState state
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -714,10 +711,10 @@ module internal HtmlParser =
             match state.Peek() with
             | '>' ->
                 state.Pop()
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -843,7 +840,7 @@ module internal HtmlParser =
                 state.EmitTag(false)
             | '&' ->
                 assert (state.ContentLength = 0)
-                state.InsertionMode := InsertionMode.CharRefMode
+                state.InsertionMode <- InsertionMode.CharRefMode
                 attributeValueUnquotedCharRef [ '/'; '>' ] state
             | _ ->
                 state.ConsAttrValue()
@@ -865,7 +862,7 @@ module internal HtmlParser =
                 afterAttributeValueQuoted state
             | '&' ->
                 assert (state.ContentLength = 0)
-                state.InsertionMode := InsertionMode.CharRefMode
+                state.InsertionMode <- InsertionMode.CharRefMode
                 attributeValueQuotedCharRef quote state
             | _ ->
                 state.ConsAttrValue()
@@ -919,13 +916,13 @@ module internal HtmlParser =
                 state.NewAttribute()
                 attributeName state
 
-        let next = ref (state.Reader.Peek())
+        let mutable next = state.Reader.Peek()
 
-        while !next <> -1 do
+        while next <> -1 do
             data state
-            next := state.Reader.Peek()
+            next <- state.Reader.Peek()
 
-        !state.Tokens |> List.rev
+        state.Tokens |> List.rev
 
     let private parse reader =
         let canNotHaveChildren (name: string) =

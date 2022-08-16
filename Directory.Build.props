@@ -11,5 +11,14 @@
     <PackageProjectUrl>https://fsprojects.github.io/FSharp.Data</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FSharp.Data/master/docs/img/logo.png</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src\keyfile.snk</AssemblyOriginatorKeyFile>
+    <PublicSign>false</PublicSign>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnableSourceLink>true</EnableSourceLink>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 </Project>

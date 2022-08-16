@@ -1,4 +1,4 @@
-module FSharp.Data.Core.Tests.HtmlCharRefs
+module FSharp.Data.Tests.HtmlCharRefs
 
 open NUnit.Framework
 open FsUnit

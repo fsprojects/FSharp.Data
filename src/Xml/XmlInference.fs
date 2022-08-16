@@ -2,7 +2,7 @@
 // Implements type inference for XML
 // --------------------------------------------------------------------------------------
 
-module ProviderImplementation.XmlInference
+module internal ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq

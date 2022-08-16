@@ -1,4 +1,4 @@
-module FSharp.Data.Core.Tests.Http
+module FSharp.Data.Tests.Http
 
 open FsUnit
 open NUnit.Framework

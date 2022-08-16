@@ -6,7 +6,9 @@ index: 2
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Core.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Csv.Core.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Html.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
@@ -59,9 +61,10 @@ first row is headers. (This behaviour is likely to get smarter in later releases
 *)
 
 [<Literal>]
-let ResolutionFolder = __SOURCE_DIRECTORY__
+let F1_2017_URL =
+    "https://en.wikipedia.org/wiki/2017_FIA_Formula_One_World_Championship"
 
-type F1_2017 = HtmlProvider<"../data/2017_F1.htm", ResolutionFolder=ResolutionFolder>
+type F1_2017 = HtmlProvider<F1_2017_URL>
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
@@ -70,12 +73,8 @@ entities exist then the table will simply be named `Tablexx` where xx is the pos
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
-let url =
-    "https://en.wikipedia.org/wiki/"
-    + "2017_FIA_Formula_One_World_Championship"
-
 // Download the latest market depth information
-let f1Calendar = F1_2017.Load(url).Tables.``Season calendar``
+let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.``Season calendarEdit``
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'

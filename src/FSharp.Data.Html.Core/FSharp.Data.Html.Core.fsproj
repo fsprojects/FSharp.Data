@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OtherFlags>--warnon:1182 --nowarn:10001</OtherFlags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageIcon>logo.png</PackageIcon>
+    <!-- always have tailcalls on for design time compiler add-in to allow repo to compile in DEBUG, see https://github.com/fsprojects/FSharp.Data/issues/1410 -->
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Html\HtmlCssSelectors.fs" />
+    <Compile Include="..\Html\HtmlCharRefs.fs" />
+    <Compile Include="..\Html\HtmlNode.fs" />
+    <Compile Include="..\Html\HtmlParser.fs" />
+    <Compile Include="..\Html\HtmlOperations.fs" />
+    <Compile Include="..\Html\HtmlCssSelectorExtensions.fs" />
+    <Compile Include="..\Html\HtmlActivePatterns.fs" />
+    <Compile Include="..\Html\HtmlInference.fs" />
+    <Compile Include="..\Html\HtmlRuntime.fs" />
+    <Compile Include="..\AssemblyInfo.Html.Core.fs" />
+    <Compile Include="InternalsVisibleTo.fs" />
+    <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

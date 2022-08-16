@@ -36,9 +36,15 @@ let summary = "Library of F# type providers and data access tools"
 
 let description =
     """
-  The FSharp.Data.Core and FSharp.Data packages contain type providers and utilities to access
-  common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
-  contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
+  The FSharp.Data packages contain type providers and utilities to access
+  common data formats (CSV, HTML, JSON and XML in your F# applications and scripts.
+  
+  * FSharp.Data -- includes everything
+    * FSharp.Data.Http -- http types/helpers
+    * FSharp.Data.Csv.Core -- csv types/helpers
+    * FSharp.Data.Json.Core -- json types/helpers
+    * FSharp.Data.Html.Core -- html types/helpers
+    * FSharp.Data.Xml.Core -- xml types/helpers"""
 
 let tags =
     "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
@@ -136,13 +142,7 @@ Target.create "Pack" (fun _ ->
           ("PackageLicenseExpression", license)
           ("PackageReleaseNotes", releaseNotes)
           ("Summary", summary)
-          ("PackageDescription", description)
-          ("EnableSourceLink", "true")
-          ("PublishRepositoryUrl", "true")
-          ("EmbedUntrackedSources", "true")
-          ("IncludeSymbols", "true")
-          //("SymbolPackageFormat", "snupkg")
-          ]
+          ("PackageDescription", description) ]
 
     DotNet.pack
         (fun p ->

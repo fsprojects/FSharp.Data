@@ -6,8 +6,7 @@ index: 1
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Core.dll"
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"

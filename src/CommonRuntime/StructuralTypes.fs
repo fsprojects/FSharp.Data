@@ -11,7 +11,7 @@ open FSharp.Data.Runtime
 /// <namespacedoc>
 ///   <summary>Types that represent the result of static type inference.</summary>
 /// </namespacedoc>
-type InferedProperty =
+type internal InferedProperty =
     { Name: string
       mutable Type: InferedType }
     override x.ToString() = sprintf "%A" x
@@ -19,7 +19,7 @@ type InferedProperty =
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
 /// this type represents the number of occurrences of individual forms
-type InferedMultiplicity =
+type internal InferedMultiplicity =
     | Single
     | OptionalSingle
     | Multiple
@@ -27,7 +27,7 @@ type InferedMultiplicity =
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)
 [<RequireQualifiedAccess>]
-type InferedTypeTag =
+type internal InferedTypeTag =
     // Unknown type
     | Null
     // Primitive types
@@ -61,7 +61,7 @@ type InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 [<CustomEquality; NoComparison; RequireQualifiedAccess>]
-type InferedType =
+type internal InferedType =
     | Primitive of typ: Type * unit: option<System.Type> * optional: bool * shouldOverrideOnMerge: bool
     | Record of name: string option * fields: InferedProperty list * optional: bool
     | Json of typ: InferedType * optional: bool
@@ -141,7 +141,7 @@ type InferedType =
 // ------------------------------------------------------------------------------------------------
 // Additional operations for working with the inferred representation
 
-type InferedTypeTag with
+type internal InferedTypeTag with
     member x.NiceName =
         match x with
         | Null -> failwith "Null nodes should be skipped"
@@ -184,21 +184,21 @@ type InferedTypeTag with
 
 /// Dummy type to represent that only "0" was found.
 /// Will be generated as 'int', unless it's converted to Bit.
-type Bit0 = Bit0
+type internal Bit0 = Bit0
 
 /// Dummy type to represent that only "1" was found
 /// Will be generated as 'int', unless it's converted to Bit
-type Bit1 = Bit1
+type internal Bit1 = Bit1
 
 /// Dummy type to represent that only one of "0" and "1" were found
 /// Will be generated as a 'bool', unless it's converted to another numerical type
-type Bit = Bit
+type internal Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
 
 /// Represents a transformation of a type
 [<RequireQualifiedAccess>]
-type TypeWrapper =
+type internal TypeWrapper =
     /// No transformation will be made to the type
     | None
     /// The type T will be converter to type T option
@@ -211,7 +211,7 @@ type TypeWrapper =
 /// Represents type information about a primitive value (used mainly in the CSV provider)
 /// This type captures the type, unit of measure and handling of missing values (if we
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
-type PrimitiveInferedValue =
+type internal PrimitiveInferedValue =
     { InferedType: Type
       RuntimeType: Type
       UnitOfMeasure: Type option
@@ -236,7 +236,7 @@ type PrimitiveInferedValue =
 /// Represents type information about a primitive property (used mainly in the CSV provider)
 /// This type captures the type, unit of measure and handling of missing values (if we
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
-type PrimitiveInferedProperty =
+type internal PrimitiveInferedProperty =
     { Name: string
       Value: PrimitiveInferedValue }
     static member Create(name, typ, (typWrapper: TypeWrapper), unit) =

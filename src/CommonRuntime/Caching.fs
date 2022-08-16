@@ -1,5 +1,5 @@
 /// Implements caching using in-memory and local file system
-module FSharp.Data.Runtime.Caching
+module internal FSharp.Data.Runtime.Caching
 
 open System
 open System.Collections.Concurrent

@@ -1,5 +1,5 @@
 /// Implements type inference for unstructured documents like XML or JSON
-module FSharp.Data.Runtime.StructuralInference
+module internal FSharp.Data.Runtime.StructuralInference
 
 open System
 open System.Diagnostics
@@ -97,8 +97,8 @@ let supportsUnitsOfMeasure typ = List.exists ((=) typ) numericTypes
 
 /// Returns a tag of a type - a tag represents a 'kind' of type
 /// (essentially it describes the different bottom types we have)
-let typeTag =
-    function
+let typeTag inferredType =
+    match inferredType with
     | InferedType.Record (name = n) -> InferedTypeTag.Record n
     | InferedType.Collection _ -> InferedTypeTag.Collection
     | InferedType.Null

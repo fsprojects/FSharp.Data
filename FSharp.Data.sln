@@ -88,11 +88,21 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.DesignTime.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FSharp.Data.Core.Tests.CSharp", "tests\FSharp.Data.Core.Tests.CSharp\FSharp.Data.Core.Tests.CSharp.csproj", "{290FED0C-D7C8-486F-AACF-3D7A1304C863}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Core", "src\FSharp.Data.Core\FSharp.Data.Core.fsproj", "{DAEBFBCF-84CD-40BB-B8F6-99B1A9C4641F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Json.Core", "src\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj", "{DAEBFBCF-84CD-40BB-B8F6-99B1A9C4641F}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{750148EC-6A05-421D-96A4-E5AC9D18AF58}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj", "{44E0DF97-D8FD-4805-8A84-B888D9589C8A}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Html.Core", "src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj", "{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Http", "src\FSharp.Data.Http\FSharp.Data.Http.fsproj", "{29EDED03-D2D6-415C-A17D-00806C52035A}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Xml.Core", "src\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj", "{1ECEFFEE-1040-40ED-9EB5-CE720A33058D}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Csv.Core", "src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj", "{0A1B8B61-268D-4061-B567-A47141C608E4}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.WorldBank.Core", "src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj", "{A69D007B-EAF0-4866-A8B4-A2EDF2614E56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +142,26 @@ Global
 		{44E0DF97-D8FD-4805-8A84-B888D9589C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44E0DF97-D8FD-4805-8A84-B888D9589C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44E0DF97-D8FD-4805-8A84-B888D9589C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29EDED03-D2D6-415C-A17D-00806C52035A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29EDED03-D2D6-415C-A17D-00806C52035A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29EDED03-D2D6-415C-A17D-00806C52035A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29EDED03-D2D6-415C-A17D-00806C52035A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECEFFEE-1040-40ED-9EB5-CE720A33058D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECEFFEE-1040-40ED-9EB5-CE720A33058D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECEFFEE-1040-40ED-9EB5-CE720A33058D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECEFFEE-1040-40ED-9EB5-CE720A33058D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1B8B61-268D-4061-B567-A47141C608E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1B8B61-268D-4061-B567-A47141C608E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1B8B61-268D-4061-B567-A47141C608E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1B8B61-268D-4061-B567-A47141C608E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A69D007B-EAF0-4866-A8B4-A2EDF2614E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A69D007B-EAF0-4866-A8B4-A2EDF2614E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A69D007B-EAF0-4866-A8B4-A2EDF2614E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A69D007B-EAF0-4866-A8B4-A2EDF2614E56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
