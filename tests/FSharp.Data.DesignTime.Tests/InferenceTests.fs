@@ -497,6 +497,7 @@ let ``recursive schemas don't cause loops``() =
 	    <xs:element name="underline" type="TextType"/>
     </xs:schema>"""
     let inferedTypeFromSchema = getInferedTypeFromSchema xsd
+    inferedTypeFromSchema |> ignore
     //printfn "%A" inferedTypeFromSchema
 
     let xsd = """<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
