@@ -2,7 +2,6 @@
 namespace FSharp.Data
 
 open System
-open System.ComponentModel
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
@@ -10,233 +9,6 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open System.Runtime.InteropServices
 open System.Collections.Generic
-
-// --------------------------------------------------------------------------------------
-
-/// <summary>Represents an HTML attribute. The name is always normalized to lowercase</summary>
-/// <namespacedoc>
-///   <summary>Contains the primary types for the FSharp.Data package.</summary>
-/// </namespacedoc>
-///
-type HtmlAttribute =
-
-    internal
-    | HtmlAttribute of name: string * value: string
-
-    /// <summary>
-    /// Creates an html attribute
-    /// </summary>
-    /// <param name="name">The name of the attribute</param>
-    /// <param name="value">The value of the attribute</param>
-    static member New(name: string, value: string) =
-        HtmlAttribute(name.ToLowerInvariant(), value)
-
-[<StructuredFormatDisplay("{_Print}")>]
-/// Represents an HTML node. The names of elements are always normalized to lowercase
-type HtmlNode =
-
-    internal
-    | HtmlElement of name: string * attributes: HtmlAttribute list * elements: HtmlNode list
-    | HtmlText of content: string
-    | HtmlComment of content: string
-    | HtmlCData of content: string
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    static member NewElement(name: string) =
-        HtmlElement(name.ToLowerInvariant(), [], [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    static member NewElement(name: string, attrs: seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name: string, children: seq<_>) =
-        HtmlElement(name.ToLowerInvariant(), [], List.ofSeq children)
-
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name: string, attrs: seq<_>, children: seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, List.ofSeq children)
-
-    /// <summary>
-    /// Creates a text content element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewText content = HtmlText(content)
-
-    /// <summary>
-    /// Creates a comment element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewComment content = HtmlComment(content)
-
-    /// <summary>
-    /// Creates a CData element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewCData content = HtmlCData(content)
-
-    override x.ToString() =
-        let isVoidElement =
-            let set =
-                [| "area"
-                   "base"
-                   "br"
-                   "col"
-                   "command"
-                   "embed"
-                   "hr"
-                   "img"
-                   "input"
-                   "keygen"
-                   "link"
-                   "meta"
-                   "param"
-                   "source"
-                   "track"
-                   "wbr" |]
-                |> Set.ofArray
-
-            fun name -> Set.contains name set
-
-        let rec serialize (sb: StringBuilder) indentation canAddNewLine html =
-            let append (str: string) = sb.Append str |> ignore
-
-            let appendEndTag name =
-                append "</"
-                append name
-                append ">"
-
-            let newLine plus =
-                sb.AppendLine() |> ignore
-                String(' ', indentation + plus) |> append
-
-            match html with
-            | HtmlElement (name, attributes, elements) ->
-                let onlyText =
-                    elements
-                    |> List.forall (function
-                        | HtmlText _ -> true
-                        | _ -> false)
-
-                if canAddNewLine && not onlyText then newLine 0
-                append "<"
-                append name
-
-                for HtmlAttribute (name, value) in attributes do
-                    append " "
-                    append name
-                    append "=\""
-                    append value
-                    append "\""
-
-                if isVoidElement name then
-                    append " />"
-                elif elements.IsEmpty then
-                    append ">"
-                    appendEndTag name
-                else
-                    append ">"
-                    if not onlyText then newLine 2
-                    let mutable canAddNewLine = false
-
-                    for element in elements do
-                        serialize sb (indentation + 2) canAddNewLine element
-                        canAddNewLine <- true
-
-                    if not onlyText then newLine 0
-                    appendEndTag name
-            | HtmlText str -> append str
-            | HtmlComment str ->
-                append "<!--"
-                append str
-                append "-->"
-            | HtmlCData str ->
-                append "<![CDATA["
-                append str
-                append "]]>"
-
-        let sb = StringBuilder()
-        serialize sb 0 false x |> ignore
-        sb.ToString()
-
-    /// <exclude />
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
-                               10001,
-                               IsHidden = true,
-                               IsError = false)>]
-    member x._Print =
-        let str = x.ToString()
-
-        if str.Length > 512 then
-            str.Substring(0, 509) + "..."
-        else
-            str
-
-[<StructuredFormatDisplay("{_Print}")>]
-/// Represents an HTML document
-type HtmlDocument =
-    internal
-    | HtmlDocument of docType: string * elements: HtmlNode list
-
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="docType">The document type specifier string</param>
-    /// <param name="children">The child elements of this document</param>
-    static member New(docType, children: seq<_>) =
-        HtmlDocument(docType, List.ofSeq children)
-
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="children">The child elements of this document</param>
-    static member New(children: seq<_>) = HtmlDocument("", List.ofSeq children)
-
-    override x.ToString() =
-        match x with
-        | HtmlDocument (docType, elements) ->
-            (if String.IsNullOrEmpty docType then
-                 ""
-             else
-                 "<!DOCTYPE " + docType + ">" + Environment.NewLine)
-            + (elements
-               |> List.map (fun x -> x.ToString())
-               |> String.Concat)
-
-    /// <exclude />
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
-                               10001,
-                               IsHidden = true,
-                               IsError = false)>]
-    member x._Print =
-        let str = x.ToString()
-
-        if str.Length > 512 then
-            str.Substring(0, 509) + "..."
-        else
-            str
-
 
 // --------------------------------------------------------------------------------------
 
@@ -321,20 +93,20 @@ module internal HtmlParser =
             | CDATAMode -> "cdata"
 
     type HtmlState =
-        { Attributes: (CharList * CharList) list ref
-          CurrentTag: CharList ref
-          Content: CharList ref
-          HasFormattedParent: bool ref
-          InsertionMode: InsertionMode ref
-          Tokens: HtmlToken list ref
+        { mutable Attributes: (CharList * CharList) list
+          mutable CurrentTag: CharList
+          mutable Content: CharList
+          mutable HasFormattedParent: bool
+          mutable InsertionMode: InsertionMode
+          mutable Tokens: HtmlToken list
           Reader: TextReader }
         static member Create(reader: TextReader) =
-            { Attributes = ref []
-              CurrentTag = ref CharList.Empty
-              Content = ref CharList.Empty
-              HasFormattedParent = ref false
-              InsertionMode = ref DefaultMode
-              Tokens = ref []
+            { Attributes = []
+              CurrentTag = CharList.Empty
+              Content = CharList.Empty
+              HasFormattedParent = false
+              InsertionMode = DefaultMode
+              Tokens = []
               Reader = reader }
 
         member x.Pop() = x.Reader.Read() |> ignore
@@ -344,30 +116,28 @@ module internal HtmlParser =
             [| 0 .. (count - 1) |]
             |> Array.map (fun _ -> x.Reader.ReadChar())
 
-        member x.Contents = (!x.Content).ToString()
-        member x.ContentLength = (!x.Content).Length
+        member x.Contents = x.Content.ToString()
+        member x.ContentLength = x.Content.Length
 
         member x.NewAttribute() =
-            x.Attributes
-            := (CharList.Empty, CharList.Empty)
-               :: (!x.Attributes)
+            x.Attributes <- (CharList.Empty, CharList.Empty) :: x.Attributes
 
         member x.ConsAttrName() =
-            match !x.Attributes with
+            match x.Attributes with
             | [] ->
                 x.NewAttribute()
                 x.ConsAttrName()
             | (h, _) :: _ -> h.Cons(Char.ToLowerInvariant(x.Reader.ReadChar()))
 
-        member x.CurrentTagName() = (!x.CurrentTag).ToString().Trim()
+        member x.CurrentTagName() = x.CurrentTag.ToString().Trim()
 
         member x.CurrentAttrName() =
-            match !x.Attributes with
+            match x.Attributes with
             | [] -> String.Empty
             | (h, _) :: _ -> h.ToString()
 
         member x.ConsAttrValue(c) =
-            match !x.Attributes with
+            match x.Attributes with
             | [] ->
                 x.NewAttribute()
                 x.ConsAttrValue(c)
@@ -376,7 +146,7 @@ module internal HtmlParser =
         member x.ConsAttrValue() = x.ConsAttrValue(x.Reader.ReadChar())
 
         member x.GetAttributes() =
-            !x.Attributes
+            x.Attributes
             |> List.choose (fun (key, value) ->
                 if key.Length > 0 then
                     Some
@@ -386,12 +156,12 @@ module internal HtmlParser =
             |> List.rev
 
         member x.EmitSelfClosingTag() =
-            let name = (!x.CurrentTag).ToString().Trim()
+            let name = x.CurrentTag.ToString().Trim()
             let result = Tag(true, name, x.GetAttributes())
-            x.CurrentTag := CharList.Empty
-            x.InsertionMode := DefaultMode
-            x.Attributes := []
-            x.Tokens := result :: !x.Tokens
+            x.CurrentTag <- CharList.Empty
+            x.InsertionMode <- DefaultMode
+            x.Attributes <- []
+            x.Tokens <- result :: x.Tokens
 
         member x.IsFormattedTag =
             match x.CurrentTagName().ToLower() with
@@ -405,7 +175,7 @@ module internal HtmlParser =
             | _ -> false
 
         member x.EmitTag(isEnd) =
-            let name = (!x.CurrentTag).ToString().Trim()
+            let name = x.CurrentTag.ToString().Trim()
 
             let result =
                 if isEnd then
@@ -420,38 +190,37 @@ module internal HtmlParser =
             // pre is the only default formatted tag, nested pres are not
             // allowed in the spec.
             if x.IsFormattedTag then
-                x.HasFormattedParent := not isEnd
+                x.HasFormattedParent <- not isEnd
             else
-                x.HasFormattedParent
-                := !x.HasFormattedParent || x.IsFormattedTag
+                x.HasFormattedParent <- x.HasFormattedParent || x.IsFormattedTag
 
-            x.InsertionMode
-            := if x.IsScriptTag && (not isEnd) then
-                   ScriptMode
-               else
-                   DefaultMode
+            x.InsertionMode <-
+                if x.IsScriptTag && (not isEnd) then
+                    ScriptMode
+                else
+                    DefaultMode
 
-            x.CurrentTag := CharList.Empty
-            x.Attributes := []
-            x.Tokens := result :: !x.Tokens
+            x.CurrentTag <- CharList.Empty
+            x.Attributes <- []
+            x.Tokens <- result :: x.Tokens
 
         member x.EmitToAttributeValue() =
-            assert (!x.InsertionMode = InsertionMode.CharRefMode)
-            let content = (!x.Content).ToString() |> HtmlCharRefs.substitute
+            assert (x.InsertionMode = InsertionMode.CharRefMode)
+            let content = x.Content.ToString() |> HtmlCharRefs.substitute
 
             for c in content.ToCharArray() do
                 x.ConsAttrValue c
 
-            x.Content := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.Content <- CharList.Empty
+            x.InsertionMode <- DefaultMode
 
         member x.Emit() : unit =
             let result =
-                let content = (!x.Content).ToString()
+                let content = x.Content.ToString()
 
-                match !x.InsertionMode with
+                match x.InsertionMode with
                 | DefaultMode ->
-                    if !x.HasFormattedParent then
+                    if x.HasFormattedParent then
                         Text content
                     else
                         let normalizedContent = wsRegex.Value.Replace(content, " ")
@@ -466,24 +235,24 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData(content.Replace("<![CDATA[", "").Replace("]]>", ""))
 
-            x.Content := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.Content <- CharList.Empty
+            x.InsertionMode <- DefaultMode
 
             match result with
             | Text t when String.IsNullOrEmpty(t) -> ()
-            | _ -> x.Tokens := result :: !x.Tokens
+            | _ -> x.Tokens <- result :: x.Tokens
 
-        member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
-        member x.Cons(char) = (!x.Content).Cons(char)
-        member x.Cons(char) = Array.iter ((!x.Content).Cons) char
+        member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
+        member x.Cons(char) = x.Content.Cons(char)
+        member x.Cons(char) = Array.iter (x.Content.Cons) char
         member x.Cons(char: string) = x.Cons(char.ToCharArray())
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
             | TextParser.Whitespace _ -> ()
-            | a -> (!x.CurrentTag).Cons(Char.ToLowerInvariant a)
+            | a -> x.CurrentTag.Cons(Char.ToLowerInvariant a)
 
-        member x.ClearContent() = (!x.Content).Clear()
+        member x.ClearContent() = x.Content.Clear()
 
     // Tokenises a stream into a sequence of HTML tokens.
     let private tokenise reader =
@@ -497,15 +266,15 @@ module internal HtmlParser =
                 else
                     state.Pop()
                     tagOpen state
-            | TextParser.EndOfFile _ -> state.Tokens := EOF :: !state.Tokens
+            | TextParser.EndOfFile _ -> state.Tokens <- EOF :: state.Tokens
             | '&' ->
                 if state.ContentLength > 0 then
                     state.Emit()
                 else
-                    state.InsertionMode := CharRefMode
+                    state.InsertionMode <- CharRefMode
                     charRef state
             | _ ->
-                match !state.InsertionMode with
+                match state.InsertionMode with
                 | DefaultMode ->
                     state.Cons()
                     data state
@@ -769,7 +538,7 @@ module internal HtmlParser =
             | '>' ->
                 state.Cons([| '<'; '/' |])
                 state.Cons(state.CurrentTagName())
-                (!state.CurrentTag).Clear()
+                state.CurrentTag.Clear()
                 script state
             | TextParser.Letter _ ->
                 state.ConsTag()
@@ -826,7 +595,7 @@ module internal HtmlParser =
             | _ ->
                 state.Cons([| '<'; '/' |])
                 state.Cons(state.CurrentTagName())
-                (!state.CurrentTag).Clear()
+                state.CurrentTag.Clear()
                 script state
 
         and charRef state =
@@ -863,7 +632,7 @@ module internal HtmlParser =
         and bogusComment state =
             let rec bogusComment' (state: HtmlState) =
                 let exitBogusComment state =
-                    state.InsertionMode := CommentMode
+                    state.InsertionMode <- CommentMode
                     state.Emit()
 
                 match state.Peek() with
@@ -895,10 +664,10 @@ module internal HtmlParser =
                 cData (i + 1) state
             | '>' when i = 2 ->
                 state.Cons()
-                state.InsertionMode := CDATAMode
+                state.InsertionMode <- CDATAMode
                 state.Emit()
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CDATAMode
+                state.InsertionMode <- CDATAMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -908,7 +677,7 @@ module internal HtmlParser =
             match state.Peek() with
             | '>' ->
                 state.Pop()
-                state.InsertionMode := DocTypeMode
+                state.InsertionMode <- DocTypeMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -920,7 +689,7 @@ module internal HtmlParser =
                 state.Pop()
                 commentEndDash state
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -932,7 +701,7 @@ module internal HtmlParser =
                 state.Pop()
                 commentEndState state
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -942,10 +711,10 @@ module internal HtmlParser =
             match state.Peek() with
             | '>' ->
                 state.Pop()
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | TextParser.EndOfFile _ ->
-                state.InsertionMode := CommentMode
+                state.InsertionMode <- CommentMode
                 state.Emit()
             | _ ->
                 state.Cons()
@@ -1071,7 +840,7 @@ module internal HtmlParser =
                 state.EmitTag(false)
             | '&' ->
                 assert (state.ContentLength = 0)
-                state.InsertionMode := InsertionMode.CharRefMode
+                state.InsertionMode <- InsertionMode.CharRefMode
                 attributeValueUnquotedCharRef [ '/'; '>' ] state
             | _ ->
                 state.ConsAttrValue()
@@ -1093,7 +862,7 @@ module internal HtmlParser =
                 afterAttributeValueQuoted state
             | '&' ->
                 assert (state.ContentLength = 0)
-                state.InsertionMode := InsertionMode.CharRefMode
+                state.InsertionMode <- InsertionMode.CharRefMode
                 attributeValueQuotedCharRef quote state
             | _ ->
                 state.ConsAttrValue()
@@ -1147,13 +916,13 @@ module internal HtmlParser =
                 state.NewAttribute()
                 attributeName state
 
-        let next = ref (state.Reader.Peek())
+        let mutable next = state.Reader.Peek()
 
-        while !next <> -1 do
+        while next <> -1 do
             data state
-            next := state.Reader.Peek()
+            next <- state.Reader.Peek()
 
-        !state.Tokens |> List.rev
+        state.Tokens |> List.rev
 
     let private parse reader =
         let canNotHaveChildren (name: string) =
@@ -1244,19 +1013,19 @@ module internal HtmlParser =
                     (dt, tokens, content)
                 else
                     let _, elements, expectedTagEnd, parentTagName, name, attributes = callstack.Pop()
-                    let e = HtmlElement(name, attributes, content)
+                    let e = HtmlNode.HtmlElement(name, attributes, content)
                     parse' dt (e :: elements) expectedTagEnd parentTagName tokens
 
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
             | Tag (_, "br", []) :: rest ->
-                let t = HtmlText Environment.NewLine
+                let t = HtmlNode.HtmlText Environment.NewLine
                 parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Tag (true, name, attributes) :: rest ->
-                let e = HtmlElement(name, attributes, [])
+                let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag (false, name, attributes) :: rest when canNotHaveChildren name ->
-                let e = HtmlElement(name, attributes, [])
+                let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag (_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
                 // insert missing </tr> </td> or </th> when starting new row/cell/header
@@ -1291,20 +1060,20 @@ module internal HtmlParser =
                     // ignore this token
                     parse' docType elements expectedTagEnd parentTagName rest
                 else
-                    let t = HtmlText(a + b)
+                    let t = HtmlNode.HtmlText(a + b)
                     parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Text cont :: rest ->
                 if cont = "" then
                     // ignore this token
                     parse' docType elements expectedTagEnd parentTagName rest
                 else
-                    let t = HtmlText cont
+                    let t = HtmlNode.HtmlText cont
                     parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Comment cont :: rest ->
-                let c = HtmlComment cont
+                let c = HtmlNode.HtmlComment cont
                 parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | CData cont :: rest ->
-                let c = HtmlCData cont
+                let c = HtmlNode.HtmlCData cont
                 parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | EOF :: _ -> recursiveReturn (docType, [], List.rev elements)
             | [] -> recursiveReturn (docType, [], List.rev elements)
@@ -1326,44 +1095,46 @@ module internal HtmlParser =
     /// All br tags will be replaced by newlines
     let parseFragment reader = parse reader |> snd
 
-// --------------------------------------------------------------------------------------
+[<AutoOpen>]
+module HtmlAutoOpens =
+    // --------------------------------------------------------------------------------------
 
-type HtmlDocument with
+    type HtmlDocument with
 
-    /// Parses the specified HTML string
-    static member Parse(text) =
-        use reader = new StringReader(text)
-        HtmlParser.parseDocument reader
+        /// Parses the specified HTML string
+        static member Parse(text) =
+            use reader = new StringReader(text)
+            HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified stream
-    static member Load(stream: Stream) =
-        use reader = new StreamReader(stream)
-        HtmlParser.parseDocument reader
+        /// Loads HTML from the specified stream
+        static member Load(stream: Stream) =
+            use reader = new StreamReader(stream)
+            HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified reader
-    static member Load(reader: TextReader) = HtmlParser.parseDocument reader
+        /// Loads HTML from the specified reader
+        static member Load(reader: TextReader) = HtmlParser.parseDocument reader
 
-    /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri: string, [<Optional>] ?encoding) =
-        async {
-            let encoding = defaultArg encoding Encoding.UTF8
-            let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
-            return HtmlParser.parseDocument reader
-        }
+        /// Loads HTML from the specified uri asynchronously
+        static member AsyncLoad(uri: string, [<Optional>] ?encoding) =
+            async {
+                let encoding = defaultArg encoding Encoding.UTF8
+                let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" encoding.WebName uri
+                return HtmlParser.parseDocument reader
+            }
 
-    /// Loads HTML from the specified uri
-    static member Load(uri: string, [<Optional>] ?encoding) =
-        HtmlDocument.AsyncLoad(uri, ?encoding = encoding)
-        |> Async.RunSynchronously
+        /// Loads HTML from the specified uri
+        static member Load(uri: string, [<Optional>] ?encoding) =
+            HtmlDocument.AsyncLoad(uri, ?encoding = encoding)
+            |> Async.RunSynchronously
 
-type HtmlNode with
+    type HtmlNode with
 
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member Parse(text) =
-        use reader = new StringReader(text)
-        HtmlParser.parseFragment reader
+        /// Parses the specified HTML string to a list of HTML nodes
+        static member Parse(text) =
+            use reader = new StringReader(text)
+            HtmlParser.parseFragment reader
 
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member ParseRooted(rootName, text) =
-        use reader = new StringReader(text)
-        HtmlElement(rootName, [], HtmlParser.parseFragment reader)
+        /// Parses the specified HTML string to a list of HTML nodes
+        static member ParseRooted(rootName, text) =
+            use reader = new StringReader(text)
+            HtmlNode.HtmlElement(rootName, [], HtmlParser.parseFragment reader)

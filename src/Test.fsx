@@ -2,6 +2,7 @@
 let dir = __SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime"
 let proj = "FSharp.Data.DesignTime"
 SetupTesting.generateSetupScript (__SOURCE_DIRECTORY__ + "/FSharp.Data.DesignTime") "FSharp.Data.DesignTime"
+
 #load "FSharp.Data.DesignTime/__setup__FSharp.Data.DesignTime__.fsx"
 #load "../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypesTesting.fs"
 #load "../tests/FSharp.Data.DesignTime.Tests/TypeProviderInstantiation.fs"
@@ -14,25 +15,44 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 let (++) a b = Path.Combine(a, b)
-let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
-let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
+
+let resolutionFolder =
+    __SOURCE_DIRECTORY__
+    ++ ".."
+    ++ "tests"
+    ++ "FSharp.Data.Tests"
+    ++ "Data"
+
+let outputFolder =
+    __SOURCE_DIRECTORY__
+    ++ ".."
+    ++ "tests"
+    ++ "FSharp.Data.DesignTime.Tests"
+    ++ "expected"
+
 let assemblyName = "FSharp.Data.dll"
 
-let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
+let dump signatureOnly ignoreOutput saveToFileSystem (inst: TypeProviderInstantiation) =
     let root = __SOURCE_DIRECTORY__ ++ ".." ++ "bin"
-    let runtimeAssembly =
-        match platform with
-        | NetStandard20 -> root ++ "netstandard2.0" ++ assemblyName
-    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs platform 
-    inst.Dump(resolutionFolder, (if saveToFileSystem then outputFolder else ""), runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput)
+    let runtimeAssembly = root ++ "netstandard2.0" ++ assemblyName
+    let runtimeAssemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs()
+
+    inst.Dump(
+        resolutionFolder,
+        (if saveToFileSystem then
+             outputFolder
+         else
+             ""),
+        runtimeAssembly,
+        runtimeAssemblyRefs,
+        signatureOnly,
+        ignoreOutput
+    )
     |> Console.WriteLine
 
-let dumpAll inst =
-    dump false false NetStandard20 false inst
-//    dump false false NetStandard16 false inst
-//    dump false false NetStandard20 false inst
+let dumpAll inst = dump false false false inst
 
-let parameters : HtmlInference.Parameters = 
+let parameters: HtmlInference.Parameters =
     { MissingValues = TextConversions.DefaultMissingValues
       CultureInfo = CultureInfo.InvariantCulture
       UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
@@ -40,7 +60,7 @@ let parameters : HtmlInference.Parameters =
 
 let includeLayout = false
 
-let printTable tableName (url:string)  = 
+let printTable tableName (url: string) =
     url
     |> HtmlDocument.Load
     |> HtmlRuntime.getTables (Some parameters) includeLayout
@@ -49,28 +69,31 @@ let printTable tableName (url:string)  =
 
 printTable "Overview" "https://en.wikipedia.org/wiki/List_of_Doctor_Who_serials"
 
-Html { Sample = "doctor_who3.html"
-       PreferOptionals = false
-       IncludeLayoutTables = false
-       MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
-       Culture = "" 
-       Encoding = ""
-       ResolutionFolder = ""
-       EmbeddedResource = "" }
+Html
+    { Sample = "doctor_who3.html"
+      PreferOptionals = false
+      IncludeLayoutTables = false
+      MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
+      Culture = ""
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
-Json { Sample = "optionals.json"
-       SampleIsList = false
-       RootName = ""
-       Culture = ""
-       Encoding = ""
-       ResolutionFolder = ""
-       EmbeddedResource = ""
-       InferTypesFromValues = true
-       PreferDictionaries = false }
+Json
+    { Sample = "optionals.json"
+      SampleIsList = false
+      RootName = ""
+      Culture = ""
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = ""
+      InferTypesFromValues = true
+      PreferDictionaries = false }
 |> dumpAll
 
-Xml { Sample = "JsonInXml.xml"      
+Xml
+    { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = ""
@@ -81,7 +104,8 @@ Xml { Sample = "JsonInXml.xml"
       Schema = "" }
 |> dumpAll
 
-Csv { Sample = "AirQuality.csv"
+Csv
+    { Sample = "AirQuality.csv"
       Separators = ";"
       InferRows = Int32.MaxValue
       Schema = ""
@@ -100,9 +124,13 @@ Csv { Sample = "AirQuality.csv"
 |> dumpAll
 
 let testCases =
-    __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
+    __SOURCE_DIRECTORY__
+    ++ ".."
+    ++ "tests"
+    ++ "FSharp.Data.DesignTime.Tests"
+    ++ "SignatureTestCases.config"
     |> File.ReadAllLines
     |> Array.map (TypeProviderInstantiation.Parse >> snd)
 
 for testCase in testCases do
-    dump false false NetStandard20 true testCase
+    dump false false true testCase

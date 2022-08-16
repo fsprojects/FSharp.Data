@@ -67,7 +67,7 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
 
 /// Creates a function that takes Expr<string option> and converts it to
 /// an expression of other type - the type is specified by `field`
-let convertStringValue missingValuesStr cultureStr (field: PrimitiveInferedProperty) =
+let internal convertStringValue missingValuesStr cultureStr (field: PrimitiveInferedProperty) =
     let fieldName = field.Name
     let field = field.Value
 

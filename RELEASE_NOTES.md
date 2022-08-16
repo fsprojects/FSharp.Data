@@ -1,3 +1,13 @@
+### 5.0.1 - Aug 15 2022
+
+* There are now multiple packages
+  * FSharp.Data -- includes everything
+    * FSharp.Data.Http -- http types/helpers
+    * FSharp.Data.Csv.Core -- csv types/helpers
+    * FSharp.Data.Json.Core -- json types/helpers
+    * FSharp.Data.Html.Core -- html types/helpers
+    * FSharp.Data.Xml.Core -- xml types/helpers
+
 ### 4.2.10 - Aug 12 2022
 
 * Implement "inline schemas": ability to add type hints into the type providers' source documents by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1447

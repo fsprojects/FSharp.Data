@@ -1,5 +1,5 @@
-﻿/// Implements caching using in-memory and local file system
-module FSharp.Data.Runtime.Caching
+/// Implements caching using in-memory and local file system
+module internal FSharp.Data.Runtime.Caching
 
 open System
 open System.Collections.Concurrent
@@ -34,7 +34,7 @@ let createInMemoryCache (expiration: TimeSpan) =
         }
 
     { new ICache<_, _> with
-        member __.Set(key, value) =
+        member _.Set(key, value) =
             dict.[key] <- (value, DateTime.UtcNow)
             invalidationFunction key |> Async.Start
 
@@ -47,7 +47,7 @@ let createInMemoryCache (expiration: TimeSpan) =
                 Some value
             | _ -> None
 
-        member __.Remove(key) =
+        member _.Remove(key) =
             match dict.TryRemove(key) with
             | true, _ -> log (sprintf "Explicitly removed from cache: %O" key)
             | _ -> () }
@@ -89,7 +89,7 @@ let createInternetFileCache prefix expiration =
 
         let cache =
             { new ICache<string, string> with
-                member __.Set(key, value) =
+                member _.Set(key, value) =
                     let cacheFile = cacheFile key
 
                     try
@@ -101,7 +101,7 @@ let createInternetFileCache prefix expiration =
                             e.Message
                         )
 
-                member __.TryRetrieve(key, ?extendCacheExpiration) =
+                member _.TryRetrieve(key, ?extendCacheExpiration) =
                     if extendCacheExpiration = Some true then
                         failwith "Not implemented"
 
@@ -119,7 +119,7 @@ let createInternetFileCache prefix expiration =
                         Debug.WriteLine("Caching: Failed to read file {0} with an exception: {1}", cacheFile, e.Message)
                         None
 
-                member __.Remove(key) =
+                member _.Remove(key) =
                     let cacheFile = cacheFile key
 
                     try
