@@ -1,3 +1,9 @@
+### 5.0.2 - Aug 17 2022
+* Identical to 4.2.10
+
+### 5.0.1 - Aug 16 2022
+* Reverted
+
 ### 4.2.10 - Aug 12 2022
 
 * Implement "inline schemas": ability to add type hints into the type providers' source documents by @mlaily in https://github.com/fsprojects/FSharp.Data/pull/1447
