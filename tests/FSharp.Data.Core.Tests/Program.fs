@@ -1,3 +1,5 @@
+module Program
+
 open System
 
 [<EntryPoint>]
