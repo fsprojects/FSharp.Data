@@ -103,21 +103,21 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
             use _holder = logTime "DisposingEvent" (sprintf "%O [%d]" x id)
             dispose None)
 
-    member __.Id = id
+    member _.Id = id
 
-    member __.SetFileToWatch(fullTypeName, path) =
+    member _.SetFileToWatch(fullTypeName, path) =
         lock filesToWatch (fun () -> filesToWatch.[fullTypeName] <- path)
 
-    member __.GetFileToWath(fullTypeName) =
+    member _.GetFileToWath(fullTypeName) =
         lock filesToWatch (fun () ->
             match filesToWatch.TryGetValue(fullTypeName) with
             | true, path -> Some path
             | _ -> None)
 
-    member __.AddDisposeAction action =
+    member _.AddDisposeAction action =
         lock disposeActions (fun () -> disposeActions.Add action)
 
-    member __.InvalidateOneType typeName =
+    member _.InvalidateOneType typeName =
         (use _holder = logTime "InvalidateOneType" (sprintf "%s in %O [%d]" typeName x id)
          dispose (Some typeName)
          log (sprintf "Calling invalidate for %O [%d]" x id))
@@ -743,5 +743,6 @@ module internal ProviderHelpers =
 
             spec.GeneratedType)
 
-[<assembly: InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests")>]
+[<assembly: InternalsVisibleToAttribute("FSharp.Data.Tests, PublicKey=00240000048000001401000006020000002400005253413100080000010001000de370e30996d51c2da4ba3878423843e8553ff8cf95bd0171fe6785d20e2f73c8a54feb5bf55888115de98bdf0f8c0e26ee79e4c0f535201582628313859078ab3be84442114655340980fa0232281badaa21c1c2849c1925d0cfbc3dfa8d22b00ba9800a3d9a6c00c5daf7344e3286c3ed6c3e62d7705db32e2a35ffef84963b8ae0a3fa8a365b4020007d22127bc24783a65602e858680d88f36d4d3ff7567fcbece85143ea5945330eb74e53596d0ead1209c56eaf2c5adbb80a05d70e59ba06b50af250a3b87239dd88b60ed57263ede090ea195f093aac2216897669634235b638fdd47b78fe55c9e34389c2a7cac21250b79c49e3a6e2f78dd3de9487")>]
+[<assembly: InternalsVisibleToAttribute("FSharp.Data.DesignTime.Tests, PublicKey=00240000048000001401000006020000002400005253413100080000010001000de370e30996d51c2da4ba3878423843e8553ff8cf95bd0171fe6785d20e2f73c8a54feb5bf55888115de98bdf0f8c0e26ee79e4c0f535201582628313859078ab3be84442114655340980fa0232281badaa21c1c2849c1925d0cfbc3dfa8d22b00ba9800a3d9a6c00c5daf7344e3286c3ed6c3e62d7705db32e2a35ffef84963b8ae0a3fa8a365b4020007d22127bc24783a65602e858680d88f36d4d3ff7567fcbece85143ea5945330eb74e53596d0ead1209c56eaf2c5adbb80a05d70e59ba06b50af250a3b87239dd88b60ed57263ede090ea195f093aac2216897669634235b638fdd47b78fe55c9e34389c2a7cac21250b79c49e3a6e2f78dd3de9487")>]
 do ()

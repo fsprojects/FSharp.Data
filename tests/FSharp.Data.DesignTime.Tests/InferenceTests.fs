@@ -3,6 +3,9 @@ module FSharp.Data.DesignTime.Tests.InferenceTests
 open FsUnit
 open System
 open System.Globalization
+open System.Xml
+open System.Xml.Linq
+open System.Xml.Schema
 open NUnit.Framework
 open FSharp.Data
 open FSharp.Data.Runtime
@@ -12,19 +15,18 @@ open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
 
 /// A collection containing just one type
-let SimpleCollection typ =
+let internal SimpleCollection typ =
   InferedType.Collection([ typeTag typ], Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
 
 let culture = TextRuntime.GetCulture ""
-let inferenceMode = InferenceMode'.ValuesOnly
-let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
+let internal inferenceMode = InferenceMode'.ValuesOnly
+let internal unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
-let inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
+let internal inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
     let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema unitsOfMeasureProvider
     inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues inferenceMode cultureInfo assumeMissingValues preferOptionals unitsOfMeasureProvider
 
-let toRecord fields = InferedType.Record(None, fields, false)
-
+let internal toRecord fields = InferedType.Record(None, fields, false)
 
 [<Test>]
 let ``List.pairBy helper function works``() =
@@ -383,7 +385,6 @@ let ``Inference with % suffix``() =
   let expected = toRecord [ propFloat ; propInteger ]
   actual |> should equal expected
 
-
 [<Test>]
 let ``Inference with $ prefix``() =
   let source = CsvFile.Parse("float,integer\n$2.0,$2\n$4.0,$3\n")
@@ -393,27 +394,21 @@ let ``Inference with $ prefix``() =
   let expected = toRecord [ propFloat ; propInteger ]
   actual |> should equal expected
 
-
-open System.Xml
-open System.Xml.Linq
-open System.Xml.Schema
-
-let getInferedTypeFromSamples samples =
+let internal getInferedTypeFromSamples samples =
     let culture = System.Globalization.CultureInfo.InvariantCulture
     samples
     |> Array.map XElement.Parse
     |> XmlInference.inferType unitsOfMeasureProvider inferenceMode culture false false
     |> Seq.fold (subtypeInfered false) InferedType.Top
 
-
-let getInferedTypeFromSchema xsd =
+let internal getInferedTypeFromSchema xsd =
     xsd
     |> XmlSchema.parseSchema ""
     |> XsdParsing.getElements
     |> List.ofSeq
     |> XsdInference.inferElements
 
-let isValid xsd =
+let internal isValid xsd =
     let xmlSchemaSet = XmlSchema.parseSchema "" xsd
     fun xml ->
         let settings = XmlReaderSettings(ValidationType = ValidationType.Schema)
@@ -426,8 +421,7 @@ let isValid xsd =
             printfn "%s/n%s" e.Message xml
             false
 
-
-let getInferedTypes xsd xmlSamples =
+let internal getInferedTypes xsd xmlSamples =
     //printfn "%s/n---------------------------------------------" xsd
     let isValid = isValid xsd
     for xml in xmlSamples do
@@ -440,13 +434,10 @@ let getInferedTypes xsd xmlSamples =
     //printfn "%A" inferedTypeFromSamples
     inferedTypeFromSchema, inferedTypeFromSamples
 
-
-
-let check xsd xmlSamples =
+let internal check xsd xmlSamples =
     //printfn "checking schema and samples"
     let inferedTypeFromSchema, inferedTypeFromSamples = getInferedTypes xsd xmlSamples
     inferedTypeFromSchema |> should equal inferedTypeFromSamples
-
 
 [<Test>]
 let ``at least one global complex element is needed``() =
@@ -506,6 +497,7 @@ let ``recursive schemas don't cause loops``() =
 	    <xs:element name="underline" type="TextType"/>
     </xs:schema>"""
     let inferedTypeFromSchema = getInferedTypeFromSchema xsd
+    inferedTypeFromSchema |> ignore
     //printfn "%A" inferedTypeFromSchema
 
     let xsd = """<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"

@@ -208,7 +208,7 @@ module XsdParsing =
 
 
 /// Element definitions in a schema are mapped to InferedType instances
-module XsdInference =
+module internal XsdInference =
     open XsdModel
     open FSharp.Data.Runtime.StructuralTypes
 

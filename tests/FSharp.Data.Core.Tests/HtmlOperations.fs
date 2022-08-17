@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.HtmlOperations
+module FSharp.Data.Tests.HtmlOperations
 
 open NUnit.Framework
 open FsUnit
