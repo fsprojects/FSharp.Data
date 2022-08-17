@@ -11,7 +11,6 @@ open FSharp.Data.Runtime
 /// <namespacedoc>
 ///   <summary>Types that represent the result of static type inference.</summary>
 /// </namespacedoc>
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedProperty =
     { Name: string
       mutable Type: InferedType }
@@ -20,7 +19,6 @@ type InferedProperty =
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
 /// this type represents the number of occurrences of individual forms
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedMultiplicity =
     | Single
     | OptionalSingle
@@ -29,7 +27,6 @@ type InferedMultiplicity =
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)
 [<RequireQualifiedAccess>]
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedTypeTag =
     // Unknown type
     | Null
@@ -64,7 +61,6 @@ type InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 [<CustomEquality; NoComparison; RequireQualifiedAccess>]
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedType =
     | Primitive of typ: Type * unit: option<System.Type> * optional: bool * shouldOverrideOnMerge: bool
     | Record of name: string option * fields: InferedProperty list * optional: bool
@@ -145,7 +141,7 @@ type InferedType =
 // ------------------------------------------------------------------------------------------------
 // Additional operations for working with the inferred representation
 
-type internal InferedTypeTag with
+type InferedTypeTag with
     member x.NiceName =
         match x with
         | Null -> failwith "Null nodes should be skipped"
@@ -188,24 +184,20 @@ type internal InferedTypeTag with
 
 /// Dummy type to represent that only "0" was found.
 /// Will be generated as 'int', unless it's converted to Bit.
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit0 = Bit0
 
 /// Dummy type to represent that only "1" was found
 /// Will be generated as 'int', unless it's converted to Bit
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit1 = Bit1
 
 /// Dummy type to represent that only one of "0" and "1" were found
 /// Will be generated as a 'bool', unless it's converted to another numerical type
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
 
 /// Represents a transformation of a type
 [<RequireQualifiedAccess>]
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type TypeWrapper =
     /// No transformation will be made to the type
     | None
@@ -219,7 +211,7 @@ type TypeWrapper =
 /// Represents type information about a primitive value (used mainly in the CSV provider)
 /// This type captures the type, unit of measure and handling of missing values (if we
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
-type internal PrimitiveInferedValue =
+type PrimitiveInferedValue =
     { InferedType: Type
       RuntimeType: Type
       UnitOfMeasure: Type option
@@ -244,7 +236,7 @@ type internal PrimitiveInferedValue =
 /// Represents type information about a primitive property (used mainly in the CSV provider)
 /// This type captures the type, unit of measure and handling of missing values (if we
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
-type internal PrimitiveInferedProperty =
+type PrimitiveInferedProperty =
     { Name: string
       Value: PrimitiveInferedValue }
     static member Create(name, typ, (typWrapper: TypeWrapper), unit) =

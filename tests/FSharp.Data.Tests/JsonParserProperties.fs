@@ -11,16 +11,16 @@ let rec isValidJsonString s =
     match s with
     | [] -> true
     | ['\\'] -> false
-    | '"' :: _t -> false
-    | h :: _t when Globalization.CharUnicodeInfo.GetUnicodeCategory h 
+    | '"' :: t -> false
+    | h :: t when Globalization.CharUnicodeInfo.GetUnicodeCategory h 
                     = Globalization.UnicodeCategory.Control -> false
     | '\\' :: 'u' :: d1 :: d2 :: d3 :: d4 :: t 
         when [d1;d2;d3;d4] |> Seq.forall 
             (fun c -> (Char.IsDigit c || Text.RegularExpressions.Regex("[a-fA-F]").IsMatch(c.ToString())))
                 -> isValidJsonString t
-    | '\\' :: i :: _t when escaped |> (not << Set.contains i) -> false
+    | '\\' :: i :: t when escaped |> (not << Set.contains i) -> false
     | '\\' :: i :: t when escaped |> Set.contains i -> isValidJsonString t
-    | _h :: t -> isValidJsonString t 
+    | h :: t -> isValidJsonString t 
 
 let validJsonStringGen = 
     Arb.generate<string> 

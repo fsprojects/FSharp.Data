@@ -1,8 +1,6 @@
 /// Implements type inference for unstructured documents like XML or JSON
 module FSharp.Data.Runtime.StructuralInference
 
-#nowarn "44"
-
 open System
 open System.Diagnostics
 open System.Collections.Generic
@@ -28,7 +26,6 @@ type InferenceMode =
     | ValuesAndInlineSchemasOverrides = 4
 
 /// This is the internal DU representing all the valid cases we support, mapped from the public InferenceMode.
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferenceMode' =
     | NoInference
     /// Backward compatible mode.
@@ -53,9 +50,8 @@ type InferenceMode' =
         | InferenceMode.ValuesAndInlineSchemasOverrides -> InferenceMode'.ValuesAndInlineSchemasOverrides
         | _ -> failwithf "Unexpected inference mode value %A" inferenceMode
 
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
-let asOption inp =
-    match inp with
+let asOption =
+    function
     | true, x -> Some x
     | false, _ -> None
 
@@ -97,14 +93,12 @@ let private primitiveTypes =
     @ numericTypes
 
 /// Checks whether a type supports unit of measure
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let supportsUnitsOfMeasure typ = List.exists ((=) typ) numericTypes
 
 /// Returns a tag of a type - a tag represents a 'kind' of type
 /// (essentially it describes the different bottom types we have)
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
-let typeTag inferredType =
-    match inferredType with
+let typeTag =
+    function
     | InferedType.Record (name = n) -> InferedTypeTag.Record n
     | InferedType.Collection _ -> InferedTypeTag.Collection
     | InferedType.Null
@@ -220,7 +214,7 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
 /// The contract that should hold about the function is that given two types with the
 /// same `InferedTypeTag`, the result also has the same `InferedTypeTag`.
 ///
-let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
+let rec subtypeInfered allowEmptyValues ot1 ot2 =
     match ot1, ot2 with
     // Subtype of matching types or one of equal types
     | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
@@ -361,7 +355,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
             tag, (m, t)
         | _ -> failwith "unionCollectionTypes: pairBy returned None, None")
 
-and internal unionCollectionOrder order1 order2 =
+and unionCollectionOrder order1 order2 =
     order1
     @ (order2
        |> List.filter (fun x -> not (List.exists ((=) x) order1)))
@@ -369,7 +363,7 @@ and internal unionCollectionOrder order1 order2 =
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
-and internal unionRecordTypes allowEmptyValues t1 t2 =
+and unionRecordTypes allowEmptyValues t1 t2 =
     List.pairBy (fun (p: InferedProperty) -> p.Name) t1 t2
     |> List.map (fun (name, fst, snd) ->
         match fst, snd with
@@ -387,7 +381,7 @@ and internal unionRecordTypes allowEmptyValues t1 t2 =
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
-let internal inferCollectionType allowEmptyValues types =
+let inferCollectionType allowEmptyValues types =
     let groupedTypes =
         types
         |> Seq.groupBy typeTag
@@ -398,13 +392,11 @@ let internal inferCollectionType allowEmptyValues types =
 
     InferedType.Collection(List.map fst groupedTypes, Map.ofList groupedTypes)
 
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type IUnitsOfMeasureProvider =
     abstract SI: str: string -> System.Type
     abstract Product: measure1: System.Type * measure2: System.Type -> System.Type
     abstract Inverse: denominator: System.Type -> System.Type
 
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let defaultUnitsOfMeasureProvider =
     { new IUnitsOfMeasureProvider with
         member x.SI(_) : Type = null
@@ -416,7 +408,6 @@ let private uomTransformations =
       [ "³"; "^3" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t))
       [ "^-1" ], (fun (provider: IUnitsOfMeasureProvider) t -> provider.Inverse(t)) ]
 
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
     let unit =
         uomTransformations
@@ -441,7 +432,6 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
 
 /// The inferred types may be set explicitly via inline schemas.
 /// This table specifies the mapping from (the names that users can use) to (the types used).
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let nameToType =
     [ "int", (typeof<int>, TypeWrapper.None)
       "int64", (typeof<int64>, TypeWrapper.None)
@@ -475,7 +465,6 @@ let private validInlineSchema =
 /// This can be of the form: <c>type|measure|type&lt;measure&gt;</c>
 /// type{measure} is also supported to ease definition in xml values.
 /// </summary>
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Type * TypeWrapper)>) str =
     let m = typeAndUnitRegex.Value.Match(str)
 
@@ -527,7 +516,6 @@ module private Helpers =
 /// with the desiredUnit applied,
 /// or a value parsed from an inline schema.
 /// (For inline schemas, the unit parsed from the schema takes precedence over desiredUnit when present)
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let inferPrimitiveType
     (unitsOfMeasureProvider: IUnitsOfMeasureProvider)
     (inferenceMode: InferenceMode')
@@ -627,6 +615,5 @@ let inferPrimitiveType
         |> Option.defaultValue fallbackType
 
 /// Infers the type of a simple string value
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
     inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo value unit

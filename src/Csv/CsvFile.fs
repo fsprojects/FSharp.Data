@@ -17,21 +17,21 @@ open System.Text
 type CsvRow(parent: CsvFile, columns: string[]) =
 
     /// The columns of the row
-    member _.Columns = columns
+    member __.Columns = columns
 
     /// Gets a column by index
-    member _.GetColumn index = columns.[index]
+    member __.GetColumn index = columns.[index]
 
     /// Gets a column by name
-    member _.GetColumn columnName =
+    member __.GetColumn columnName =
         columns.[parent.GetColumnIndex columnName]
 
     /// Gets a column by index
-    member _.Item
+    member __.Item
         with get index = columns.[index]
 
     /// Gets a column by name
-    member _.Item
+    member __.Item
         with get columnName = columns.[parent.GetColumnIndex columnName]
 
 /// <summary>
@@ -74,10 +74,10 @@ and CsvFile
         | None -> [] |> dict
 
     /// Returns the index of the column with the given name
-    member _.GetColumnIndex columnName = headerDic.[columnName]
+    member __.GetColumnIndex columnName = headerDic.[columnName]
 
     /// Returns the index of the column with the given name, or returns None if no column is found
-    member _.TryGetColumnIndex columnName =
+    member __.TryGetColumnIndex columnName =
         match headerDic.TryGetValue columnName with
         | true, index -> Some index
         | false, _ -> None

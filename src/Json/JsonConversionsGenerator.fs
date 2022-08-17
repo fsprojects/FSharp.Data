@@ -41,19 +41,14 @@ let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<JsonValu
     else
         failwith "getConversionQuotation: Unsupported primitive type"
 
-type internal JsonConversionCallingType =
+type JsonConversionCallingType =
     | JsonDocument
     | JsonValueOption
     | JsonValueOptionAndPath
 
 /// Creates a function that takes Expr<JsonValue option> and converts it to
 /// an expression of other type - the type is specified by `field`
-let internal convertJsonValue
-    missingValuesStr
-    cultureStr
-    canPassAllConversionCallingTypes
-    (field: PrimitiveInferedValue)
-    =
+let convertJsonValue missingValuesStr cultureStr canPassAllConversionCallingTypes (field: PrimitiveInferedValue) =
 
 
     let returnType =

@@ -49,13 +49,13 @@ module HtmlNode =
     /// Gets the given nodes name
     let name n =
         match n with
-        | HtmlNode.HtmlElement (name = name) -> name
+        | HtmlElement (name = name) -> name
         | _ -> ""
 
     /// Gets all of the nodes immediately under this node
     let elements n =
         match n with
-        | HtmlNode.HtmlElement (elements = elements) -> elements
+        | HtmlElement (elements = elements) -> elements
         | _ -> []
 
     /// <summary>
@@ -193,7 +193,7 @@ module HtmlNode =
     /// Gets all of the attributes of this node
     let attributes n =
         match n with
-        | HtmlNode.HtmlElement (attributes = attributes) -> attributes
+        | HtmlElement (attributes = attributes) -> attributes
         | _ -> []
 
     /// <summary>
@@ -259,16 +259,16 @@ module HtmlNode =
     let private innerTextExcluding' recurse exclusions n =
         let rec innerText' n =
             match n with
-            | HtmlNode.HtmlElement (name, _, content) when List.forall ((<>) name) exclusions ->
+            | HtmlElement (name, _, content) when List.forall ((<>) name) exclusions ->
                 seq {
                     for e in content do
                         match e with
-                        | HtmlNode.HtmlText (text) -> yield text
-                        | HtmlNode.HtmlComment (_) -> yield ""
+                        | HtmlText (text) -> yield text
+                        | HtmlComment (_) -> yield ""
                         | elem -> if recurse then yield innerText' elem else yield ""
                 }
                 |> String.Concat
-            | HtmlNode.HtmlText (text) -> text
+            | HtmlText (text) -> text
             | _ -> ""
 
         innerText' n

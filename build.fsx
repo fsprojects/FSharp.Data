@@ -36,15 +36,9 @@ let summary = "Library of F# type providers and data access tools"
 
 let description =
     """
-  The FSharp.Data packages contain type providers and utilities to access
-  common data formats (CSV, HTML, JSON and XML in your F# applications and scripts.
-  
-  * FSharp.Data -- includes everything
-    * FSharp.Data.Http -- http types/helpers
-    * FSharp.Data.Csv.Core -- csv types/helpers
-    * FSharp.Data.Json.Core -- json types/helpers
-    * FSharp.Data.Html.Core -- html types/helpers
-    * FSharp.Data.Xml.Core -- xml types/helpers"""
+  The FSharp.Data package contains type providers and utilities to access
+  common data formats (CSV, HTML, JSON and XML in your F# applications and scripts. It also
+  contains  helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 
 let tags =
     "F# fsharp data typeprovider WorldBank CSV HTML CSS JSON XML HTTP linqpad-samples"
@@ -126,9 +120,9 @@ Target.create "RunTests" (fun _ ->
     "FSharp.Data.sln" |> DotNet.test setParams)
 
 // --------------------------------------------------------------------------------------
-// Build packages
+// Build a NuGet package
 
-Target.create "Pack" (fun _ ->
+Target.create "NuGet" (fun _ ->
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
 
@@ -142,7 +136,12 @@ Target.create "Pack" (fun _ ->
           ("PackageLicenseExpression", license)
           ("PackageReleaseNotes", releaseNotes)
           ("Summary", summary)
-          ("PackageDescription", description) ]
+          ("PackageDescription", description)
+          ("EnableSourceLink", "true")
+          ("PublishRepositoryUrl", "true")
+          ("EmbedUntrackedSources", "true")
+          ("IncludeSymbols", "true")
+          ("SymbolPackageFormat", "snupkg") ]
 
     DotNet.pack
         (fun p ->
@@ -150,7 +149,7 @@ Target.create "Pack" (fun _ ->
                 Configuration = DotNet.BuildConfiguration.Release
                 OutputPath = Some "bin"
                 MSBuildParams = { p.MSBuildParams with Properties = properties } })
-        "FSharp.Data.sln")
+        "src/FSharp.Data/FSharp.Data.fsproj")
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
@@ -179,7 +178,7 @@ Target.create "Help" (fun _ ->
     printfn "  * Build"
     printfn "  * RunTests"
     printfn "  * GenerateDocs"
-    printfn "  * Pack (creates package only, doesn't publish)"
+    printfn "  * NuGet (creates package only, doesn't publish)"
     printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
@@ -229,7 +228,7 @@ Target.create "All" ignore
 ==> "GenerateDocs"
 ==> "All"
 
-"Build" ==> "Pack" ==> "All"
+"Build" ==> "NuGet" ==> "All"
 "Build" ==> "All"
 "Build" ==> "RunTests" ==> "All"
 

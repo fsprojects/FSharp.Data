@@ -1,8 +1,0 @@
-group Test
-
-    Microsoft.NET.Test.Sdk
-    NUnit
-    NUnit3TestAdapter
-    FsUnit
-    FsCheck
-    GitHubActionsTestLogger
