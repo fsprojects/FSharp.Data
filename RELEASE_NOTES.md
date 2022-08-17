@@ -1,4 +1,4 @@
-### 5.0.3 - Aug 18 2022
+### 6.0.1-beta001 - Aug 18 2022
 
 * There are now multiple packages
   * FSharp.Data -- includes everything
