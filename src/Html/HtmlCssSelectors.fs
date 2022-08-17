@@ -1,8 +1,6 @@
-namespace FSharp.Data
+﻿namespace FSharp.Data
 
 open System
-
-#nowarn "26"
 
 module internal HtmlCssSelectors =
 

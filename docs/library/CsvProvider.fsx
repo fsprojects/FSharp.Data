@@ -6,20 +6,18 @@ index: 1
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Csv.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif
+#endif // FSX
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
-#endif
+Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
+#endif // IPYNB
 (**
 
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
@@ -86,10 +84,7 @@ The following sample calls the `Load` method with an URL that points to a live C
 *)
 
 // Download the stock prices
-let msft =
-    Stocks
-        .Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv")
-        .Cache()
+let msft = Stocks.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -99,7 +94,7 @@ let lastOpen = firstRow.Open
 
 // Print the first 10 prices in the HLOC format
 for row in msft.Rows |> Seq.truncate 10 do
-    printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
+  printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
 (*** include-fsi-merged-output ***)
 
@@ -132,8 +127,7 @@ a static argument. Also note that in this case we're using the same data at runt
 so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
-let small =
-    CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>.GetSample ()
+let small = CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>.GetSample()
 
 (*** include-fsi-merged-output ***)
 
@@ -141,8 +135,7 @@ let small =
 We can also use the default constructor instead of the `GetSample` static method:
 *)
 
-let small2 =
-    new CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>()
+let small2 = new CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>()
 
 (*** include-fsi-merged-output ***)
 
@@ -158,10 +151,9 @@ following simple calculation:
 open FSharp.Data.UnitSystems.SI.UnitNames
 
 for row in small.Rows do
-    let speed = row.Distance / row.Time
-
-    if speed > 15.0M<metre/second> then
-        printfn "%s (%A m/s)" row.Name speed
+  let speed = row.Distance / row.Time
+  if speed > 15.0M<metre/second> then
+    printfn "%s (%A m/s)" row.Name speed
 
 (*** include-fsi-merged-output ***)
 
@@ -186,8 +178,8 @@ type AirQuality = CsvProvider<"../data/AirQuality.csv", ";", ResolutionFolder=Re
 let airQuality = new AirQuality()
 
 for row in airQuality.Rows |> Seq.truncate 10 do
-    if row.Month > 6 then
-        printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
+  if row.Month > 6 then
+    printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (*** include-fsi-merged-output ***)
 
@@ -203,21 +195,18 @@ we also set `IgnoreErrors` static parameter to `true` so that lines with incorre
 are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
-let mortalityNy =
-    CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=ResolutionFolder>.GetSample ()
+let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=ResolutionFolder>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
-let cause =
-    mortalityNy.Rows
-    |> Seq.find (fun r -> r.``Cause of death Code`` = "V13.4")
+let cause = mortalityNy.Rows |> Seq.find (fun r ->
+  r.``Cause of death Code`` = "V13.4")
 
 // Print the number of injured cyclists
 printfn "CAUSE: %s" cause.``Cause of death``
-
 for r in mortalityNy.Rows do
-    if r.``Cause of death Code`` = "V13.4" then
-        printfn "%s (%d cases)" r.County r.Count
+  if r.``Cause of death Code`` = "V13.4" then
+    printfn "%s (%d cases)" r.County r.Count
 
 (*** include-fsi-merged-output ***)
 
@@ -240,9 +229,8 @@ the `MissingValues` static parameter of `CsvProvider` as a comma-separated strin
 For example, to ignore `this` and `that` we could do:
 *)
 
-CsvProvider<"X,Y,Z\nthis,that,1.0", MissingValues="this,that">
-    .GetSample()
-    .Rows
+CsvProvider<"X,Y,Z\nthis,that,1.0",
+            MissingValues="this,that">.GetSample().Rows
 (*** include-fsi-merged-output ***)
 (**
 
@@ -253,11 +241,11 @@ each row, then remove missing values and then use the standard `Seq.average` fun
 open System
 
 let mean =
-    airQuality.Rows
-    |> Seq.toArray
-    |> Array.map (fun row -> row.Ozone)
-    |> Array.filter (fun elem -> not (Double.IsNaN elem))
-    |> Array.average
+  airQuality.Rows
+  |> Seq.toArray
+  |> Array.map (fun row -> row.Ozone)
+  |> Array.filter (fun elem -> not (Double.IsNaN elem))
+  |> Array.average
 
 (*** include-fsi-merged-output ***)
 
@@ -332,12 +320,15 @@ consider that row as a data row. In that case, the columns will be named `Column
 names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
 and still have the provider infer the type for you. Example:
 *)
-type OneTwoThree = CsvProvider<"1,2,3", HasHeaders=false, Schema="Duration (float<second>),foo,float option">
+type OneTwoThree =
+  CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">
 
 let csv = OneTwoThree.GetSample()
-
 for row in csv.Rows do
-    printfn "%f %d %f" (row.Duration / 1.0<second>) row.Foo (defaultArg row.Column3 1.0)
+  printfn "%f %d %f"
+    (row.Duration/1.0<second>)
+    row.Foo
+    (defaultArg row.Column3 1.0)
 
 (*** include-fsi-merged-output ***)
 
@@ -351,12 +342,14 @@ the other columns blank in the schema (you also don't need to add all the traili
 
 *)
 type Titanic1 =
-    CsvProvider<"../data/Titanic.csv", Schema=",,Passenger Class,,,float", ResolutionFolder=ResolutionFolder>
+  CsvProvider<"../data/Titanic.csv",
+              Schema=",,Passenger Class,,,float",
+              ResolutionFolder=ResolutionFolder>
 
 let titanic1 = Titanic1.GetSample()
-
 for row in titanic1.Rows |> Seq.truncate 10 do
-    printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
+  printfn "%s Class = %d Fare = %g"
+    row.Name row.``Passenger Class`` row.Fare
 
 (*** include-fsi-merged-output ***)
 
@@ -366,12 +359,14 @@ Alternatively, you can rename and override the type of any column by name instea
 
 *)
 type Titanic2 =
-    CsvProvider<"../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class", ResolutionFolder=ResolutionFolder>
+  CsvProvider<"../data/Titanic.csv",
+              Schema="Fare=float,PClass->Passenger Class",
+              ResolutionFolder=ResolutionFolder>
 
 let titanic2 = Titanic2.GetSample()
-
 for row in titanic2.Rows |> Seq.truncate 10 do
-    printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
+  printfn "%s Class = %d Fare = %g"
+    row.Name row.``Passenger Class`` row.Fare
 
 (*** include-fsi-merged-output ***)
 
@@ -390,11 +385,11 @@ the `Save` method. You can also use the `SaveToString()` to get the output direc
 
 // Saving the first 10 rows that don't have missing values to a new csv file
 airQuality
-    .Filter(fun row ->
-        not (Double.IsNaN row.Ozone)
-        && not (Double.IsNaN row.``Solar.R``))
-    .Truncate(10)
-    .SaveToString()
+  .Filter(fun row ->
+    not (Double.IsNaN row.Ozone) &&
+    not (Double.IsNaN row.``Solar.R``))
+  .Truncate(10)
+  .SaveToString()
 
 (*** include-fsi-merged-output ***)
 
@@ -405,7 +400,10 @@ It's also possible to transform the columns themselves by using `Map` and the co
 *)
 
 let doubleOzone =
-    airQuality.Map(fun row -> AirQuality.Row(row.Ozone * 2.0, row.``Solar.R``, row.Wind, row.Temp, row.Month, row.Day))
+  airQuality.Map(fun row ->
+    AirQuality.Row
+      ( row.Ozone * 2.0, row.``Solar.R``,
+        row.Wind, row.Temp, row.Month, row.Day))
 
 (*** include-fsi-merged-output ***)
 
@@ -416,12 +414,12 @@ You can also append new rows, either by creating them directly as in the previou
 *)
 
 let newRows =
-    AirQuality.ParseRows(
-        """41;190;7.4;67;5;1
-        36;118;8;72;5;2"""
-    )
+  AirQuality.ParseRows
+    ("""41;190;7.4;67;5;1
+        36;118;8;72;5;2""")
 
-let airQualityWithExtraRows = airQuality.Append newRows
+let airQualityWithExtraRows =
+  airQuality.Append newRows
 
 (*** include-fsi-merged-output ***)
 
@@ -431,11 +429,13 @@ It's even possible to create csv files without parsing at all:
 
 *)
 
-type MyCsvType = CsvProvider<Schema="A (int), B (string), C (date option)", HasHeaders=false>
+type MyCsvType =
+  CsvProvider<Schema = "A (int), B (string), C (date option)",
+              HasHeaders=false>
 
 let myRows =
-    [ MyCsvType.Row(1, "a", None)
-      MyCsvType.Row(2, "B", Some System.DateTime.Now) ]
+  [ MyCsvType.Row(1, "a", None)
+    MyCsvType.Row(2, "B", Some System.DateTime.Now) ]
 
 let myCsv = new MyCsvType(myRows)
 myCsv.SaveToString()

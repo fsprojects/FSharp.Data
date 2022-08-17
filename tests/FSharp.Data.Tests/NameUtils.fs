@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------
 // Tests for a utility that generates nice PascalCase and camelCase names for members
 // --------------------------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ let ``Handles long and ugly names`` () =
 [<Test>]
 let ``Unique generator generates unique names`` () = 
   let gen = uniqueGenerator nicePascalName
-  let names = [ for _i in 0 .. 100 -> gen "test" ]
+  let names = [ for i in 0 .. 100 -> gen "test" ]
   Seq.length names  |> should equal (Seq.length (set names))
 
 [<Test>]

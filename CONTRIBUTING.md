@@ -32,22 +32,14 @@ Type providers consist of two components:
    CSV provider, this component does the type inference and generates types
    (that are mapped to runtime components by the compiler).
 
-We need _runtime components_ for .NET Standard 2.0 (netstandard2.0). We also need a _design time_
-component, to be able to host the type providers in .NET Core-based tooling.
+We need a _runtime component_ for .NET Standard 2.0 (netstandard2.0). We also need a _design time_
+component for each, to be able to host the type provider in .NET Core-based tooling.
 
-The _core_ runtime components are the following projects. No type providers are activated if you reference these:
-
- * **FSharp.Data.Http**
- * **FSharp.Data.Csv.Core**
- * **FSharp.Data.Html.Core**
- * **FSharp.Data.Json.Core**
- * **FSharp.Data.Xml.Core**
- 
-The _enhanced_ runtime component that mentions the associated the design-time component is in the following project:
+The _runtime_ components are in the following project:
 
  * **FSharp.Data**
  
-The design-time component is the following project:
+The _design time_ components are in the following project:
 
  * **FSharp.Data.DesignTime**
  

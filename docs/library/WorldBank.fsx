@@ -6,20 +6,18 @@ index: 5
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.WorldBank.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif
+#endif // FSX
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
-#endif
+Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
+#endif // IPYNB
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -56,7 +54,9 @@ open FSharp.Data
 
 let data = WorldBankData.GetDataContext()
 
-data.Countries.``United Kingdom``.Indicators.``Gross capital formation (% of GDP)``
+data
+  .Countries.``United Kingdom``
+  .Indicators.``Gross capital formation (% of GDP)``
 |> Seq.maxBy fst
 
 (*** include-fsi-merged-output ***)
@@ -103,20 +103,20 @@ let wb = WorldBank.GetDataContext()
 
 // Create a list of countries to process
 let countries =
-    [| wb.Countries.``Arab World``
-       wb.Countries.``European Union``
-       wb.Countries.Australia
-       wb.Countries.Brazil
-       wb.Countries.Canada
-       wb.Countries.Chile
-       wb.Countries.``Czech Republic``
-       wb.Countries.Denmark
-       wb.Countries.France
-       wb.Countries.Greece
-       wb.Countries.``Low income``
-       wb.Countries.``High income``
-       wb.Countries.``United Kingdom``
-       wb.Countries.``United States`` |]
+ [| wb.Countries.``Arab World``
+    wb.Countries.``European Union``
+    wb.Countries.Australia
+    wb.Countries.Brazil
+    wb.Countries.Canada
+    wb.Countries.Chile
+    wb.Countries.``Czech Republic``
+    wb.Countries.Denmark
+    wb.Countries.France
+    wb.Countries.Greece
+    wb.Countries.``Low income``
+    wb.Countries.``High income``
+    wb.Countries.``United Kingdom``
+    wb.Countries.``United States`` |]
 
 (**
 To download the information in parallel, we can create a list of asynchronous
@@ -124,7 +124,8 @@ computations, compose them using `Async.Parallel` and then run the (single) obta
 computation to perform all the downloads:
 *)
 
-[ for c in countries -> c.Indicators.``Gross capital formation (% of GDP)`` ]
+[ for c in countries ->
+    c.Indicators.``Gross capital formation (% of GDP)`` ]
 |> Async.Parallel
 |> Async.RunSynchronously
 

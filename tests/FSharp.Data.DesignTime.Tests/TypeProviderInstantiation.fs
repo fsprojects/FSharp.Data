@@ -8,7 +8,7 @@ open ProviderImplementation.ProvidedTypesTesting
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 
-type internal CsvProviderArgs =
+type CsvProviderArgs =
     { Sample : string
       Separators : string
       InferRows : int
@@ -26,7 +26,7 @@ type internal CsvProviderArgs =
       ResolutionFolder : string
       EmbeddedResource : string }
 
-type internal XmlProviderArgs =
+type XmlProviderArgs =
     { Sample : string
       SampleIsList : bool
       Global : bool
@@ -38,7 +38,7 @@ type internal XmlProviderArgs =
       Schema : string
       InferenceMode: InferenceMode }
 
-type internal JsonProviderArgs =
+type JsonProviderArgs =
     { Sample : string
       SampleIsList : bool
       RootName : string
@@ -50,7 +50,7 @@ type internal JsonProviderArgs =
       PreferDictionaries : bool
       InferenceMode: InferenceMode }
 
-type internal HtmlProviderArgs =
+type HtmlProviderArgs =
     { Sample : string
       PreferOptionals : bool
       IncludeLayoutTables : bool
@@ -60,11 +60,13 @@ type internal HtmlProviderArgs =
       ResolutionFolder : string
       EmbeddedResource : string }
 
-type internal WorldBankProviderArgs =
+type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type internal TypeProviderInstantiation =
+type Platform = NetStandard20
+
+type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
@@ -249,23 +251,7 @@ type internal TypeProviderInstantiation =
                         Asynchronous = args.[2] |> bool.Parse }
         | _ -> failwithf "Unknown: %s" args.[0]
 
-    static member GetRuntimeAssemblyRefs () =
-        let (++) a b = Path.Combine(a, b)
-        #if DEBUG
-        let build = "Debug"
-        #else
-        let build = "Release"
-        #endif
-
-        let extraDlls = 
-            [ "FSharp.Data.Http"
-              "FSharp.Data.Csv.Core"
-              "FSharp.Data.Html.Core"
-              "FSharp.Data.Xml.Core"
-              "FSharp.Data.Json.Core" 
-              "FSharp.Data.WorldBank.Core" ]
-        let extraRefs = 
-            [ for j in  extraDlls do
-                __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "src" ++ "FSharp.Data" ++ "bin" ++ build ++ "netstandard2.0" ++ (j + ".dll") ]
-        extraRefs @ Targets.DotNetStandard20FSharpRefs()
+    static member GetRuntimeAssemblyRefs platform =
+        match platform with
+        | NetStandard20 -> Targets.DotNetStandard20FSharpRefs()
 

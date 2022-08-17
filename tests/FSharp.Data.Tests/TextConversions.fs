@@ -1,4 +1,4 @@
-module FSharp.Data.Tests.Conversions
+﻿module FSharp.Data.Tests.Conversions
 
 open NUnit.Framework
 open FsUnit

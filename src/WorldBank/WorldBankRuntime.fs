@@ -292,63 +292,59 @@ type Indicator internal (connection: ServiceConnection, countryOrRegionCode: str
     let dataDict = lazy (dict data)
 
     /// Get the code for the country or region of the indicator
-    member _.Code = countryOrRegionCode
+    member x.Code = countryOrRegionCode
 
     /// Get the code for the indicator
-    member _.IndicatorCode = indicatorCode
+    member x.IndicatorCode = indicatorCode
 
     /// Get the name of the indicator
-    member _.Name = connection.IndicatorsIndexed.[indicatorCode].Name
+    member x.Name = connection.IndicatorsIndexed.[indicatorCode].Name
 
     /// Get the source of the indicator
-    member _.Source = connection.IndicatorsIndexed.[indicatorCode].Source
+    member x.Source = connection.IndicatorsIndexed.[indicatorCode].Source
 
     /// Get the description of the indicator
-    member _.Description = connection.IndicatorsIndexed.[indicatorCode].Description
+    member x.Description = connection.IndicatorsIndexed.[indicatorCode].Description
 
     /// Get the indicator value for the given year. If there's no data for that year, NaN is returned
-    member _.Item
+    member x.Item
         with get year =
             match dataDict.Force().TryGetValue year with
             | true, value -> value
             | _ -> Double.NaN
 
     /// Get the indicator value for the given year, if present
-    member _.TryGetValueAt year =
+    member x.TryGetValueAt year =
         match dataDict.Force().TryGetValue year with
         | true, value -> Some value
         | _ -> None
 
     /// Get the years for which the indicator has values
-    member _.Years = dataDict.Force().Keys
+    member x.Years = dataDict.Force().Keys
 
     /// Get the values for the indicator (without years)
-    member _.Values = dataDict.Force().Values
+    member x.Values = dataDict.Force().Values
 
     interface seq<int * float> with
-        member _.GetEnumerator() = data.GetEnumerator()
+        member x.GetEnumerator() = data.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() = (data.GetEnumerator() :> _)
+        member x.GetEnumerator() = (data.GetEnumerator() :> _)
 
 /// Metadata for an Indicator
 [<DebuggerDisplay("{Name}")>]
 [<StructuredFormatDisplay("{Name}")>]
 type IndicatorDescription internal (connection: ServiceConnection, topicCode: string, indicatorCode: string) =
     /// Get the code for the topic of the indicator
-    member _.Code = topicCode
-
+    member x.Code = topicCode
     /// Get the code for the indicator
-    member _.IndicatorCode = indicatorCode
-
+    member x.IndicatorCode = indicatorCode
     /// Get the name of the indicator
-    member _.Name = connection.IndicatorsIndexed.[indicatorCode].Name
-
+    member x.Name = connection.IndicatorsIndexed.[indicatorCode].Name
     /// Get the source of the indicator
-    member _.Source = connection.IndicatorsIndexed.[indicatorCode].Source
-
+    member x.Source = connection.IndicatorsIndexed.[indicatorCode].Source
     /// Get the description of the indicator
-    member _.Description = connection.IndicatorsIndexed.[indicatorCode].Description
+    member x.Description = connection.IndicatorsIndexed.[indicatorCode].Description
 
 /// <exclude />
 type IIndicators =
@@ -361,17 +357,17 @@ type Indicators internal (connection: ServiceConnection, countryOrRegionCode) =
         seq { for indicator in connection.Indicators -> Indicator(connection, countryOrRegionCode, indicator.Id) }
 
     interface IIndicators with
-        member _.GetIndicator(indicatorCode) =
+        member x.GetIndicator(indicatorCode) =
             Indicator(connection, countryOrRegionCode, indicatorCode)
 
-        member _.AsyncGetIndicator(indicatorCode) =
+        member x.AsyncGetIndicator(indicatorCode) =
             async { return Indicator(connection, countryOrRegionCode, indicatorCode) }
 
     interface seq<Indicator> with
-        member _.GetEnumerator() = indicators.GetEnumerator()
+        member x.GetEnumerator() = indicators.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() = indicators.GetEnumerator() :> _
+        member x.GetEnumerator() = indicators.GetEnumerator() :> _
 
 /// <exclude />
 type IIndicatorsDescriptions =
@@ -386,14 +382,14 @@ type IndicatorsDescriptions internal (connection: ServiceConnection, topicCode) 
         }
 
     interface IIndicatorsDescriptions with
-        member _.GetIndicator(indicatorCode) =
+        member x.GetIndicator(indicatorCode) =
             IndicatorDescription(connection, topicCode, indicatorCode)
 
     interface seq<IndicatorDescription> with
-        member _.GetEnumerator() = indicatorsDescriptions.GetEnumerator()
+        member x.GetEnumerator() = indicatorsDescriptions.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() =
+        member x.GetEnumerator() =
             indicatorsDescriptions.GetEnumerator() :> _
 
 /// <exclude />
@@ -405,21 +401,17 @@ type ICountry =
 [<StructuredFormatDisplay("{Name}")>]
 type Country internal (connection: ServiceConnection, countryCode: string) =
     let indicators = new Indicators(connection, countryCode)
-
     /// Get the WorldBank code of the country
-    member _.Code = countryCode
-
+    member x.Code = countryCode
     /// Get the name of the country
-    member _.Name = connection.CountriesIndexed.[countryCode].Name
-
+    member x.Name = connection.CountriesIndexed.[countryCode].Name
     /// Get the capital city of the country
-    member _.CapitalCity = connection.CountriesIndexed.[countryCode].CapitalCity
-
+    member x.CapitalCity = connection.CountriesIndexed.[countryCode].CapitalCity
     /// Get the region of the country
-    member _.Region = connection.CountriesIndexed.[countryCode].Region
+    member x.Region = connection.CountriesIndexed.[countryCode].Region
 
     interface ICountry with
-        member _.GetIndicators() = indicators
+        member x.GetIndicators() = indicators
 
 /// <exclude />
 type ICountryCollection =
@@ -440,13 +432,13 @@ type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConne
         }
 
     interface seq<'T> with
-        member _.GetEnumerator() = items.GetEnumerator()
+        member x.GetEnumerator() = items.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
+        member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
 
     interface ICountryCollection with
-        member _.GetCountry(countryCode (*this parameter is only here to help FunScript*) , _countryName) =
+        member x.GetCountry(countryCode (*this parameter is only here to help FunScript*) , _countryName) =
             Country(connection, countryCode)
 
 /// <exclude />
@@ -460,15 +452,15 @@ type IRegion =
 type Region internal (connection: ServiceConnection, regionCode: string) =
     let indicators = new Indicators(connection, regionCode)
     /// Get the WorldBank code for the region
-    member _.RegionCode = regionCode
+    member x.RegionCode = regionCode
     /// Get the name of the region
-    member _.Name = connection.RegionsIndexed.[regionCode]
+    member x.Name = connection.RegionsIndexed.[regionCode]
 
     interface IRegion with
-        member _.GetCountries() =
+        member x.GetCountries() =
             CountryCollection(connection, Some regionCode)
 
-        member _.GetIndicators() = indicators
+        member x.GetIndicators() = indicators
 
 /// <exclude />
 type IRegionCollection =
@@ -480,13 +472,13 @@ type RegionCollection<'T when 'T :> Region> internal (connection: ServiceConnect
         seq { for (code, _) in connection.Regions -> Region(connection, code) :?> 'T }
 
     interface seq<'T> with
-        member _.GetEnumerator() = items.GetEnumerator()
+        member x.GetEnumerator() = items.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
+        member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
 
     interface IRegionCollection with
-        member _.GetRegion(regionCode) = Region(connection, regionCode)
+        member x.GetRegion(regionCode) = Region(connection, regionCode)
 
 /// <exclude />
 type ITopic =
@@ -497,18 +489,15 @@ type ITopic =
 [<StructuredFormatDisplay("{Name}")>]
 type Topic internal (connection: ServiceConnection, topicCode: string) =
     let indicatorsDescriptions = new IndicatorsDescriptions(connection, topicCode)
-
     /// Get the WorldBank code of the topic
-    member _.Code = topicCode
-
+    member x.Code = topicCode
     /// Get the name of the topic
-    member _.Name = connection.TopicsIndexed.[topicCode].Name
-
+    member x.Name = connection.TopicsIndexed.[topicCode].Name
     /// Get the description of the topic
-    member _.Description = connection.TopicsIndexed.[topicCode].Description
+    member x.Description = connection.TopicsIndexed.[topicCode].Description
 
     interface ITopic with
-        member _.GetIndicators() = indicatorsDescriptions
+        member x.GetIndicators() = indicatorsDescriptions
 
 /// <exclude />
 type ITopicCollection =
@@ -520,13 +509,13 @@ type TopicCollection<'T when 'T :> Topic> internal (connection: ServiceConnectio
         seq { for topic in connection.Topics -> Topic(connection, topic.Id) :?> 'T }
 
     interface seq<'T> with
-        member _.GetEnumerator() = items.GetEnumerator()
+        member x.GetEnumerator() = items.GetEnumerator()
 
     interface IEnumerable with
-        member _.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
+        member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
 
     interface ITopicCollection with
-        member _.GetTopic(topicCode) = Topic(connection, topicCode)
+        member x.GetTopic(topicCode) = Topic(connection, topicCode)
 
 /// <exclude />
 type IWorldBankData =
@@ -544,8 +533,8 @@ type WorldBankData(serviceUrl: string, sources: string) =
     let connection = new ServiceConnection(restCache, serviceUrl, sources)
 
     interface IWorldBankData with
-        member _.GetCountries() =
+        member x.GetCountries() =
             CountryCollection(connection, None) :> seq<_>
 
-        member _.GetRegions() = RegionCollection(connection) :> seq<_>
-        member _.GetTopics() = TopicCollection(connection) :> seq<_>
+        member x.GetRegions() = RegionCollection(connection) :> seq<_>
+        member x.GetTopics() = TopicCollection(connection) :> seq<_>

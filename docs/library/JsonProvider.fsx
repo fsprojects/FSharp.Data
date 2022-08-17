@@ -6,20 +6,18 @@ index: 3
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Json.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif
+#endif // FSX
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
-#endif
+Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
+#endif // IPYNB
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -126,15 +124,14 @@ following example uses two records - one with `name` and `age` and the second wi
 If we want to just use the same text used for the schema at runtime, we can use the `GetSamples` method:
 *)
 
-type People =
-    JsonProvider<"""
+type People = JsonProvider<"""
   [ { "name":"John", "age":94 },
     { "name":"Tomas" } ] """>
 
 for item in People.GetSamples() do
-    printf "%s " item.Name
-    item.Age |> Option.iter (printf "(%d)")
-    printfn ""
+  printf "%s " item.Name
+  item.Age |> Option.iter (printf "(%d)")
+  printfn ""
 
 (*** include-fsi-merged-output ***)
 
@@ -153,10 +150,10 @@ as follows:
 type Values = JsonProvider<""" [{"value":94 }, {"value":"Tomas" }] """>
 
 for item in Values.GetSamples() do
-    match item.Value.Number, item.Value.String with
-    | Some num, _ -> printfn "Numeric: %d" num
-    | _, Some str -> printfn "Text: %s" str
-    | _ -> printfn "Some other value!"
+  match item.Value.Number, item.Value.String with
+  | Some num, _ -> printfn "Numeric: %d" num
+  | _, Some str -> printfn "Text: %s" str
+  | _ -> printfn "Some other value!"
 
 (*** include-fsi-merged-output ***)
 
@@ -177,8 +174,7 @@ Applied to the previous example this would be:
 
 *)
 
-type People2 =
-    JsonProvider<"""
+type People2 = JsonProvider<"""
   [ { "name":"John", "age":94 },
     { "name":"Tomas" } ] """, SampleIsList=true>
 
@@ -208,12 +204,12 @@ Let's consider an example where this can be useful:
 *)
 
 type AmbiguousEntity =
-    JsonProvider<Sample="""
+    JsonProvider<Sample = """
         { "code":"000", "length":"0" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
-        """, SampleIsList=true>
-
+        """,
+        SampleIsList = true>
 let code = (AmbiguousEntity.GetSamples()[1]).Code
 let length = (AmbiguousEntity.GetSamples()[1]).Length
 
@@ -230,12 +226,13 @@ Now let's enable inline schemas:
 open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
-    JsonProvider<Sample="""
+    JsonProvider<Sample = """
         { "code":"typeof<string>", "length":"typeof<float<metre>>" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
-        """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
-
+        """,
+        SampleIsList = true,
+        InferenceMode = InferenceMode.ValuesAndInlineSchemasOverrides>
 let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
 let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
 
@@ -263,7 +260,7 @@ Inline schemas also enable support for units of measure.
 In the previous example, the `Length` property is now inferred as a `float`
 with the `metre` unit of measure (from the default SI units).
 
-Warning: units of measures are discarded when merged with types without a unit or with a different unit.
+Warning: units of measures are discarded when merged with types without a unit or with a different unit.  
 As mentioned previously, with the `ValuesAndInlineSchemasHints` inference mode,
 inline schemas types are merged with other inferred types with the same precedence.
 Since values-inferred types never have units, inline-schemas-inferred types will lose their
@@ -307,10 +304,11 @@ let doc = WorldBank.GetSample()
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
 let wbReq =
-    "http://api.worldbank.org/country/cz/indicator/"
-    + "GC.DOD.TOTL.GD.ZS?format=json"
+  "http://api.worldbank.org/country/cz/indicator/" +
+    "GC.DOD.TOTL.GD.ZS?format=json"
 
-let docAsync = WorldBank.AsyncLoad(wbReq)
+let docAsync =
+  WorldBank.AsyncLoad(wbReq)
 
 (*** include-fsi-merged-output ***)
 
@@ -322,12 +320,13 @@ provider infers that there is only one record and one array. We can print the da
 
 // Print general information
 let info = doc.Record
-printfn "Showing page %d of %d. Total records %d" info.Page info.Pages info.Total
+printfn "Showing page %d of %d. Total records %d"
+  info.Page info.Pages info.Total
 
 // Print all data points
 for record in doc.Array do
-    record.Value
-    |> Option.iter (fun value -> printfn "%d: %f" record.Date value)
+  record.Value |> Option.iter (fun value ->
+    printfn "%d: %f" record.Date value)
 
 (*** include-fsi-merged-output ***)
 
@@ -349,13 +348,11 @@ provider that the sample is actually a _list of samples_:
 *)
 
 type Tweet = JsonProvider<"../data/TwitterStream.json", SampleIsList=true, ResolutionFolder=ResolutionFolder>
-
-let text = (*[omit:(omitted)]*)
-    """ {"in_reply_to_status_id_str":null,"text":"\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002","in_reply_to_user_id_str":null,"retweet_count":0,"geo":null,"source":"web","retweeted":false,"truncated":false,"id_str":"263290764686155776","entities":{"user_mentions":[],"hashtags":[],"urls":[]},"in_reply_to_user_id":null,"in_reply_to_status_id":null,"place":null,"coordinates":null,"in_reply_to_screen_name":null,"created_at":"Tue Oct 30 14:46:24 +0000 2012","user":{"notifications":null,"contributors_enabled":false,"time_zone":"Tokyo","profile_background_color":"FFFFFF","location":"Kodaira Tokyo Japan","profile_background_tile":false,"profile_image_url_https":"https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg","default_profile_image":false,"follow_request_sent":null,"profile_sidebar_fill_color":"17451B","description":"KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a","favourites_count":17,"screen_name":"Merlin_wand","profile_sidebar_border_color":"000000","id_str":"94788486","verified":false,"lang":"ja","statuses_count":8641,"profile_use_background_image":true,"protected":false,"profile_image_url":"http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg","listed_count":31,"geo_enabled":true,"created_at":"Sat Dec 05 13:07:32 +0000 2009","profile_text_color":"000000","name":"Marin","profile_background_image_url":"http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg","friends_count":629,"url":null,"id":94788486,"is_translator":false,"default_profile":false,"following":null,"profile_background_image_url_https":"https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg","utc_offset":32400,"profile_link_color":"ADADAD","followers_count":426},"id":263290764686155776,"contributors":null,"favorited":false} """ (*[/omit]*)
-
+let text = (*[omit:(omitted)]*)""" {"in_reply_to_status_id_str":null,"text":"\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002","in_reply_to_user_id_str":null,"retweet_count":0,"geo":null,"source":"web","retweeted":false,"truncated":false,"id_str":"263290764686155776","entities":{"user_mentions":[],"hashtags":[],"urls":[]},"in_reply_to_user_id":null,"in_reply_to_status_id":null,"place":null,"coordinates":null,"in_reply_to_screen_name":null,"created_at":"Tue Oct 30 14:46:24 +0000 2012","user":{"notifications":null,"contributors_enabled":false,"time_zone":"Tokyo","profile_background_color":"FFFFFF","location":"Kodaira Tokyo Japan","profile_background_tile":false,"profile_image_url_https":"https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg","default_profile_image":false,"follow_request_sent":null,"profile_sidebar_fill_color":"17451B","description":"KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a","favourites_count":17,"screen_name":"Merlin_wand","profile_sidebar_border_color":"000000","id_str":"94788486","verified":false,"lang":"ja","statuses_count":8641,"profile_use_background_image":true,"protected":false,"profile_image_url":"http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg","listed_count":31,"geo_enabled":true,"created_at":"Sat Dec 05 13:07:32 +0000 2009","profile_text_color":"000000","name":"Marin","profile_background_image_url":"http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg","friends_count":629,"url":null,"id":94788486,"is_translator":false,"default_profile":false,"following":null,"profile_background_image_url_https":"https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg","utc_offset":32400,"profile_link_color":"ADADAD","followers_count":426},"id":263290764686155776,"contributors":null,"favorited":false} """(*[/omit]*)
 let tweet = Tweet.Parse(text)
 
-printfn "%s (retweeted %d times)\n:%s" tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
+printfn "%s (retweeted %d times)\n:%s"
+  tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
 
 (*** include-fsi-merged-output ***)
 
@@ -396,8 +393,7 @@ we need to post a JSON value similar to this:
 *)
 
 [<Literal>]
-let issueSample =
-    """
+let issueSample = """
 {
   "title": "Found a bug",
   "body": "I'm having a problem with this.",
@@ -422,14 +418,12 @@ create an instance, and send a POST request:
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue =
-    GitHubIssue.Issue(
-        "Test issue",
-        "This is a test issue created in FSharp.Data documentation",
-        assignee = "",
-        labels = [||],
-        milestone = 0
-    )
-
+  GitHubIssue.Issue
+    ( "Test issue",
+      "This is a test issue created in FSharp.Data documentation",
+      assignee = "",
+      labels = [| |],
+      milestone = 0)
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**
@@ -448,8 +442,9 @@ static parameter `EmbeddedResource` (don't forget then to [include the file](htt
 project file). If you are building a library `MyLib.dll`, you can write:
 
 *)
-type WB =
-    JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, MyLib.data.worldbank.json", ResolutionFolder=ResolutionFolder>
+type WB = JsonProvider<"../data/WorldBank.json",
+                       EmbeddedResource="MyLib, MyLib.data.worldbank.json",
+                       ResolutionFolder=ResolutionFolder>
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`.

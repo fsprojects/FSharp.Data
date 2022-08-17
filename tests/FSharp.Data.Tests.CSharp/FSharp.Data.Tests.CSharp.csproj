@@ -7,7 +7,6 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:44</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CsvExtensionsTests.cs" />
@@ -20,12 +19,7 @@
     <PackageReference Include="NUnit" Version="3.13.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
-    <ProjectReference Include="..\..\src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

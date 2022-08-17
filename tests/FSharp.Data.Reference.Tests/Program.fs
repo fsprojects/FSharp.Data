@@ -1,6 +1,6 @@
-open System
+﻿open System
 
 [<EntryPoint>]
-let main _argv = 
+let main argv = 
     printfn "Dotnet Core NUnit Tests..."
     0

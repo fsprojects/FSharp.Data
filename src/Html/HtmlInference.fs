@@ -7,14 +7,14 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
 
-type internal Parameters =
+type Parameters =
     { MissingValues: string[]
       CultureInfo: CultureInfo
       UnitsOfMeasureProvider: IUnitsOfMeasureProvider
       PreferOptionals: bool
       InferenceMode: InferenceMode' }
 
-let internal inferColumns parameters (headerNamesAndUnits: _[]) rows =
+let inferColumns parameters (headerNamesAndUnits: _[]) rows =
 
     let inferRows = 0
     let schema = Array.init headerNamesAndUnits.Length (fun _ -> None)
@@ -32,7 +32,7 @@ let internal inferColumns parameters (headerNamesAndUnits: _[]) rows =
         parameters.PreferOptionals
         parameters.UnitsOfMeasureProvider
 
-let internal inferHeaders parameters (rows: string[][]) =
+let inferHeaders parameters (rows: string[][]) =
     if rows.Length <= 2 then
         false, None, None, None //Not enough info to infer anything, assume first row data
     else
@@ -51,7 +51,7 @@ let internal inferHeaders parameters (rows: string[][]) =
             let headerNames, units = Array.unzip headerNamesAndUnits
             true, Some headerNames, Some units, Some dataRowsType
 
-let internal inferListType parameters (values: string[]) =
+let inferListType parameters (values: string[]) =
 
     if values.Length > 0 then
         let inferedtype value =

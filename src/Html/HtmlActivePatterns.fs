@@ -1,6 +1,5 @@
-namespace FSharp.Data
+﻿namespace FSharp.Data
 
-[<AutoOpen>]
 module HtmlActivePatterns =
     let (|HtmlElement|HtmlText|HtmlComment|HtmlCData|) (node: HtmlNode) =
         match node with

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>@project@</id>
+    <title>FSharp.Data</title>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <license type="expression">Apache-2.0</license>
+    <projectUrl>https://fsprojects.github.io/FSharp.Data</projectUrl>
+    <iconUrl>https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>@summary@</summary>
+    <description>@description@</description>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <copyright>Copyright 2021</copyright>
+    <tags>@tags@</tags>
+    <dependencies>
+      <group targetFramework="netstandard2.0">
+        <dependency id="FSharp.Core" version="4.7.2" />
+      </group>
+    </dependencies>
+    <references>
+      <reference file="FSharp.Data.dll" />
+    </references>
+  </metadata>
+  <files>
+    <!-- Place the TPRTCs in the usual locations --> 
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.dll" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.pdb" target="lib/netstandard2.0" />
+    <file src="..\bin\lib\netstandard2.0\FSharp.Data.xml" target="lib/netstandard2.0" />
+
+    <!-- Place the TPDTC in the future-proof location --> 
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll" target="typeproviders/fsharp41/netstandard2.0" />
+    <file src="..\bin\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.pdb" target="typeproviders/fsharp41/netstandard2.0" />
+
+    <file src="linqpad-samples\*.*" target="linqpad-samples" />
+  </files>
+</package>

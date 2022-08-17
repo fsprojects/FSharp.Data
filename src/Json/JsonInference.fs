@@ -14,7 +14,7 @@ open FSharp.Data.Runtime.StructuralInference
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
-let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo parentName json =
+let rec inferType unitsOfMeasureProvider inferenceMode cultureInfo parentName json =
     let inline inRangeDecimal lo hi (v: decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
     let inline inRangeFloat lo hi (v: float) : bool = (v >= float lo) && (v <= float hi)
     let inline isIntegerDecimal (v: decimal) : bool = Math.Round v = v

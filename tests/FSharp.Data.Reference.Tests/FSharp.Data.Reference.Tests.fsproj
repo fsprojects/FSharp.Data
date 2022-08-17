@@ -7,7 +7,6 @@
     <!-- Tests won't run without this, at least on OSX, see https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateProgramFile>false</GenerateProgramFile>
-    <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:44</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="JsonProvider.fs" />
