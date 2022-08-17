@@ -6,18 +6,18 @@ index: 1
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
 (*** condition: fsx ***)
 #if FSX
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
-#endif // FSX
+#endif
 (*** condition: ipynb ***)
 #if IPYNB
 #r "nuget: FSharp.Data,{{fsdocs-package-version}}"
 
 Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
+Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" x)
+#endif
 (**
 [![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](../img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
@@ -56,8 +56,10 @@ can use `cref:M:FSharp.Data.Http.RequestString` and `cref:M:FSharp.Data.Http.Asy
 Http.RequestString("http://tomasp.net")
 
 // Download web site asynchronously
-async { let! html = Http.AsyncRequestString("http://tomasp.net")
-        printfn "%d" html.Length }
+async {
+    let! html = Http.AsyncRequestString("http://tomasp.net")
+    printfn "%d" html.Length
+}
 |> Async.Start
 
 (*** include-fsi-merged-output ***)
@@ -74,9 +76,7 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString
-  ( "http://httpbin.org/get",
-    query=["test", "foo"], httpMethod="GET" )
+Http.RequestString("http://httpbin.org/get", query = [ "test", "foo" ], httpMethod = "GET")
 
 (*** include-fsi-merged-output ***)
 
@@ -96,10 +96,12 @@ provide your API key:
 let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
-Http.RequestString
-  ( "http://api.themoviedb.org/3/search/movie", httpMethod = "GET",
-    query   = [ "api_key", apiKey; "query", "batman" ],
-    headers = [ "Accept", "application/json" ])
+Http.RequestString(
+    "http://api.themoviedb.org/3/search/movie",
+    httpMethod = "GET",
+    query = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ "Accept", "application/json" ]
+)
 
 (**
 The library supports a simple and unchecked string based API (used in the previous example),
@@ -115,10 +117,11 @@ open FSharp.Data.HttpRequestHeaders
 (*** do-not-eval ***)
 
 // Run the HTTP web request
-Http.RequestString
-  ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey; "query", "batman" ],
-    headers = [ Accept HttpContentTypes.Json ])
+Http.RequestString(
+    "http://api.themoviedb.org/3/search/movie",
+    query = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ Accept HttpContentTypes.Json ]
+)
 
 (**
 ## Getting extra information
@@ -143,7 +146,8 @@ instead of the `cref:M:FSharp.Data.Http.RequestString` method:
 
 *)
 
-let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+let response =
+    Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
 
 // Examine information about the response
 response.Headers
@@ -168,7 +172,7 @@ The following example uses the [httpbin.org](http://httpbin.org) service which
 returns the request details:
 *)
 
-Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
+Http.RequestString("http://httpbin.org/post", body = FormValues [ "test", "foo" ])
 
 (*** include-fsi-merged-output ***)
 
@@ -178,10 +182,11 @@ or `application/octet-stream`, depending on which kind of `HttpRequestBody` you 
 this behaviour by adding `content-type` to the list of headers using the optional argument `headers`:
 *)
 
-Http.RequestString
-  ( "http://httpbin.org/post",
+Http.RequestString(
+    "http://httpbin.org/post",
     headers = [ ContentType HttpContentTypes.Json ],
-    body = TextRequest """ {"test": 42} """)
+    body = TextRequest """ {"test": 42} """
+)
 
 (*** include-fsi-merged-output ***)
 
@@ -198,8 +203,8 @@ The following is an old sample showing how this is set.
 
 // Build URL with documentation for a given class
 let msdnUrl className =
-  let root = "http://msdn.microsoft.com"
-  sprintf "%s/en-gb/library/%s.aspx" root className
+    let root = "http://msdn.microsoft.com"
+    sprintf "%s/en-gb/library/%s.aspx" root className
 
 // Get the page and search for F# code
 let docInCSharp = Http.RequestString(msdnUrl "system.web.httprequest")
@@ -209,16 +214,19 @@ open System.Net
 let cc = CookieContainer()
 
 // Send a request to switch the language
-Http.RequestString
-  ( msdnUrl "system.datetime",
-    query = ["cs-save-lang", "1"; "cs-lang","fsharp"],
-    cookieContainer = cc) |> ignore
+Http.RequestString(
+    msdnUrl "system.datetime",
+    query =
+        [ "cs-save-lang", "1"
+          "cs-lang", "fsharp" ],
+    cookieContainer = cc
+)
+|> ignore
 
 // Request the documentation again & search for F#
 let docInFSharp =
-  Http.RequestString
-    ( msdnUrl "system.web.httprequest",
-      cookieContainer = cc )
+    Http.RequestString(msdnUrl "system.web.httprequest", cookieContainer = cc)
+
 docInFSharp.Contains "<a>F#</a>"
 
 (**
@@ -230,11 +238,10 @@ The `cref:M:FSharp.Data.Http.RequestString` method will always return the respon
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
+
 match Http.Request(logoUrl).Body with
-| Text text ->
-    printfn "Got text content: %s" text
-| Binary bytes ->
-    printfn "Got %d bytes of binary content" bytes.Length
+| Text text -> printfn "Got text content: %s" text
+| Binary bytes -> printfn "Got %d bytes of binary content" bytes.Length
 
 (**
 ## Customizing the HTTP request
@@ -254,14 +261,16 @@ Assuming the certificate is stored in `myCertificate.pfx`:
 open System.Security.Cryptography.X509Certificates
 
 // Load the certificate from local file
-let clientCert =
-  new X509Certificate2(".\myCertificate.pfx", "password")
+let clientCert = new X509Certificate2(".\myCertificate.pfx", "password")
 
 // Send the request with certificate
-Http.Request
-  ( "http://yourprotectedresouce.com/data",
-    customizeHttpRequest = fun req ->
-        req.ClientCertificates.Add(clientCert) |> ignore; req)
+Http.Request(
+    "http://yourprotectedresouce.com/data",
+    customizeHttpRequest =
+        fun req ->
+            req.ClientCertificates.Add(clientCert) |> ignore
+            req
+)
 
 (**
 ## Handling multipart form data
@@ -277,14 +286,14 @@ uploads of arbitrary size.
 let largeFilePath = "//path/to/large/file.mp4"
 let data = System.IO.File.OpenRead(largeFilePath) :> System.IO.Stream
 
-Http.Request
-  ( "http://endpoint/for/multipart/data",
-  body = Multipart(
-    boundary = "define a custom boundary here", // this is used to separate the items you're streaming
-    parts = [
-      MultipartItem("formFieldName", System.IO.Path.GetFileName(largeFilePath), data)
-    ]
-  ))
+Http.Request(
+    "http://endpoint/for/multipart/data",
+    body =
+        Multipart(
+            boundary = "define a custom boundary here", // this is used to separate the items you're streaming
+            parts = [ MultipartItem("formFieldName", System.IO.Path.GetFileName(largeFilePath), data) ]
+        )
+)
 
 (**
 ## Related articles

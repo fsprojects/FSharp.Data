@@ -256,22 +256,22 @@ type CsvFile<'RowType>
     ) =
 
     /// The rows with data
-    member __.Rows = rows
+    member _.Rows = rows
 
     /// The names of the columns
-    member __.Headers = headers
+    member _.Headers = headers
 
     /// The number of columns
-    member __.NumberOfColumns = numberOfColumns
+    member _.NumberOfColumns = numberOfColumns
 
     /// The character(s) used as column separator(s)
-    member __.Separators = separators
+    member _.Separators = separators
 
     /// The quotation mark use for surrounding values containing separator chars
-    member __.Quote = quote
+    member _.Quote = quote
 
     interface IDisposable with
-        member __.Dispose() = disposer.Dispose()
+        member _.Dispose() = disposer.Dispose()
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]

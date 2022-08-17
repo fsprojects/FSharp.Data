@@ -224,14 +224,14 @@ let testFormDataSizesInBytes = [
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testFormDataBodySize (size: int) =
     use localServer = startHttpLocalServer()
-    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let bodyString = seq {for _i in 0..size -> "x\n"} |> String.concat ""
     let body = FormValues([("input", bodyString)])
     Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url= localServer.BaseAddress + "/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testMultipartFormDataBodySize (size: int) =
     use localServer = startHttpLocalServer()
-    let bodyString = seq {for i in 0..size -> "x\n"} |> String.concat ""
+    let bodyString = seq {for _i in 0..size -> "x\n"} |> String.concat ""
     let multipartItem = [ MultipartItem("input", "input.txt", new MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> Stream) ]
     let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 

@@ -2,7 +2,7 @@
 // Implements type inference for XML
 // --------------------------------------------------------------------------------------
 
-module ProviderImplementation.XmlInference
+module internal ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
@@ -11,6 +11,10 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
+
+/// Takes a map and succeeds if it is empty
+let (|EmptyMap|_|) result (map: Map<_, _>) =
+    if map.IsEmpty then Some result else None
 
 // The type of XML element is always a non-optional record with a field
 // for every attribute. If it has some content, then it also

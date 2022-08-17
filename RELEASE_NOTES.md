@@ -1,3 +1,13 @@
+### 6.0.1-beta001 - Aug 18 2022
+
+* There are now multiple packages
+  * FSharp.Data -- includes everything
+    * FSharp.Data.Http -- http types/helpers
+    * FSharp.Data.Csv.Core -- csv types/helpers
+    * FSharp.Data.Json.Core -- json types/helpers
+    * FSharp.Data.Html.Core -- html types/helpers
+    * FSharp.Data.Xml.Core -- xml types/helpers
+
 ### 5.0.2 - Aug 17 2022
 * Identical to 4.2.10
 

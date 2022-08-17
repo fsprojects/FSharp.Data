@@ -151,10 +151,10 @@ type Html = XmlProvider<"""
 
 [<Test>]
 let ``Nested xml types compile when only used in type annotations``() =
-    let divWorks (div:Html.Div) = ()
-    let spanWorks (span:Html.Span) = ()
-    let ulWorks (ul:Html.Ul) = ()
-    let liWorks (li:Html.Li) = ()
+    let _divWorks (_div:Html.Div) = ()
+    let _spanWorks (_span:Html.Span) = ()
+    let _ulWorks (_ul:Html.Ul) = ()
+    let _liWorks (_li:Html.Li) = ()
     ()
 
 [<Literal>]
@@ -168,8 +168,8 @@ let sameNameDifferentNamespace = """<?xml version="1.0" encoding="UTF-8" ?>
 [<Test>]
 let ``XML elements with same name in different namespaces``() =
     let xml = XmlProvider<sameNameDifferentNamespace>.GetSample()
-    let b1 = xml.B
-    let b2 = xml.B2
+    let _b1 = xml.B
+    let _b2 = xml.B2
     ()
 
 [<Test>]
