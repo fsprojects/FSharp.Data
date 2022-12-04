@@ -16,6 +16,7 @@
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="InferenceTests.fs" />
     <None Include="expected\**\*" />
+    <None Include="paket.references" />
     <None Include="SignatureTestCases.config" />
     <Compile Include="SignatureTests.fs" />
     <Compile Include="Program.fs" />
