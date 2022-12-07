@@ -109,7 +109,7 @@ let countries =
        wb.Countries.Brazil
        wb.Countries.Canada
        wb.Countries.Chile
-       wb.Countries.``Czech Republic``
+       wb.Countries.Czechia
        wb.Countries.Denmark
        wb.Countries.France
        wb.Countries.Greece

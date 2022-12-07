@@ -32,6 +32,9 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj" />

@@ -15,11 +15,6 @@
     <Compile Include="JsonExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj" />

@@ -16,6 +16,7 @@
     <Compile Include="..\AssemblyInfo.fs" />
     <Compile Include="..\Runtime.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj">
@@ -28,9 +29,6 @@
     <ProjectReference Include="..\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
     <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.2" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
