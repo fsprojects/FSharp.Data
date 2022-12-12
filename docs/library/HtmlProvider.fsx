@@ -44,19 +44,11 @@ open FSharp.Data
 
 (**
 
-### Parsing Power Market Data
+### Parsing F1 Calendar Data
 
-The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format.
+This example shows an example of using the HTML Type Provider to extract each row from a table on a Wikipedia page.
 
-    [lang=text]
-    Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
-    2014-01-14,1,877.000,52378.500,-53779.500,348.200,-654.374,0.000,0.000,348.200,-654.374
-    2014-01-14,2,196.000,52598.000,-53559.500,349.601,-310.862,0.000,0.000,316.701,-310.862
-    2014-01-14,3,-190.000,52575.000,-53283.500,186.183,-2.426,0.000,0.000,162.767,-1.917
-    2014-01-14,4,-61.000,52576.000,-53454.500,18.000,-24.158,0.000,0.000,18.000,-24.158
-
-
-Usually with HTML files headers are demarked by using the `<th>` tag, however in this file this is not the case, so the provider assumes that the
+Usually with HTML files headers are demarked by using the `<th>` tag, however this is not true in general, so the provider assumes that the
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness.
 *)
 
@@ -73,17 +65,16 @@ entities exist then the table will simply be named `Tablexx` where xx is the pos
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
-// Download the latest market depth information
+// Download the table for the 2017 F1 calendar from Wikipedia
 let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.``Season calendarEdit``
 
-// Look at the most recent row. Note the 'Date' property
-// is of type 'DateTime' and 'Open' has a type 'decimal'
+// Look at the top row, being the first race of the calendar
 let firstRow = f1Calendar.Rows |> Seq.head
 let round = firstRow.Round
 let grandPrix = firstRow.``Grand Prix``
 let date = firstRow.Date
 
-// Print the bid / offer volumes for each row
+// Print the round, location and date for each race, corresponding to a row
 for row in f1Calendar.Rows do
     printfn "Race, round %A is hosted at %A on %A" row.Round row.``Grand Prix`` row.Date
 
