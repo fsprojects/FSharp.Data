@@ -1,3 +1,7 @@
+### 6.0.1-beta002 - Jan 6 2023
+
+* Change the namespace of the `InferenceMode` enum from `FSharp.Data.Runtime.StructuralInference` to `FSharp.Data`.
+
 ### 6.0.1-beta001 - Aug 18 2022
 
 * There are now multiple packages
