@@ -11,6 +11,7 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PublicApi.fs" />
     <Compile Include="..\Net\Http.fs" />
     <Compile Include="..\CommonRuntime\IO.fs" />
     <Compile Include="..\CommonRuntime\TextConversions.fs" />
