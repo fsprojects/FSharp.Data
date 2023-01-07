@@ -1,3 +1,5 @@
+#nowarn "10001" // Disable "This method is intended for use in generated code only." triggered by nameof references.
+
 // --------------------------------------------------------------------------------------
 // CSV type provider
 // --------------------------------------------------------------------------------------
@@ -140,7 +142,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
 
             let ctorCode (Singleton paramValue: Expr list) =
                 let body =
-                    csvErasedType?CreateEmpty
+                    csvErasedType?(nameof (CsvFile.CreateEmpty))
                         ()
                         (Expr.Var rowToStringArrayVar, paramValue, headers, sampleCsv.NumberOfColumns, separators, quote)
 
@@ -153,7 +155,9 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
 
             let parseRowsCode (Singleton text: Expr list) =
                 let body =
-                    csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
+                    csvErasedType?(nameof (CsvFile.ParseRows))
+                        ()
+                        (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
 
                 Expr.Let(stringArrayToRowVar, stringArrayToRow, body)
 
@@ -173,7 +177,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
               CreateFromTextReader =
                 fun reader ->
                     let body =
-                        csvErasedType?Create
+                        csvErasedType?(nameof (CsvFile.Create))
                             ()
                             (Expr.Var stringArrayToRowVar,
                              Expr.Var rowToStringArrayVar,

@@ -94,18 +94,22 @@ let internal convertStringValue missingValuesStr cultureStr (field: PrimitiveInf
             let varExpr = Expr.Cast<string option>(Expr.Var var)
 
             let body =
-                typeof<TextRuntime>?GetNonOptionalValue field.RuntimeType (fieldName, convert varExpr, varExpr)
+                typeof<TextRuntime>?(nameof (TextRuntime.GetNonOptionalValue))
+                    field.RuntimeType
+                    (fieldName, convert varExpr, varExpr)
 
             Expr.Let(var, value, body)
         | TypeWrapper.Option -> convert value
-        | TypeWrapper.Nullable -> typeof<TextRuntime>?OptionToNullable field.RuntimeType (convert value)
+        | TypeWrapper.Nullable ->
+            typeof<TextRuntime>?(nameof (TextRuntime.OptionToNullable)) field.RuntimeType (convert value)
 
     let convertBack value =
         let value =
             match field.TypeWrapper with
             | TypeWrapper.None -> ProviderHelpers.some field.RuntimeType value
             | TypeWrapper.Option -> value
-            | TypeWrapper.Nullable -> typeof<TextRuntime>?NullableToOption field.RuntimeType value
+            | TypeWrapper.Nullable ->
+                typeof<TextRuntime>?(nameof (TextRuntime.NullableToOption)) field.RuntimeType value
 
         getBackConversionQuotation missingValuesStr cultureStr field.InferedType value :> Expr
 
