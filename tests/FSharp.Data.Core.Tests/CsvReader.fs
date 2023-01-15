@@ -76,9 +76,11 @@ let ``Quoted strings parsed correctly`` () =
 [<Test>]
 let ``Read all rows from non seekable slow network stream`` () =
 
-  let data = """ABC
-DEF
-GHI"""
+  let data = """ABC;1
+DEF;2
+GHI;3
+"QUOTED";4
+;5"""
 
   let encoding = System.Text.Encoding.UTF8
   let bytes = data |> encoding.GetBytes 
@@ -105,6 +107,11 @@ GHI"""
   let reader = new StreamReader(fakeNetworkStream, encoding)
 
   let actual = readCsvFile reader ";" '"' |> Seq.map fst |> Array.ofSeq
-  let expected = [| [| "ABC" |]; [| "DEF" |]; [| "GHI" |] |]
+  let expected = 
+    [| [| "ABC"; "1" |]
+       [| "DEF"; "2" |]
+       [| "GHI"; "3" |]
+       [| "QUOTED"; "4" |]
+       [| ""; "5" |] |]
 
   actual |> should equal expected

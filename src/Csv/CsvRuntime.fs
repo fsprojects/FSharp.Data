@@ -50,7 +50,10 @@ module internal CsvReader =
         /// Reads a line with data that are separated using specified separators
         /// and may be quoted. Ends with newline or end of input.
         let rec readLine data (chars: StringBuilder) =
-            match reader.Read() with
+            reader.Read() |> readLineWithChar data chars
+
+        and readLineWithChar data (chars: StringBuilder) i =
+            match i with
             | -1
             | Char '\r'
             | Char '\n' ->
@@ -70,9 +73,9 @@ module internal CsvReader =
                 | Char '\r'
                 | Char '\n' ->
                     yield! readLines lineNumber
-                | Char c ->
+                | i ->
                     yield
-                        readLine [] (StringBuilder(string c))
+                        readLineWithChar [] (StringBuilder()) i
                         |> List.rev
                         |> Array.ofList,
                         lineNumber
