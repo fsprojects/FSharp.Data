@@ -65,15 +65,14 @@ module internal CsvReader =
         /// Reads multiple lines from the input, skipping newline characters
         let rec readLines lineNumber =
             seq {
-                match reader.Peek() with
+                match reader.Read() with
                 | -1 -> ()
                 | Char '\r'
                 | Char '\n' ->
-                    reader.Read() |> ignore
                     yield! readLines lineNumber
-                | _ ->
+                | Char c ->
                     yield
-                        readLine [] (StringBuilder())
+                        readLine [] (StringBuilder(string c))
                         |> List.rev
                         |> Array.ofList,
                         lineNumber
