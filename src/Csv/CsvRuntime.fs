@@ -49,11 +49,8 @@ module internal CsvReader =
 
         /// Reads a line with data that are separated using specified separators
         /// and may be quoted. Ends with newline or end of input.
-        let rec readLine data (chars: StringBuilder) =
-            reader.Read() |> readLineWithChar data chars
-
-        and readLineWithChar data (chars: StringBuilder) i =
-            match i with
+        let rec readLine data (chars: StringBuilder) current =
+            match current with
             | -1
             | Char '\r'
             | Char '\n' ->
@@ -61,9 +58,9 @@ module internal CsvReader =
                 item :: data
             | Separator ->
                 let item = chars.ToString()
-                readLine (item :: data) (StringBuilder())
-            | Quote -> readLine data (readString chars)
-            | Char c -> readLine data (chars.Append c)
+                readLine (item :: data) (StringBuilder()) (reader.Read())
+            | Quote -> readLine data (readString chars) (reader.Read())
+            | Char c -> readLine data (chars.Append c) (reader.Read())
 
         /// Reads multiple lines from the input, skipping newline characters
         let rec readLines lineNumber =
@@ -73,9 +70,9 @@ module internal CsvReader =
                 | Char '\r'
                 | Char '\n' ->
                     yield! readLines lineNumber
-                | i ->
+                | current ->
                     yield
-                        readLineWithChar [] (StringBuilder()) i
+                        readLine [] (StringBuilder()) current
                         |> List.rev
                         |> Array.ofList,
                         lineNumber
