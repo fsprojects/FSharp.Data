@@ -68,8 +68,7 @@ module internal CsvReader =
                 match reader.Read() with
                 | -1 -> ()
                 | Char '\r'
-                | Char '\n' ->
-                    yield! readLines lineNumber
+                | Char '\n' -> yield! readLines lineNumber
                 | current ->
                     yield
                         readLine [] (StringBuilder()) current
