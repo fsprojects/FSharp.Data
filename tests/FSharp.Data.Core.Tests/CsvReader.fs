@@ -72,3 +72,46 @@ let ``Quoted strings parsed correctly`` () =
   let expected = [|[|"12"; "a\n\rb"|]; [|"123"; "\"hello\" world"|]|]
   actual |> should equal expected
 
+
+[<Test>]
+let ``Read all rows from non seekable slow network stream`` () =
+
+  let data = """ABC;1
+DEF;2
+GHI;3
+"QUOTED";4
+;5"""
+
+  let encoding = System.Text.Encoding.UTF8
+  let bytes = data |> encoding.GetBytes 
+  use memoryStream = new MemoryStream(bytes)
+
+  use fakeNetworkStream =
+    { new System.IO.Stream () with
+        override _.CanRead: bool = memoryStream.CanRead
+        override _.CanSeek: bool = false
+        override _.CanWrite: bool = false
+        override _.Flush (): unit = memoryStream.Flush( )
+        override _.Length: int64 = raise (System.NotSupportedException())
+        override _.Position
+            with get (): int64 = memoryStream.Position
+            and set (v: int64): unit = raise (System.NotSupportedException ())
+        override _.Read(buffer: byte[], offset: int, _: int): int = 
+          memoryStream.Read (buffer, offset, 1 (* Ignores the count parameter and reads one byte only to simulate a slow network stream *))
+        override _.ReadByte(): int = memoryStream.ReadByte ()
+        override _.Seek(offset: int64, origin: SeekOrigin): int64 = raise (System.NotSupportedException ())
+        override _.SetLength(value: int64): unit = raise (System.NotSupportedException ())
+        override _.Write(buffer: byte[], offset: int, count: int): unit = raise (System.NotSupportedException ())
+        override _.WriteByte(value: byte): unit = raise (System.NotSupportedException ()) }
+
+  let reader = new StreamReader(fakeNetworkStream, encoding)
+
+  let actual = readCsvFile reader ";" '"' |> Seq.map fst |> Array.ofSeq
+  let expected = 
+    [| [| "ABC"; "1" |]
+       [| "DEF"; "2" |]
+       [| "GHI"; "3" |]
+       [| "QUOTED"; "4" |]
+       [| ""; "5" |] |]
+
+  actual |> should equal expected
