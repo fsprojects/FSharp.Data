@@ -153,7 +153,7 @@ module internal ProviderHelpers =
         let f = Var("f", convFunc.Type)
 
         let body =
-            typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f)
+            typeof<TextRuntime>?(nameof (TextRuntime.AsyncMap)) (typeof<'T>, resultType) (valueAsync, Expr.Var f)
 
         Expr.Let(f, convFunc, body)
 

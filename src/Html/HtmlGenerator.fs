@@ -1,3 +1,5 @@
+#nowarn "10001" // Disable "This method is intended for use in generated code only." triggered by nameof references.
+
 // --------------------------------------------------------------------------------------
 // HTML type provider - generate code for accessing inferred elements
 // --------------------------------------------------------------------------------------
@@ -108,7 +110,7 @@ module internal HtmlGenerator =
             let rowConverterVar = Var("rowConverter", rowConverter.Type)
 
             let body =
-                tableErasedWithRowErasedType?Create
+                tableErasedWithRowErasedType?(nameof (HtmlDocument.Create))
                     ()
                     (Expr.Var rowConverterVar, htmlDoc, table.Name, table.HasHeaders.Value)
 
@@ -166,7 +168,7 @@ module internal HtmlGenerator =
             let rowConverterVar = Var("rowConverter", rowConverter.Type)
 
             let body =
-                listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, list.Name)
+                listTypeWithErasedType?(nameof (HtmlDocument.Create)) () (Expr.Var rowConverterVar, htmlDoc, list.Name)
 
             Expr.Let(rowConverterVar, rowConverter, body)
 
@@ -228,7 +230,9 @@ module internal HtmlGenerator =
                 let rowConverterVar = Var("rowConverter", rowConverter.Type)
 
                 let body =
-                    listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, doc, definitionList.Name, index)
+                    listTypeWithErasedType?(nameof (HtmlList.CreateNested))
+                        ()
+                        (Expr.Var rowConverterVar, doc, definitionList.Name, index)
 
                 Expr.Let(rowConverterVar, rowConverter, body)
 

@@ -358,7 +358,7 @@ module JsonTypeBuilder =
 
             let conv =
                 fun (jDoc: Expr) ->
-                    ctx.JsonRuntimeType?ConvertArray
+                    ctx.JsonRuntimeType?(nameof (JsonRuntime.ConvertArray))
                         (elementResult.ConvertedTypeErased ctx)
                         (jDoc, elementResult.ConverterFunc ctx)
 
@@ -444,17 +444,17 @@ module JsonTypeBuilder =
                     let itemsSeqType = typedefof<_ seq>.MakeGenericType ([| tupleType |])
 
                     let itemsGetter (Singleton jDoc) =
-                        ctx.JsonRuntimeType?ConvertRecordToDictionary
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.ConvertRecordToDictionary))
                             (keyResult.ConvertedType, valueConvertedTypeErased)
                             (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx)
 
                     let keysGetter (Singleton jDoc) =
-                        ctx.JsonRuntimeType?GetKeysFromInferedDictionary
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.GetKeysFromInferedDictionary))
                             (keyResult.ConvertedType)
                             (jDoc, keyResult.ConverterFunc ctx)
 
                     let valuesGetter (Singleton jDoc) =
-                        ctx.JsonRuntimeType?GetValuesFromInferedDictionary
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.GetValuesFromInferedDictionary))
                             (valueConvertedTypeErased)
                             (jDoc, valueResult.ConverterFunc ctx)
 
@@ -464,17 +464,17 @@ module JsonTypeBuilder =
                         | _ -> failwith "Parameter mismatch"
 
                     let itemGetter (Doubleton (jDoc, key)) =
-                        ctx.JsonRuntimeType?GetValueByKeyFromInferedDictionary
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.GetValueByKeyFromInferedDictionary))
                             (keyResult.ConvertedType, valueConvertedTypeErased)
                             (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
                     let tryFindCode (Doubleton (jDoc, key)) =
-                        ctx.JsonRuntimeType?TryGetValueByKeyFromInferedDictionary
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.TryGetValueByKeyFromInferedDictionary))
                             (keyResult.ConvertedType, valueConvertedTypeErased)
                             (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
                     let containsKeyCode (Doubleton (jDoc, key)) =
-                        ctx.JsonRuntimeType?InferedDictionaryContainsKey
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.InferedDictionaryContainsKey))
                             (keyResult.ConvertedType)
                             (jDoc, keyResult.ConverterFunc ctx, key)
 
@@ -528,7 +528,7 @@ module JsonTypeBuilder =
 
                             let cultureStr = ctx.CultureStr
 
-                            ctx.JsonRuntimeType?CreateRecordFromDictionary
+                            ctx.JsonRuntimeType?(nameof (JsonRuntime.CreateRecordFromDictionary))
                                 (keyResult.ConvertedType, valueConvertedTypeErased)
                                 (kvSeq, cultureStr, convFunc)
 
@@ -562,7 +562,7 @@ module JsonTypeBuilder =
                                       match propResult.OptionalConverter with
                                       | Some _ ->
                                           //TODO: not covered in tests
-                                          ctx.JsonRuntimeType?ConvertOptionalProperty
+                                          ctx.JsonRuntimeType?(nameof (JsonRuntime.ConvertOptionalProperty))
                                               (propResult.ConvertedTypeErased ctx)
                                               (jDoc, propName, propResult.ConverterFunc ctx)
 
@@ -644,7 +644,7 @@ module JsonTypeBuilder =
                             // from the runtime similarly to options and arrays)
                             let cultureStr = ctx.CultureStr
 
-                            ctx.JsonRuntimeType?GetArrayChildrenByTypeTag
+                            ctx.JsonRuntimeType?(nameof (JsonRuntime.GetArrayChildrenByTypeTag))
                                 (result.ConvertedTypeErased ctx)
                                 (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)
 
@@ -653,7 +653,7 @@ module JsonTypeBuilder =
                             // Similar to the previous case, but call `TryGetArrayChildByTypeTag`
                             let cultureStr = ctx.CultureStr
 
-                            ctx.JsonRuntimeType?TryGetArrayChildByTypeTag
+                            ctx.JsonRuntimeType?(nameof (JsonRuntime.TryGetArrayChildByTypeTag))
                                 (result.ConvertedTypeErased ctx)
                                 (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)))
 
@@ -670,7 +670,7 @@ module JsonTypeBuilder =
                         assert (multiplicity = InferedMultiplicity.OptionalSingle)
                         let cultureStr = ctx.CultureStr
 
-                        ctx.JsonRuntimeType?TryGetValueByTypeTag
+                        ctx.JsonRuntimeType?(nameof (JsonRuntime.TryGetValueByTypeTag))
                             (result.ConvertedTypeErased ctx)
                             (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)))
 

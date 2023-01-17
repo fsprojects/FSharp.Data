@@ -79,12 +79,12 @@ let internal convertJsonValue
         match field.TypeWrapper, canPassAllConversionCallingTypes with
         | TypeWrapper.None, true ->
             wrapInLetIfNeeded value (fun (varExpr: Expr<JsonValueOptionAndPath>) ->
-                typeof<JsonRuntime>?GetNonOptionalValue
+                typeof<JsonRuntime>?(nameof (JsonRuntime.GetNonOptionalValue))
                     (field.RuntimeType)
                     (<@ (%varExpr).Path @>, convert <@ (%varExpr).JsonOpt @>, <@ (%varExpr).JsonOpt @>))
         | TypeWrapper.None, false ->
             wrapInLetIfNeeded value (fun (varExpr: Expr<IJsonDocument>) ->
-                typeof<JsonRuntime>?GetNonOptionalValue
+                typeof<JsonRuntime>?(nameof (JsonRuntime.GetNonOptionalValue))
                     (field.RuntimeType)
                     (<@ (%varExpr).Path() @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>))
         | TypeWrapper.Option, true -> convert <@ (%%value: JsonValue option) @>
@@ -93,10 +93,12 @@ let internal convertJsonValue
             convert <@ Some (%%value: IJsonDocument).JsonValue @>
         | TypeWrapper.Nullable, true ->
             //TODO: not covered in tests
-            typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ (%%value: JsonValue option) @>)
+            typeof<TextRuntime>?(nameof (TextRuntime.OptionToNullable))
+                (field.RuntimeType)
+                (convert <@ (%%value: JsonValue option) @>)
         | TypeWrapper.Nullable, false ->
             //TODO: not covered in tests
-            typeof<TextRuntime>?OptionToNullable
+            typeof<TextRuntime>?(nameof (TextRuntime.OptionToNullable))
                 (field.RuntimeType)
                 (convert <@ Some (%%value: IJsonDocument).JsonValue @>)
 
