@@ -11,10 +11,10 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Csv\CsvRuntime.fs" />
-    <Compile Include="..\Csv\CsvFile.fs" />
-    <Compile Include="..\Csv\CsvExtensions.fs" />
-    <Compile Include="..\Csv\CsvInference.fs" />
+    <Compile Include="CsvRuntime.fs" />
+    <Compile Include="CsvFile.fs" />
+    <Compile Include="CsvExtensions.fs" />
+    <Compile Include="CsvInference.fs" />
     <Compile Include="..\AssemblyInfo.Csv.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

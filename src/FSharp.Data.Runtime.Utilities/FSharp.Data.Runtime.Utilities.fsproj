@@ -13,14 +13,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PublicApi.fs" />
-    <Compile Include="..\CommonRuntime\IO.fs" />
-    <Compile Include="..\CommonRuntime\TextConversions.fs" />
-    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
-    <Compile Include="..\CommonRuntime\NameUtils.fs" />
-    <Compile Include="..\CommonRuntime\Caching.fs" />
-    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
-    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
+    <Compile Include="IO.fs" />
+    <Compile Include="TextConversions.fs" />
+    <Compile Include="Pluralizer.fs" />
+    <Compile Include="NameUtils.fs" />
+    <Compile Include="Caching.fs" />
+    <Compile Include="TextRuntime.fs" />
+    <Compile Include="StructuralTypes.fs" />
+    <Compile Include="StructuralInference.fs" />
     <Compile Include="..\AssemblyInfo.Runtime.Utilities.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

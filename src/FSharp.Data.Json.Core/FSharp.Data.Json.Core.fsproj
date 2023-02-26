@@ -11,12 +11,12 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Json\JsonValue.fs" />
-    <Compile Include="..\Json\JsonConversions.fs" />
-    <Compile Include="..\Json\JsonExtensions.fs" />
-    <Compile Include="..\Json\JsonDocument.fs" />
-    <Compile Include="..\Json\JsonRuntime.fs" />
-    <Compile Include="..\Json\JsonInference.fs" />
+    <Compile Include="JsonValue.fs" />
+    <Compile Include="JsonConversions.fs" />
+    <Compile Include="JsonExtensions.fs" />
+    <Compile Include="JsonDocument.fs" />
+    <Compile Include="JsonRuntime.fs" />
+    <Compile Include="JsonInference.fs" />
     <Compile Include="..\AssemblyInfo.Json.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

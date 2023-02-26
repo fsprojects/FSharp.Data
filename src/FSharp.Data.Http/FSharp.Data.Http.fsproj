@@ -11,7 +11,7 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Net\Http.fs" />
+    <Compile Include="Http.fs" />
     <Compile Include="..\AssemblyInfo.Http.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo.fs" />
-    <Compile Include="..\Runtime.fs" />
+    <Compile Include="Runtime.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
     <None Include="paket.references" />
   </ItemGroup>

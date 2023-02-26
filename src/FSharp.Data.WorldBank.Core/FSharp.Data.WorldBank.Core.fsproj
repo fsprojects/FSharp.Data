@@ -11,7 +11,7 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="..\AssemblyInfo.WorldBank.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
