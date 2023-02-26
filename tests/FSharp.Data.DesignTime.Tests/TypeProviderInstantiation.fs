@@ -260,6 +260,7 @@ type internal TypeProviderInstantiation =
 
         let extraDlls = 
             [ "FSharp.Data.Http"
+              "FSharp.Data.Runtime.Utilities"
               "FSharp.Data.Csv.Core"
               "FSharp.Data.Html.Core"
               "FSharp.Data.Xml.Core"

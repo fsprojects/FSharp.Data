@@ -11,16 +11,7 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PublicApi.fs" />
     <Compile Include="..\Net\Http.fs" />
-    <Compile Include="..\CommonRuntime\IO.fs" />
-    <Compile Include="..\CommonRuntime\TextConversions.fs" />
-    <Compile Include="..\CommonRuntime\Pluralizer.fs" />
-    <Compile Include="..\CommonRuntime\NameUtils.fs" />
-    <Compile Include="..\CommonRuntime\Caching.fs" />
-    <Compile Include="..\CommonRuntime\TextRuntime.fs" />
-    <Compile Include="..\CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="..\CommonRuntime\StructuralInference.fs" />
     <Compile Include="..\AssemblyInfo.Http.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

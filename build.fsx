@@ -38,7 +38,7 @@ let description =
     """
   The FSharp.Data packages contain type providers and utilities to access
   common data formats (CSV, HTML, JSON and XML in your F# applications and scripts.
-  
+
   * FSharp.Data -- includes everything
     * FSharp.Data.Http -- http types/helpers
     * FSharp.Data.Csv.Core -- csv types/helpers

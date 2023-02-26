@@ -29,6 +29,7 @@
     <ProjectReference Include="..\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
     <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
