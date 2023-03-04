@@ -66,6 +66,8 @@ type InferedTypeTag =
 [<CustomEquality; NoComparison; RequireQualifiedAccess>]
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedType =
+    /// When shouldOverrideOnMerge is true, it means this type should win when merged with other primitive types during inference.
+    /// This allows users to control inference by adding manual type hints that take priority.
     | Primitive of typ: Type * unit: option<System.Type> * optional: bool * shouldOverrideOnMerge: bool
     | Record of name: string option * fields: InferedProperty list * optional: bool
     | Json of typ: InferedType * optional: bool
