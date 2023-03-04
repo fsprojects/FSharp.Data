@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
 // Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
 //
 // Utilities for building F# quotations without quotation literals
@@ -21,10 +21,10 @@ open UncheckedQuotations
 ///    typ?Name tyArgs args
 ///
 /// tyArgs is a sequence of type arguments for method `Name`.
-/// Actual arguments can be either expression (Expr<'T>) or primitive values, whic
+/// Actual arguments can be either expression (Expr<'T>) or primitive values, which
 /// are automatically wrapped using Expr.Value.
 ///
-let (?) (typ: Type) (operation: string) (args1: 'T) (args2: 'U) : Expr =
+let (?) (typ: Type) (operation: string) (typeArgs: 'T) (argValues: 'U) : Expr =
     // Arguments are either Expr or other type - in the second case,
     // we treat them as Expr.Value (which will only work for primitives)
     let convertValue (arg: obj) =
@@ -86,4 +86,4 @@ let (?) (typ: Type) (operation: string) (args1: 'T) (args2: 'U) : Expr =
                 Expr.PropertyGetUnchecked(List.head args, pi, List.tail args)
         | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
-    invokeOperation (args1, typeof<'T>) (args2, typeof<'U>)
+    invokeOperation (typeArgs, typeof<'T>) (argValues, typeof<'U>)

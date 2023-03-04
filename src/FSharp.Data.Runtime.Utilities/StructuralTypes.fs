@@ -2,6 +2,7 @@ namespace rec FSharp.Data.Runtime.StructuralTypes
 
 open System
 open FSharp.Data.Runtime
+open System.Diagnostics
 
 // --------------------------------------------------------------------------------------
 // Types that represent the result of the type inference
@@ -65,6 +66,7 @@ type InferedTypeTag =
 /// to generate nicer types!
 [<CustomEquality; NoComparison; RequireQualifiedAccess>]
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<DebuggerDisplay("{ToString(),nq}")>]
 type InferedType =
     /// When shouldOverrideOnMerge is true, it means this type should win when merged with other primitive types during inference.
     /// This allows users to control inference by adding manual type hints that take priority.
@@ -142,7 +144,79 @@ type InferedType =
         else
             false
 
-    override x.ToString() = sprintf "%A" x
+    override x.ToString() =
+        let sb = System.Text.StringBuilder()
+        let mutable indentation = -1
+        let pushIndent () = indentation <- indentation + 1
+        let popIndent () = indentation <- indentation - 1
+
+        let indented str =
+            sb.Append(new String(' ', 2 * indentation))
+            |> ignore
+
+            sb.AppendLine(str) |> ignore
+
+        let rec walk t =
+            pushIndent ()
+
+            match t with
+            | Top -> indented ("(Top)") |> ignore
+            | Null -> indented ("(Null)") |> ignore
+            | Primitive (typ, unit, opt, overrideOnMerge) ->
+                indented ($"(*Primitive* %A{typ}, Unit: %A{unit}, Optional: {opt}, OverrideOnMerge: {overrideOnMerge})")
+                |> ignore
+            | Record (name, props, opt) ->
+                indented ($"{{*Record* Name: {name}, Optional: {opt}")
+                |> ignore
+
+                pushIndent ()
+
+                for p in props do
+                    indented ($"- Property (Name: {p.Name})")
+                    |> ignore
+
+                    walk p.Type
+
+                popIndent ()
+                indented ("}") |> ignore
+            | Json (iTyp, opt) ->
+                indented ($"{{Json Optional: {opt}") |> ignore
+                walk iTyp
+                indented ("}") |> ignore
+            | Collection (order, types) ->
+                let inOrder order types =
+                    types
+                    |> Map.toList
+                    |> List.sortBy (fun (tag, _) -> List.findIndex ((=) tag) order)
+
+                indented ($"[*Array*") |> ignore
+                pushIndent ()
+
+                for (typTag, (multiplicity, inferedType)) in inOrder order types do
+                    indented ($"- Item (Tag: {typTag}, Multiplicity: %A{multiplicity})")
+                    |> ignore
+
+                    walk inferedType
+
+                popIndent ()
+                indented ("]") |> ignore
+            | Heterogeneous (inferedTypes, containsOptional) ->
+                indented ($"{{[*Heterogeneous* ContainsOptional: {containsOptional}")
+                |> ignore
+
+                pushIndent ()
+
+                for KeyValue (typTag, inferedType) in inferedTypes do
+                    indented ($"- Type (Tag: {typTag})") |> ignore
+                    walk inferedType
+
+                popIndent ()
+                indented ("]}") |> ignore
+
+            popIndent ()
+
+        walk x
+        sb.ToString()
 
 // ------------------------------------------------------------------------------------------------
 // Additional operations for working with the inferred representation
