@@ -32,7 +32,7 @@ let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo pare
     | JsonValue.Null -> InferedType.Null
     | JsonValue.Boolean _ -> InferedType.Primitive(typeof<bool>, None, false, false)
     | JsonValue.String s ->
-        StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo s None
+        StructuralInference.inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo s None
     // For numbers, we test if it is integer and if it fits in smaller range
     | JsonValue.Number 0M when shouldInferNonStringFromValue -> InferedType.Primitive(typeof<Bit0>, None, false, false)
     | JsonValue.Number 1M when shouldInferNonStringFromValue -> InferedType.Primitive(typeof<Bit1>, None, false, false)
@@ -62,11 +62,14 @@ let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo pare
         ->
         InferedType.Primitive(typeof<int64>, None, false, false)
     | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false, false)
+
     // More interesting types
+
     | JsonValue.Array ar ->
         StructuralInference.inferCollectionType
             false
             (Seq.map (inferType unitsOfMeasureProvider inferenceMode cultureInfo (NameUtils.singularize parentName)) ar)
+
     | JsonValue.Record properties ->
         let name =
             if String.IsNullOrEmpty parentName then

@@ -436,7 +436,7 @@ module JsonTypeBuilder =
                     else
                         let infKeyType =
                             [ for prop in props ->
-                                  StructuralInference.getInferedTypeFromString
+                                  StructuralInference.inferPrimitiveType
                                       ctx.UnitsOfMeasureProvider
                                       ctx.InferenceMode
                                       (TextRuntime.GetCulture ctx.CultureStr)

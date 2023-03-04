@@ -30,11 +30,11 @@ let private getAttributes unitsOfMeasureProvider inferenceMode cultureInfo (elem
              && attr.Name.ToString() <> "xmlns" then
               yield
                   { Name = attr.Name.ToString()
-                    Type = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo attr.Value None } ]
+                    Type = inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo attr.Value None } ]
 
 let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (element: XElement) =
     let typ =
-        getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo (element.Value) None
+        inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo (element.Value) None
 
     match inferenceMode with
     // Embedded json is not parsed when InferenceMode is NoInference

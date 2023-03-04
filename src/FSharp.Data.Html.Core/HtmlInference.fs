@@ -67,7 +67,7 @@ let internal inferListType parameters (values: string[]) =
                 else
                     InferedType.Primitive(typeof<float>, None, false, false)
             else
-                getInferedTypeFromString
+                inferPrimitiveType
                     parameters.UnitsOfMeasureProvider
                     parameters.InferenceMode
                     parameters.CultureInfo
