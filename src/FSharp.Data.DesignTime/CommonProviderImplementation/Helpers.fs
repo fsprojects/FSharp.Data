@@ -266,7 +266,10 @@ module internal ProviderHelpers =
                       IsUri = false
                       IsResource = false }
                 with e ->
-                    failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
+                    failwithf
+                        "The provided sample is neither a file, nor a well-formed %s: %s"
+                        formatName
+                        (e.ToString())
 
             | Some uri ->
 
@@ -331,9 +334,17 @@ module internal ProviderHelpers =
                               IsResource = false }
                         with _ ->
                             // if not, return the first exception
-                            failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
+                            failwithf
+                                "Cannot read sample %s from '%s': %s"
+                                formatName
+                                valueToBeParsedOrItsUri
+                                (e.ToString())
                     else
-                        failwithf "Cannot read sample %s from '%s': %s" formatName valueToBeParsedOrItsUri e.Message
+                        failwithf
+                            "Cannot read sample %s from '%s': %s"
+                            formatName
+                            valueToBeParsedOrItsUri
+                            (e.ToString())
 
     let private providedTypesCache = createInMemoryCache (TimeSpan.FromSeconds 30.0)
     let private activeDisposeActions = HashSet<_>()
