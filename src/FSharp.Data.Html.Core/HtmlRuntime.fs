@@ -179,7 +179,7 @@ module HtmlRuntime =
                 <| element.Descendants("caption", false)
                 with
             | [] ->
-                match tryGetName [ "id"; "name"; "title"; "summary" ] with
+                match tryGetName [ "id"; "name"; "title"; "summary"; "aria-label" ] with
                 | Some name -> normalizeWs name
                 | _ -> defaultName
             | h :: _ -> h.InnerText()

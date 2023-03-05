@@ -2,6 +2,7 @@
 
 * Change the namespace of the `InferenceMode` enum from `FSharp.Data.Runtime.StructuralInference` to `FSharp.Data`.
 * Move common runtime utilities out of `FSharp.Data.Http` and into a new `FSharp.Data.Runtime.Utilities` assembly.
+* Add `aria-label` to the list of html attributes used to infer names of types provided by the HtmlProvider.
 
 ### 6.0.1-beta001 - Aug 18 2022
 
