@@ -11,7 +11,7 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="..\AssemblyInfo.WorldBank.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
     <ProjectReference Include="..\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

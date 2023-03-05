@@ -12,6 +12,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
+open System.Net
 
 // ----------------------------------------------------------------------------------------------
 
@@ -34,6 +35,11 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         ProvidedTypeDefinition(asm, ns, "XmlProvider", None, hideObjectMethods = true, nonNullable = true)
 
     let buildTypes (typeName: string) (args: obj[]) =
+
+        // Enable TLS 1.2 for samples requested through https.
+        ServicePointManager.SecurityProtocol <-
+            ServicePointManager.SecurityProtocol
+            ||| SecurityProtocolType.Tls12
 
         // Generate the required type
         let tpType =

@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:10001 --nowarn:44</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -11,11 +12,22 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Http.fs" />
-    <Compile Include="..\AssemblyInfo.Http.fs" />
+    <Compile Include="PublicApi.fs" />
+    <Compile Include="IO.fs" />
+    <Compile Include="TextConversions.fs" />
+    <Compile Include="Pluralizer.fs" />
+    <Compile Include="NameUtils.fs" />
+    <Compile Include="Caching.fs" />
+    <Compile Include="TextRuntime.fs" />
+    <Compile Include="StructuralTypes.fs" />
+    <Compile Include="StructuralInference.fs" />
+    <Compile Include="..\AssemblyInfo.Runtime.Utilities.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
     <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

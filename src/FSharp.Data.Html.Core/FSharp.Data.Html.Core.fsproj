@@ -11,15 +11,15 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Html\HtmlCssSelectors.fs" />
-    <Compile Include="..\Html\HtmlCharRefs.fs" />
-    <Compile Include="..\Html\HtmlNode.fs" />
-    <Compile Include="..\Html\HtmlParser.fs" />
-    <Compile Include="..\Html\HtmlOperations.fs" />
-    <Compile Include="..\Html\HtmlCssSelectorExtensions.fs" />
-    <Compile Include="..\Html\HtmlActivePatterns.fs" />
-    <Compile Include="..\Html\HtmlInference.fs" />
-    <Compile Include="..\Html\HtmlRuntime.fs" />
+    <Compile Include="HtmlCssSelectors.fs" />
+    <Compile Include="HtmlCharRefs.fs" />
+    <Compile Include="HtmlNode.fs" />
+    <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlCssSelectorExtensions.fs" />
+    <Compile Include="HtmlActivePatterns.fs" />
+    <Compile Include="HtmlInference.fs" />
+    <Compile Include="HtmlRuntime.fs" />
     <Compile Include="..\AssemblyInfo.Html.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
@@ -27,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

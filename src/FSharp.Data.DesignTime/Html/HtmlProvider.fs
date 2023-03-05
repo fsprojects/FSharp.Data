@@ -11,6 +11,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralInference
+open System.Net
 
 #nowarn "10001"
 
@@ -31,6 +32,11 @@ type public HtmlProvider(cfg: TypeProviderConfig) as this =
         ProvidedTypeDefinition(asm, ns, "HtmlProvider", None, hideObjectMethods = true, nonNullable = true)
 
     let buildTypes (typeName: string) (args: obj[]) =
+
+        // Enable TLS 1.2 for samples requested through https.
+        ServicePointManager.SecurityProtocol <-
+            ServicePointManager.SecurityProtocol
+            ||| SecurityProtocolType.Tls12
 
         let sample = args.[0] :?> string
         let preferOptionals = args.[1] :?> bool

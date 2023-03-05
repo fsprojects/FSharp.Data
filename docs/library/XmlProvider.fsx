@@ -6,7 +6,7 @@ index: 4
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Runtime.Utilities.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Csv.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Xml.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
@@ -408,11 +408,11 @@ RSS feed. As discussed earlier, we can use relative paths or web addresses when 
 the type provider:
 *)
 
-type Rss = XmlProvider<"http://tomasp.net/rss.xml">
+type Rss = XmlProvider<"https://tomasp.net/rss.xml">
 
 (**
 This code builds a type `Rss` that represents RSS feeds (with the features that are used
-on `http://tomasp.net`). The type `Rss` provides static methods `Parse`, `Load` and `AsyncLoad`
+on `https://tomasp.net`). The type `Rss` provides static methods `Parse`, `Load` and `AsyncLoad`
 to construct it - here, we just want to reuse the same URI of the schema, so we
 use the `GetSample` static method:
 *)

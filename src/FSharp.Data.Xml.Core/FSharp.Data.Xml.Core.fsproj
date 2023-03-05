@@ -11,10 +11,10 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Xml\XmlRuntime.fs" />
-    <Compile Include="..\Xml\XmlExtensions.fs" />
-    <Compile Include="..\Xml\XmlInference.fs" />
-    <Compile Include="..\Xml\XsdInference.fs" />
+    <Compile Include="XmlRuntime.fs" />
+    <Compile Include="XmlExtensions.fs" />
+    <Compile Include="XmlInference.fs" />
+    <Compile Include="XsdInference.fs" />
     <Compile Include="..\AssemblyInfo.Xml.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
     <ProjectReference Include="..\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

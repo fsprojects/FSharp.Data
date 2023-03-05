@@ -6,7 +6,7 @@ index: 2
 ---
 *)
 (*** condition: prepare ***)
-#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Runtime.Utilities.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Csv.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Html.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
@@ -105,7 +105,7 @@ Note that we're using the live URL as the sample, so we can just use the default
 type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats().Tables.Table4
+let rawStats = NugetStats().Tables.``Version History of FSharp.Data``
 
 // helper function to analyze version numbers from nuget
 let getMinorVersion (v: string) =

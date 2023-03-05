@@ -7,6 +7,7 @@ index: 5
 *)
 (*** condition: prepare ***)
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Runtime.Utilities.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.Json.Core.dll"
 #r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
 (*** condition: fsx ***)
