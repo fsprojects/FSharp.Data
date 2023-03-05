@@ -32,11 +32,14 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : intLike:int -> boolLike1:bool -> boolLike2:bool -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("intLike",
-                                 (intLike :> obj))
+                                 (intLike :> obj),
+                                 1)
                                 ("boolLike1",
-                                 (boolLike1 :> obj))
+                                 (boolLike1 :> obj),
+                                 2)
                                 ("boolLike2",
-                                 (boolLike2 :> obj)) |], "")
+                                 (boolLike2 :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")

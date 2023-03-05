@@ -74,9 +74,11 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
 class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
     JsonRuntime.CreateRecord([| ("Something.Schema",
-                                 (somethingSchema :> obj))
+                                 (somethingSchema :> obj),
+                                 1)
                                 ("results",
-                                 (results :> obj)) |], "")
+                                 (results :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo
     JsonDocument.Create(jsonValue, "")
@@ -115,9 +117,11 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
 class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
     JsonRuntime.CreateRecord([| ("Something.Schema",
-                                 (somethingSchema :> obj))
+                                 (somethingSchema :> obj),
+                                 1)
                                 ("results",
-                                 (results :> obj)) |], "")
+                                 (results :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo3
     JsonDocument.Create(jsonValue, "")
@@ -152,9 +156,11 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
 class XmlProvider+X : FDR.BaseTypes.IJsonDocument
     new : t:int -> val:string -> XmlProvider+X
     JsonRuntime.CreateRecord([| ("T",
-                                 (t :> obj))
+                                 (t :> obj),
+                                 2)
                                 ("Val",
-                                 (val :> obj)) |], "")
+                                 (val :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+X
     JsonDocument.Create(jsonValue, "")
@@ -171,9 +177,11 @@ class XmlProvider+X : FDR.BaseTypes.IJsonDocument
 class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> query:string option -> XmlProvider+Results
     JsonRuntime.CreateRecord([| ("Something.Schema",
-                                 (somethingSchema :> obj))
+                                 (somethingSchema :> obj),
+                                 1)
                                 ("Query",
-                                 (query :> obj)) |], "")
+                                 (query :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+Results
     JsonDocument.Create(jsonValue, "")
@@ -189,9 +197,11 @@ class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
 class XmlProvider+Results2 : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> query:string -> XmlProvider+Results2
     JsonRuntime.CreateRecord([| ("Something.Schema",
-                                 (somethingSchema :> obj))
+                                 (somethingSchema :> obj),
+                                 1)
                                 ("Query",
-                                 (query :> obj)) |], "")
+                                 (query :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+Results2
     JsonDocument.Create(jsonValue, "")

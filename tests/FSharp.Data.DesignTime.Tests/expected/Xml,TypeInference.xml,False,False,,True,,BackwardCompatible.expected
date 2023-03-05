@@ -65,7 +65,8 @@ class XmlProvider+X : FDR.BaseTypes.XmlElement
 class XmlProvider+JsonLike : FDR.BaseTypes.IJsonDocument
     new : a:int -> XmlProvider+JsonLike
     JsonRuntime.CreateRecord([| ("a",
-                                 (a :> obj)) |], "")
+                                 (a :> obj),
+                                 2) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+JsonLike
     JsonDocument.Create(jsonValue, "")

@@ -32,13 +32,17 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> address:JsonProvider+Address -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("firstName",
-                                 (firstName :> obj))
+                                 (firstName :> obj),
+                                 1)
                                 ("lastName",
-                                 (lastName :> obj))
+                                 (lastName :> obj),
+                                 1)
                                 ("age",
-                                 (age :> obj))
+                                 (age :> obj),
+                                 2)
                                 ("address",
-                                 (address :> obj)) |], "")
+                                 (address :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -62,13 +66,17 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Address : FDR.BaseTypes.IJsonDocument
     new : streetAddress:string -> city:string -> state:string -> postalCode:int -> JsonProvider+Address
     JsonRuntime.CreateRecord([| ("streetAddress",
-                                 (streetAddress :> obj))
+                                 (streetAddress :> obj),
+                                 1)
                                 ("city",
-                                 (city :> obj))
+                                 (city :> obj),
+                                 1)
                                 ("state",
-                                 (state :> obj))
+                                 (state :> obj),
+                                 1)
                                 ("postalCode",
-                                 (postalCode :> obj)) |], "")
+                                 (postalCode :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Address
     JsonDocument.Create(jsonValue, "")

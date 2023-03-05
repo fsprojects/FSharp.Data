@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("ordercontainer",
-                                 (ordercontainer :> obj)) |], "")
+                                 (ordercontainer :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -44,9 +45,11 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Ordercontainer : FDR.BaseTypes.IJsonDocument
     new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
     JsonRuntime.CreateRecord([| ("backgrounds",
-                                 (backgrounds :> obj))
+                                 (backgrounds :> obj),
+                                 0)
                                 ("project",
-                                 (project :> obj)) |], "")
+                                 (project :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Ordercontainer
     JsonDocument.Create(jsonValue, "")
@@ -61,7 +64,8 @@ class JsonProvider+Ordercontainer : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Background : FDR.BaseTypes.IJsonDocument
     new : title:JsonProvider+Title -> JsonProvider+Background
     JsonRuntime.CreateRecord([| ("title",
-                                 (title :> obj)) |], "")
+                                 (title :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Background
     JsonDocument.Create(jsonValue, "")
@@ -73,7 +77,8 @@ class JsonProvider+Background : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Backgrounds : FDR.BaseTypes.IJsonDocument
     new : background:JsonProvider+Background -> JsonProvider+Backgrounds
     JsonRuntime.CreateRecord([| ("background",
-                                 (background :> obj)) |], "")
+                                 (background :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Backgrounds
     JsonDocument.Create(jsonValue, "")
@@ -85,7 +90,8 @@ class JsonProvider+Backgrounds : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Title : FDR.BaseTypes.IJsonDocument
     new : text:string -> JsonProvider+Title
     JsonRuntime.CreateRecord([| ("text",
-                                 (text :> obj)) |], "")
+                                 (text :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Title
     JsonDocument.Create(jsonValue, "")

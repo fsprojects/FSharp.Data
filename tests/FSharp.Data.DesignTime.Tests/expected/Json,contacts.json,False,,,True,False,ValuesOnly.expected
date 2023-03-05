@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ab:JsonProvider+Ab -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("ab",
-                                 (ab :> obj)) |], "")
+                                 (ab :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -44,7 +45,8 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
     new : persons:JsonProvider+JsonProvider+Person[] -> JsonProvider+Ab
     JsonRuntime.CreateRecord([| ("persons",
-                                 (persons :> obj)) |], "")
+                                 (persons :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Ab
     JsonDocument.Create(jsonValue, "")
@@ -56,11 +58,14 @@ class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
     new : contacts:JsonProvider+JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
     JsonRuntime.CreateRecord([| ("contacts",
-                                 (contacts :> obj))
+                                 (contacts :> obj),
+                                 0)
                                 ("emails",
-                                 (emails :> obj))
+                                 (emails :> obj),
+                                 0)
                                 ("phones",
-                                 (phones :> obj)) |], "")
+                                 (phones :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Person
     JsonDocument.Create(jsonValue, "")
@@ -78,13 +83,17 @@ class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Contact : FDR.BaseTypes.IJsonDocument
     new : emailCapability:int[] -> emailImEnabled:bool[] -> emails:string[] -> phones:JsonValue[] -> JsonProvider+Contact
     JsonRuntime.CreateRecord([| ("emailCapability",
-                                 (emailCapability :> obj))
+                                 (emailCapability :> obj),
+                                 0)
                                 ("emailIMEnabled",
-                                 (emailImEnabled :> obj))
+                                 (emailImEnabled :> obj),
+                                 3)
                                 ("emails",
-                                 (emails :> obj))
+                                 (emails :> obj),
+                                 0)
                                 ("phones",
-                                 (phones :> obj)) |], "")
+                                 (phones :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Contact
     JsonDocument.Create(jsonValue, "")

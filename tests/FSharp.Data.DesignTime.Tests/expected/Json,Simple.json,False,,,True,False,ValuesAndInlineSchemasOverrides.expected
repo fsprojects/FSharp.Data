@@ -32,13 +32,17 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> isCool:bool -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("firstName",
-                                 (firstName :> obj))
+                                 (firstName :> obj),
+                                 1)
                                 ("lastName",
-                                 (lastName :> obj))
+                                 (lastName :> obj),
+                                 1)
                                 ("age",
-                                 (age :> obj))
+                                 (age :> obj),
+                                 2)
                                 ("isCool",
-                                 (isCool :> obj)) |], "")
+                                 (isCool :> obj),
+                                 3) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")

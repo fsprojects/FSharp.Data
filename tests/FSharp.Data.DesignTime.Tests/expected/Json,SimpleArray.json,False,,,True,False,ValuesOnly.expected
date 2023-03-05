@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : items:JsonProvider+JsonProvider+Item[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("items",
-                                 (items :> obj)) |], "")
+                                 (items :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -44,7 +45,8 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Item : FDR.BaseTypes.IJsonDocument
     new : id:string -> JsonProvider+Item
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj)) |], "")
+                                 (id :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Item
     JsonDocument.Create(jsonValue, "")

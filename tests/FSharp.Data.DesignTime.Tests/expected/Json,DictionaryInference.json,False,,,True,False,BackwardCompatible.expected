@@ -32,9 +32,11 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : rec:JsonProvider+Rec -> rec2:JsonProvider+Rec2 -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("rec",
-                                 (rec :> obj))
+                                 (rec :> obj),
+                                 0)
                                 ("rec2",
-                                 (rec2 :> obj)) |], "")
+                                 (rec2 :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -49,9 +51,11 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Rec : FDR.BaseTypes.IJsonDocument
     new : 0:int -> 1:int option -> JsonProvider+Rec
     JsonRuntime.CreateRecord([| ("0",
-                                 (0 :> obj))
+                                 (0 :> obj),
+                                 1)
                                 ("1",
-                                 (1 :> obj)) |], "")
+                                 (1 :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Rec
     JsonDocument.Create(jsonValue, "")
@@ -67,9 +71,11 @@ class JsonProvider+Rec : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Rec2 : FDR.BaseTypes.IJsonDocument
     new : 0:JsonProvider+0 option -> 1:JsonProvider+0 -> JsonProvider+Rec2
     JsonRuntime.CreateRecord([| ("0",
-                                 (0 :> obj))
+                                 (0 :> obj),
+                                 0)
                                 ("1",
-                                 (1 :> obj)) |], "")
+                                 (1 :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Rec2
     JsonDocument.Create(jsonValue, "")
@@ -84,7 +90,8 @@ class JsonProvider+Rec2 : FDR.BaseTypes.IJsonDocument
 class JsonProvider+0 : FDR.BaseTypes.IJsonDocument
     new : a:int -> JsonProvider+0
     JsonRuntime.CreateRecord([| ("a",
-                                 (a :> obj)) |], "")
+                                 (a :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+0
     JsonDocument.Create(jsonValue, "")

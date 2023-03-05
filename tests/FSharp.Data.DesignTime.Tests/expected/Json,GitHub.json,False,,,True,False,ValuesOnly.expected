@@ -32,43 +32,62 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : url:string -> labelsUrl:string -> commentsUrl:string -> eventsUrl:string -> htmlUrl:string -> id:int -> number:int -> title:string -> user:JsonProvider+User -> labels:JsonProvider+JsonProvider+Label[] -> state:string -> assignee:JsonValue -> milestone:JsonValue -> comments:int -> createdAt:System.DateTimeOffset -> updatedAt:System.DateTimeOffset -> closedAt:JsonValue -> pullRequest:JsonProvider+PullRequest -> body:string option -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("url",
-                                 (url :> obj))
+                                 (url :> obj),
+                                 1)
                                 ("labels_url",
-                                 (labelsUrl :> obj))
+                                 (labelsUrl :> obj),
+                                 1)
                                 ("comments_url",
-                                 (commentsUrl :> obj))
+                                 (commentsUrl :> obj),
+                                 1)
                                 ("events_url",
-                                 (eventsUrl :> obj))
+                                 (eventsUrl :> obj),
+                                 1)
                                 ("html_url",
-                                 (htmlUrl :> obj))
+                                 (htmlUrl :> obj),
+                                 1)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("number",
-                                 (number :> obj))
+                                 (number :> obj),
+                                 2)
                                 ("title",
-                                 (title :> obj))
+                                 (title :> obj),
+                                 1)
                                 ("user",
-                                 (user :> obj))
+                                 (user :> obj),
+                                 0)
                                 ("labels",
-                                 (labels :> obj))
+                                 (labels :> obj),
+                                 0)
                                 ("state",
-                                 (state :> obj))
+                                 (state :> obj),
+                                 1)
                                 ("assignee",
-                                 (assignee :> obj))
+                                 (assignee :> obj),
+                                 0)
                                 ("milestone",
-                                 (milestone :> obj))
+                                 (milestone :> obj),
+                                 0)
                                 ("comments",
-                                 (comments :> obj))
+                                 (comments :> obj),
+                                 2)
                                 ("created_at",
-                                 (createdAt :> obj))
+                                 (createdAt :> obj),
+                                 1)
                                 ("updated_at",
-                                 (updatedAt :> obj))
+                                 (updatedAt :> obj),
+                                 1)
                                 ("closed_at",
-                                 (closedAt :> obj))
+                                 (closedAt :> obj),
+                                 0)
                                 ("pull_request",
-                                 (pullRequest :> obj))
+                                 (pullRequest :> obj),
+                                 0)
                                 ("body",
-                                 (body :> obj)) |], "")
+                                 (body :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -146,11 +165,14 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
     new : url:string -> name:string -> color:JsonProvider+FloatOrString -> JsonProvider+Label
     JsonRuntime.CreateRecord([| ("url",
-                                 (url :> obj))
+                                 (url :> obj),
+                                 1)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("color",
-                                 (color :> obj)) |], "")
+                                 (color :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Label
     JsonDocument.Create(jsonValue, "")
@@ -170,11 +192,14 @@ class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
 class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
     new : htmlUrl:string option -> diffUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
     JsonRuntime.CreateRecord([| ("html_url",
-                                 (htmlUrl :> obj))
+                                 (htmlUrl :> obj),
+                                 1)
                                 ("diff_url",
-                                 (diffUrl :> obj))
+                                 (diffUrl :> obj),
+                                 1)
                                 ("patch_url",
-                                 (patchUrl :> obj)) |], "")
+                                 (patchUrl :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+PullRequest
     JsonDocument.Create(jsonValue, "")
@@ -192,37 +217,53 @@ class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     new : login:string -> id:int -> avatarUrl:string -> gravatarId:System.Guid -> url:string -> htmlUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> starredUrl:string -> subscriptionsUrl:string -> organizationsUrl:string -> reposUrl:string -> eventsUrl:string -> receivedEventsUrl:string -> type:string -> JsonProvider+User
     JsonRuntime.CreateRecord([| ("login",
-                                 (login :> obj))
+                                 (login :> obj),
+                                 1)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("avatar_url",
-                                 (avatarUrl :> obj))
+                                 (avatarUrl :> obj),
+                                 1)
                                 ("gravatar_id",
-                                 (gravatarId :> obj))
+                                 (gravatarId :> obj),
+                                 1)
                                 ("url",
-                                 (url :> obj))
+                                 (url :> obj),
+                                 1)
                                 ("html_url",
-                                 (htmlUrl :> obj))
+                                 (htmlUrl :> obj),
+                                 1)
                                 ("followers_url",
-                                 (followersUrl :> obj))
+                                 (followersUrl :> obj),
+                                 1)
                                 ("following_url",
-                                 (followingUrl :> obj))
+                                 (followingUrl :> obj),
+                                 1)
                                 ("gists_url",
-                                 (gistsUrl :> obj))
+                                 (gistsUrl :> obj),
+                                 1)
                                 ("starred_url",
-                                 (starredUrl :> obj))
+                                 (starredUrl :> obj),
+                                 1)
                                 ("subscriptions_url",
-                                 (subscriptionsUrl :> obj))
+                                 (subscriptionsUrl :> obj),
+                                 1)
                                 ("organizations_url",
-                                 (organizationsUrl :> obj))
+                                 (organizationsUrl :> obj),
+                                 1)
                                 ("repos_url",
-                                 (reposUrl :> obj))
+                                 (reposUrl :> obj),
+                                 1)
                                 ("events_url",
-                                 (eventsUrl :> obj))
+                                 (eventsUrl :> obj),
+                                 1)
                                 ("received_events_url",
-                                 (receivedEventsUrl :> obj))
+                                 (receivedEventsUrl :> obj),
+                                 1)
                                 ("type",
-                                 (type :> obj)) |], "")
+                                 (type :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+User
     JsonDocument.Create(jsonValue, "")

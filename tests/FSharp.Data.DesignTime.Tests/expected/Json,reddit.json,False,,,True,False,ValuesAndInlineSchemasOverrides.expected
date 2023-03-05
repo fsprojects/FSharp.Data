@@ -32,9 +32,11 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("kind",
-                                 (kind :> obj))
+                                 (kind :> obj),
+                                 1)
                                 ("data",
-                                 (data :> obj)) |], "")
+                                 (data :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -50,13 +52,17 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
     new : modhash:JsonValue -> children:JsonProvider+JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
     JsonRuntime.CreateRecord([| ("modhash",
-                                 (modhash :> obj))
+                                 (modhash :> obj),
+                                 0)
                                 ("children",
-                                 (children :> obj))
+                                 (children :> obj),
+                                 0)
                                 ("after",
-                                 (after :> obj))
+                                 (after :> obj),
+                                 1)
                                 ("before",
-                                 (before :> obj)) |], "")
+                                 (before :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Data
     JsonDocument.Create(jsonValue, "")
@@ -78,9 +84,11 @@ class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Child : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data2 -> JsonProvider+Child
     JsonRuntime.CreateRecord([| ("kind",
-                                 (kind :> obj))
+                                 (kind :> obj),
+                                 1)
                                 ("data",
-                                 (data :> obj)) |], "")
+                                 (data :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Child
     JsonDocument.Create(jsonValue, "")
@@ -96,61 +104,89 @@ class JsonProvider+Child : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Data2 : FDR.BaseTypes.IJsonDocument
     new : subredditId:string -> linkTitle:string -> bannedBy:JsonValue -> subreddit:string -> linkAuthor:string -> likes:JsonValue -> replies:JsonValue -> saved:bool -> id:string -> gilded:int -> author:string -> parentId:string -> approvedBy:JsonValue -> body:string -> edited:bool -> authorFlairCssClass:JsonValue -> downs:int -> bodyHtml:string -> linkId:string -> scoreHidden:bool -> name:string -> created:int -> authorFlairText:JsonValue -> linkUrl:string -> createdUtc:int -> ups:int -> numReports:JsonValue -> distinguished:JsonValue -> JsonProvider+Data2
     JsonRuntime.CreateRecord([| ("subreddit_id",
-                                 (subredditId :> obj))
+                                 (subredditId :> obj),
+                                 1)
                                 ("link_title",
-                                 (linkTitle :> obj))
+                                 (linkTitle :> obj),
+                                 1)
                                 ("banned_by",
-                                 (bannedBy :> obj))
+                                 (bannedBy :> obj),
+                                 0)
                                 ("subreddit",
-                                 (subreddit :> obj))
+                                 (subreddit :> obj),
+                                 1)
                                 ("link_author",
-                                 (linkAuthor :> obj))
+                                 (linkAuthor :> obj),
+                                 1)
                                 ("likes",
-                                 (likes :> obj))
+                                 (likes :> obj),
+                                 0)
                                 ("replies",
-                                 (replies :> obj))
+                                 (replies :> obj),
+                                 0)
                                 ("saved",
-                                 (saved :> obj))
+                                 (saved :> obj),
+                                 3)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 1)
                                 ("gilded",
-                                 (gilded :> obj))
+                                 (gilded :> obj),
+                                 2)
                                 ("author",
-                                 (author :> obj))
+                                 (author :> obj),
+                                 1)
                                 ("parent_id",
-                                 (parentId :> obj))
+                                 (parentId :> obj),
+                                 1)
                                 ("approved_by",
-                                 (approvedBy :> obj))
+                                 (approvedBy :> obj),
+                                 0)
                                 ("body",
-                                 (body :> obj))
+                                 (body :> obj),
+                                 1)
                                 ("edited",
-                                 (edited :> obj))
+                                 (edited :> obj),
+                                 3)
                                 ("author_flair_css_class",
-                                 (authorFlairCssClass :> obj))
+                                 (authorFlairCssClass :> obj),
+                                 0)
                                 ("downs",
-                                 (downs :> obj))
+                                 (downs :> obj),
+                                 2)
                                 ("body_html",
-                                 (bodyHtml :> obj))
+                                 (bodyHtml :> obj),
+                                 1)
                                 ("link_id",
-                                 (linkId :> obj))
+                                 (linkId :> obj),
+                                 1)
                                 ("score_hidden",
-                                 (scoreHidden :> obj))
+                                 (scoreHidden :> obj),
+                                 3)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("created",
-                                 (created :> obj))
+                                 (created :> obj),
+                                 2)
                                 ("author_flair_text",
-                                 (authorFlairText :> obj))
+                                 (authorFlairText :> obj),
+                                 0)
                                 ("link_url",
-                                 (linkUrl :> obj))
+                                 (linkUrl :> obj),
+                                 1)
                                 ("created_utc",
-                                 (createdUtc :> obj))
+                                 (createdUtc :> obj),
+                                 2)
                                 ("ups",
-                                 (ups :> obj))
+                                 (ups :> obj),
+                                 2)
                                 ("num_reports",
-                                 (numReports :> obj))
+                                 (numReports :> obj),
+                                 0)
                                 ("distinguished",
-                                 (distinguished :> obj)) |], "")
+                                 (distinguished :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Data2
     JsonDocument.Create(jsonValue, "")

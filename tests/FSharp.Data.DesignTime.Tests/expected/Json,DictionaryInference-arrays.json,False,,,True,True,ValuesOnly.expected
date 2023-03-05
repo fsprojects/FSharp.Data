@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : mappings:JsonProvider+Mappings -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("Mappings",
-                                 (mappings :> obj)) |], "")
+                                 (mappings :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -43,7 +44,7 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
     new : items:int * JsonProvider+JsonProvider+MappingsValue[] seq -> JsonProvider+Mappings
-    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:int) -> TextRuntime.ConvertIntegerBack("", Some t)))
+    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:int) -> TextRuntime.ConvertIntegerBack("", Some t)), 0)
 
     new : jsonValue:JsonValue -> JsonProvider+Mappings
     JsonDocument.Create(jsonValue, "")
@@ -76,11 +77,14 @@ class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
 class JsonProvider+MappingsValue : FDR.BaseTypes.IJsonDocument
     new : groupId:int -> canDelete:bool -> errorMessage:string option -> JsonProvider+MappingsValue
     JsonRuntime.CreateRecord([| ("GroupId",
-                                 (groupId :> obj))
+                                 (groupId :> obj),
+                                 2)
                                 ("CanDelete",
-                                 (canDelete :> obj))
+                                 (canDelete :> obj),
+                                 3)
                                 ("ErrorMessage",
-                                 (errorMessage :> obj)) |], "")
+                                 (errorMessage :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+MappingsValue
     JsonDocument.Create(jsonValue, "")

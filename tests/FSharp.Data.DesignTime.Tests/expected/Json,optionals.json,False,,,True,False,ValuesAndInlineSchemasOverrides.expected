@@ -32,27 +32,38 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : recordProperty:JsonProvider+RecordProperty -> nullProperty:JsonValue -> emptyStringProperty:JsonValue -> emptyArrayProperty:JsonValue[] -> oneElementArrayProperty:int[] -> multipleElementsArrayProperty:int[] -> arrayOfObjects:JsonProvider+JsonProvider+ArrayOfObject[] -> optionalPrimitives:JsonProvider+JsonProvider+OptionalPrimitive[] -> optionalRecords:JsonProvider+JsonProvider+OptionalRecord[] -> heterogeneousArray:JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray -> heterogeneousRecords:JsonProvider+JsonProvider+HeterogeneousRecord[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("recordProperty",
-                                 (recordProperty :> obj))
+                                 (recordProperty :> obj),
+                                 0)
                                 ("nullProperty",
-                                 (nullProperty :> obj))
+                                 (nullProperty :> obj),
+                                 0)
                                 ("emptyStringProperty",
-                                 (emptyStringProperty :> obj))
+                                 (emptyStringProperty :> obj),
+                                 0)
                                 ("emptyArrayProperty",
-                                 (emptyArrayProperty :> obj))
+                                 (emptyArrayProperty :> obj),
+                                 0)
                                 ("oneElementArrayProperty",
-                                 (oneElementArrayProperty :> obj))
+                                 (oneElementArrayProperty :> obj),
+                                 2)
                                 ("multipleElementsArrayProperty",
-                                 (multipleElementsArrayProperty :> obj))
+                                 (multipleElementsArrayProperty :> obj),
+                                 2)
                                 ("arrayOfObjects",
-                                 (arrayOfObjects :> obj))
+                                 (arrayOfObjects :> obj),
+                                 0)
                                 ("optionalPrimitives",
-                                 (optionalPrimitives :> obj))
+                                 (optionalPrimitives :> obj),
+                                 0)
                                 ("optionalRecords",
-                                 (optionalRecords :> obj))
+                                 (optionalRecords :> obj),
+                                 0)
                                 ("heterogeneousArray",
-                                 (heterogeneousArray :> obj))
+                                 (heterogeneousArray :> obj),
+                                 0)
                                 ("heterogeneousRecords",
-                                 (heterogeneousRecords :> obj)) |], "")
+                                 (heterogeneousRecords :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -94,11 +105,14 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+ArrayOfObject : FDR.BaseTypes.IJsonDocument
     new : heterogeneousArrayProperty:JsonProvider+NumbersOrBooleanOrString -> heterogeneousProperty:JsonProvider+IntOrBooleanOrDateTime -> heterogeneousOptionalProperty:JsonProvider+IntOrBoolean -> JsonProvider+ArrayOfObject
     JsonRuntime.CreateRecord([| ("heterogeneousArrayProperty",
-                                 (heterogeneousArrayProperty :> obj))
+                                 (heterogeneousArrayProperty :> obj),
+                                 0)
                                 ("heterogeneousProperty",
-                                 (heterogeneousProperty :> obj))
+                                 (heterogeneousProperty :> obj),
+                                 0)
                                 ("heterogeneousOptionalProperty",
-                                 (heterogeneousOptionalProperty :> obj)) |], "")
+                                 (heterogeneousOptionalProperty :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+ArrayOfObject
     JsonDocument.Create(jsonValue, "")
@@ -116,7 +130,8 @@ class JsonProvider+ArrayOfObject : FDR.BaseTypes.IJsonDocument
 class JsonProvider+HeterogeneousRecord : FDR.BaseTypes.IJsonDocument
     new : b:JsonProvider+IntOrBooleanOrArrayOrB -> JsonProvider+HeterogeneousRecord
     JsonRuntime.CreateRecord([| ("b",
-                                 (b :> obj)) |], "")
+                                 (b :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+HeterogeneousRecord
     JsonDocument.Create(jsonValue, "")
@@ -127,10 +142,14 @@ class JsonProvider+HeterogeneousRecord : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.BaseTypes.IJsonDocument
     new : number:int -> boolean:bool -> arrays:JsonProvider+JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateArray([| (number :> obj)
-                               (boolean :> obj)
-                               (arrays :> obj)
-                               (record :> obj) |], "")
+    JsonRuntime.CreateArray([| ((number :> obj),
+                                2)
+                               ((boolean :> obj),
+                                3)
+                               ((arrays :> obj),
+                                0)
+                               ((record :> obj),
+                                0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
     JsonDocument.Create(jsonValue, "")
@@ -153,15 +172,20 @@ class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.BaseTypes.IJso
 class JsonProvider+OptionalPrimitive : FDR.BaseTypes.IJsonDocument
     new : optionalBecauseMissing:int option -> optionalBecauseNull:int option -> optionalBecauseEmptyString:int option -> notOptional:int -> nullNotOptional:JsonValue -> JsonProvider+OptionalPrimitive
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
-                                 (optionalBecauseMissing :> obj))
+                                 (optionalBecauseMissing :> obj),
+                                 2)
                                 ("optionalBecauseNull",
-                                 (optionalBecauseNull :> obj))
+                                 (optionalBecauseNull :> obj),
+                                 2)
                                 ("optionalBecauseEmptyString",
-                                 (optionalBecauseEmptyString :> obj))
+                                 (optionalBecauseEmptyString :> obj),
+                                 2)
                                 ("notOptional",
-                                 (notOptional :> obj))
+                                 (notOptional :> obj),
+                                 1)
                                 ("nullNotOptional",
-                                 (nullNotOptional :> obj)) |], "")
+                                 (nullNotOptional :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalPrimitive
     JsonDocument.Create(jsonValue, "")
@@ -186,13 +210,17 @@ class JsonProvider+OptionalPrimitive : FDR.BaseTypes.IJsonDocument
 class JsonProvider+OptionalRecord : FDR.BaseTypes.IJsonDocument
     new : optionalBecauseMissing:JsonProvider+OptionalBecauseMissing option -> optionalBecauseNull:JsonProvider+OptionalBecauseMissing option -> optionalBecauseEmptyString:JsonProvider+OptionalBecauseMissing option -> notOptional:JsonProvider+OptionalBecauseMissing -> JsonProvider+OptionalRecord
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
-                                 (optionalBecauseMissing :> obj))
+                                 (optionalBecauseMissing :> obj),
+                                 0)
                                 ("optionalBecauseNull",
-                                 (optionalBecauseNull :> obj))
+                                 (optionalBecauseNull :> obj),
+                                 0)
                                 ("optionalBecauseEmptyString",
-                                 (optionalBecauseEmptyString :> obj))
+                                 (optionalBecauseEmptyString :> obj),
+                                 0)
                                 ("notOptional",
-                                 (notOptional :> obj)) |], "")
+                                 (notOptional :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalRecord
     JsonDocument.Create(jsonValue, "")
@@ -213,21 +241,29 @@ class JsonProvider+OptionalRecord : FDR.BaseTypes.IJsonDocument
 class JsonProvider+RecordProperty : FDR.BaseTypes.IJsonDocument
     new : stringProperty:string -> intProperty:int -> int64Property:int64 -> decimalProperty:decimal -> floatProperty:float -> boolProperty:bool -> dateProperty:System.DateTime -> guidProperty:System.Guid -> JsonProvider+RecordProperty
     JsonRuntime.CreateRecord([| ("stringProperty",
-                                 (stringProperty :> obj))
+                                 (stringProperty :> obj),
+                                 1)
                                 ("intProperty",
-                                 (intProperty :> obj))
+                                 (intProperty :> obj),
+                                 2)
                                 ("int64Property",
-                                 (int64Property :> obj))
+                                 (int64Property :> obj),
+                                 2)
                                 ("decimalProperty",
-                                 (decimalProperty :> obj))
+                                 (decimalProperty :> obj),
+                                 2)
                                 ("floatProperty",
-                                 (floatProperty :> obj))
+                                 (floatProperty :> obj),
+                                 2)
                                 ("boolProperty",
-                                 (boolProperty :> obj))
+                                 (boolProperty :> obj),
+                                 3)
                                 ("dateProperty",
-                                 (dateProperty :> obj))
+                                 (dateProperty :> obj),
+                                 1)
                                 ("guidProperty",
-                                 (guidProperty :> obj)) |], "")
+                                 (guidProperty :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+RecordProperty
     JsonDocument.Create(jsonValue, "")
@@ -345,9 +381,12 @@ class JsonProvider+IntOrBooleanOrDateTime : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    JsonRuntime.CreateArray([| (numbers :> obj)
-                               (boolean :> obj)
-                               (record :> obj) |], "")
+    JsonRuntime.CreateArray([| ((numbers :> obj),
+                                2)
+                               ((boolean :> obj),
+                                3)
+                               ((record :> obj),
+                                0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
     JsonDocument.Create(jsonValue, "")
@@ -364,9 +403,12 @@ class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.BaseTypes.IJsonDoc
 
 class JsonProvider+NumbersOrBooleanOrString : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool -> string:string option -> JsonProvider+NumbersOrBooleanOrString
-    JsonRuntime.CreateArray([| (numbers :> obj)
-                               (boolean :> obj)
-                               (string :> obj) |], "")
+    JsonRuntime.CreateArray([| ((numbers :> obj),
+                                2)
+                               ((boolean :> obj),
+                                3)
+                               ((string :> obj),
+                                1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrString
     JsonDocument.Create(jsonValue, "")
@@ -385,7 +427,8 @@ class JsonProvider+NumbersOrBooleanOrString : FDR.BaseTypes.IJsonDocument
 class JsonProvider+OptionalBecauseMissing : FDR.BaseTypes.IJsonDocument
     new : a:int -> JsonProvider+OptionalBecauseMissing
     JsonRuntime.CreateRecord([| ("a",
-                                 (a :> obj)) |], "")
+                                 (a :> obj),
+                                 2) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+OptionalBecauseMissing
     JsonDocument.Create(jsonValue, "")
@@ -397,9 +440,12 @@ class JsonProvider+OptionalBecauseMissing : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+NumbersOrBooleanOrB : FDR.BaseTypes.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrB
-    JsonRuntime.CreateArray([| (numbers :> obj)
-                               (boolean :> obj)
-                               (record :> obj) |], "")
+    JsonRuntime.CreateArray([| ((numbers :> obj),
+                                2)
+                               ((boolean :> obj),
+                                3)
+                               ((record :> obj),
+                                0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+NumbersOrBooleanOrB
     JsonDocument.Create(jsonValue, "")

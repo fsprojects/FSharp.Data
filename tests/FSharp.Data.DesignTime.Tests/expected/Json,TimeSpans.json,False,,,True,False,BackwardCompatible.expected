@@ -32,15 +32,20 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : positiveWithDayWithFraction:System.TimeSpan -> positiveWithoutDayWithoutFraction:System.TimeSpan -> negativeWithDayWithFraction:System.TimeSpan -> timespanOneTickGreaterThanMaxValue:string -> timespanOneTickLessThanMinValue:string -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("positiveWithDayWithFraction",
-                                 (positiveWithDayWithFraction :> obj))
+                                 (positiveWithDayWithFraction :> obj),
+                                 1)
                                 ("positiveWithoutDayWithoutFraction",
-                                 (positiveWithoutDayWithoutFraction :> obj))
+                                 (positiveWithoutDayWithoutFraction :> obj),
+                                 1)
                                 ("negativeWithDayWithFraction",
-                                 (negativeWithDayWithFraction :> obj))
+                                 (negativeWithDayWithFraction :> obj),
+                                 1)
                                 ("timespanOneTickGreaterThanMaxValue",
-                                 (timespanOneTickGreaterThanMaxValue :> obj))
+                                 (timespanOneTickGreaterThanMaxValue :> obj),
+                                 1)
                                 ("timespanOneTickLessThanMinValue",
-                                 (timespanOneTickLessThanMinValue :> obj)) |], "")
+                                 (timespanOneTickLessThanMinValue :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")

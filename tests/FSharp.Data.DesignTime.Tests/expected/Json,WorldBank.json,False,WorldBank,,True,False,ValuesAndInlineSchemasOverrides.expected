@@ -31,8 +31,10 @@ class JsonProvider : obj
 
 class JsonProvider+WorldBank : FDR.BaseTypes.IJsonDocument
     new : array:JsonProvider+JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
-    JsonRuntime.CreateArray([| (array :> obj)
-                               (record :> obj) |], "")
+    JsonRuntime.CreateArray([| ((array :> obj),
+                                0)
+                               ((record :> obj),
+                                0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+WorldBank
     JsonDocument.Create(jsonValue, "")
@@ -47,15 +49,20 @@ class JsonProvider+WorldBank : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
     new : indicator:JsonProvider+Indicator -> country:JsonProvider+Indicator -> value:decimal option -> decimal:int -> date:int -> JsonProvider+Record
     JsonRuntime.CreateRecord([| ("indicator",
-                                 (indicator :> obj))
+                                 (indicator :> obj),
+                                 0)
                                 ("country",
-                                 (country :> obj))
+                                 (country :> obj),
+                                 0)
                                 ("value",
-                                 (value :> obj))
+                                 (value :> obj),
+                                 1)
                                 ("decimal",
-                                 (decimal :> obj))
+                                 (decimal :> obj),
+                                 1)
                                 ("date",
-                                 (date :> obj)) |], "")
+                                 (date :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Record
     JsonDocument.Create(jsonValue, "")
@@ -81,13 +88,17 @@ class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Record2 : FDR.BaseTypes.IJsonDocument
     new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
     JsonRuntime.CreateRecord([| ("page",
-                                 (page :> obj))
+                                 (page :> obj),
+                                 2)
                                 ("pages",
-                                 (pages :> obj))
+                                 (pages :> obj),
+                                 2)
                                 ("per_page",
-                                 (perPage :> obj))
+                                 (perPage :> obj),
+                                 1)
                                 ("total",
-                                 (total :> obj)) |], "")
+                                 (total :> obj),
+                                 2) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Record2
     JsonDocument.Create(jsonValue, "")
@@ -112,9 +123,11 @@ class JsonProvider+Record2 : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Indicator : FDR.BaseTypes.IJsonDocument
     new : id:string -> value:string -> JsonProvider+Indicator
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 1)
                                 ("value",
-                                 (value :> obj)) |], "")
+                                 (value :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Indicator
     JsonDocument.Create(jsonValue, "")

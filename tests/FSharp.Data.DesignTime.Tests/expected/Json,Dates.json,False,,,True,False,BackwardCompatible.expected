@@ -32,13 +32,17 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : birthdate:System.DateTime -> anniversary:System.DateTimeOffset -> noTimeZone:System.DateTime -> utcTime:System.DateTimeOffset -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("birthdate",
-                                 (birthdate :> obj))
+                                 (birthdate :> obj),
+                                 1)
                                 ("anniversary",
-                                 (anniversary :> obj))
+                                 (anniversary :> obj),
+                                 1)
                                 ("NoTimeZone",
-                                 (noTimeZone :> obj))
+                                 (noTimeZone :> obj),
+                                 1)
                                 ("UtcTime",
-                                 (utcTime :> obj)) |], "")
+                                 (utcTime :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")

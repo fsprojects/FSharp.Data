@@ -32,15 +32,20 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("game",
-                                 (game :> obj))
+                                 (game :> obj),
+                                 0)
                                 ("hero",
-                                 (hero :> obj))
+                                 (hero :> obj),
+                                 0)
                                 ("token",
-                                 (token :> obj))
+                                 (token :> obj),
+                                 1)
                                 ("viewUrl",
-                                 (viewUrl :> obj))
+                                 (viewUrl :> obj),
+                                 1)
                                 ("playUrl",
-                                 (playUrl :> obj)) |], "")
+                                 (playUrl :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -67,17 +72,23 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 1)
                                 ("turn",
-                                 (turn :> obj))
+                                 (turn :> obj),
+                                 2)
                                 ("maxTurns",
-                                 (maxTurns :> obj))
+                                 (maxTurns :> obj),
+                                 2)
                                 ("heroes",
-                                 (heroes :> obj))
+                                 (heroes :> obj),
+                                 0)
                                 ("board",
-                                 (board :> obj))
+                                 (board :> obj),
+                                 0)
                                 ("finished",
-                                 (finished :> obj)) |], "")
+                                 (finished :> obj),
+                                 3) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Game
     JsonDocument.Create(jsonValue, "")
@@ -108,25 +119,35 @@ class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
     new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("userId",
-                                 (userId :> obj))
+                                 (userId :> obj),
+                                 1)
                                 ("elo",
-                                 (elo :> obj))
+                                 (elo :> obj),
+                                 2)
                                 ("pos",
-                                 (pos :> obj))
+                                 (pos :> obj),
+                                 0)
                                 ("life",
-                                 (life :> obj))
+                                 (life :> obj),
+                                 2)
                                 ("gold",
-                                 (gold :> obj))
+                                 (gold :> obj),
+                                 2)
                                 ("mineCount",
-                                 (mineCount :> obj))
+                                 (mineCount :> obj),
+                                 2)
                                 ("spawnPos",
-                                 (spawnPos :> obj))
+                                 (spawnPos :> obj),
+                                 0)
                                 ("crashed",
-                                 (crashed :> obj)) |], "")
+                                 (crashed :> obj),
+                                 3) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Hero
     JsonDocument.Create(jsonValue, "")
@@ -173,9 +194,11 @@ class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
     JsonRuntime.CreateRecord([| ("size",
-                                 (size :> obj))
+                                 (size :> obj),
+                                 2)
                                 ("tiles",
-                                 (tiles :> obj)) |], "")
+                                 (tiles :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Board
     JsonDocument.Create(jsonValue, "")
@@ -192,9 +215,11 @@ class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Pos : FDR.BaseTypes.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
     JsonRuntime.CreateRecord([| ("x",
-                                 (x :> obj))
+                                 (x :> obj),
+                                 2)
                                 ("y",
-                                 (y :> obj)) |], "")
+                                 (y :> obj),
+                                 2) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Pos
     JsonDocument.Create(jsonValue, "")

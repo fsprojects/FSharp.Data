@@ -25,51 +25,74 @@ class JsonProvider : obj
 class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
     new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic
     JsonRuntime.CreateRecord([| ("photo",
-                                 (photo :> obj))
+                                 (photo :> obj),
+                                 1)
                                 ("preview_link",
-                                 (previewLink :> obj))
+                                 (previewLink :> obj),
+                                 1)
                                 ("small_icon_hover",
-                                 (smallIconHover :> obj))
+                                 (smallIconHover :> obj),
+                                 1)
                                 ("large_icon",
-                                 (largeIcon :> obj))
+                                 (largeIcon :> obj),
+                                 1)
                                 ("video",
-                                 (video :> obj))
+                                 (video :> obj),
+                                 1)
                                 ("university-ids",
-                                 (universityIds :> obj))
+                                 (universityIds :> obj),
+                                 1)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("universities",
-                                 (universities :> obj))
+                                 (universities :> obj),
+                                 0)
                                 ("self_service_course_id",
-                                 (selfServiceCourseId :> obj))
+                                 (selfServiceCourseId :> obj),
+                                 2)
                                 ("short_description",
-                                 (shortDescription :> obj))
+                                 (shortDescription :> obj),
+                                 1)
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (shortName :> obj),
+                                 1)
                                 ("category-ids",
-                                 (categoryIds :> obj))
+                                 (categoryIds :> obj),
+                                 1)
                                 ("visibility",
-                                 (visibility :> obj))
+                                 (visibility :> obj),
+                                 2)
                                 ("small_icon",
-                                 (smallIcon :> obj))
+                                 (smallIcon :> obj),
+                                 1)
                                 ("instructor",
-                                 (instructor :> obj))
+                                 (instructor :> obj),
+                                 1)
                                 ("categories",
-                                 (categories :> obj))
+                                 (categories :> obj),
+                                 0)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("language",
-                                 (language :> obj))
+                                 (language :> obj),
+                                 1)
                                 ("courses",
-                                 (courses :> obj))
+                                 (courses :> obj),
+                                 0)
                                 ("university_logo",
-                                 (universityLogo :> obj))
+                                 (universityLogo :> obj),
+                                 1)
                                 ("course-ids",
-                                 (courseIds :> obj))
+                                 (courseIds :> obj),
+                                 2)
                                 ("display",
-                                 (display :> obj))
+                                 (display :> obj),
+                                 3)
                                 ("subtitle_languages_csv",
-                                 (subtitleLanguagesCsv :> obj)) |], "")
+                                 (subtitleLanguagesCsv :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Topic
     JsonDocument.Create(jsonValue, "")
@@ -157,15 +180,20 @@ class JsonProvider+Topic : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Category : FDR.BaseTypes.IJsonDocument
     new : id:int -> name:string -> mailingListId:int option -> shortName:string -> description:string option -> JsonProvider+Category
     JsonRuntime.CreateRecord([| ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("mailing_list_id",
-                                 (mailingListId :> obj))
+                                 (mailingListId :> obj),
+                                 2)
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (shortName :> obj),
+                                 1)
                                 ("description",
-                                 (description :> obj)) |], "")
+                                 (description :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Category
     JsonDocument.Create(jsonValue, "")
@@ -192,95 +220,140 @@ class JsonProvider+Category : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Course : FDR.BaseTypes.IJsonDocument
     new : gradingPolicyDistinction:string option -> aceTrackPriceDisplay:JsonValue -> signatureTrackCertificateDesignId:JsonValue -> aceSemesterHours:JsonValue -> startDay:int option -> durationString:string option -> signatureTrackLastChanceTime:System.DateTime option -> id:int -> startMonth:int option -> certificateDescription:string option -> startDateString:JsonProvider+StringOrDateTime -> cheggSessionId:JsonValue -> signatureTrackRegularPrice:int option -> gradesReleaseDate:System.DateTime option -> certificatesReady:bool -> signatureTrackPrice:int option -> statementDesignId:int option -> signatureTrackRegistrationOpen:bool -> topicId:int -> eligibleForSignatureTrack:bool -> startDate:System.DateTime option -> record:JsonProvider+Record -> status:bool -> startYear:int option -> signatureTrackCertificateCombinedSignature:JsonValue -> endDate:JsonValue -> notifiedSubscribers:bool -> instructors:int[] -> active:bool -> eligibleForCertificates:bool -> signatureTrackCertificateSignatureBlurb:JsonValue -> deployed:bool -> aceCloseDate:JsonValue -> name:JsonProvider+IntOrString -> textbooks:JsonValue[] -> signatureTrackOpenTime:System.DateTime option -> eligibleForAce:bool option -> gradingPolicyNormal:string option -> aceOpenDate:JsonValue -> homeLink:string option -> creatorId:int option -> proctoredExamCompletionDate:JsonValue -> universityLogo:JsonValue -> signatureTrackCloseTime:System.DateTime option -> authReviewCompletionDate:JsonValue -> JsonProvider+Course
     JsonRuntime.CreateRecord([| ("grading_policy_distinction",
-                                 (gradingPolicyDistinction :> obj))
+                                 (gradingPolicyDistinction :> obj),
+                                 1)
                                 ("ace_track_price_display",
-                                 (aceTrackPriceDisplay :> obj))
+                                 (aceTrackPriceDisplay :> obj),
+                                 0)
                                 ("signature_track_certificate_design_id",
-                                 (signatureTrackCertificateDesignId :> obj))
+                                 (signatureTrackCertificateDesignId :> obj),
+                                 0)
                                 ("ace_semester_hours",
-                                 (aceSemesterHours :> obj))
+                                 (aceSemesterHours :> obj),
+                                 0)
                                 ("start_day",
-                                 (startDay :> obj))
+                                 (startDay :> obj),
+                                 2)
                                 ("duration_string",
-                                 (durationString :> obj))
+                                 (durationString :> obj),
+                                 1)
                                 ("signature_track_last_chance_time",
-                                 (signatureTrackLastChanceTime :> obj))
+                                 (signatureTrackLastChanceTime :> obj),
+                                 1)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("start_month",
-                                 (startMonth :> obj))
+                                 (startMonth :> obj),
+                                 2)
                                 ("certificate_description",
-                                 (certificateDescription :> obj))
+                                 (certificateDescription :> obj),
+                                 1)
                                 ("start_date_string",
-                                 (startDateString :> obj))
+                                 (startDateString :> obj),
+                                 0)
                                 ("chegg_session_id",
-                                 (cheggSessionId :> obj))
+                                 (cheggSessionId :> obj),
+                                 0)
                                 ("signature_track_regular_price",
-                                 (signatureTrackRegularPrice :> obj))
+                                 (signatureTrackRegularPrice :> obj),
+                                 2)
                                 ("grades_release_date",
-                                 (gradesReleaseDate :> obj))
+                                 (gradesReleaseDate :> obj),
+                                 1)
                                 ("certificates_ready",
-                                 (certificatesReady :> obj))
+                                 (certificatesReady :> obj),
+                                 3)
                                 ("signature_track_price",
-                                 (signatureTrackPrice :> obj))
+                                 (signatureTrackPrice :> obj),
+                                 2)
                                 ("statement_design_id",
-                                 (statementDesignId :> obj))
+                                 (statementDesignId :> obj),
+                                 2)
                                 ("signature_track_registration_open",
-                                 (signatureTrackRegistrationOpen :> obj))
+                                 (signatureTrackRegistrationOpen :> obj),
+                                 3)
                                 ("topic_id",
-                                 (topicId :> obj))
+                                 (topicId :> obj),
+                                 2)
                                 ("eligible_for_signature_track",
-                                 (eligibleForSignatureTrack :> obj))
+                                 (eligibleForSignatureTrack :> obj),
+                                 3)
                                 ("start_date",
-                                 (startDate :> obj))
+                                 (startDate :> obj),
+                                 1)
                                 ("record",
-                                 (record :> obj))
+                                 (record :> obj),
+                                 0)
                                 ("status",
-                                 (status :> obj))
+                                 (status :> obj),
+                                 2)
                                 ("start_year",
-                                 (startYear :> obj))
+                                 (startYear :> obj),
+                                 2)
                                 ("signature_track_certificate_combined_signature",
-                                 (signatureTrackCertificateCombinedSignature :> obj))
+                                 (signatureTrackCertificateCombinedSignature :> obj),
+                                 0)
                                 ("end_date",
-                                 (endDate :> obj))
+                                 (endDate :> obj),
+                                 0)
                                 ("notified_subscribers",
-                                 (notifiedSubscribers :> obj))
+                                 (notifiedSubscribers :> obj),
+                                 3)
                                 ("instructors",
-                                 (instructors :> obj))
+                                 (instructors :> obj),
+                                 2)
                                 ("active",
-                                 (active :> obj))
+                                 (active :> obj),
+                                 3)
                                 ("eligible_for_certificates",
-                                 (eligibleForCertificates :> obj))
+                                 (eligibleForCertificates :> obj),
+                                 3)
                                 ("signature_track_certificate_signature_blurb",
-                                 (signatureTrackCertificateSignatureBlurb :> obj))
+                                 (signatureTrackCertificateSignatureBlurb :> obj),
+                                 0)
                                 ("deployed",
-                                 (deployed :> obj))
+                                 (deployed :> obj),
+                                 3)
                                 ("ace_close_date",
-                                 (aceCloseDate :> obj))
+                                 (aceCloseDate :> obj),
+                                 0)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 0)
                                 ("textbooks",
-                                 (textbooks :> obj))
+                                 (textbooks :> obj),
+                                 0)
                                 ("signature_track_open_time",
-                                 (signatureTrackOpenTime :> obj))
+                                 (signatureTrackOpenTime :> obj),
+                                 1)
                                 ("eligible_for_ACE",
-                                 (eligibleForAce :> obj))
+                                 (eligibleForAce :> obj),
+                                 3)
                                 ("grading_policy_normal",
-                                 (gradingPolicyNormal :> obj))
+                                 (gradingPolicyNormal :> obj),
+                                 1)
                                 ("ace_open_date",
-                                 (aceOpenDate :> obj))
+                                 (aceOpenDate :> obj),
+                                 0)
                                 ("home_link",
-                                 (homeLink :> obj))
+                                 (homeLink :> obj),
+                                 1)
                                 ("creator_id",
-                                 (creatorId :> obj))
+                                 (creatorId :> obj),
+                                 2)
                                 ("proctored_exam_completion_date",
-                                 (proctoredExamCompletionDate :> obj))
+                                 (proctoredExamCompletionDate :> obj),
+                                 0)
                                 ("university_logo",
-                                 (universityLogo :> obj))
+                                 (universityLogo :> obj),
+                                 0)
                                 ("signature_track_close_time",
-                                 (signatureTrackCloseTime :> obj))
+                                 (signatureTrackCloseTime :> obj),
+                                 1)
                                 ("auth_review_completion_date",
-                                 (authReviewCompletionDate :> obj)) |], "")
+                                 (authReviewCompletionDate :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Course
     JsonDocument.Create(jsonValue, "")
@@ -434,69 +507,101 @@ class JsonProvider+Course : FDR.BaseTypes.IJsonDocument
 class JsonProvider+University : FDR.BaseTypes.IJsonDocument
     new : rectangularLogoSvg:string option -> wordmark:JsonValue -> websiteTwitter:string option -> chinaMirror:int option -> favicon:string option -> websiteFacebook:string option -> logo:string option -> backgroundColor:JsonValue -> id:int -> locationCity:string option -> locationCountry:string option -> locationLat:decimal option -> location:string option -> primaryColor:string option -> abbrName:string -> website:string option -> description:string option -> shortName:string -> landingPageBanner:string option -> mailingListId:JsonValue -> websiteYoutube:string option -> partnerType:int -> banner:string option -> locationState:string option -> name:string -> squareLogo:string option -> squareLogoSource:string option -> squareLogoSvg:string option -> locationLng:decimal option -> homeLink:string option -> classLogo:string option -> display:bool -> JsonProvider+University
     JsonRuntime.CreateRecord([| ("rectangular_logo_svg",
-                                 (rectangularLogoSvg :> obj))
+                                 (rectangularLogoSvg :> obj),
+                                 1)
                                 ("wordmark",
-                                 (wordmark :> obj))
+                                 (wordmark :> obj),
+                                 0)
                                 ("website_twitter",
-                                 (websiteTwitter :> obj))
+                                 (websiteTwitter :> obj),
+                                 1)
                                 ("china_mirror",
-                                 (chinaMirror :> obj))
+                                 (chinaMirror :> obj),
+                                 2)
                                 ("favicon",
-                                 (favicon :> obj))
+                                 (favicon :> obj),
+                                 1)
                                 ("website_facebook",
-                                 (websiteFacebook :> obj))
+                                 (websiteFacebook :> obj),
+                                 1)
                                 ("logo",
-                                 (logo :> obj))
+                                 (logo :> obj),
+                                 1)
                                 ("background_color",
-                                 (backgroundColor :> obj))
+                                 (backgroundColor :> obj),
+                                 0)
                                 ("id",
-                                 (id :> obj))
+                                 (id :> obj),
+                                 2)
                                 ("location_city",
-                                 (locationCity :> obj))
+                                 (locationCity :> obj),
+                                 1)
                                 ("location_country",
-                                 (locationCountry :> obj))
+                                 (locationCountry :> obj),
+                                 1)
                                 ("location_lat",
-                                 (locationLat :> obj))
+                                 (locationLat :> obj),
+                                 2)
                                 ("location",
-                                 (location :> obj))
+                                 (location :> obj),
+                                 1)
                                 ("primary_color",
-                                 (primaryColor :> obj))
+                                 (primaryColor :> obj),
+                                 1)
                                 ("abbr_name",
-                                 (abbrName :> obj))
+                                 (abbrName :> obj),
+                                 1)
                                 ("website",
-                                 (website :> obj))
+                                 (website :> obj),
+                                 1)
                                 ("description",
-                                 (description :> obj))
+                                 (description :> obj),
+                                 1)
                                 ("short_name",
-                                 (shortName :> obj))
+                                 (shortName :> obj),
+                                 1)
                                 ("landing_page_banner",
-                                 (landingPageBanner :> obj))
+                                 (landingPageBanner :> obj),
+                                 1)
                                 ("mailing_list_id",
-                                 (mailingListId :> obj))
+                                 (mailingListId :> obj),
+                                 0)
                                 ("website_youtube",
-                                 (websiteYoutube :> obj))
+                                 (websiteYoutube :> obj),
+                                 1)
                                 ("partner_type",
-                                 (partnerType :> obj))
+                                 (partnerType :> obj),
+                                 2)
                                 ("banner",
-                                 (banner :> obj))
+                                 (banner :> obj),
+                                 1)
                                 ("location_state",
-                                 (locationState :> obj))
+                                 (locationState :> obj),
+                                 1)
                                 ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("square_logo",
-                                 (squareLogo :> obj))
+                                 (squareLogo :> obj),
+                                 1)
                                 ("square_logo_source",
-                                 (squareLogoSource :> obj))
+                                 (squareLogoSource :> obj),
+                                 1)
                                 ("square_logo_svg",
-                                 (squareLogoSvg :> obj))
+                                 (squareLogoSvg :> obj),
+                                 1)
                                 ("location_lng",
-                                 (locationLng :> obj))
+                                 (locationLng :> obj),
+                                 2)
                                 ("home_link",
-                                 (homeLink :> obj))
+                                 (homeLink :> obj),
+                                 1)
                                 ("class_logo",
-                                 (classLogo :> obj))
+                                 (classLogo :> obj),
+                                 1)
                                 ("display",
-                                 (display :> obj)) |], "")
+                                 (display :> obj),
+                                 3) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+University
     JsonDocument.Create(jsonValue, "")
@@ -627,27 +732,38 @@ class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
     new : gradeDistinction:decimal option -> shareForWork:bool option -> isEnrolledForProctoredExam:bool -> achievementLevel:int option -> signatureTrack:bool -> passedAce:bool -> aceGrade:int -> gradeNormal:decimal option -> verifyCertId:JsonValue -> authenticatedOverall:bool -> withGradeCertId:JsonValue -> JsonProvider+Record
     JsonRuntime.CreateRecord([| ("grade_distinction",
-                                 (gradeDistinction :> obj))
+                                 (gradeDistinction :> obj),
+                                 2)
                                 ("share_for_work",
-                                 (shareForWork :> obj))
+                                 (shareForWork :> obj),
+                                 3)
                                 ("is_enrolled_for_proctored_exam",
-                                 (isEnrolledForProctoredExam :> obj))
+                                 (isEnrolledForProctoredExam :> obj),
+                                 3)
                                 ("achievement_level",
-                                 (achievementLevel :> obj))
+                                 (achievementLevel :> obj),
+                                 2)
                                 ("signature_track",
-                                 (signatureTrack :> obj))
+                                 (signatureTrack :> obj),
+                                 3)
                                 ("passed_ace",
-                                 (passedAce :> obj))
+                                 (passedAce :> obj),
+                                 3)
                                 ("ace_grade",
-                                 (aceGrade :> obj))
+                                 (aceGrade :> obj),
+                                 2)
                                 ("grade_normal",
-                                 (gradeNormal :> obj))
+                                 (gradeNormal :> obj),
+                                 2)
                                 ("verify_cert_id",
-                                 (verifyCertId :> obj))
+                                 (verifyCertId :> obj),
+                                 0)
                                 ("authenticated_overall",
-                                 (authenticatedOverall :> obj))
+                                 (authenticatedOverall :> obj),
+                                 3)
                                 ("with_grade_cert_id",
-                                 (withGradeCertId :> obj)) |], "")
+                                 (withGradeCertId :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Record
     JsonDocument.Create(jsonValue, "")

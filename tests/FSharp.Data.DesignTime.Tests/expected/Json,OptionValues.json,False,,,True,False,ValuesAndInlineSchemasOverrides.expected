@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : authors:JsonProvider+JsonProvider+Author[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("authors",
-                                 (authors :> obj)) |], "")
+                                 (authors :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -44,9 +45,11 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Author : FDR.BaseTypes.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
     JsonRuntime.CreateRecord([| ("name",
-                                 (name :> obj))
+                                 (name :> obj),
+                                 1)
                                 ("age",
-                                 (age :> obj)) |], "")
+                                 (age :> obj),
+                                 2) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Author
     JsonDocument.Create(jsonValue, "")

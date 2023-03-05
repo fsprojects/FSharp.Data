@@ -32,7 +32,8 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : mappings:JsonProvider+Mappings -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("Mappings",
-                                 (mappings :> obj)) |], "")
+                                 (mappings :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -44,11 +45,14 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
     new : 123:JsonProvider+JsonProvider+123[] -> 456:JsonProvider+JsonProvider+123[] -> 789:JsonProvider+JsonProvider+789[] -> JsonProvider+Mappings
     JsonRuntime.CreateRecord([| ("123",
-                                 (123 :> obj))
+                                 (123 :> obj),
+                                 0)
                                 ("456",
-                                 (456 :> obj))
+                                 (456 :> obj),
+                                 0)
                                 ("789",
-                                 (789 :> obj)) |], "")
+                                 (789 :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Mappings
     JsonDocument.Create(jsonValue, "")
@@ -66,9 +70,11 @@ class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
 class JsonProvider+123 : FDR.BaseTypes.IJsonDocument
     new : groupId:int -> canDelete:bool -> JsonProvider+123
     JsonRuntime.CreateRecord([| ("GroupId",
-                                 (groupId :> obj))
+                                 (groupId :> obj),
+                                 2)
                                 ("CanDelete",
-                                 (canDelete :> obj)) |], "")
+                                 (canDelete :> obj),
+                                 3) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+123
     JsonDocument.Create(jsonValue, "")
@@ -85,11 +91,14 @@ class JsonProvider+123 : FDR.BaseTypes.IJsonDocument
 class JsonProvider+789 : FDR.BaseTypes.IJsonDocument
     new : groupId:int -> canDelete:bool -> errorMessage:string option -> JsonProvider+789
     JsonRuntime.CreateRecord([| ("GroupId",
-                                 (groupId :> obj))
+                                 (groupId :> obj),
+                                 2)
                                 ("CanDelete",
-                                 (canDelete :> obj))
+                                 (canDelete :> obj),
+                                 3)
                                 ("ErrorMessage",
-                                 (errorMessage :> obj)) |], "")
+                                 (errorMessage :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+789
     JsonDocument.Create(jsonValue, "")

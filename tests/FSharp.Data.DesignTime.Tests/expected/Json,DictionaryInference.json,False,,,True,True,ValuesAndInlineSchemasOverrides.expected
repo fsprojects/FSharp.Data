@@ -32,9 +32,11 @@ class JsonProvider : obj
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : rec:JsonProvider+Rec -> rec2:JsonProvider+Rec2 -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("rec",
-                                 (rec :> obj))
+                                 (rec :> obj),
+                                 0)
                                 ("rec2",
-                                 (rec2 :> obj)) |], "")
+                                 (rec2 :> obj),
+                                 0) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Root
     JsonDocument.Create(jsonValue, "")
@@ -48,7 +50,7 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+Rec : FDR.BaseTypes.IJsonDocument
     new : items:bool * int seq -> JsonProvider+Rec
-    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:bool) -> TextRuntime.ConvertBooleanBack(Some t, false)))
+    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:bool) -> TextRuntime.ConvertBooleanBack(Some t, false)), 1)
 
     new : jsonValue:JsonValue -> JsonProvider+Rec
     JsonDocument.Create(jsonValue, "")
@@ -80,7 +82,7 @@ class JsonProvider+Rec : FDR.BaseTypes.IJsonDocument
 
 class JsonProvider+Rec2 : FDR.BaseTypes.IJsonDocument
     new : items:bool * JsonProvider+Rec2Value seq -> JsonProvider+Rec2
-    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:bool) -> TextRuntime.ConvertBooleanBack(Some t, false)))
+    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:bool) -> TextRuntime.ConvertBooleanBack(Some t, false)), 0)
 
     new : jsonValue:JsonValue -> JsonProvider+Rec2
     JsonDocument.Create(jsonValue, "")
@@ -113,7 +115,8 @@ class JsonProvider+Rec2 : FDR.BaseTypes.IJsonDocument
 class JsonProvider+Rec2Value : FDR.BaseTypes.IJsonDocument
     new : a:int -> JsonProvider+Rec2Value
     JsonRuntime.CreateRecord([| ("a",
-                                 (a :> obj)) |], "")
+                                 (a :> obj),
+                                 1) |], "")
 
     new : jsonValue:JsonValue -> JsonProvider+Rec2Value
     JsonDocument.Create(jsonValue, "")
