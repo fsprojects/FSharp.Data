@@ -41,7 +41,7 @@ let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (el
     | InferenceMode'.NoInference -> typ
     | _ ->
         match typ with
-        | InferedType.Primitive (t, _, optional, _) when
+        | InferedType.Primitive (t, _, optional, _, _) when
             t = typeof<string>
             && let v = (element.Value).TrimStart() in
                v.StartsWith "{" || v.StartsWith "["

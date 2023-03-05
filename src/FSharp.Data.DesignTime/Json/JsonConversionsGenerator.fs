@@ -55,7 +55,6 @@ let internal convertJsonValue
     (field: PrimitiveInferedValue)
     =
 
-
     let returnType =
         match field.TypeWrapper with
         | TypeWrapper.None -> field.TypeWithMeasure

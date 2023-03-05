@@ -50,6 +50,35 @@ type InferedTypeTag =
     // Possibly named record
     | Record of string option
 
+/// Used to keep track of the original type of a primitive value (before inference).
+/// This is primarily useful for the Json type provider,
+/// to be able to serialize e.g an int inferred from a json string back into a json string instead of a json number.
+[<RequireQualifiedAccess>]
+[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+type PrimitiveType =
+    | String
+    | Number
+    | Bool
+
+    /// Serialization function useful to bypass type provider limitations...
+    /// ("Quotations provided by type providers can only contain simple constants")
+    static member ToInt(x) =
+        match x with
+        | None -> 0
+        | Some String -> 1
+        | Some Number -> 2
+        | Some Bool -> 3
+
+    /// Deserialization function useful to bypass type provider limitations...
+    /// ("Quotations provided by type providers can only contain simple constants")
+    static member FromInt(x) =
+        match x with
+        | 0 -> None
+        | 1 -> Some String
+        | 2 -> Some Number
+        | 3 -> Some Bool
+        | _ -> failwith $"PrimitiveType value {x} is not mapped."
+
 /// Represents inferred structural type. A type may be either primitive type
 /// (one of those listed by `primitiveTypes`) or it can be collection,
 /// (named) record and heterogeneous type. We also have `Null` type (which is
@@ -70,7 +99,12 @@ type InferedTypeTag =
 type InferedType =
     /// When shouldOverrideOnMerge is true, it means this type should win when merged with other primitive types during inference.
     /// This allows users to control inference by adding manual type hints that take priority.
-    | Primitive of typ: Type * unit: option<System.Type> * optional: bool * shouldOverrideOnMerge: bool
+    | Primitive of
+        typ: Type *
+        unit: option<System.Type> *
+        optional: bool *
+        shouldOverrideOnMerge: bool *
+        originalType: PrimitiveType
     | Record of name: string option * fields: InferedProperty list * optional: bool
     | Json of typ: InferedType * optional: bool
     | Collection of order: InferedTypeTag list * types: Map<InferedTypeTag, InferedMultiplicity * InferedType>
@@ -98,13 +132,14 @@ type InferedType =
         | Primitive(optional = true)
         | Record(optional = true)
         | Json(optional = true) -> x
-        | Primitive (typ, _, false, _) when
+        | Primitive (typ, _, false, _, _) when
             allowEmptyValues
             && InferedType.CanHaveEmptyValues typ
             ->
             x
         | Heterogeneous (map, false) -> Heterogeneous(map, true)
-        | Primitive (typ, unit, false, overrideOnMerge) -> Primitive(typ, unit, true, overrideOnMerge)
+        | Primitive (typ, unit, false, overrideOnMerge, originalType) ->
+            Primitive(typ, unit, true, overrideOnMerge, originalType)
         | Record (name, props, false) -> Record(name, props, true)
         | Json (typ, false) -> Json(typ, true)
         | Collection (order, types) ->
@@ -117,7 +152,8 @@ type InferedType =
 
     member x.GetDropOptionality() =
         match x with
-        | Primitive (typ, unit, true, overrideOnMerge) -> Primitive(typ, unit, false, overrideOnMerge), true
+        | Primitive (typ, unit, true, overrideOnMerge, originalType) ->
+            Primitive(typ, unit, false, overrideOnMerge, originalType), true
         | Record (name, props, true) -> Record(name, props, false), true
         | Json (typ, true) -> Json(typ, false), true
         | Heterogeneous (map, true) -> Heterogeneous(map, false), true
@@ -133,7 +169,12 @@ type InferedType =
         if y :? InferedType then
             match x, y :?> InferedType with
             | a, b when Object.ReferenceEquals(a, b) -> true
-            | Primitive (t1, ot1, b1, x1), Primitive (t2, ot2, b2, x2) -> t1 = t2 && ot1 = ot2 && b1 = b2 && x1 = x2
+            | Primitive (t1, u1, b1, x1, ot1), Primitive (t2, u2, b2, x2, ot2) ->
+                t1 = t2
+                && u1 = u2
+                && b1 = b2
+                && x1 = x2
+                && ot1 = ot2
             | Record (s1, pl1, b1), Record (s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
             | Json (t1, o1), Json (t2, o2) -> t1 = t2 && o1 = o2
             | Collection (o1, t1), Collection (o2, t2) -> o1 = o2 && t1 = t2
@@ -162,8 +203,10 @@ type InferedType =
             match t with
             | Top -> indented ("(Top)") |> ignore
             | Null -> indented ("(Null)") |> ignore
-            | Primitive (typ, unit, opt, overrideOnMerge) ->
-                indented ($"(*Primitive* %A{typ}, Unit: %A{unit}, Optional: {opt}, OverrideOnMerge: {overrideOnMerge})")
+            | Primitive (typ, unit, opt, overrideOnMerge, originalType) ->
+                indented (
+                    $"(*Primitive* %A{typ}, Unit: %A{unit}, Optional: {opt}, OverrideOnMerge: {overrideOnMerge}, OriginalType: {originalType})"
+                )
                 |> ignore
             | Record (name, props, opt) ->
                 indented ($"{{*Record* Name: {name}, Optional: {opt}")
@@ -300,6 +343,7 @@ type internal PrimitiveInferedValue =
       RuntimeType: Type
       UnitOfMeasure: Type option
       TypeWrapper: TypeWrapper }
+
     static member Create(typ, typWrapper, unit) =
         let runtimeTyp =
             if typ = typeof<Bit> then
@@ -323,6 +367,7 @@ type internal PrimitiveInferedValue =
 type internal PrimitiveInferedProperty =
     { Name: string
       Value: PrimitiveInferedValue }
+
     static member Create(name, typ, (typWrapper: TypeWrapper), unit) =
         { Name = name
           Value = PrimitiveInferedValue.Create(typ, typWrapper, unit) }

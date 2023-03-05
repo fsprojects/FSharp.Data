@@ -75,7 +75,7 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
     let isType testType typ =
         match typ with
-        | Runtime.StructuralTypes.InferedType.Primitive (typ, _, _, _) -> typ = testType
+        | Runtime.StructuralTypes.InferedType.Primitive (typ, _, _, _, _) -> typ = testType
         | _ -> false
 
     let rec anonymize json =

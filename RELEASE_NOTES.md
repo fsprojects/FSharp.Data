@@ -5,6 +5,7 @@
 * Add `aria-label` to the list of html attributes used to infer names of types provided by the HtmlProvider.
 * Enable TLS 1.2 when requesting http(s) samples from the type providers.
 * Fix generated code of the json provider with `PreferDictionaries` when values are arrays.
+* Fix the json provider not using the correct json primitive type when serializing values inferred to another type.
 
 ### 6.0.1-beta001 - Aug 18 2022
 

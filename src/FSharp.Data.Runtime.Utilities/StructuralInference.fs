@@ -140,7 +140,7 @@ let private conversionTable =
         typeof<decimal> ]
       typeof<DateTime>, [ typeof<DateTimeOffset> ] ]
 
-let private subtypePrimitives typ1 typ2 =
+let private subtypePrimitives (typ1, originalType1) (typ2, originalType2) =
     Debug.Assert(List.exists ((=) typ1) primitiveTypes)
     Debug.Assert(List.exists ((=) typ2) primitiveTypes)
 
@@ -151,32 +151,51 @@ let private subtypePrimitives typ1 typ2 =
            |> snd
            |> List.exists ((=) source)
 
-    // If both types are the same, then that's good
-    if typ1 = typ2 then
-        Some typ1
-    else
-        // try to find the smaller type that both types are convertible to
-        conversionTable
-        |> List.map fst
-        |> List.tryPick (fun superType ->
-            if convertibleTo superType typ1
-               && convertibleTo superType typ2 then
-                Some superType
-            else
-                None)
+    let unifiedType =
+        // If both types are the same, then that's good
+        if typ1 = typ2 then
+            Some typ1
+        else
+            // try to find the smaller type that both types are convertible to
+            conversionTable
+            |> List.map fst
+            |> List.tryPick (fun superType ->
+                if convertibleTo superType typ1
+                   && convertibleTo superType typ2 then
+                    Some superType
+                else
+                    None)
+
+    match unifiedType with
+    | Some typ ->
+        let unifiedOriginalType =
+            // String can contain all the others,
+            // Number can contain bools,
+            // and Bool can only contain bools.
+            match originalType1, originalType2 with
+            | PrimitiveType.String, _
+            | _, PrimitiveType.String -> PrimitiveType.String
+            | PrimitiveType.Number, _
+            | _, PrimitiveType.Number -> PrimitiveType.Number
+            | PrimitiveType.Bool, _
+            | _, PrimitiveType.Bool -> PrimitiveType.Bool
+
+        Some(typ, unifiedOriginalType)
+    | None -> None
 
 /// Active pattern that calls `subtypePrimitives` on two primitive types
 let private (|SubtypePrimitives|_|) allowEmptyValues =
     function
     // When a type should override the other, make sure we preserve optionality
     // (so that null and inline schemas are always considered at the same level of importance)
-    | InferedType.Primitive (t, u, o1, true), InferedType.Primitive (_, _, o2, false)
-    | InferedType.Primitive (_, _, o2, false), InferedType.Primitive (t, u, o1, true) -> Some(t, u, o1 || o2, true)
-    | InferedType.Primitive (t1, u1, o1, x1), InferedType.Primitive (t2, u2, o2, x2) ->
+    | InferedType.Primitive (t, u, o1, true, ot1), InferedType.Primitive (_, _, o2, false, _)
+    | InferedType.Primitive (_, _, o2, false, _), InferedType.Primitive (t, u, o1, true, ot1) ->
+        Some(t, u, o1 || o2, true, ot1)
+    | InferedType.Primitive (t1, u1, o1, x1, ot1), InferedType.Primitive (t2, u2, o2, x2, ot2) ->
 
         // Re-annotate with the unit, if it is the same one
-        match subtypePrimitives t1 t2 with
-        | Some t ->
+        match subtypePrimitives (t1, ot1) (t2, ot2) with
+        | Some (t, ot) ->
             let unit = if u1 = u2 then u1 else None
 
             let optional =
@@ -186,8 +205,8 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
                     && InferedType.CanHaveEmptyValues t
                 )
 
-            assert (x1 = x2) // The other cases should be handled above.
-            Some(t, unit, optional, x1)
+            assert (x1 = x2) // The other shouldOverride cases should be handled above.
+            Some(t, unit, optional, x1, ot)
         | _ -> None
     | _ -> None
 
@@ -247,15 +266,15 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
         // When other is a primitive infered from an inline schema in overriding mode,
         // try to replace the heterogeneous type with the overriding primitive:
         match other with
-        | InferedType.Primitive (_, _, _, true) ->
+        | InferedType.Primitive (_, _, _, true, _) ->
             let primitiveOverrides, nonPrimitives =
                 let primitiveOverrides, nonPrimitives = ResizeArray(), ResizeArray()
 
                 tagMerged
                 |> List.iter (fun (tag, typ) ->
                     match typ with
-                    | InferedType.Primitive (_, _, _, true) -> primitiveOverrides.Add(tag, typ)
-                    | InferedType.Primitive (_, _, _, false) -> () // We don't need to track normal primitives
+                    | InferedType.Primitive (_, _, _, true, _) -> primitiveOverrides.Add(tag, typ)
+                    | InferedType.Primitive (_, _, _, false, _) -> () // We don't need to track normal primitives
                     | _ -> nonPrimitives.Add(tag, typ))
 
                 primitiveOverrides |> List.ofSeq, nonPrimitives |> List.ofSeq
@@ -269,7 +288,7 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
             // return only this overriding primitive (and take care to reestablish optionality if needed).
             | [ (_, singlePrimitive) ], [] ->
                 match singlePrimitive with
-                | InferedType.Primitive (t, u, o, x) -> InferedType.Primitive(t, u, o || containsOptional, x)
+                | InferedType.Primitive (t, u, o, x, ot) -> InferedType.Primitive(t, u, o || containsOptional, x, ot)
                 | _ -> failwith "There should be only primitive types here."
             // If there are non primitives, keep the heterogeneous type.
             | [ singlePrimitive ], nonPrimitives ->
@@ -550,7 +569,7 @@ let inferPrimitiveType
 
     let matchValue value =
         let makePrimitive typ =
-            Some(InferedType.Primitive(typ, desiredUnit, false, false))
+            Some(InferedType.Primitive(typ, desiredUnit, false, false, PrimitiveType.String))
 
         match value with
         | "" -> Some InferedType.Null
@@ -588,14 +607,16 @@ let inferPrimitiveType
                 | None, _ -> None
                 | Some (typ, typeWrapper), unit ->
                     match typeWrapper with
-                    | TypeWrapper.None -> Some(InferedType.Primitive(typ, unit, false, useInlineSchemasOverrides))
+                    | TypeWrapper.None ->
+                        Some(InferedType.Primitive(typ, unit, false, useInlineSchemasOverrides, PrimitiveType.String))
                     // To keep it simple and prevent weird situations (and preserve backward compat),
                     // only structural inference can create optional types.
                     // Optional types in inline schemas are not allowed.
                     | TypeWrapper.Option -> failwith "Option types are not allowed in inline schemas."
                     | TypeWrapper.Nullable -> failwith "Nullable types are not allowed in inline schemas."
 
-    let fallbackType = InferedType.Primitive(typeof<string>, None, false, false)
+    let fallbackType =
+        InferedType.Primitive(typeof<string>, None, false, false, PrimitiveType.String)
 
     match inferenceMode with
     | InferenceMode'.NoInference -> fallbackType

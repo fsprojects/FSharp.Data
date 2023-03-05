@@ -48,14 +48,14 @@ let ``List.pairBy helper function preserves order``() =
 [<Test>]
 let ``Finds common subtype of numeric types (decimal)``() =
   let source = JsonValue.Parse """[ 10, 10.23 ]"""
-  let expected = SimpleCollection(InferedType.Primitive(typeof<decimal>, None, false, false))
+  let expected = SimpleCollection(InferedType.Primitive(typeof<decimal>, None, false, false, PrimitiveType.Number))
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (int64)``() =
   let source = JsonValue.Parse """[ 10, 2147483648 ]"""
-  let expected = SimpleCollection(InferedType.Primitive(typeof<int64>, None, false, false))
+  let expected = SimpleCollection(InferedType.Primitive(typeof<int64>, None, false, false, PrimitiveType.Number))
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
@@ -65,8 +65,8 @@ let ``Infers heterogeneous type of InferedType.Primitives``() =
   let expected =
     InferedType.Collection
         ([ InferedTypeTag.Number; InferedTypeTag.Boolean ],
-         [ InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false))
-           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false, false)) ] |> Map.ofList)
+         [ InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false, PrimitiveType.Number))
+           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false, false, PrimitiveType.Bool)) ] |> Map.ofList)
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
@@ -77,15 +77,15 @@ let ``Infers heterogeneous type of InferedType.Primitives and nulls``() =
     InferedType.Collection
         ([ InferedTypeTag.Number; InferedTypeTag.Boolean; InferedTypeTag.Null ],
          [ InferedTypeTag.Null, (Single, InferedType.Null)
-           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false))
-           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false, false)) ] |> Map.ofList)
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false, PrimitiveType.Number))
+           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false, false, PrimitiveType.Bool)) ] |> Map.ofList)
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (float)``() =
   let source = JsonValue.Parse """[ 10, 10.23, 79228162514264337593543950336 ]"""
-  let expected = SimpleCollection(InferedType.Primitive(typeof<float>, None, false, false))
+  let expected = SimpleCollection(InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.Number))
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
@@ -95,9 +95,9 @@ let ``Infers heterogeneous type of InferedType.Primitives and records``() =
   let expected =
     InferedType.Collection
         ([ InferedTypeTag.Record None; InferedTypeTag.Number ],
-         [ InferedTypeTag.Number, (Multiple, InferedType.Primitive(typeof<int>, None, false, false))
+         [ InferedTypeTag.Number, (Multiple, InferedType.Primitive(typeof<int>, None, false, false, PrimitiveType.Number))
            InferedTypeTag.Record None,
-             (Single, toRecord [ { Name="a"; Type=InferedType.Primitive(typeof<Bit0>, None, false, false) } ]) ] |> Map.ofList)
+             (Single, toRecord [ { Name="a"; Type=InferedType.Primitive(typeof<Bit0>, None, false, false, PrimitiveType.Number) } ]) ] |> Map.ofList)
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
@@ -105,9 +105,9 @@ let ``Infers heterogeneous type of InferedType.Primitives and records``() =
 let ``Merges types in a collection of collections``() =
   let source = JsonValue.Parse """[ [{"a":true,"c":0},{"b":1,"c":0}], [{"b":1.1,"c":0}] ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Primitive(typeof<bool>, None, true, false) }
-      { Name = "c"; Type = InferedType.Primitive(typeof<Bit0>, None, false, false) }
-      { Name = "b"; Type = InferedType.Primitive(typeof<decimal>, None, true, false) } ]
+    [ { Name = "a"; Type = InferedType.Primitive(typeof<bool>, None, true, false, PrimitiveType.Bool) }
+      { Name = "c"; Type = InferedType.Primitive(typeof<Bit0>, None, false, false, PrimitiveType.Number) }
+      { Name = "b"; Type = InferedType.Primitive(typeof<decimal>, None, true, false, PrimitiveType.Number) } ]
     |> toRecord
     |> SimpleCollection
     |> SimpleCollection
@@ -118,9 +118,9 @@ let ``Merges types in a collection of collections``() =
 let ``Unions properties of records in a collection``() =
   let source = JsonValue.Parse """[ {"a":1, "b":""}, {"a":1.2, "c":true} ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Primitive(typeof<decimal>, None, false, false) }
+    [ { Name = "a"; Type = InferedType.Primitive(typeof<decimal>, None, false, false, PrimitiveType.Number) }
       { Name = "b"; Type = InferedType.Null }
-      { Name = "c"; Type = InferedType.Primitive(typeof<bool>, None, true, false) } ]
+      { Name = "c"; Type = InferedType.Primitive(typeof<bool>, None, true, false, PrimitiveType.Bool) } ]
     |> toRecord
     |> SimpleCollection
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
@@ -130,7 +130,7 @@ let ``Unions properties of records in a collection``() =
 let ``Null should make string optional``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":"b"} ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Primitive(typeof<string>, None, true, false) } ]
+    [ { Name = "a"; Type = InferedType.Primitive(typeof<string>, None, true, false, PrimitiveType.String) } ]
     |> toRecord
     |> SimpleCollection
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
@@ -139,15 +139,15 @@ let ``Null should make string optional``() =
 [<Test>]
 let ``Null is not a valid value of DateTime``() =
   let actual =
-    subtypeInfered false InferedType.Null (InferedType.Primitive(typeof<DateTime>, None, false, false))
-  let expected = InferedType.Primitive(typeof<DateTime>, None, true, false)
+    subtypeInfered false InferedType.Null (InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String))
+  let expected = InferedType.Primitive(typeof<DateTime>, None, true, false, PrimitiveType.String)
   actual |> should equal expected
 
 [<Test>]
 let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":123} ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Primitive(typeof<int>, None, true, false) } ]
+    [ { Name = "a"; Type = InferedType.Primitive(typeof<int>, None, true, false, PrimitiveType.Number) } ]
     |> toRecord
     |> SimpleCollection
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
@@ -157,7 +157,7 @@ let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``(
 let ``Null makes a record optional``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":{"b": 1}} ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Record(Some "a", [{ Name = "b"; Type = InferedType.Primitive(typeof<Bit1>, None, false, false) }], true) } ]
+    [ { Name = "a"; Type = InferedType.Record(Some "a", [{ Name = "b"; Type = InferedType.Primitive(typeof<Bit1>, None, false, false, PrimitiveType.Number) }], true) } ]
     |> toRecord
     |> SimpleCollection
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
@@ -167,8 +167,8 @@ let ``Null makes a record optional``() =
 let ``Infers mixed fields of a record as heterogeneous type``() =
   let source = JsonValue.Parse """[ {"a":"hi"}, {"a":2} , {"a":2147483648} ]"""
   let cases =
-    Map.ofSeq [ InferedTypeTag.String, InferedType.Primitive(typeof<string>, None, false, false)
-                InferedTypeTag.Number, InferedType.Primitive(typeof<int64>, None, false, false) ]
+    Map.ofSeq [ InferedTypeTag.String, InferedType.Primitive(typeof<string>, None, false, false, PrimitiveType.String)
+                InferedTypeTag.Number, InferedType.Primitive(typeof<int64>, None, false, false, PrimitiveType.Number) ]
   let expected =
     [ { Name = "a"; Type = InferedType.Heterogeneous (cases, false) }]
     |> toRecord
@@ -180,7 +180,7 @@ let ``Infers mixed fields of a record as heterogeneous type``() =
 let ``Infers mixed fields of a record as heterogeneous type with nulls (2.)``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":2} , {"a":3} ]"""
   let expected =
-    [ { Name = "a"; Type = InferedType.Primitive(typeof<int>, None, true, false) }]
+    [ { Name = "a"; Type = InferedType.Primitive(typeof<int>, None, true, false, PrimitiveType.Number) }]
     |> toRecord
     |> SimpleCollection
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
@@ -194,7 +194,7 @@ let ``Inference of multiple nulls works``() =
     InferedType.Collection
         ([ InferedTypeTag.Number; InferedTypeTag.Collection ],
          [ InferedTypeTag.Collection, (Single, SimpleCollection(toRecord [prop]))
-           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit0>, None, false, false)) ] |> Map.ofList)
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit0>, None, false, false, PrimitiveType.Number)) ] |> Map.ofList)
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
@@ -202,9 +202,9 @@ let ``Inference of multiple nulls works``() =
 let ``Inference of DateTime``() =
   let source = CsvFile.Parse("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
-  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
-  let propInt = { Name = "int"; Type = InferedType.Primitive(typeof<int>, None, false, false) }
-  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false) }
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String) }
+  let propInt = { Name = "int"; Type = InferedType.Primitive(typeof<int>, None, false, false, PrimitiveType.String) }
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propDate ; propInt ; propFloat ]
   actual |> should equal expected
 
@@ -212,8 +212,8 @@ let ``Inference of DateTime``() =
 let ``Inference of DateTime with timestamp``() =
   let source = CsvFile.Parse("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
-  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
-  let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String) }
+  let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propDate ; propTimestamp ]
   actual |> should equal expected
 
@@ -221,8 +221,8 @@ let ``Inference of DateTime with timestamp``() =
 let ``Inference of DateTime with timestamp non default separator``() =
   let source = CsvFile.Parse("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00", ";")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
-  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
-  let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String) }
+  let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propDate ; propTimestamp ]
   actual |> should equal expected
 
@@ -230,8 +230,8 @@ let ``Inference of DateTime with timestamp non default separator``() =
 let ``Inference of float with #N/A values and non default separator``() =
   let source = CsvFile.Parse("float;integer\n2.0;2\n#N/A;3\n", ";")
   let actual, _ = inferType source Int32.MaxValue [|"#N/A"|] culture "" false false
-  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<float>, None, false, false) }
-  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false) }
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.String) }
+  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propFloat ; propInteger ]
   actual |> should equal expected
 
@@ -242,16 +242,16 @@ let ``Inference of numbers with empty values``() =
                                 2.0,#N/A,,1,1,1,,2010-01-10,yes,
                                 ,,2.0,NA,1,foo,2.0,,,2147483648""")
   let actual, typeOverrides = inferType source Int32.MaxValue [|"#N/A"; "NA"; "foo"|] culture "" false false
-  let propFloat1 = { Name = "float1"; Type = InferedType.Primitive(typeof<decimal>, None, true, false) }
-  let propFloat2 = { Name = "float2"; Type = InferedType.Primitive(typeof<float>, None, false, false) }
-  let propFloat3 = { Name = "float3"; Type = InferedType.Primitive(typeof<decimal>, None, true, false) }
-  let propFloat4 = { Name = "float4"; Type = InferedType.Primitive(typeof<float>, None, false, false) }
-  let propInt =    { Name = "int";    Type = InferedType.Primitive(typeof<Bit1>, None, true, false) }
-  let propFloat5 = { Name = "float5"; Type = InferedType.Primitive(typeof<float>, None, false, false) }
-  let propFloat6 = { Name = "float6"; Type = InferedType.Primitive(typeof<decimal>, None, true, false) }
-  let propDate =   { Name = "date";   Type = InferedType.Primitive(typeof<DateTime>, None, true, false) }
-  let propBool =   { Name = "bool";   Type = InferedType.Primitive(typeof<bool>, None, true, false) }
-  let propInt64 =  { Name = "int64";  Type = InferedType.Primitive(typeof<int64>, None, true, false) }
+  let propFloat1 = { Name = "float1"; Type = InferedType.Primitive(typeof<decimal>, None, true, false, PrimitiveType.String) }
+  let propFloat2 = { Name = "float2"; Type = InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.String) }
+  let propFloat3 = { Name = "float3"; Type = InferedType.Primitive(typeof<decimal>, None, true, false, PrimitiveType.String) }
+  let propFloat4 = { Name = "float4"; Type = InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.String) }
+  let propInt =    { Name = "int";    Type = InferedType.Primitive(typeof<Bit1>, None, true, false, PrimitiveType.String) }
+  let propFloat5 = { Name = "float5"; Type = InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.String) }
+  let propFloat6 = { Name = "float6"; Type = InferedType.Primitive(typeof<decimal>, None, true, false, PrimitiveType.String) }
+  let propDate =   { Name = "date";   Type = InferedType.Primitive(typeof<DateTime>, None, true, false, PrimitiveType.String) }
+  let propBool =   { Name = "bool";   Type = InferedType.Primitive(typeof<bool>, None, true, false, PrimitiveType.String) }
+  let propInt64 =  { Name = "int64";  Type = InferedType.Primitive(typeof<int64>, None, true, false, PrimitiveType.String) }
   let expected = toRecord [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ]
   actual |> should equal expected
 
@@ -366,22 +366,22 @@ let ``Doesn't infer 12-002 as a date``() =
   let expected =
     InferedType.Collection
         ([ InferedTypeTag.String; InferedTypeTag.Number],
-         [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None, false, false))
-           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false)) ] |> Map.ofList)
+         [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None, false, false, PrimitiveType.String))
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false, false, PrimitiveType.String)) ] |> Map.ofList)
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
 [<Test>]
 let ``Doesn't infer ad3mar as a date``() =
   StructuralInference.inferPrimitiveType unitsOfMeasureProvider inferenceMode CultureInfo.InvariantCulture "ad3mar" None
-  |> should equal (InferedType.Primitive(typeof<string>, None, false, false))
+  |> should equal (InferedType.Primitive(typeof<string>, None, false, false, PrimitiveType.String))
 
 [<Test>]
 let ``Inference with % suffix``() =
   let source = CsvFile.Parse("float,integer\n2.0%,2%\n4.0%,3%\n")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
-  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false) }
-  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false) }
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false, PrimitiveType.String) }
+  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propFloat ; propInteger ]
   actual |> should equal expected
 
@@ -389,8 +389,8 @@ let ``Inference with % suffix``() =
 let ``Inference with $ prefix``() =
   let source = CsvFile.Parse("float,integer\n$2.0,$2\n$4.0,$3\n")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
-  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false) }
-  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false) }
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false, PrimitiveType.String) }
+  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false, false, PrimitiveType.String) }
   let expected = toRecord [ propFloat ; propInteger ]
   actual |> should equal expected
 
@@ -485,16 +485,16 @@ let ``names can be qualified``() =
 let ``recursive schemas don't cause loops``() =
     let xsd = """ <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
-	    <xs:complexType name="TextType" mixed="true">
-		    <xs:choice minOccurs="0" maxOccurs="unbounded">
-			    <xs:element ref="bold"/>
-			    <xs:element ref="italic"/>
-			    <xs:element ref="underline"/>
-		    </xs:choice>
-	    </xs:complexType>
-	    <xs:element name="bold" type="TextType"/>
-	    <xs:element name="italic" type="TextType"/>
-	    <xs:element name="underline" type="TextType"/>
+        <xs:complexType name="TextType" mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="bold"/>
+                <xs:element ref="italic"/>
+                <xs:element ref="underline"/>
+            </xs:choice>
+        </xs:complexType>
+        <xs:element name="bold" type="TextType"/>
+        <xs:element name="italic" type="TextType"/>
+        <xs:element name="underline" type="TextType"/>
     </xs:schema>"""
     let inferedTypeFromSchema = getInferedTypeFromSchema xsd
     inferedTypeFromSchema |> ignore
@@ -521,11 +521,11 @@ let ``attributes become properties``() =
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
         elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
-	       <xs:complexType>
-		     <xs:attribute name="bar" type="xs:string" use="required" />
+           <xs:complexType>
+             <xs:attribute name="bar" type="xs:string" use="required" />
              <xs:attribute name="baz" type="xs:int" />
-	      </xs:complexType>
-	    </xs:element>
+          </xs:complexType>
+        </xs:element>
       </xs:schema>    """
     let sample1 = "<foo bar='aa' />"
     let sample2 = "<foo bar='aa' baz='2' />"
@@ -537,16 +537,16 @@ let ``multiple root elements are allowed``() =
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
         elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="root1">
-	      <xs:complexType>
-		     <xs:attribute name="foo" type="xs:string" use="required" />
+          <xs:complexType>
+             <xs:attribute name="foo" type="xs:string" use="required" />
              <xs:attribute name="fow" type="xs:int" use="required" />
-	      </xs:complexType>
-	    </xs:element>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="root2">
            <xs:complexType>
-		     <xs:attribute name="bar" type="xs:string" use="required" />
+             <xs:attribute name="bar" type="xs:string" use="required" />
              <xs:attribute name="baz" type="xs:date" use="required" />
-	       </xs:complexType>
+           </xs:complexType>
         </xs:element>
       </xs:schema>
       """
@@ -562,12 +562,12 @@ let ``sequences can have elements``() =
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
-		  <xs:sequence>
-			<xs:element name="bar" type="xs:int"/>
-			<xs:element name="baz" type="xs:int"/>
-		  </xs:sequence>
-		</xs:complexType>
-	  </xs:element>
+          <xs:sequence>
+            <xs:element name="bar" type="xs:int"/>
+            <xs:element name="baz" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>    """
     let sample = "<foo><bar>2</bar><baz>5</baz></foo>"
     check xsd [| sample |]
@@ -579,12 +579,12 @@ let ``sequences can have multiple elements``() =
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
-		  <xs:sequence>
-			<xs:element name="bar" type="xs:int" maxOccurs='unbounded' />
-			<xs:element name="baz" type="xs:int" maxOccurs='3' />
-		  </xs:sequence>
-		</xs:complexType>
-	  </xs:element>
+          <xs:sequence>
+            <xs:element name="bar" type="xs:int" maxOccurs='unbounded' />
+            <xs:element name="baz" type="xs:int" maxOccurs='3' />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>    """
     let sample = """
     <foo>
@@ -603,12 +603,12 @@ let ``sequences may occur multiple times``() =
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
-		  <xs:sequence maxOccurs='unbounded'>
-			<xs:element name="bar" type="xs:int"/>
-			<xs:element name="baz" type="xs:int"/>
-		  </xs:sequence>
-		</xs:complexType>
-	  </xs:element>
+          <xs:sequence maxOccurs='unbounded'>
+            <xs:element name="bar" type="xs:int"/>
+            <xs:element name="baz" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>    """
     let sample = """
     <foo>
@@ -624,14 +624,14 @@ let ``sequences can be nested``() =
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
-		  <xs:sequence maxOccurs='unbounded'>
+          <xs:sequence maxOccurs='unbounded'>
             <xs:sequence maxOccurs='1'>
-			  <xs:element name="bar" type="xs:int"/>
-			  <xs:element name="baz" type="xs:int"/>
+              <xs:element name="bar" type="xs:int"/>
+              <xs:element name="baz" type="xs:int"/>
             </xs:sequence>
-		  </xs:sequence>
-		</xs:complexType>
-	  </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>    """
     let sample = """
     <foo>
@@ -647,14 +647,14 @@ let ``sequences can have multiple nested sequences``() =
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
         <xs:complexType>
-		  <xs:sequence maxOccurs='1'>
+          <xs:sequence maxOccurs='1'>
             <xs:sequence maxOccurs='unbounded'>
-			  <xs:element name="bar" type="xs:int"/>
-			  <xs:element name="baz" type="xs:int"/>
+              <xs:element name="bar" type="xs:int"/>
+              <xs:element name="baz" type="xs:int"/>
             </xs:sequence>
-		  </xs:sequence>
-		</xs:complexType>
-	  </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>    """
     let sample = """
     <foo>
@@ -670,15 +670,15 @@ let ``simple content can be extended with attributes``() =
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
-		<xs:complexType>
-		  <xs:simpleContent>
-			  <xs:extension base="xs:date">
-				  <xs:attribute name="bar" type="xs:string" />
-				  <xs:attribute name="baz" type="xs:int" />
-			  </xs:extension>
-		  </xs:simpleContent>
-		</xs:complexType>
-	  </xs:element>
+        <xs:complexType>
+          <xs:simpleContent>
+              <xs:extension base="xs:date">
+                  <xs:attribute name="bar" type="xs:string" />
+                  <xs:attribute name="baz" type="xs:int" />
+              </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>"""
     let sample1 = """<foo>1957-08-13</foo>"""
     let sample2 = """<foo bar="hello" baz="2">1957-08-13</foo>"""
@@ -690,13 +690,13 @@ let ``elements in a choice become optional``() =
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
       <xs:element name="foo">
-		<xs:complexType>
-		  <xs:choice>
+        <xs:complexType>
+          <xs:choice>
             <xs:element name="bar" type="xs:int" />
             <xs:element name="baz" type="xs:date" />
-		  </xs:choice>
-		</xs:complexType>
-	  </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>"""
     let sample1 = """<foo><bar>5</bar></foo>"""
     let sample2 = """<foo><baz>1957-08-13</baz></foo>"""
@@ -707,16 +707,16 @@ let ``elements can reference attribute groups``() =
     let xsd = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
-	    <xs:attributeGroup name="myAttributes">
-		    <xs:attribute name="myNr" type="xs:int" use="required" />
-		    <xs:attribute name="available" type="xs:boolean" use="required" />
-	    </xs:attributeGroup>
-	    <xs:element name="foo">
+        <xs:attributeGroup name="myAttributes">
+            <xs:attribute name="myNr" type="xs:int" use="required" />
+            <xs:attribute name="available" type="xs:boolean" use="required" />
+        </xs:attributeGroup>
+        <xs:element name="foo">
             <xs:complexType>
                 <xs:attributeGroup ref="myAttributes"/>
                 <xs:attribute name="lang" type="xs:language" use="required" />
             </xs:complexType>
-	    </xs:element>
+        </xs:element>
     </xs:schema>"""
     let sample1 = """
     <foo myNr="42" available="false" lang="en-US" />"""
@@ -727,12 +727,12 @@ let ``elements can reference attribute groups``() =
 let ``can import namespaces``() =
     let xsd = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+        <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
         <xs:element name="test">
-		    <xs:complexType>
-			    <xs:attribute ref="xml:base"/>
-		    </xs:complexType>
-	    </xs:element>
+            <xs:complexType>
+                <xs:attribute ref="xml:base"/>
+            </xs:complexType>
+        </xs:element>
     </xs:schema>"""
     let inferedTypeFromSchema = getInferedTypeFromSchema xsd
     //printfn "%A" inferedTypeFromSchema
@@ -743,7 +743,7 @@ let ``simple elements can be nillable``() =
     let xsd = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
-	    <xs:element name="author">
+        <xs:element name="author">
             <xs:complexType>
                 <xs:sequence>
                     <xs:element name="name" type="xs:string" nillable="true" />
@@ -774,10 +774,10 @@ let ``complex elements can be nillable``() =
     let xsd = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
-	    <xs:element name="person">
+        <xs:element name="person">
             <xs:complexType>
                 <xs:sequence>
-	                <xs:element name="address" nillable="true">
+                    <xs:element name="address" nillable="true">
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="city" type="xs:string" />
@@ -835,10 +835,10 @@ let ``list fallback to string``() =
         </xs:simpleType>
         <xs:element name="nums">
           <xs:complexType>
-		    <xs:simpleContent>
-			  <xs:extension base="listOfInts" />
-		    </xs:simpleContent>
-		  </xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="listOfInts" />
+            </xs:simpleContent>
+          </xs:complexType>
         </xs:element>
     </xs:schema>"""
     let sample = """<nums>40 50 60</nums>"""
@@ -854,15 +854,15 @@ let ``abstract elements can be recursive``() =
     let formulaXsd = """
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
         elementFormDefault="qualified" attributeFormDefault="unqualified">
-	    <xs:element name="Formula" abstract="true"/>
-	    <xs:element name="Prop" type="xs:string" substitutionGroup="Formula"/>
-	    <xs:element name="And" substitutionGroup="Formula">
-		    <xs:complexType>
-			    <xs:sequence>
-				    <xs:element ref="Formula" minOccurs="2" maxOccurs="2"/>
-			    </xs:sequence>
-		    </xs:complexType>
-	    </xs:element>
+        <xs:element name="Formula" abstract="true"/>
+        <xs:element name="Prop" type="xs:string" substitutionGroup="Formula"/>
+        <xs:element name="And" substitutionGroup="Formula">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="Formula" minOccurs="2" maxOccurs="2"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
     </xs:schema>
     """
 

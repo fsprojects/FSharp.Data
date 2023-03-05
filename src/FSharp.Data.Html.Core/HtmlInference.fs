@@ -65,7 +65,7 @@ let internal inferListType parameters (values: string[]) =
                 if parameters.PreferOptionals then
                     InferedType.Null
                 else
-                    InferedType.Primitive(typeof<float>, None, false, false)
+                    InferedType.Primitive(typeof<float>, None, false, false, PrimitiveType.String)
             else
                 inferPrimitiveType
                     parameters.UnitsOfMeasureProvider

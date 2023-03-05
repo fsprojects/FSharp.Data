@@ -321,51 +321,76 @@ type JsonRuntime =
         else
             None
 
-    static member private ToJsonValue (cultureInfo: CultureInfo) (value: obj) =
+    static member private ToJsonValue (cultureInfo: CultureInfo) (originalType: PrimitiveType option) (value: obj) =
         let inline optionToJson f =
             function
             | None -> JsonValue.Null
             | Some v -> f v
 
-        match value with
-        | null -> JsonValue.Null
-        | :? Array as v -> JsonValue.Array [| for elem in v -> JsonRuntime.ToJsonValue cultureInfo elem |]
+        let inline boolToDecimal x = if x then 1m else 0m
+        let inline boolToString x = if x then "true" else "false"
+        let inline intToString (x: int) = x.ToString(cultureInfo)
+        let inline int64ToString (x: int64) = x.ToString(cultureInfo)
+        let inline floatToString (x: float) = x.ToString(cultureInfo)
+        let inline decimalToString (x: decimal) = x.ToString(cultureInfo)
 
-        | :? string as v -> JsonValue.String v
-        | :? DateTime as v -> v.ToString("O", cultureInfo) |> JsonValue.String
-        | :? DateTimeOffset as v -> v.ToString("O", cultureInfo) |> JsonValue.String
-        | :? TimeSpan as v -> v.ToString("g", cultureInfo) |> JsonValue.String
-        | :? int as v -> JsonValue.Number(decimal v)
-        | :? int64 as v -> JsonValue.Number(decimal v)
-        | :? float as v -> JsonValue.Number(decimal v)
-        | :? decimal as v -> JsonValue.Number v
-        | :? bool as v -> JsonValue.Boolean v
-        | :? Guid as v -> v.ToString() |> JsonValue.String
-        | :? IJsonDocument as v -> v.JsonValue
-        | :? JsonValue as v -> v
+        match value, originalType with
+        | null, _ -> JsonValue.Null
+        | :? Array as v, _ ->
+            JsonValue.Array [| for elem in v -> JsonRuntime.ToJsonValue cultureInfo originalType elem |]
 
-        | :? option<string> as v -> optionToJson JsonValue.String v
-        | :? option<DateTime> as v ->
+        | :? string as v, _ -> JsonValue.String v
+        | :? DateTime as v, _ -> v.ToString("O", cultureInfo) |> JsonValue.String
+        | :? DateTimeOffset as v, _ -> v.ToString("O", cultureInfo) |> JsonValue.String
+        | :? TimeSpan as v, _ -> v.ToString("g", cultureInfo) |> JsonValue.String
+        | :? int as v, Some PrimitiveType.String -> JsonValue.String(intToString v)
+        | :? int as v, _ -> JsonValue.Number(decimal v)
+        | :? int64 as v, Some PrimitiveType.String -> JsonValue.String(int64ToString v)
+        | :? int64 as v, _ -> JsonValue.Number(decimal v)
+        | :? float as v, Some PrimitiveType.String -> JsonValue.String(floatToString v)
+        | :? float as v, _ -> JsonValue.Number(decimal v)
+        | :? decimal as v, Some PrimitiveType.String -> JsonValue.String(decimalToString v)
+        | :? decimal as v, _ -> JsonValue.Number v
+        | :? bool as v, Some PrimitiveType.Number -> JsonValue.Number(boolToDecimal v)
+        | :? bool as v, Some PrimitiveType.String -> JsonValue.String(boolToString v)
+        | :? bool as v, _ -> JsonValue.Boolean v
+        | :? Guid as v, _ -> v.ToString() |> JsonValue.String
+        | :? IJsonDocument as v, _ -> v.JsonValue
+        | :? JsonValue as v, _ -> v
+
+        | :? option<string> as v, _ -> optionToJson JsonValue.String v
+        | :? option<DateTime> as v, _ ->
             optionToJson (fun (dt: DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
-        | :? option<DateTimeOffset> as v ->
+        | :? option<DateTimeOffset> as v, _ ->
             optionToJson (fun (dt: DateTimeOffset) -> dt.ToString(cultureInfo) |> JsonValue.String) v
-        | :? option<TimeSpan> as v ->
+        | :? option<TimeSpan> as v, _ ->
             optionToJson (fun (ts: TimeSpan) -> ts.ToString("g", cultureInfo) |> JsonValue.String) v
-        | :? option<int> as v -> optionToJson (decimal >> JsonValue.Number) v
-        | :? option<int64> as v -> optionToJson (decimal >> JsonValue.Number) v
-        | :? option<float> as v -> optionToJson (decimal >> JsonValue.Number) v
-        | :? option<decimal> as v -> optionToJson JsonValue.Number v
-        | :? option<bool> as v -> optionToJson JsonValue.Boolean v
-        | :? option<Guid> as v -> optionToJson (fun (g: Guid) -> g.ToString() |> JsonValue.String) v
-        | :? option<IJsonDocument> as v -> optionToJson (fun (v: IJsonDocument) -> v.JsonValue) v
-        | :? option<JsonValue> as v -> optionToJson id v
+        | :? option<int> as v, Some PrimitiveType.String -> optionToJson (intToString >> JsonValue.String) v
+        | :? option<int> as v, _ -> optionToJson (decimal >> JsonValue.Number) v
+        | :? option<int64> as v, Some PrimitiveType.String -> optionToJson (int64ToString >> JsonValue.String) v
+        | :? option<int64> as v, _ -> optionToJson (decimal >> JsonValue.Number) v
+        | :? option<float> as v, Some PrimitiveType.String -> optionToJson (floatToString >> JsonValue.String) v
+        | :? option<float> as v, _ -> optionToJson (decimal >> JsonValue.Number) v
+        | :? option<decimal> as v, Some PrimitiveType.String -> optionToJson (decimalToString >> JsonValue.String) v
+        | :? option<decimal> as v, _ -> optionToJson JsonValue.Number v
+        | :? option<bool> as v, Some PrimitiveType.Number -> optionToJson (boolToDecimal >> JsonValue.Number) v
+        | :? option<bool> as v, Some PrimitiveType.String -> optionToJson (boolToString >> JsonValue.String) v
+        | :? option<bool> as v, _ -> optionToJson JsonValue.Boolean v
+        | :? option<Guid> as v, _ -> optionToJson (fun (g: Guid) -> g.ToString() |> JsonValue.String) v
+        | :? option<IJsonDocument> as v, _ -> optionToJson (fun (v: IJsonDocument) -> v.JsonValue) v
+        | :? option<JsonValue> as v, _ -> optionToJson id v
 
         | _ -> failwithf "Can't create JsonValue from %A" value
 
     /// Creates a scalar JsonValue and wraps it in a json document
     static member CreateValue(value: obj, cultureStr) =
         let cultureInfo = TextRuntime.GetCulture cultureStr
-        let json = JsonRuntime.ToJsonValue cultureInfo value
+        // Actual original primitive type is not needed here,
+        // because this code path is only used to generate special multiple-choice types (from heterogeneous inferred types),
+        // and in that case the generated ctor will have different parameter overrides
+        // for all the possible primitive types, giving the user full control.
+        let originalType = None
+        let json = JsonRuntime.ToJsonValue cultureInfo originalType value
         JsonDocument.Create(json, "")
 
     // Creates a JsonValue.Record and wraps it in a json document
@@ -374,7 +399,8 @@ type JsonRuntime =
 
         let json =
             properties
-            |> Array.map (fun (k, v: obj) -> k, JsonRuntime.ToJsonValue cultureInfo v)
+            |> Array.map (fun (k, v: obj, originalType) ->
+                k, JsonRuntime.ToJsonValue cultureInfo (originalType |> PrimitiveType.FromInt) v)
             |> JsonValue.Record
 
         JsonDocument.Create(json, "")
@@ -384,31 +410,35 @@ type JsonRuntime =
         (
             keyValuePairs: ('Key * 'Value) seq,
             cultureStr,
-            mappingKeyBack: Func<'Key, string>
+            mappingKeyBack: Func<'Key, string>,
+            originalValueType
         ) =
         let cultureInfo = TextRuntime.GetCulture cultureStr
 
         let json =
             keyValuePairs
-            |> Seq.map (fun (k, v) -> (k |> mappingKeyBack.Invoke), JsonRuntime.ToJsonValue cultureInfo (v :> obj))
+            |> Seq.map (fun (k, v) ->
+                (k |> mappingKeyBack.Invoke),
+                JsonRuntime.ToJsonValue cultureInfo (originalValueType |> PrimitiveType.FromInt) (v :> obj))
             |> Seq.toArray
             |> JsonValue.Record
 
         JsonDocument.Create(json, "")
 
     /// Creates a scalar JsonValue.Array and wraps it in a json document
-    static member CreateArray(elements: obj[], cultureStr) =
+    /// elements is actually an obj[][]: an array of all the user-provided arrays from a ctor
+    /// (e.g [ [1;2;3] ; ["a";"b";"c"]  ] in the case of an array inferred to contain IntsOrStrings)
+    static member CreateArray(elements, cultureStr) =
         let cultureInfo = TextRuntime.GetCulture cultureStr
 
         let json =
             elements
-            |> Array.collect (
-                JsonRuntime.ToJsonValue cultureInfo
-                >> function
-                    | JsonValue.Array elements -> elements
-                    | JsonValue.Null -> [||]
-                    | element -> [| element |]
-            )
+            |> Array.map (fun (array: obj, originalType) ->
+                JsonRuntime.ToJsonValue cultureInfo (originalType |> PrimitiveType.FromInt) array)
+            |> Array.collect (function
+                | JsonValue.Array elements -> elements
+                | JsonValue.Null -> [||]
+                | element -> [| element |])
             |> JsonValue.Array
 
         JsonDocument.Create(json, "")

@@ -109,6 +109,25 @@ module JsonTypeBuilder =
 
     let (?) = QuotationBuilder.(?)
 
+    module internal List =
+        let unzip4 l =
+            let a, b, cd = List.unzip3 (List.map (fun (a, b, c, d) -> (a, b, (c, d))) l)
+            let c, d = List.unzip cd
+            a, b, c, d
+
+    let internal findOriginalPrimitiveType inferedType =
+        let (|SingleTypeCollection|_|) =
+            function
+            | InferedType.Collection ([ singleTag ], types) ->
+                let _, singleType = types[singleTag]
+                Some singleType
+            | _ -> None
+
+        match inferedType with
+        | InferedType.Primitive (_, _, _, _, originalType) -> Some originalType
+        | SingleTypeCollection (InferedType.Primitive (_, _, _, _, originalType)) -> Some originalType
+        | _ -> None
+
     // check if a type was already created for the inferedType before creating a new one
     let internal getOrCreateType ctx inferedType createType =
 
@@ -132,12 +151,12 @@ module JsonTypeBuilder =
                           Type = normalize false inferedType })
                 // optional only affects the parent, so at top level always set to true regardless of the actual value
                 InferedType.Record(None, props, optional || topLevel)
-            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when
+            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge, originalType) when
                 typ = typeof<Bit0> || typ = typeof<Bit1>
                 ->
-                InferedType.Primitive(typeof<int>, unit, optional, shouldOverrideOnMerge)
-            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when typ = typeof<Bit> ->
-                InferedType.Primitive(typeof<bool>, unit, optional, shouldOverrideOnMerge)
+                InferedType.Primitive(typeof<int>, unit, optional, shouldOverrideOnMerge, originalType)
+            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge, originalType) when typ = typeof<Bit> ->
+                InferedType.Primitive(typeof<bool>, unit, optional, shouldOverrideOnMerge, originalType)
             | x -> x
 
         let inferedType = normalize true inferedType
@@ -205,7 +224,7 @@ module JsonTypeBuilder =
                     | InferedMultiplicity.OptionalSingle
                     | InferedMultiplicity.Single ->
                         match inferedType with
-                        | InferedType.Primitive (typ, _, _, _) ->
+                        | InferedType.Primitive (typ, _, _, _, _) ->
                             if typ = typeof<int>
                                || typ = typeof<Bit0>
                                || typ = typeof<Bit1> then
@@ -262,9 +281,10 @@ module JsonTypeBuilder =
                           (replaceJDocWithJValue ctx result.ConvertedType).MakeArrayType()
 
                   ProvidedProperty(name, typ, getterCode = codeGenerator multiplicity result tag.Code),
-                  ProvidedParameter(NameUtils.niceCamelName name, constructorType) ]
+                  ProvidedParameter(NameUtils.niceCamelName name, constructorType),
+                  findOriginalPrimitiveType inferedType ]
 
-        let properties, parameters = List.unzip members
+        let properties, parameters, originalPrimitiveTypes = List.unzip3 members
         objectTy.AddMembers properties
 
         if ctx.GenerateConstructors then
@@ -275,9 +295,14 @@ module JsonTypeBuilder =
                 let ctorCode (args: Expr list) =
                     let elements =
                         Expr.NewArray(
-                            typeof<obj>,
+                            typeof<obj * int>,
                             args
-                            |> List.map (fun a -> Expr.Coerce(a, typeof<obj>))
+                            |> List.mapi (fun i a ->
+                                let serializedOriginalPrimitiveType =
+                                    originalPrimitiveTypes[i] |> PrimitiveType.ToInt
+
+                                let arg = Expr.Coerce(a, typeof<obj>)
+                                <@@ (%%arg, serializedOriginalPrimitiveType) @@>)
                         )
 
                     let cultureStr = ctx.CultureStr
@@ -333,7 +358,7 @@ module JsonTypeBuilder =
 
         match inferedType with
 
-        | InferedType.Primitive (inferedType, unit, optional, _) ->
+        | InferedType.Primitive (inferedType, unit, optional, _, _) ->
 
             let typ, conv, conversionCallingType =
                 PrimitiveInferedValue.Create(inferedType, optional, unit)
@@ -397,6 +422,7 @@ module JsonTypeBuilder =
                 makeUnique "JsonValue" |> ignore
 
                 let inferedKeyValueType =
+
                     let aggr = List.fold (StructuralInference.subtypeInfered false) InferedType.Top
 
                     let dropRecordsNames infType =
@@ -554,12 +580,16 @@ module JsonTypeBuilder =
                         let ctorCode (args: Expr list) =
                             let kvSeq = args.Head
                             let convFunc = ReflectionHelpers.makeDelegate conv keyResult.ConvertedType
-
                             let cultureStr = ctx.CultureStr
+
+                            let originalValueType =
+                                findOriginalPrimitiveType inferedValueType
+                                |> PrimitiveType.ToInt
+                                |> Expr.Value
 
                             ctx.JsonRuntimeType?(nameof (JsonRuntime.CreateRecordFromDictionary))
                                 (keyResult.ConvertedType, valueConvertedTypeErased)
-                                (kvSeq, cultureStr, convFunc)
+                                (kvSeq, cultureStr, convFunc, originalValueType)
 
                         let ctor =
                             ProvidedConstructor([ ProvidedParameter("items", itemsSeqType) ], ctorCode)
@@ -618,24 +648,32 @@ module JsonTypeBuilder =
                               let name = makeUnique prop.Name
 
                               prop.Name,
-                              [ ProvidedProperty(name, convertedType, getterCode = getter) ],
-                              ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
+                              ProvidedProperty(name, convertedType, getterCode = getter),
+                              ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType),
+                              findOriginalPrimitiveType prop.Type ]
 
-                    let names, properties, parameters = List.unzip3 members
-                    let properties = properties |> List.concat
+                    let names, properties, parameters, originalPrimitiveTypes = List.unzip4 members
+
                     objectTy.AddMembers properties
 
                     if ctx.GenerateConstructors then
                         let ctorCode (args: Expr list) =
                             let properties =
                                 Expr.NewArray(
-                                    typeof<string * obj>,
+                                    typeof<string * obj * int>,
                                     args
                                     |> List.mapi (fun i a ->
-                                        Expr.NewTuple [ Expr.Value names.[i]; Expr.Coerce(a, typeof<obj>) ])
+                                        let name = names[i]
+
+                                        let serializedOriginalPrimitiveType =
+                                            originalPrimitiveTypes[i] |> PrimitiveType.ToInt
+
+                                        let arg = Expr.Coerce(a, typeof<obj>)
+                                        <@@ (name, %%arg, serializedOriginalPrimitiveType) @@>)
                                 )
 
                             let cultureStr = ctx.CultureStr
+
                             <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
 
                         let ctor = ProvidedConstructor(parameters, invokeCode = ctorCode)

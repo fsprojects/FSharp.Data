@@ -807,7 +807,7 @@ let ``Inline schemas are disabled by default and are recognized as strings`` () 
     sample[1].Length.String.GetType() |> should equal (typeof<string option>)
     sample[1].Length.Number.GetType() |> should equal (typeof<decimal option>)
     sample[1].Obj.Value.X.String.GetType() |> should equal (typeof<string option>)
-    sample[1].Obj.Value.X.Number.GetType() |> should equal (typeof<bool option>) // (There is probably a little but here. The property should be called Boolean)
+    sample[1].Obj.Value.X.Number.GetType() |> should equal (typeof<bool option>) // (There is probably a little bug here. The property should be called Boolean)
 
 [<Test>]
 let ``"No inference" mode disables type inference`` () =
@@ -850,3 +850,176 @@ let ``Inline schemas as overrides replace value-based inference when present`` (
     sample[1].Obj.Value.X.GetType() |> should equal (typeof<int>)
     // (Note the types in the inline schemas are automatically transformed to options as needed
     // when another node does not define any value for the given property)
+
+module ``Serialization should roundtrip primitive type`` =
+
+    [<Test>]
+    let ``string inferred as int`` () =
+        let serialized = JsonProvider<"""{"a":"42"}""">.Root(43).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":"43"}"""
+
+    [<Test>]
+    let ``string inferred as decimal`` () =
+        let serialized = JsonProvider<"""{"a":"42.0"}""">.Root(42.5m).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":"42.5"}"""
+
+    [<Test>]
+    let ``string inferred as bool`` () =
+        let serialized = JsonProvider<"""{"a":"false"}""">.Root(true).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":"true"}"""
+
+    [<Test>]
+    let ``int inferred as bool`` () =
+        let serialized = JsonProvider<"""{"a":1} {"a":0}""", SampleIsList=true>.Root(true).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":1}"""
+
+    [<Test>]
+    let ``decimal inferred as decimal`` () =
+        let serialized = JsonProvider<"""{"a":42.5}""">.Root(42.5m).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":42.5}"""
+
+    [<Test>]
+    let ``int inferred as int`` () =
+        let serialized = JsonProvider<"""{"a":42}""">.Root(43).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":43}"""
+
+    [<Test>]
+    let ``bool inferred as bool`` () =
+        let serialized = JsonProvider<"""{"a":false}""">.Root(true).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":true}"""
+
+    // Arrays are implemented through a different code path...
+
+    [<Test>]
+    let ``string inferred as int inside array`` () =
+        let serialized = JsonProvider<"""{"a":["42"]}""">.Root([|43|]).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":["43"]}"""
+
+    [<Test>]
+    let ``int inferred as int inside array`` () =
+        let serialized = JsonProvider<"""{"a":[42]}""">.Root([|43|]).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":[43]}"""
+
+    [<Test>]
+    let ``mixed int-looking string and int inferred as string inside array`` () =
+        let serialized = JsonProvider<"""{"a":["42", 43]}""">.Root([|44;45|]).JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":["44","45"]}"""
+
+    type MixedStringAndIntArrayInferredAsInt =
+        JsonProvider<"""{"a":["a","b",42,43]}""">
+    type MixedStringAndStringLookingIntArrayInferredAsInt =
+        JsonProvider<"""{"a":["a","b","42","43"]}""">
+
+    [<Test>]
+    let ``mixed string and int inferred as int inside array`` () =
+        let serialized =
+            MixedStringAndIntArrayInferredAsInt.Root(
+                MixedStringAndIntArrayInferredAsInt.NumbersOrStrings([|44;45|], [|"x";"y"|]))
+                .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":[44,45,"x","y"]}"""
+
+    [<Test>]
+    let ``mixed string and int-looking string inferred as int inside array`` () =
+        let serialized =
+            MixedStringAndStringLookingIntArrayInferredAsInt.Root(
+                MixedStringAndStringLookingIntArrayInferredAsInt.NumbersOrStrings([|44;45|], [|"x";"y"|]))
+                .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":["44","45","x","y"]}"""
+
+    type IntAsIntInsideNestedArray =
+        JsonProvider<"""{"a":["a","b","42","43",[42]]}""">
+    type StringAsIntInsideNestedArray =
+        JsonProvider<"""{"a":["a","b","42","43",["42"]]}""">
+
+    [<Test>]
+    let ``int inferred as int inside nested array`` () =
+        Assert.Inconclusive("BUG/TODO: looks like nested arrays are flattened...")
+        // Expected: "{"a":["44","45","x","y",[46,47]]}"
+        // But was:  "{"a":["44","45","x","y",46,47]}"
+        let serialized =
+            IntAsIntInsideNestedArray.Root(
+                IntAsIntInsideNestedArray.NumbersOrStringsOrArray([|44;45|], [|"x";"y"|], [|46;47|]))
+                .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":["44","45","x","y",[46,47]]}"""
+
+    [<Test>]
+    let ``string inferred as int inside nested array`` () =
+        Assert.Inconclusive("BUG/TODO: looks like nested arrays are flattened...")
+        // Expected: "{"a":["44","45","x","y",["46","47"]]}"
+        // But was:  "{"a":["44","45","x","y","46","47"]}"
+        let serialized =
+            StringAsIntInsideNestedArray.Root(
+                StringAsIntInsideNestedArray.NumbersOrStringsOrArray([|44;45|], [|"x";"y"|], [|46;47|]))
+                .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"a":["44","45","x","y",["46","47"]]}"""
+
+    // PreferDictionaries uses a different code path...
+
+    type PreferDictWithIntValues =
+        JsonProvider<"""{"123":42,"456":43}""", PreferDictionaries=true>
+    type PreferDictWithStringValues =
+        JsonProvider<"""{"123":"42","456":43}""", PreferDictionaries=true>
+
+    [<Test>]
+    let ``int values in dictionary`` () =
+        let serialized =
+            PreferDictWithIntValues.Root(
+                [123,42
+                 456,43])
+                 .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":42,"456":43}"""
+
+    [<Test>]
+    let ``int-looking string values in dictionary`` () =
+        let serialized =
+            PreferDictWithStringValues.Root(
+                [123,42
+                 456,43])
+                .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":"42","456":"43"}"""
+
+    type PreferDictWithIntInRecordValues =
+        JsonProvider<"""{"123":{"a":42},"456":{"a":43}}""", PreferDictionaries=true>
+    type PreferDictWithStringInRecordValues =
+        JsonProvider<"""{"123":{"a":"42"},"456":{"a":43}}""", PreferDictionaries=true>
+
+    [<Test>]
+    let ``int in record values in dictionary`` () =
+        let serialized =
+            PreferDictWithIntInRecordValues.Root(
+            [123,PreferDictWithIntInRecordValues.RootValue(42)
+             456,PreferDictWithIntInRecordValues.RootValue(43)])
+             .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":{"a":42},"456":{"a":43}}"""
+
+    [<Test>]
+    let ``int-looking string in record values in dictionary`` () =
+        let serialized =
+            PreferDictWithStringInRecordValues.Root(
+            [123,PreferDictWithStringInRecordValues.RootValue(42)
+             456,PreferDictWithStringInRecordValues.RootValue(43)])
+             .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":{"a":"42"},"456":{"a":"43"}}"""
+
+    type PreferDictWithIntInArrayValues =
+        JsonProvider<"""{"123":[42,43],"456":[44,45]}""", PreferDictionaries=true>
+    type PreferDictWithStringInArrayValues =
+        JsonProvider<"""{"123":["42",43],"456":[44,45]}""", PreferDictionaries=true>
+
+    [<Test>]
+    let ``int in array values in dictionary`` () =
+        let serialized =
+            PreferDictWithIntInArrayValues.Root(
+            [123,[|42|]
+             456,[|43|]])
+             .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":[42],"456":[43]}"""
+
+    [<Test>]
+    let ``int-looking string in array values in dictionary`` () =
+        let serialized =
+            PreferDictWithStringInArrayValues.Root(
+            [123,[|42|]
+             456,[|43|]])
+             .JsonValue.ToString(JsonSaveOptions.DisableFormatting)
+        serialized |> should equal """{"123":["42"],"456":["43"]}"""

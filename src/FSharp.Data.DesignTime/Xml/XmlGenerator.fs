@@ -127,7 +127,7 @@ module internal XmlTypeBuilder =
                       (StructuralInference.typeTag primitive).NiceName
 
               match primitive with
-              | InferedType.Primitive (typ, unit, optional, _) ->
+              | InferedType.Primitive (typ, unit, optional, _, _) ->
 
                   let optional = optional || forceOptional
                   let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
@@ -356,7 +356,7 @@ module internal XmlTypeBuilder =
                                   failwithf "generateXmlType: Type shouldn't be optional: %A" typ
 
                               match typ with
-                              | InferedType.Primitive (primTyp, unit, false, _) ->
+                              | InferedType.Primitive (primTyp, unit, false, _, _) ->
 
                                   let typ, conv =
                                       ctx.ConvertValue
@@ -396,7 +396,7 @@ module internal XmlTypeBuilder =
 
                           createMember choiceTy (fun x -> x :> Expr)
 
-                      | InferedType.Primitive (typ, unit, optional, _) -> createPrimitiveMember typ unit optional
+                      | InferedType.Primitive (typ, unit, optional, _, _) -> createPrimitiveMember typ unit optional
                       | InferedType.Null -> createPrimitiveMember typeof<string> None false
 
                       | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type ]
