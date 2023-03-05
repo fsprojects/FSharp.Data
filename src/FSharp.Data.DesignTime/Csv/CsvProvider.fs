@@ -17,6 +17,7 @@ open FSharp.Data.Runtime.CsvInference
 open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime.StructuralInference
+open System.Net
 
 // --------------------------------------------------------------------------------------
 
@@ -37,6 +38,11 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
         ProvidedTypeDefinition(asm, ns, "CsvProvider", None, hideObjectMethods = true, nonNullable = true)
 
     let buildTypes (typeName: string) (args: obj[]) =
+
+        // Enable TLS 1.2 for samples requested through https.
+        ServicePointManager.SecurityProtocol <-
+            ServicePointManager.SecurityProtocol
+            ||| SecurityProtocolType.Tls12
 
         let sample = args.[0] :?> string
         let separators = args.[1] :?> string
