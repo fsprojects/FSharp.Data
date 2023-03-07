@@ -399,15 +399,42 @@ module JsonTypeBuilder =
                 let inferedKeyValueType =
                     let aggr = List.fold (StructuralInference.subtypeInfered false) InferedType.Top
 
-                    let dropRecordName infType =
+                    let dropRecordsNames infType =
+
+                        let dropRecordName infType =
+                            match infType with
+                            | InferedType.Record (_, fields, opt) -> InferedType.Record(None, fields, opt)
+                            | _ -> infType
+
+                        let dropTagName tag =
+                            match tag with
+                            | InferedTypeTag.Record (Some _) -> InferedTypeTag.Record None
+                            | _ -> tag
+
+                        let infType = dropRecordName infType
+
                         match infType with
-                        | InferedType.Record (_, fields, opt) -> InferedType.Record(None, fields, opt)
+                        | InferedType.Collection (order, types) ->
+                            // Records in collections have the parent property as name.
+                            // We drop it too so they can be merged into a unified type.
+                            let order = order |> List.map dropTagName
+
+                            let types =
+                                types
+                                |> Map.toSeq
+                                |> Seq.map (fun (tag, (multiplicity, typ)) ->
+                                    let tag = dropTagName tag
+                                    let typ = dropRecordName typ
+                                    tag, (multiplicity, typ))
+                                |> Map.ofSeq
+
+                            InferedType.Collection(order, types)
                         | _ -> infType
 
                     if not ctx.PreferDictionaries then
                         None
                     else
-                        let infType =
+                        let infKeyType =
                             [ for prop in props ->
                                   StructuralInference.getInferedTypeFromString
                                       ctx.UnitsOfMeasureProvider
@@ -417,14 +444,16 @@ module JsonTypeBuilder =
                                       None ]
                             |> aggr
 
-                        match infType with
+                        match infKeyType with
                         | InferedType.Primitive (typ = typ) when typ <> typeof<string> ->
                             let inferValueType =
-                                ([ for prop in props -> prop.Type |> dropRecordName ]
+                                ([ for prop in props -> prop.Type |> dropRecordsNames ]
                                  |> aggr)
+                                    // Optional properties in the initial record should translate
+                                    // to simply missing values in the dictionary, not an optional type.
                                     .DropOptionality()
 
-                            (infType, inferValueType) |> Some
+                            Some(infKeyType, inferValueType)
                         | _ -> None
 
                 match inferedKeyValueType with

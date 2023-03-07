@@ -1,0 +1,31 @@
+﻿{
+    "Mappings": {
+        "123": [
+            {
+            "GroupId": 1001,
+            "CanDelete": true
+            },
+            {
+            "GroupId": 6562,
+            "CanDelete": false
+            }
+        ],
+        "456": [
+            {
+            "GroupId": 1003,
+            "CanDelete": false
+            }
+        ],
+        "789": [
+            {
+            "GroupId": 1002,
+            "CanDelete": false,
+            "ErrorMessage": "Error."
+            },
+            {
+            "GroupId": 6562,
+            "CanDelete": true
+            }
+        ]
+    }
+}
