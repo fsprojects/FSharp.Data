@@ -6,6 +6,28 @@
 * Enable TLS 1.2 when requesting http(s) samples from the type providers.
 * Fix generated code of the json provider with `PreferDictionaries` when values are arrays.
 
+## 6.1.0-beta - Apr 4 2023
+
+- Fix json provider PreferDictionaries for array properties | [Melvyn Laïly](https://github.com/)
+- Add signature tests showing the wrong generation for array values when inferring dictionaries in json | [Melvyn Laïly](https://github.com/)
+- Enable TLS 1.2 in providers to be able to use it when requesting https samples | [Melvyn Laïly](https://github.com/)
+- Report complete exception from providers | [Melvyn Laïly](https://github.com/)
+- Add aria-label to the list of attributes used to find a name for html provided types | [Melvyn Laïly](https://github.com/)
+- Do not fail the build if the WorldBank api is offline | [Melvyn Laïly](https://github.com/)
+- Move source files into the folders of the projects they belong to | [Melvyn Laïly](https://github.com/)
+- Move non-http code from FSharp.Data.Http into a new FSharp.Data.Runtime.Utilities project | [Melvyn Laïly](https://github.com/)
+- Format code | [Lennart Schlegge](https://github.com/)
+- Refactor readLine function | [Lennart Schlegge](https://github.com/)
+- Extend test with quoted strings and separators | [Lennart Schlegge](https://github.com/)
+- Fix reading CSV from non seekable network stream | [Lennart Schlegge](https://github.com/)
+- Use nameof for all dynamically built quotations | [Melvyn Laïly](https://github.com/)
+- Update release notes | [Melvyn Laïly](https://github.com/)
+- Change the namespace of the public "InferenceMode" enum | [Melvyn Laïly](https://github.com/)
+- updated docs for html type provider example | [aaron-jack-manning](https://github.com/)
+- Fix WorldBank.fsx docs build | [Melvyn Laïly](https://github.com/)
+- Re-add solution level items missing or with broken paths | [Melvyn Laïly](https://github.com/)
+- Remove explicit PackageReference in projects + include paket.references | [Melvyn Laïly](https://github.com/)
+
 ### 6.0.1-beta001 - Aug 18 2022
 
 * There are now multiple packages
