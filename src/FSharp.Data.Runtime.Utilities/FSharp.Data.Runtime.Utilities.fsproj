@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <IsPackable>false</IsPackable>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:10001 --nowarn:44</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

@@ -1,10 +1,8 @@
-### 6.0.1-beta002 - Jan 6 2023
+## 6.1.1-beta - Apr 12 2023
 
-* Change the namespace of the `InferenceMode` enum from `FSharp.Data.Runtime.StructuralInference` to `FSharp.Data`.
-* Move common runtime utilities out of `FSharp.Data.Http` and into a new `FSharp.Data.Runtime.Utilities` assembly.
-* Add `aria-label` to the list of html attributes used to infer names of types provided by the HtmlProvider.
-* Enable TLS 1.2 when requesting http(s) samples from the type providers.
-* Fix generated code of the json provider with `PreferDictionaries` when values are arrays.
+- Publish FSharp.Data.RuntimeUtilities
+- Update annoying assemblyinfo stuff because fake
+- Roll forward the SDK so that you can use project in codespaces
 
 ## 6.1.0-beta - Apr 4 2023
 
@@ -27,6 +25,14 @@
 - Fix WorldBank.fsx docs build | [Melvyn Laïly](https://github.com/)
 - Re-add solution level items missing or with broken paths | [Melvyn Laïly](https://github.com/)
 - Remove explicit PackageReference in projects + include paket.references | [Melvyn Laïly](https://github.com/)
+
+### 6.0.1-beta002 - Jan 6 2023
+
+* Change the namespace of the `InferenceMode` enum from `FSharp.Data.Runtime.StructuralInference` to `FSharp.Data`.
+* Move common runtime utilities out of `FSharp.Data.Http` and into a new `FSharp.Data.Runtime.Utilities` assembly.
+* Add `aria-label` to the list of html attributes used to infer names of types provided by the HtmlProvider.
+* Enable TLS 1.2 when requesting http(s) samples from the type providers.
+* Fix generated code of the json provider with `PreferDictionaries` when values are arrays.
 
 ### 6.0.1-beta001 - Aug 18 2022
 
