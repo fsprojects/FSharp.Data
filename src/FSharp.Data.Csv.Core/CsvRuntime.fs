@@ -447,6 +447,11 @@ type CsvFile<'RowType>
 
         use writer = writer
 
+        // RFC 4180 (https://www.rfc-editor.org/rfc/rfc4180)
+        // 2.  Definition of the CSV Format
+        // Each record is located on a separated line, delimited by a line break CRLF
+        writer.NewLine <- "\r\n"
+
         let nullSafeguard str =
             match str with
             | null -> String.Empty
