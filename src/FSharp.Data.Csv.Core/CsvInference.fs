@@ -151,7 +151,7 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
         if String.IsNullOrWhiteSpace schema then
             Array.zeroCreate headers.Length
         else
-            use reader = new StringReader(schema)
+            use reader = new StringReader(schema.Replace("\n", ""))
 
             let schemaStr =
                 CsvReader.readCsvFile reader "," '"'

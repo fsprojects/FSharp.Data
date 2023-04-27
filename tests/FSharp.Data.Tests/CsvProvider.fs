@@ -124,7 +124,7 @@ let ``Can create type for small document``() =
 
 [<Test>]
 let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
-  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))  
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 
@@ -638,3 +638,36 @@ let ``InferColumnTypes shall infer empty string as Double``() =
   let expected = "Double"
   let actual = types.[3].Value.InferedType.Name
   actual |> should equal expected
+
+let [<Literal>] manyColumnCsv = """
+"001","2022-01-01 10:00:00","100.00","John S.","+1 (555) 123-4567","john@example.com","","John Smith","California","Los Angeles","123 Main St.","90001","P001","Widget A","2","25.00"
+"002","2022-01-02 14:30:00","50.00","Alice T.","+1 (555) 987-6543","alice@example.com","Please deliver after 6pm.","Alice Thompson","New York","Brooklyn","456 Elm St.","10001","P002","Widget B","1","50.00"
+"003","2022-01-03 08:15:00","75.00","Bob R.","+1 (555) 555-1212","bob@example.com","","Bob Robertson","Florida","Miami","789 Oak Ave.","33010","P003","Widget C","3","25.00"
+"004","2022-01-04 16:00:00","200.00","Jane D.","+1 (555) 555-5555","jane@example.com","Please include gift receipt.","Jane Doe","Texas","Austin","321 Pine St.","78701","P004","Widget D","4","50.00"
+"005","2022-01-05 12:00:00","60.00","Sam G.","+1 (555) 555-1212","sam@example.com","","Sam Green","California","San Francisco","987 Oak St.","94101","P005","Widget E","2","30.00"
+"""
+
+[<Test>]
+let ``Can infer from a multiline schema`` () =
+    let csv =
+        CsvProvider<manyColumnCsv,
+            HasHeaders = false,
+            Schema = "OrderNumber (string),
+                      OrderCreated (string),
+                      OrderTotal (string),
+                      FioShort (string),
+                      PhoneNumber (string),
+                      Email (string),
+                      Comment (string),
+                      FioFull (string),
+                      Region (string),
+                      Town (string),
+                      Address (string),
+                      Postindex (string),
+                      ProductId (string),
+                      ProductTitle (string),
+                      ProductQuantity (string),
+                      ProductPrice (string)">.GetSample ()
+    let firstRow = csv.Rows |> Seq.head
+    firstRow.OrderCreated |> should equal "2022-01-01 10:00:00"
+
