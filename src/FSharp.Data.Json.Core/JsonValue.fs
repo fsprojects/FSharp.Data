@@ -108,7 +108,7 @@ type JsonValue =
                 w.Write "["
 
                 for i = 0 to elements.Length - 1 do
-                    comma ()
+                    if i > 0 then comma ()
                     newLine indentation 2
                     serialize (indentation + 2) elements.[i]
 
