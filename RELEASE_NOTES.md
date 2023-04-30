@@ -1,3 +1,10 @@
+## 6.2.0 - Apr 30 2023
+
+- It's a new world, major versions abound
+- New option for JSON serialization (#1482) by @bonjune in https://github.com/fsprojects/FSharp.Data/pull/1485
+- Adhere to RFC 4180 standard by @bonjune in https://github.com/fsprojects/FSharp.Data/pull/1484
+- Csv Column Inference ignores newline character by @bonjune in https://github.com/fsprojects/FSharp.Data/pull/1483
+
 ## 6.1.1-beta - Apr 12 2023
 
 - Publish FSharp.Data.RuntimeUtilities
