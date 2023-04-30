@@ -124,7 +124,7 @@ let ``Can create type for small document``() =
 
 [<Test>]
 let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
-  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))  
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 
@@ -465,7 +465,8 @@ let ``Parse single row with trailing newline``() =
 let ``Parse two rows``() =
   let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\ntrue, def, 42")
   rows.Length |> should equal 2
-  (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + Environment.NewLine + "false,abc,31" + Environment.NewLine + "true, def,42" + Environment.NewLine)
+  (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + "\r\n" + "false,abc,31" + "\r\n" + "true, def,42" + "\r\n")
+  // (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + Environment.NewLine + "false,abc,31" + Environment.NewLine + "true, def,42" + Environment.NewLine)
 
 let [<Literal>] csvWithDataEndingWithSeparator = """
 Name|Company |Email|Password
