@@ -150,8 +150,8 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
         let schemas = ResizeArray<string>()
         let chars = StringBuilder()
 
-        let (|Comma|_|) chr = if char chr = ',' then Some () else None
-        let (|Quote|_|) chr = if char chr = '"' then Some () else None
+        let (|Comma|_|) chr = if char chr = ',' then Some() else None
+        let (|Quote|_|) chr = if char chr = '"' then Some() else None
         let (|Char|) c = char c
 
         let rec iter () =
@@ -167,8 +167,8 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
                 chars.Clear() |> ignore
                 iter ()
             // Skips CR/LF characters
-            | Char '\r' | Char '\n' ->
-                iter ()
+            | Char '\r'
+            | Char '\n' -> iter ()
             | Char c ->
                 chars.Append(c) |> ignore
                 iter ()
