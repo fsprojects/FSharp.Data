@@ -670,5 +670,6 @@ let ``Can infer from a multiline schema`` () =
                       ProductQuantity (string),
                       ProductPrice (string)">.GetSample ()
     let firstRow = csv.Rows |> Seq.head
+    csv.NumberOfColumns |> should equal 16
     firstRow.OrderCreated |> should equal "2022-01-01 10:00:00"
-
+    firstRow.FioFull |> should equal "John Smith"
