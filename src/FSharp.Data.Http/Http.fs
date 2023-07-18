@@ -636,7 +636,9 @@ module HttpStatusCodes =
 
 
 type MultipartItem = MultipartItem of formField: string * filename: string * content: Stream
-type MultipartFileItem = MultipartFileItem of formField: string * filename: string option * contentType: string option * content: Stream
+
+type MultipartFileItem =
+    | MultipartFileItem of formField: string * filename: string option * contentType: string option * content: Stream
 
 type MultipartFormDataItem =
     | FileValue of MultipartFileItem
@@ -655,7 +657,7 @@ type HttpRequestBody =
     | Multipart of boundary: string * parts: seq<MultipartItem>
 
     /// A sequence of formParamName * fileName * fileContent groups
-    | MultipartFormData  of boundary: string * parts: seq<MultipartFormDataItem>
+    | MultipartFormData of boundary: string * parts: seq<MultipartFormDataItem>
 
 /// The response body returned by an HTTP request
 type HttpResponseBody =
@@ -1553,21 +1555,24 @@ module internal HttpHelpers =
 
         let segments =
             parts
-            |> Seq.map (fun (MultipartFileItem(formField, fileName, contentType, contentStream)) ->
+            |> Seq.map (fun (MultipartFileItem (formField, fileName, contentType, contentStream)) ->
                 let printHeader (header, value) = sprintf "%s: %s" header value
 
-                let sharedHeaders = [
-                    prefixedBoundary
-                    HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
-                        |> printHeader ]
-                let headers = match contentType with
-                              | Some(contentType) ->
-                                  sharedHeaders
-                                      |> Seq.append [ HttpRequestHeaders.ContentType contentType |> printHeader ]
-                              | None -> sharedHeaders
-                let headerpart =
-                    headers
-                    |> String.concat "\r\n"
+                let sharedHeaders =
+                    [ prefixedBoundary
+                      HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
+                      |> printHeader ]
+
+                let headers =
+                    match contentType with
+                    | Some (contentType) ->
+                        sharedHeaders
+                        |> Seq.append
+                            [ HttpRequestHeaders.ContentType contentType
+                              |> printHeader ]
+                    | None -> sharedHeaders
+
+                let headerpart = headers |> String.concat "\r\n"
 
                 let headerStream =
                     let bytes = e.GetBytes headerpart
@@ -2091,15 +2096,28 @@ type Http private () =
 
                         HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
                     | Multipart (boundary, parts) ->
-                        let fileParts = parts |> Seq.map (fun (MultipartItem(formField, fileName, stream)) ->
-                            let fileExt = Path.GetExtension fileName
-                            let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
-                            MultipartFileItem(formField, Some fileName, Some contentType, stream))
+                        let fileParts =
+                            parts
+                            |> Seq.map (fun (MultipartItem (formField, fileName, stream)) ->
+                                let fileExt = Path.GetExtension fileName
+                                let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
+                                MultipartFileItem(formField, Some fileName, Some contentType, stream))
+
                         HttpContentTypes.Multipart(boundary), writeMultipart boundary fileParts
                     | MultipartFormData (boundary, parts) ->
-                        let fileParts = parts |> Seq.map (fun p -> match p with
-                                                                    | FormValue(formField, value) -> MultipartFileItem(formField, None, None, new MemoryStream(Encoding.UTF8.GetBytes(value)))
-                                                                    | FileValue(item) -> item)
+                        let fileParts =
+                            parts
+                            |> Seq.map (fun p ->
+                                match p with
+                                | FormValue (formField, value) ->
+                                    MultipartFileItem(
+                                        formField,
+                                        None,
+                                        None,
+                                        new MemoryStream(Encoding.UTF8.GetBytes(value))
+                                    )
+                                | FileValue (item) -> item)
+
                         HttpContentTypes.Multipart(boundary), writeMultipart boundary fileParts
 
                 // Set default content type if it is not specified by the user
