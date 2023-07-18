@@ -1531,7 +1531,7 @@ module internal HttpHelpers =
     ///         c) write newline
     ///         d) write section data
     ///     3) write trailing boundary
-    let writeMultipart (boundary: string) (parts: seq<MultipartFileItem>) (e: Encoding) =
+    let writeMultipartFileItem (boundary: string) (parts: seq<MultipartFileItem>) (e: Encoding) =
         let newlineStream () =
             new MemoryStream(e.GetBytes "\r\n") :> Stream
 
@@ -1598,6 +1598,16 @@ module internal HttpHelpers =
         let wholePayload = Seq.append segments [ endBoundaryStream ]
         let wholePayloadLength = wholePayload |> trySumLength
         new CombinedStream(wholePayloadLength, wholePayload) :> Stream
+
+    let writeMultipart (boundary: string) (parts: seq<MultipartItem>) (e: Encoding) =
+        let fileParts =
+            parts
+            |> Seq.map (fun (MultipartItem (formField, fileName, stream)) ->
+                let fileExt = Path.GetExtension fileName
+                let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
+                MultipartFileItem(formField, Some fileName, Some contentType, stream))
+
+        writeMultipartFileItem boundary fileParts e
 
     let asyncCopy (source: Stream) (dest: Stream) =
         async {
@@ -2095,15 +2105,7 @@ type Http private () =
                             |> e.GetBytes
 
                         HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
-                    | Multipart (boundary, parts) ->
-                        let fileParts =
-                            parts
-                            |> Seq.map (fun (MultipartItem (formField, fileName, stream)) ->
-                                let fileExt = Path.GetExtension fileName
-                                let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
-                                MultipartFileItem(formField, Some fileName, Some contentType, stream))
-
-                        HttpContentTypes.Multipart(boundary), writeMultipart boundary fileParts
+                    | Multipart (boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
                     | MultipartFormData (boundary, parts) ->
                         let fileParts =
                             parts
@@ -2118,7 +2120,7 @@ type Http private () =
                                     )
                                 | FileValue (item) -> item)
 
-                        HttpContentTypes.Multipart(boundary), writeMultipart boundary fileParts
+                        HttpContentTypes.Multipart(boundary), writeMultipartFileItem boundary fileParts
 
                 // Set default content type if it is not specified by the user
                 let encoding =
