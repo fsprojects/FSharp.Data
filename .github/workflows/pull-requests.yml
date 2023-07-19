@@ -5,6 +5,9 @@ on:
     branches:
     - main
 
+env:
+    FAKE_DETAILED_ERRORS: true
+
 jobs:
   build-windows:
 
@@ -20,9 +23,7 @@ jobs:
     - name: Restore packages
       run: dotnet paket restore
     - name: Build and test (Release)
-      run:
-        set FAKE_DETAILED_ERRORS=true
-        dotnet fake build -t All
+      run: dotnet fake build -t All
     - name: Build (Debug)
       run: dotnet build -c Debug -v n
 
