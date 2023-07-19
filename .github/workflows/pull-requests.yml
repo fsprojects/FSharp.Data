@@ -20,7 +20,9 @@ jobs:
     - name: Restore packages
       run: dotnet paket restore
     - name: Build and test (Release)
-      run: dotnet fake build -t All
+      run:
+        set FAKE_DETAILED_ERRORS=true
+        dotnet fake build -t All
     - name: Build (Debug)
       run: dotnet build -c Debug -v n
 
