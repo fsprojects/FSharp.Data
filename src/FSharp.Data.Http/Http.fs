@@ -1558,19 +1558,16 @@ module internal HttpHelpers =
             |> Seq.map (fun (MultipartFileItem (formField, fileName, contentType, contentStream)) ->
                 let printHeader (header, value) = sprintf "%s: %s" header value
 
-                let sharedHeaders =
-                    [ prefixedBoundary
-                      HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
-                      |> printHeader ]
-
                 let headers =
                     match contentType with
                     | Some (contentType) ->
-                        sharedHeaders
-                        |> Seq.append
-                            [ HttpRequestHeaders.ContentType contentType
-                              |> printHeader ]
-                    | None -> sharedHeaders
+                        [ prefixedBoundary
+                          HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName) |> printHeader
+                          HttpRequestHeaders.ContentType contentType |> printHeader ]
+                    | None ->
+                        [ prefixedBoundary
+                          HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
+                          |> printHeader ]
 
                 let headerpart = headers |> String.concat "\r\n"
 
