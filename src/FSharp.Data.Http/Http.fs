@@ -1562,8 +1562,10 @@ module internal HttpHelpers =
                     match contentType with
                     | Some (contentType) ->
                         [ prefixedBoundary
-                          HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName) |> printHeader
-                          HttpRequestHeaders.ContentType contentType |> printHeader ]
+                          HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
+                          |> printHeader
+                          HttpRequestHeaders.ContentType contentType
+                          |> printHeader ]
                     | None ->
                         [ prefixedBoundary
                           HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
