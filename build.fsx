@@ -184,6 +184,8 @@ Target.create "Help" (fun _ ->
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
+    printfn "  * Format"
+    printfn "  * CheckFormat"
     printfn "")
 
 let sourceFiles =
