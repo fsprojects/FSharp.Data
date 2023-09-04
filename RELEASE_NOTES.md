@@ -1,3 +1,7 @@
+## 6.3.0 - Apr 30 2023
+
+- Add support for plain control types by @kant2002 in https://github.com/fsprojects/FSharp.Data/pull/1487
+
 ## 6.2.0 - Apr 30 2023
 
 - It's a new world, major versions abound
