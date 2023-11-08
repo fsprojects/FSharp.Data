@@ -103,7 +103,7 @@ type XmlRuntime =
 
     static member TryGetAttribute(xml: XmlElement, nameWithNS) =
         let attr = xml.XElement.Attribute(XName.Get(nameWithNS))
-        if attr = null then None else Some attr.Value
+        if isNull attr then None else Some attr.Value
 
     // Operations that obtain children - depending on the inference, we may
     // want to get an array, option (if it may or may not be there) or
@@ -114,12 +114,12 @@ type XmlRuntime =
         let mutable current = value.XElement
 
         for i = 0 to namesWithNS.Length - 2 do
-            if current <> null then
+            if not(isNull current) then
                 current <- current.Element(XName.Get namesWithNS.[i])
 
         let value = current
 
-        if value = null then
+        if isNull value then
             [||]
         else
             [| for c in value.Elements(XName.Get namesWithNS.[namesWithNS.Length - 1]) -> { XElement = c } |]
@@ -193,7 +193,7 @@ type XmlRuntime =
                 match v with
                 | :? XmlElement as v ->
                     let xElement =
-                        if v.XElement.Parent = null then
+                        if isNull v.XElement.Parent then
                             v.XElement
                         else
                             // clone, as element is connected to previous parent
@@ -248,7 +248,7 @@ type XmlRuntime =
             ||> Array.fold (fun parent nameWithNS ->
                 let xname = XName.Get nameWithNS
 
-                if parent = null then
+                if isNull parent then
                     XElement xname
                 else
                     let element =
@@ -257,7 +257,7 @@ type XmlRuntime =
                         else
                             parent.Element(xname)
 
-                    if element = null then
+                    if isNull element then
                         let element = XElement xname
                         parent.Add element
                         element
@@ -271,7 +271,7 @@ type XmlRuntime =
 
             match toXmlContent value with
             | [||] -> ()
-            | [| v |] when v :? string && element.Attribute(xname) = null -> element.SetAttributeValue(xname, v)
+            | [| v |] when v :? string && isNull (element.Attribute xname) -> element.SetAttributeValue(xname, v)
             | _ -> failwithf "Unexpected attribute value: %A" value
 
         let parents = System.Collections.Generic.Dictionary()
@@ -296,7 +296,7 @@ type XmlRuntime =
                              Seq.skip 1 parentNames
                              |> Seq.mapi (fun x i -> x, i))
                             ||> Seq.fold (fun element ((_, nameWithNS) as key) ->
-                                if element.Parent = null then
+                                if isNull element.Parent then
                                     let parent =
                                         match parents.TryGetValue key with
                                         | true, parent -> parent
@@ -313,7 +313,7 @@ type XmlRuntime =
 
                                     element.Parent)
 
-                        if v.Parent = null then element.Add v
+                        if isNull v.Parent then element.Add v
                     | :? string as v ->
                         let child = createElement element nameWithNS
                         child.Value <- v
@@ -345,7 +345,7 @@ module XmlSchema =
 
         let useResolutionFolder (baseUri: System.Uri) =
             resolutionFolder <> ""
-            && (baseUri = null || baseUri.OriginalString = "")
+            && (isNull baseUri || baseUri.OriginalString = "")
 
         let getEncoding xmlText = // peek encoding definition
             let settings = XmlReaderSettings(ConformanceLevel = ConformanceLevel.Fragment)

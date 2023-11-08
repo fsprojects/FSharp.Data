@@ -1620,7 +1620,7 @@ module internal HttpHelpers =
 
     let runningOnMono =
         try
-            System.Type.GetType("Mono.Runtime") <> null
+            not(isNull (System.Type.GetType "Mono.Runtime"))
         with e ->
             false
 
@@ -1637,7 +1637,7 @@ module internal HttpHelpers =
             let remoteStackTraceString =
                 typeof<exn>.GetField ("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
 
-            if remoteStackTraceString <> null then
+            if not (isNull remoteStackTraceString) then
                 remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
         with _ ->
             ()
@@ -1651,7 +1651,7 @@ module internal HttpHelpers =
             with
             // If an exception happens, augment the message with the response
             | :? WebException as exn ->
-                if exn.Response = null then reraisePreserveStackTrace exn
+                if isNull exn.Response then reraisePreserveStackTrace exn
 
                 let responseExn =
                     try
@@ -1749,12 +1749,12 @@ module internal HttpHelpers =
             | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
             | "range" ->
                 if not (value.StartsWith("bytes=")) then
-                    failwith "Invalid value for the Range header"
+                    failwithf "Invalid value for the Range header (%O)" value
 
                 let bytes = value.Substring("bytes=".Length).Split('-')
 
                 if bytes.Length <> 2 then
-                    failwith "Invalid value for the Range header"
+                    failwithf "Invalid value for the Range header (%O)" bytes
 
                 req.AddRange(int64 bytes.[0], int64 bytes.[1])
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
@@ -1803,7 +1803,7 @@ module internal HttpHelpers =
                 try
                     return! getResponseAsync req
                 with :? WebException as exc ->
-                    if exc.Response <> null then
+                    if not (isNull exc.Response) then
                         return exc.Response
                     else
                         reraisePreserveStackTrace exc
@@ -2164,7 +2164,7 @@ type Http private () =
                         (defaultArg silentCookieErrors false)
 
                 let contentType =
-                    if resp.ContentType = null then
+                    if isNull resp.ContentType then
                         "application/octet-stream"
                     else
                         resp.ContentType
@@ -2174,7 +2174,7 @@ type Http private () =
                     | :? HttpWebResponse as resp -> int resp.StatusCode, resp.CharacterSet
                     | _ -> 0, ""
 
-                let characterSet = if characterSet = null then "" else characterSet
+                let characterSet = if isNull characterSet then "" else characterSet
 
                 let stream = resp.GetResponseStream()
 

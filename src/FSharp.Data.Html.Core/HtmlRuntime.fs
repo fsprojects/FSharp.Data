@@ -269,8 +269,7 @@ module HtmlRuntime =
                 cells
                 |> List.map (fun row ->
                     row
-                    |> List.map (fun (_, col) -> colSpan col)
-                    |> List.fold (+) 0)
+                    |> List.sumBy (snd >> colSpan))
 
             let numberOfColumns = List.max rowLengths
 
