@@ -100,7 +100,10 @@ module XsdParsing =
                 |> Seq.map (fun x -> x, collectSubst x)
                 |> dict
 
-            fun elm -> match subst'.TryGetValue elm with | true, elVal -> elVal | false, _ -> []
+            fun elm ->
+                match subst'.TryGetValue elm with
+                | true, elVal -> elVal
+                | false, _ -> []
 
 
         let elements =

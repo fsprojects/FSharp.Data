@@ -1620,7 +1620,7 @@ module internal HttpHelpers =
 
     let runningOnMono =
         try
-            not(isNull (System.Type.GetType "Mono.Runtime"))
+            not (isNull (System.Type.GetType "Mono.Runtime"))
         with e ->
             false
 

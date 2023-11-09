@@ -114,7 +114,7 @@ type XmlRuntime =
         let mutable current = value.XElement
 
         for i = 0 to namesWithNS.Length - 2 do
-            if not(isNull current) then
+            if not (isNull current) then
                 current <- current.Element(XName.Get namesWithNS.[i])
 
         let value = current

@@ -301,7 +301,7 @@ type private JsonParser(jsonText: string) =
 
                     let unicodeChar (s: string) =
                         if s.Length <> 8 then failwithf "unicodeChar (%O)" s
-                        if s.[0..1] <> "00" then failwithf "unicodeChar (%O)" s 
+                        if s.[0..1] <> "00" then failwithf "unicodeChar (%O)" s
 
                         UnicodeHelper.getUnicodeSurrogatePair
                         <| System.UInt32.Parse(s, NumberStyles.HexNumber)
