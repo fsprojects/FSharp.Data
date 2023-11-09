@@ -24,8 +24,10 @@ let private (|EOF|_|) c =
 
 [<return: Struct>]
 let private (|LetterDigit|_|) = sat Char.IsLetterOrDigit
+
 [<return: Struct>]
 let private (|Upper|_|) = sat (fun c -> Char.IsUpper c || Char.IsDigit c)
+
 [<return: Struct>]
 let private (|Lower|_|) = sat (fun c -> Char.IsLower c || Char.IsDigit c)
 
