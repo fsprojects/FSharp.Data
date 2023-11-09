@@ -43,5 +43,8 @@
     <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

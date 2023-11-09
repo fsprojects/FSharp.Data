@@ -17,6 +17,9 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\FSharp.Data.Tests\FSharp.Data.Tests.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

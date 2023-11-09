@@ -19,17 +19,19 @@ module private Helpers =
         | true, v -> Some v
         | _ -> None
 
+    [<return: Struct>]
     let (|StringEqualsIgnoreCase|_|) (s1: string) s2 =
         if s1.Equals(s2, StringComparison.OrdinalIgnoreCase) then
-            Some()
+            ValueSome()
         else
-            None
+            ValueNone
 
+    [<return: Struct>]
     let (|OneOfIgnoreCase|_|) set str =
         if Array.exists (fun s -> StringComparer.OrdinalIgnoreCase.Compare(s, str) = 0) set then
-            Some()
+            ValueSome()
         else
-            None
+            ValueNone
 
     // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping
     // is already taken care of before AsDateTime is called

@@ -20,7 +20,7 @@ type InferedProperty =
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
 /// this type represents the number of occurrences of individual forms
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<Struct; Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferedMultiplicity =
     | Single
     | OptionalSingle
@@ -188,23 +188,23 @@ type internal InferedTypeTag with
 
 /// Dummy type to represent that only "0" was found.
 /// Will be generated as 'int', unless it's converted to Bit.
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<Struct;Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit0 = Bit0
 
 /// Dummy type to represent that only "1" was found
 /// Will be generated as 'int', unless it's converted to Bit
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<Struct;Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit1 = Bit1
 
 /// Dummy type to represent that only one of "0" and "1" were found
 /// Will be generated as a 'bool', unless it's converted to another numerical type
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<Struct;Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
 
 /// Represents a transformation of a type
-[<RequireQualifiedAccess>]
+[<Struct;RequireQualifiedAccess>]
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type TypeWrapper =
     /// No transformation will be made to the type

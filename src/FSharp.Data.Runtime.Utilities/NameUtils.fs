@@ -9,21 +9,26 @@ open FSharp.Data.Runtime
 // Active patterns & operators for parsing strings
 
 let private tryAt (s: string) i =
-    if i >= s.Length then None else Some s.[i]
+    if i >= s.Length then ValueNone else ValueSome s.[i]
 
-let private sat f (c: option<char>) =
+let private sat f (c: voption<char>) =
     match c with
-    | Some c when f c -> Some c
-    | _ -> None
+    | ValueSome c when f c -> ValueSome c
+    | _ -> ValueNone
 
+[<return: Struct>]
 let private (|EOF|_|) c =
     match c with
-    | Some _ -> None
-    | _ -> Some()
+    | ValueSome _ -> ValueNone
+    | _ -> ValueSome()
 
+[<return: Struct>]
 let private (|LetterDigit|_|) = sat Char.IsLetterOrDigit
+[<return: Struct>]
 let private (|Upper|_|) = sat (fun c -> Char.IsUpper c || Char.IsDigit c)
+[<return: Struct>]
 let private (|Lower|_|) = sat (fun c -> Char.IsLower c || Char.IsDigit c)
+
 
 // --------------------------------------------------------------------------------------
 
