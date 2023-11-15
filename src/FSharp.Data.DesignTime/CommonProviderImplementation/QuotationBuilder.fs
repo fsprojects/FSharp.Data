@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
 // Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
 //
 // Utilities for building F# quotations without quotation literals
@@ -61,7 +61,7 @@ let (?) (typ: Type) (operation: string) (args1: 'T) (args2: 'U) : Expr =
         match typ.GetMember(operation, MemberTypes.All, flags) with
         | [| :? MethodInfo as mi |] ->
             let mi =
-                if tyargs = [] then
+                if List.isEmpty tyargs then
                     mi
                 else
                     mi.MakeGenericMethod(tyargs |> Array.ofList)

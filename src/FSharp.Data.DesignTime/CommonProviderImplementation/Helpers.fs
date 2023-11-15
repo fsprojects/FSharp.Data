@@ -296,7 +296,7 @@ module internal ProviderHelpers =
                         while max > 0 do
                             let line = reader.ReadLine()
 
-                            if line = null then
+                            if isNull line then
                                 max <- 0
                             else
                                 line |> sb.AppendLine |> ignore

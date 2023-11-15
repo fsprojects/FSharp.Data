@@ -73,7 +73,7 @@ module Implementation =
                         Debug.WriteLine(
                             sprintf
                                 "[WorldBank] got text: %s"
-                                (if doc = null then "null"
+                                (if isNull doc then "null"
                                  elif doc.Length > 50 then doc.[0..49] + "..."
                                  else doc)
                         )
@@ -122,7 +122,7 @@ module Implementation =
                               let name = ind?name.AsString().Trim([| '"' |]).Trim()
                               let sourceName = ind?source?value.AsString()
 
-                              if sources = []
+                              if List.isEmpty sources
                                  || sources
                                     |> List.exists (fun source ->
                                         String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then
