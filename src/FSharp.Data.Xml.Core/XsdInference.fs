@@ -86,8 +86,10 @@ module XsdParsing =
                 let items = System.Collections.Generic.HashSet()
 
                 let rec collect elm =
-                    if subst.ContainsKey elm then
-                        for x in subst.Item elm do
+                    match subst.TryGetValue elm with
+                    | false, _ -> ()
+                    | true, substVal ->
+                        for x in substVal do
                             if items.Add x then collect x
 
                 collect elm
@@ -98,7 +100,10 @@ module XsdParsing =
                 |> Seq.map (fun x -> x, collectSubst x)
                 |> dict
 
-            fun elm -> if subst'.ContainsKey elm then subst'.Item elm else []
+            fun elm ->
+                match subst'.TryGetValue elm with
+                | true, elVal -> elVal
+                | false, _ -> []
 
 
         let elements =
@@ -303,9 +308,9 @@ module internal XsdInference =
             body :: attrs
         | ComplexContent xsdParticle ->
             let body =
-                if ctx.ContainsKey cty then
-                    ctx.Item cty
-                else
+                match ctx.TryGetValue cty with
+                | true, ctVal -> ctVal
+                | false, _ ->
                     let result =
                         { InferedProperty.Name = ""
                           Type = InferedType.Top }

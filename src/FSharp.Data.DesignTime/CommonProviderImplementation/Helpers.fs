@@ -80,6 +80,7 @@ module internal ReflectionHelpers =
 type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
     inherit TypeProviderForNamespaces(config, ?assemblyReplacementMap = assemblyReplacementMap)
 
+    let lockObj = Object()
     let disposeActions = ResizeArray()
 
     static let mutable idCount = 0
@@ -90,7 +91,7 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
     do idCount <- idCount + 1
 
     let dispose typeNameOpt =
-        lock disposeActions (fun () ->
+        lock lockObj (fun () ->
             for i = disposeActions.Count - 1 downto 0 do
                 let disposeAction = disposeActions.[i]
                 let discard = disposeAction typeNameOpt
@@ -115,7 +116,7 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
             | _ -> None)
 
     member _.AddDisposeAction action =
-        lock disposeActions (fun () -> disposeActions.Add action)
+        lock lockObj (fun () -> disposeActions.Add action)
 
     member _.InvalidateOneType typeName =
         (use _holder = logTime "InvalidateOneType" (sprintf "%s in %O [%d]" typeName x id)
@@ -296,7 +297,7 @@ module internal ProviderHelpers =
                         while max > 0 do
                             let line = reader.ReadLine()
 
-                            if line = null then
+                            if isNull line then
                                 max <- 0
                             else
                                 line |> sb.AppendLine |> ignore
