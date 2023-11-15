@@ -326,7 +326,7 @@ module HtmlNode =
         let rec selectElements' level acc source =
 
             // if we already have an empty list, terminate early
-            if acc = [] then
+            if List.isEmpty acc then
                 []
             else
 

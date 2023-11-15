@@ -20,7 +20,7 @@ type TextRuntime =
         else
             let mutable cache = TextRuntime.cultureInfoCache
 
-            if cache = null then
+            if isNull cache then
                 cache <- Dictionary<string, CultureInfo>()
                 TextRuntime.cultureInfoCache <- cache
 

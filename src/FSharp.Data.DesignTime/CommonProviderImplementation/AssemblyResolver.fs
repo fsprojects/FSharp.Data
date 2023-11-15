@@ -20,7 +20,7 @@ let init () =
     if not initialized then
         initialized <- true
 
-        if WebRequest.DefaultWebProxy <> null then
+        if not (isNull WebRequest.DefaultWebProxy) then
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
         ProvidedTypes.ProvidedTypeDefinition.Logger

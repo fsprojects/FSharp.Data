@@ -412,7 +412,7 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
                 let baseUnitStr = str.[.. str.Length - suffix.Length - 1]
                 let baseUnit = provider.SI baseUnitStr
 
-                if baseUnit = null then
+                if isNull baseUnit then
                     None
                 else
                     baseUnit |> trans provider |> Some
@@ -423,7 +423,7 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
     | Some _ -> unit
     | None ->
         let unit = provider.SI str
-        if unit = null then None else Some unit
+        if isNull unit then None else Some unit
 
 /// The inferred types may be set explicitly via inline schemas.
 /// This table specifies the mapping from (the names that users can use) to (the types used).
