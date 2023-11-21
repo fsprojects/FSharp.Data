@@ -32,5 +32,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\FSharp.Data\FSharp.Data.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

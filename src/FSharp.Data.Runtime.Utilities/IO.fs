@@ -7,6 +7,7 @@ open System.IO
 open System.Text
 open FSharp.Data
 
+[<Struct>]
 type internal UriResolutionType =
     | DesignTime
     | Runtime

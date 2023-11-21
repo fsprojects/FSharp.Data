@@ -1,7 +1,7 @@
 RESTRICTION: || (== net6.0) (== netstandard2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (5.0.1)
+    FSharp.Core (6.0.1)
     Microsoft.Build.Tasks.Git (1.0) - copy_local: true
     Microsoft.NETCore.App (2.2.8)
       Microsoft.NETCore.DotNetHostPolicy (>= 2.2.8) - restriction: || (== net6.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
@@ -340,7 +340,7 @@ NUGET
   remote: https://api.nuget.org/v3/index.json
     FsCheck (2.15.1)
       FSharp.Core (>= 4.2.3)
-    FSharp.Core (5.0.1)
+    FSharp.Core (6.0.1)
     FsUnit (4.0.4)
       FSharp.Core (>= 4.3.4)
       NETStandard.Library (>= 2.0.3)

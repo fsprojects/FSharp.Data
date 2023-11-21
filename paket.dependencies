@@ -11,7 +11,7 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
-nuget FSharp.Core >= 5.0.1 lowest_matching: true
+nuget FSharp.Core >= 6.0.1 lowest_matching: true
 nuget Microsoft.SourceLink.GitHub 1.0 copy_local: true
 nuget Microsoft.SourceLink.Common 1.0 copy_local: true
 nuget Microsoft.Build.Tasks.Git 1.0 copy_local: true
@@ -49,7 +49,7 @@ group Test
     frameworks: net6.0
     source https://api.nuget.org/v3/index.json
 
-    nuget FSharp.Core 5.0.1
+    nuget FSharp.Core 6.0.1
     nuget Microsoft.NET.Test.Sdk
     nuget NUnit 3.13.1
     nuget NUnit3TestAdapter

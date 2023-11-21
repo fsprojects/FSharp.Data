@@ -55,8 +55,7 @@ let createInMemoryCache (expiration: TimeSpan) =
 /// Get hash code of a string - used to determine cache file
 let private hashString (plainText: string) =
     let plainTextBytes = Encoding.UTF8.GetBytes(plainText)
-    let hash = new SHA1Managed()
-    let hashBytes = hash.ComputeHash(plainTextBytes)
+    let hashBytes = SHA1.Create().ComputeHash(plainTextBytes)
     let s = Convert.ToBase64String(hashBytes)
     s.Replace("ab", "abab").Replace("\\", "ab")
 
