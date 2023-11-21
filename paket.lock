@@ -1,7 +1,7 @@
 RESTRICTION: || (== net6.0) (== netstandard2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (5.0.1)
+    FSharp.Core (6.0.1)
     Microsoft.Build.Tasks.Git (1.0) - copy_local: true
     Microsoft.NETCore.App (2.2.8)
       Microsoft.NETCore.DotNetHostPolicy (>= 2.2.8) - restriction: || (== net6.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
@@ -24,9 +24,9 @@ NUGET
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (9e24c99e98431a6c91283dc75ccd33afad4aa6c6)
-    src/ProvidedTypes.fsi (9e24c99e98431a6c91283dc75ccd33afad4aa6c6)
-    tests/ProvidedTypesTesting.fs (9e24c99e98431a6c91283dc75ccd33afad4aa6c6)
+    src/ProvidedTypes.fs (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
+    src/ProvidedTypes.fsi (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
+    tests/ProvidedTypesTesting.fs (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
 GROUP Fake
 STORAGE: NONE
 NUGET
@@ -340,7 +340,7 @@ NUGET
   remote: https://api.nuget.org/v3/index.json
     FsCheck (2.15.1)
       FSharp.Core (>= 4.2.3)
-    FSharp.Core (5.0.1)
+    FSharp.Core (6.0.1)
     FsUnit (4.0.4)
       FSharp.Core (>= 4.3.4)
       NETStandard.Library (>= 2.0.3)

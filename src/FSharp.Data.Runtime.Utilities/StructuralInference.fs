@@ -13,7 +13,8 @@ open FSharp.Data.Runtime.StructuralTypes
 open System.Text.RegularExpressions
 
 /// This is the internal DU representing all the valid cases we support, mapped from the public InferenceMode.
-[<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
+[<Struct;
+  Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type InferenceMode' =
     | NoInference
     /// Backward compatible mode.
