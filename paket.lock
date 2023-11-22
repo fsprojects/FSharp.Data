@@ -24,9 +24,9 @@ NUGET
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
-    src/ProvidedTypes.fsi (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
-    tests/ProvidedTypesTesting.fs (b7c930b0bd9e0e0476981ba0813ac17e7d61742b)
+    src/ProvidedTypes.fs (48abfa531a90a42a7f62a7cbfd0027741e83b9da)
+    src/ProvidedTypes.fsi (48abfa531a90a42a7f62a7cbfd0027741e83b9da)
+    tests/ProvidedTypesTesting.fs (48abfa531a90a42a7f62a7cbfd0027741e83b9da)
 GROUP Fake
 STORAGE: NONE
 NUGET
