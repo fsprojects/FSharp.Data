@@ -521,7 +521,7 @@ type CsvFile<'RowType>
     /// Returns a new csv with only the first N rows of the underlying csv.
     member x.Take count = Seq.take count |> x.mapRows
 
-    /// Returns a csv that, when iterated, yields rowswhile the given predicate
+    /// Returns a csv that, when iterated, yields rows while the given predicate
     /// returns <c>true</c>, and then returns no further rows.
     member x.TakeWhile(predicate: Func<_, _>) =
         Seq.takeWhile predicate.Invoke |> x.mapRows
