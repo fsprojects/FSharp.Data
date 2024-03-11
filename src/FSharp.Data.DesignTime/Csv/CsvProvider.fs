@@ -109,12 +109,8 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                 // Register CodePagesEncodingProvider before getting encoding
                 let provider = CodePagesEncodingProvider.Instance
                 Encoding.RegisterProvider provider
-                try
-                    let encoding = TextRuntime.GetEncoding encodingStr
-                    CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, encoding)
-                finally
-                    // Unregister CodePagesEncodingProvider after getting encoding
-                    Encoding.UnregisterProvider provider
+                let encoding = TextRuntime.GetEncoding encodingStr
+                CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, encoding)
 
             let separators = sampleCsv.Separators
 
