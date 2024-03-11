@@ -18,7 +18,7 @@ open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime.StructuralInference
 open System.Net
-open System.Text // Added for CodePagesEncodingProvider
+open System.Text
 
 // --------------------------------------------------------------------------------------
 
