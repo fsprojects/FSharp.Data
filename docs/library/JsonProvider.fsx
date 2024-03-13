@@ -272,38 +272,3 @@ unit if the sample contains other values...
 
 *)
 
-(**
-
-## Loading WorldBank data
-
-Now let's use the type provider to process some real data. We use a data set returned by
-[the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
-
-    [lang=js]
-    [ { "page": 1, "pages": 1, "total": 53 },
-      [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
-          "country": {"id":"CZ","value":"Czech Republic"},
-          "value":null,"decimal":"1","date":"2000"},
-        { "indicator": {"value": "Central government debt, total (% of GDP)"},
-          "country": {"id":"CZ","value":"Czech Republic"},
-          "value":"16.6567773464055","decimal":"1","date":"2010"} ] ]
-
-The response to a request contains an array with two items. The first item is a record
-with general information about the response (page, total pages, etc.) and the second item
-is another array which contains the actual data points. For every data point, we get
-some information and the actual `value`. Note that the `value` is passed as a string
-(for some unknown reason). It is wrapped in quotes, so the provider infers its type as
-`string` (and we need to convert it manually).
-
-The following sample generates type based on the [`data/WorldBank.json`](../data/WorldBank.json)
-file and loads it:
-*)
-
-[<Literal>]
-let ResolutionFolder = __SOURCE_DIRECTORY__
-
-type WorldBank = JsonProvider<"../data/WorldBank.json", ResolutionFolder=ResolutionFolder>
-let doc = WorldBank.GetSample()
-
-(** Note that we can also load the data directly from the web both in the `Load` method and in
-the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
