@@ -52,7 +52,8 @@ If the loaded file does not match the structure of the sample, a runtime error m
     </div>
 </div>
 
-The type provider is located in the `FSharp.Data.dll` assembly and namespace: *)
+The type provider is located in the `FSharp.Data.dll` assembly and namespace:
+*)
 
 open FSharp.Data
 
@@ -270,9 +271,6 @@ inline schemas types are merged with other inferred types with the same preceden
 Since values-inferred types never have units, inline-schemas-inferred types will lose their
 unit if the sample contains other values...
 
-*)
-
-(**
 
 ## Loading WorldBank data
 
