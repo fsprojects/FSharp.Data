@@ -229,17 +229,17 @@ even though it looks more like it should be a `string`.
 Now let's enable inline schemas:
 *)
 
-//open FSharp.Data.Runtime.StructuralInference
+open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
     JsonProvider<Sample="""
-        { "code":"typeof<string>", "length":"typeof<float<metre>>" }
+        { "code":"typeof<string>", "length":"typeof< float<metre> >" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
         """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
 
-let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
-let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
+let code2 = (AmbiguousEntity2.GetSamples().[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples().[1]).Length
 
 (*** include-fsi-merged-output ***)
 
