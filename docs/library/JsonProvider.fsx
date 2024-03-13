@@ -177,3 +177,45 @@ you need more samples at root level, you can use the `SampleIsList` parameter.
 Applied to the previous example this would be:
 
 *)
+
+type People2 =
+    JsonProvider<"""
+  [ { "name":"John", "age":94 },
+    { "name":"Tomas" } ] """, SampleIsList=true>
+
+let person = People2.Parse("""{ "name":"Gustavo" }""")
+
+(*** include-fsi-merged-output ***)
+
+(**
+Note that starting with version 4.2.9 of this package, JSON comments are supported
+(Comments are either single-line and start with `//` or multi-line when wrapped in `/*` and `*/`).
+This is not a standard feature of JSON, but it can be really convenient,
+e.g. to annotate each sample when using multiple ones.
+*)
+
+(**
+## Type inference hints / inline schemas
+
+Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)
+
+This feature is disabled by default and has to be explicitly enabled with the `InferenceMode`
+static parameter.
+
+Let's consider an example where this can be useful:
+
+*)
+
+type AmbiguousEntity =
+    JsonProvider<Sample="""
+        { "code":"000", "length":"0" }
+        { "code":"123", "length":"42" }
+        { "code":"4E5", "length":"1.83" }
+        """, SampleIsList=true>
+
+let code = (AmbiguousEntity.GetSamples()[1]).Code
+let length = (AmbiguousEntity.GetSamples()[1]).Length
+
+(*** include-fsi-merged-output ***)
