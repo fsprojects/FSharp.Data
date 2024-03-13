@@ -52,7 +52,8 @@ If the loaded file does not match the structure of the sample, a runtime error m
     </div>
 </div>
 
-The type provider is located in the `FSharp.Data.dll` assembly and namespace: *)
+The type provider is located in the `FSharp.Data.dll` assembly and namespace:
+*)
 
 open FSharp.Data
 
@@ -232,13 +233,13 @@ open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
     JsonProvider<Sample="""
-        { "code":"typeof<string>", "length":"typeof<float<metre>>" }
+        { "code":"typeof<string>", "length":"typeof< float<metre> >" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
         """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
 
-let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
-let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
+let code2 = (AmbiguousEntity2.GetSamples().[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples().[1]).Length
 
 (*** include-fsi-merged-output ***)
 
@@ -270,9 +271,6 @@ inline schemas types are merged with other inferred types with the same preceden
 Since values-inferred types never have units, inline-schemas-inferred types will lose their
 unit if the sample contains other values...
 
-*)
-
-(**
 
 ## Loading WorldBank data
 
