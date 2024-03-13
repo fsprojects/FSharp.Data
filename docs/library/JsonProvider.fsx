@@ -229,7 +229,7 @@ even though it looks more like it should be a `string`.
 Now let's enable inline schemas:
 *)
 
-open FSharp.Data.Runtime.StructuralInference
+//open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
     JsonProvider<Sample="""
