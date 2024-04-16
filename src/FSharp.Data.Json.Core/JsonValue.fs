@@ -60,7 +60,7 @@ type JsonValue =
             str
 
     /// Serializes the JsonValue to the specified System.IO.TextWriter.
-    member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces : int) =
+    member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces: int) =
         let indentationSpaces = defaultArg indentationSpaces 2
 
         let newLine =
@@ -141,16 +141,15 @@ type JsonValue =
                     | '\\' -> w.Write "\\\\"
                     | _ -> w.Write c
 
-    member x.ToString(saveOptions, ?indentationSpaces : int) =
+    member x.ToString(saveOptions, ?indentationSpaces: int) =
         let w = new StringWriter(CultureInfo.InvariantCulture)
         x.WriteTo(w, saveOptions, ?indentationSpaces = indentationSpaces)
         w.GetStringBuilder().ToString()
 
-    member x.ToString(?indentationSpaces : int) =
+    member x.ToString(?indentationSpaces: int) =
         x.ToString(JsonSaveOptions.None, ?indentationSpaces = indentationSpaces)
 
-    override x.ToString() =
-        x.ToString(JsonSaveOptions.None)
+    override x.ToString() = x.ToString(JsonSaveOptions.None)
 
 /// <exclude />
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
