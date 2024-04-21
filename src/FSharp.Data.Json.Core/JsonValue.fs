@@ -60,7 +60,8 @@ type JsonValue =
             str
 
     /// Serializes the JsonValue to the specified System.IO.TextWriter.
-    member x.WriteTo(w: TextWriter, saveOptions) =
+    member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces: int) =
+        let indentationSpaces = defaultArg indentationSpaces 2
 
         let newLine =
             if saveOptions = JsonSaveOptions.None then
@@ -96,11 +97,11 @@ type JsonValue =
                 for i = 0 to properties.Length - 1 do
                     let k, v = properties.[i]
                     if i > 0 then comma ()
-                    newLine indentation 2
+                    newLine indentation indentationSpaces
                     w.Write "\""
                     JsonValue.JsonStringEncodeTo w k
                     w.Write propSep
-                    serialize (indentation + 2) v
+                    serialize (indentation + indentationSpaces) v
 
                 newLine indentation 0
                 w.Write "}"
@@ -109,8 +110,8 @@ type JsonValue =
 
                 for i = 0 to elements.Length - 1 do
                     if i > 0 then comma ()
-                    newLine indentation 2
-                    serialize (indentation + 2) elements.[i]
+                    newLine indentation indentationSpaces
+                    serialize (indentation + indentationSpaces) elements.[i]
 
                 if elements.Length > 0 then newLine indentation 0
                 w.Write "]"
@@ -140,10 +141,13 @@ type JsonValue =
                     | '\\' -> w.Write "\\\\"
                     | _ -> w.Write c
 
-    member x.ToString saveOptions =
+    member x.ToString(saveOptions, ?indentationSpaces: int) =
         let w = new StringWriter(CultureInfo.InvariantCulture)
-        x.WriteTo(w, saveOptions)
+        x.WriteTo(w, saveOptions, ?indentationSpaces = indentationSpaces)
         w.GetStringBuilder().ToString()
+
+    member x.ToString(?indentationSpaces: int) =
+        x.ToString(JsonSaveOptions.None, ?indentationSpaces = indentationSpaces)
 
     override x.ToString() = x.ToString(JsonSaveOptions.None)
 
