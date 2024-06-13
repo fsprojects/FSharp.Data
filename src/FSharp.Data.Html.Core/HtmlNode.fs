@@ -13,8 +13,9 @@ open System.Text
 /// </namespacedoc>
 ///
 type HtmlAttribute =
-
+#if HIDE_REPRESENTATION
     internal
+#endif
     | HtmlAttribute of name: string * value: string
 
     /// <summary>
@@ -29,8 +30,9 @@ type HtmlAttribute =
 [<RequireQualifiedAccess>]
 /// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
-
+#if HIDE_REPRESENTATION
     internal
+#endif
     | HtmlElement of name: string * attributes: HtmlAttribute list * elements: HtmlNode list
     | HtmlText of content: string
     | HtmlComment of content: string
@@ -190,7 +192,9 @@ type HtmlNode =
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
 type HtmlDocument =
+#if HIDE_REPRESENTATION
     internal
+#endif
     | HtmlDocument of docType: string * elements: HtmlNode list
 
     /// <summary>
