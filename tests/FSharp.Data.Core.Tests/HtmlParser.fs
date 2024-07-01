@@ -858,6 +858,18 @@ let ``Drops whitespace outside pre``() =
     result |> should equal expected
 
 [<Test>]
+let ``Maintain whitespace inside pre tag through round-trip``() =
+    let html = """<pre>
+<span>Line 1</span>
+<span>Line 2</span>
+<span>Line 3</span></pre>"""
+
+    let result = HtmlDocument.Parse(html).ToString()
+
+    let expected = html
+    result |> should equal expected
+
+[<Test>]
 let ``Can parse national rail mobile site correctly``() =
     HtmlDocument.Load "UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
