@@ -134,7 +134,8 @@ type HtmlNode =
 
                 let isPreTag = name = "pre"
 
-                if canAddNewLine && not (onlyText || isPreTag) then newLine 0
+                if canAddNewLine && not (onlyText || isPreTag) then
+                    newLine 0
 
                 append "<"
                 append name
