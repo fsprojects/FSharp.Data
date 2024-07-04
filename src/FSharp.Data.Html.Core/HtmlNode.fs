@@ -132,7 +132,11 @@ type HtmlNode =
                         | HtmlText _ -> true
                         | _ -> false)
 
-                if canAddNewLine && not onlyText then newLine 0
+                let isPreTag = name = "pre"
+
+                if canAddNewLine && not (onlyText || isPreTag) then
+                    newLine 0
+
                 append "<"
                 append name
 
@@ -150,14 +154,14 @@ type HtmlNode =
                     appendEndTag name
                 else
                     append ">"
-                    if not onlyText then newLine 2
+                    if not (onlyText || isPreTag) then newLine 2
                     let mutable canAddNewLine = false
 
                     for element in elements do
                         serialize sb (indentation + 2) canAddNewLine element
                         canAddNewLine <- true
 
-                    if not onlyText then newLine 0
+                    if not (onlyText || isPreTag) then newLine 0
                     appendEndTag name
             | HtmlText str -> append str
             | HtmlComment str ->

@@ -66,7 +66,7 @@ The `Load` method allows reading the data from a file or web resource. We could 
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
 // Download the table for the 2017 F1 calendar from Wikipedia
-let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.``Season calendaredit``
+let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.``Season calendar``
 
 // Look at the top row, being the first race of the calendar
 let firstRow = f1Calendar.Rows |> Seq.head
@@ -146,7 +146,7 @@ let doctorWho = new HtmlProvider<DrWho>()
 
 // Get the average number of viewers for each doctor's series run
 let viewersByDoctor =
-    doctorWho.Tables.``Season 1 (1963-1964) edit``.Rows
+    doctorWho.Tables.``Season 1 (1963-1964)``.Rows
     |> Seq.groupBy (fun season -> season.``Directed by``)
     |> Seq.map (fun (doctor, seasons) ->
         let averaged =
