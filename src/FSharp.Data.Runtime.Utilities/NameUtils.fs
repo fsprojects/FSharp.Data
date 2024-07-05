@@ -52,9 +52,11 @@ let nicePascalName (s: string) =
             | Upper _ -> consume from true (i + 1)
             | Lower _ -> consume from false (i + 1)
             | _ ->
+                let r1 = struct (from, i)
+                let r2 = restart (i + 1)
                 seq {
-                    yield from, i
-                    yield! restart (i + 1)
+                    yield r1
+                    yield! r2
                 }
         // Consume are letters of the same kind (either all lower or all upper)
         and consume from takeUpper i =
@@ -62,14 +64,14 @@ let nicePascalName (s: string) =
             | false, Lower _ -> consume from takeUpper (i + 1)
             | true, Upper _ -> consume from takeUpper (i + 1)
             | true, Lower _ ->
-                let r1 = from, (i - 1)
+                let r1 = struct (from, (i - 1))
                 let r2 = restart (i - 1)
                 seq {
                     yield r1
                     yield! r2
                 }
             | _ ->
-                let r1 = from, i
+                let r1 = struct (from, i)
                 let r2 = restart i
                 seq {
                     yield r1
