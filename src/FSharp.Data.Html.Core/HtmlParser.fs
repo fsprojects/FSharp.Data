@@ -14,14 +14,18 @@ open System.Collections.Generic
 
 module private TextParser =
 
-    let toPattern f c = if f c then Some c else None
+    let toPattern f c = if f c then ValueSome c else ValueNone
 
+    [<return: Struct>]
     let (|EndOfFile|_|) (c: char) =
         let value = c |> int
-        if (value = -1 || value = 65535) then Some c else None
+        if (value = -1 || value = 65535) then ValueSome c else ValueNone
 
+    [<return: Struct>]
     let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
+    [<return: Struct>]
     let (|LetterDigit|_|) = toPattern Char.IsLetterOrDigit
+    [<return: Struct>]
     let (|Letter|_|) = toPattern Char.IsLetter
 
 // --------------------------------------------------------------------------------------

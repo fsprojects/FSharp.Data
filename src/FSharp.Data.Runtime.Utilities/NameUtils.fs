@@ -41,36 +41,40 @@ let nicePascalName (s: string) =
     else
         // Starting to parse a new segment
         let rec restart i =
-            seq {
-                match tryAt s i with
-                | EOF -> ()
-                | LetterDigit _ & Upper _ -> yield! upperStart i (i + 1)
-                | LetterDigit _ -> yield! consume i false (i + 1)
-                | _ -> yield! restart (i + 1)
-            }
+            match tryAt s i with
+            | EOF -> Seq.empty
+            | LetterDigit _ & Upper _ -> upperStart i (i + 1)
+            | LetterDigit _ -> consume i false (i + 1)
+            | _ -> restart (i + 1)
         // Parsed first upper case letter, continue either all lower or all upper
         and upperStart from i =
-            seq {
-                match tryAt s i with
-                | Upper _ -> yield! consume from true (i + 1)
-                | Lower _ -> yield! consume from false (i + 1)
-                | _ ->
+            match tryAt s i with
+            | Upper _ -> consume from true (i + 1)
+            | Lower _ -> consume from false (i + 1)
+            | _ ->
+                seq {
                     yield from, i
                     yield! restart (i + 1)
-            }
+                }
         // Consume are letters of the same kind (either all lower or all upper)
         and consume from takeUpper i =
-            seq {
-                match tryAt s i with
-                | Lower _ when not takeUpper -> yield! consume from takeUpper (i + 1)
-                | Upper _ when takeUpper -> yield! consume from takeUpper (i + 1)
-                | Lower _ when takeUpper ->
-                    yield from, (i - 1)
-                    yield! restart (i - 1)
-                | _ ->
-                    yield from, i
-                    yield! restart i
-            }
+            match takeUpper, tryAt s i with
+            | false, Lower _ -> consume from takeUpper (i + 1)
+            | true, Upper _ -> consume from takeUpper (i + 1)
+            | true, Lower _ ->
+                let r1 = from, (i - 1)
+                let r2 = restart (i - 1)
+                seq {
+                    yield r1
+                    yield! r2
+                }
+            | _ ->
+                let r1 = from, i
+                let r2 = restart i
+                seq {
+                    yield r1
+                    yield! r2
+                }
 
         // Split string into segments and turn them to PascalCase
         seq {
