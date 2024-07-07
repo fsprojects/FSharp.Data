@@ -54,6 +54,7 @@ let nicePascalName (s: string) =
             | _ ->
                 let r1 = struct (from, i)
                 let r2 = restart (i + 1)
+
                 seq {
                     yield r1
                     yield! r2
@@ -66,6 +67,7 @@ let nicePascalName (s: string) =
             | true, Lower _ ->
                 let r1 = struct (from, (i - 1))
                 let r2 = restart (i - 1)
+
                 seq {
                     yield r1
                     yield! r2
@@ -73,6 +75,7 @@ let nicePascalName (s: string) =
             | _ ->
                 let r1 = struct (from, i)
                 let r2 = restart i
+
                 seq {
                     yield r1
                     yield! r2

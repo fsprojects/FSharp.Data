@@ -19,12 +19,18 @@ module private TextParser =
     [<return: Struct>]
     let (|EndOfFile|_|) (c: char) =
         let value = c |> int
-        if (value = -1 || value = 65535) then ValueSome c else ValueNone
+
+        if (value = -1 || value = 65535) then
+            ValueSome c
+        else
+            ValueNone
 
     [<return: Struct>]
     let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
+
     [<return: Struct>]
     let (|LetterDigit|_|) = toPattern Char.IsLetterOrDigit
+
     [<return: Struct>]
     let (|Letter|_|) = toPattern Char.IsLetter
 
