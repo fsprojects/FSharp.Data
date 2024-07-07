@@ -69,17 +69,14 @@ module internal CsvReader =
             | Char '\r'
             | Char '\n' -> readLines lineNumber
             | current ->
-                let r1 =
-                    readLine [] (StringBuilder()) current
-                    |> List.rev
-                    |> Array.ofList,
-                    lineNumber
-
-                let r2 = readLines (lineNumber + 1)
-
                 seq {
-                    yield r1
-                    yield! r2
+                    yield 
+                        readLine [] (StringBuilder()) current
+                        |> List.rev
+                        |> Array.ofList,
+                        lineNumber
+
+                    yield! readLines (lineNumber + 1)
                 }
 
         readLines 0
