@@ -70,7 +70,7 @@ module internal CsvReader =
             | Char '\n' -> readLines lineNumber
             | current ->
                 seq {
-                    yield 
+                    yield
                         readLine [] (StringBuilder()) current
                         |> List.rev
                         |> Array.ofList,
