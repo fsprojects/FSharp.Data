@@ -18,6 +18,7 @@ open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime.StructuralInference
 open System.Net
+open System.Text
 
 // --------------------------------------------------------------------------------------
 
@@ -105,7 +106,11 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                     else
                         value
 
-                CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows)
+                // Register CodePagesEncodingProvider before getting encoding
+                let provider = CodePagesEncodingProvider.Instance
+                Encoding.RegisterProvider provider
+                let encoding = TextRuntime.GetEncoding encodingStr
+                CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, encoding)
 
             let separators = sampleCsv.Separators
 
