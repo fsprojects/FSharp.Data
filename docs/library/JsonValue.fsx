@@ -147,7 +147,7 @@ let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 asynchronous version available too: *)
 
 let wbReq =
-    "http://api.worldbank.org/country/cz/indicator/"
+    "https://api.worldbank.org/country/cz/indicator/"
     + "GC.DOD.TOTL.GD.ZS?format=json"
 
 let valueAsync = JsonValue.AsyncLoad(wbReq)

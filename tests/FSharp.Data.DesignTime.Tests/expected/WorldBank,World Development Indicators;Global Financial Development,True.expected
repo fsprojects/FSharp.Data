@@ -1,6 +1,6 @@
 class WorldBankDataProvider : obj
     static member GetDataContext: () -> WorldBankDataProvider+ServiceTypes+WorldBankDataService
-    (new WorldBankData("http://api.worldbank.org", "World Development Indicators;Global Financial Development"))
+    (new WorldBankData("https://api.worldbank.org", "World Development Indicators;Global Financial Development"))
 
 
 class WorldBankDataProvider+ServiceTypes : obj
