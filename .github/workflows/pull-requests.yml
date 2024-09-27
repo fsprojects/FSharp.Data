@@ -12,10 +12,14 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core
+    - name: Setup .NET Core 6
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.203
+        dotnet-version: 6.0.425
+    - name: Setup .NET Core 8
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.400
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
@@ -32,10 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core
+    - name: Setup .NET Core 6
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.203
+        dotnet-version: 6.0.425
+    - name: Setup .NET Core 8
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.400
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
