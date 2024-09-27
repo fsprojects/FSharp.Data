@@ -66,7 +66,7 @@ The `Load` method allows reading the data from a file or web resource. We could 
 The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
 *)
 // Download the table for the 2017 F1 calendar from Wikipedia
-let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.``Season calendar``
+let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.Calendar
 
 // Look at the top row, being the first race of the calendar
 let firstRow = f1Calendar.Rows |> Seq.head
