@@ -306,7 +306,7 @@ let doc = WorldBank.GetSample()
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
 let wbReq =
-    "http://api.worldbank.org/country/cz/indicator/"
+    "https://api.worldbank.org/country/cz/indicator/"
     + "GC.DOD.TOTL.GD.ZS?format=json"
 
 let docAsync = WorldBank.AsyncLoad(wbReq)
