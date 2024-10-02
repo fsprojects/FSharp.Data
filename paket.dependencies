@@ -1,4 +1,4 @@
-frameworks: net6.0, netstandard2.0
+frameworks: net8.0, netstandard2.0
 source https://api.nuget.org/v3/index.json
 
 # These are for TPSDK testing of TPDTCs against .NET Core App 2.0, to make sure references can be found in a known packages/... location.
@@ -20,33 +20,33 @@ group Fake
     source https://api.nuget.org/v3/index.json
     storage: none
 
-    nuget Fake.Testing.Common          5.20.3
-    nuget Fake.Net.Http                5.20.3
-    nuget Fake.IO.FileSystem           5.20.3
-    nuget Fake.Core.CommandLineParsing 5.20.3
-    nuget Fake.Core.Environment        5.20.3
-    nuget Fake.Core.FakeVar            5.20.3
-    nuget Fake.Core.SemVer             5.20.3
-    nuget Fake.Core.String             5.20.3
-    nuget Fake.Core.Context            5.20.3
-    nuget Fake.Core.Trace              5.20.3
-    nuget Fake.Core.Tasks              5.20.3
-    nuget Fake.Core.Target             5.20.3
-    nuget Fake.Core.ReleaseNotes       5.20.3
-    nuget Fake.DotNet.AssemblyInfoFile 5.20.3
-    nuget Fake.DotNet.Cli              5.20.3
-    nuget Fake.DotNet.Testing.NUnit    5.20.3
-    nuget Fake.DotNet.NuGet            5.20.3
-    nuget Fake.DotNet.MsBuild          5.20.3
-    nuget Fake.Tools.Git               5.20.3
-	nuget Fake.DotNet.Paket            5.20.3
-	nuget Microsoft.Build              16.9
-	nuget Microsoft.Build.Framework    16.9
-	nuget Microsoft.Build.Tasks.Core   16.9
-	nuget Microsoft.Build.Utilities.Core   16.9
+    nuget Fake.Testing.Common          6.1.3
+    nuget Fake.Net.Http                6.1.3
+    nuget Fake.IO.FileSystem           6.1.3
+    nuget Fake.Core.CommandLineParsing 6.1.3
+    nuget Fake.Core.Environment        6.1.3
+    nuget Fake.Core.FakeVar            6.1.3
+    nuget Fake.Core.SemVer             6.1.3
+    nuget Fake.Core.String             6.1.3
+    nuget Fake.Core.Context            6.1.3
+    nuget Fake.Core.Trace              6.1.3
+    nuget Fake.Core.Tasks              6.1.3
+    nuget Fake.Core.Target             6.1.3
+    nuget Fake.Core.ReleaseNotes       6.1.3
+    nuget Fake.DotNet.AssemblyInfoFile 6.1.3
+    nuget Fake.DotNet.Cli              6.1.3
+    nuget Fake.DotNet.Testing.NUnit    6.1.3
+    nuget Fake.DotNet.NuGet            6.1.3
+    nuget Fake.DotNet.MsBuild          6.1.3
+    nuget Fake.Tools.Git               6.1.3
+	nuget Fake.DotNet.Paket            6.1.3
+	nuget Microsoft.Build              17.11.4
+	nuget Microsoft.Build.Framework    17.11.4
+	nuget Microsoft.Build.Tasks.Core   17.11.4
+	nuget Microsoft.Build.Utilities.Core   17.11.4
 
 group Test
-    frameworks: net6.0
+    frameworks: net8.0
     source https://api.nuget.org/v3/index.json
 
     nuget FSharp.Core 6.0.1

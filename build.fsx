@@ -111,12 +111,16 @@ Target.create "CleanInternetCaches" (fun _ ->
 
 Target.create "Build" (fun _ ->
     "FSharp.Data.sln"
-    |> DotNet.build (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }))
+    |> DotNet.build (fun o ->
+        { o with
+            Configuration = DotNet.BuildConfiguration.Release
+            MSBuildParams = { o.MSBuildParams with DisableInternalBinLog = true } }))
 
 Target.create "RunTests" (fun _ ->
     let setParams (o: DotNet.TestOptions) =
         { o with
             Configuration = DotNet.BuildConfiguration.Release
+            MSBuildParams = { o.MSBuildParams with DisableInternalBinLog = true }
             Logger =
                 if isCI then
                     Some "GitHubActions"
@@ -149,7 +153,10 @@ Target.create "Pack" (fun _ ->
             { p with
                 Configuration = DotNet.BuildConfiguration.Release
                 OutputPath = Some "bin"
-                MSBuildParams = { p.MSBuildParams with Properties = properties } })
+                MSBuildParams =
+                    { p.MSBuildParams with
+                        Properties = properties
+                        DisableInternalBinLog = true } })
         "FSharp.Data.sln")
 
 // --------------------------------------------------------------------------------------
