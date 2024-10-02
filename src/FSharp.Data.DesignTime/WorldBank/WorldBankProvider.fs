@@ -344,7 +344,7 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
 
     let worldBankType =
         createTypesForSources (defaultSources, "WorldBankData", false, false)
-    //do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.</summary>"
+    //do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See https://www.worldbank.org for terms and conditions.</summary>"
 
     let paramWorldBankType =
         let t =
@@ -353,7 +353,7 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
         let defaultSourcesStr = String.Join(";", defaultSources)
 
         let helpText =
-            "<summary>Typed representation of WorldBank data with additional configuration parameters. See http://www.worldbank.org for terms and conditions.</summary>
+            "<summary>Typed representation of WorldBank data with additional configuration parameters. See https://www.worldbank.org for terms and conditions.</summary>
                         <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to <c>"
             + defaultSourcesStr
             + "</c>.

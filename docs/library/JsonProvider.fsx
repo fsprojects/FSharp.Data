@@ -275,7 +275,7 @@ unit if the sample contains other values...
 ## Loading WorldBank data
 
 Now let's use the type provider to process some real data. We use a data set returned by
-[the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
+[the WorldBank](https://data.worldbank.org), which has (roughly) the following structure:
 
     [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
