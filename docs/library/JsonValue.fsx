@@ -68,7 +68,7 @@ of extensions that become available after opening the `cref:T:FSharp.Data.JsonEx
 module. Once opened, we can write:
 
  * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`.
- * `value.AsInteger()` returns the value as integer if it is numeric and can be
+ * `value.AsInteger()` returns the value as an integer if it is numeric and can be
    converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
    `value.AsFloat()` behave similarly.
  * `value.AsString()` returns the value as a string.

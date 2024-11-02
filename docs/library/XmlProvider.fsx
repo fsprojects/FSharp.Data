@@ -33,7 +33,7 @@ in a statically typed way. We first look at how the structure is inferred and th
 demonstrate the provider by parsing an RSS feed.
 
 The XML Type Provider provides statically typed access to XML documents.
-It takes a sample document as an input (or document containing a root XML node with
+It takes a sample document as an input (or a document containing a root XML node with
 multiple child nodes that are used as samples). The generated type can then be used
 to read files with the same structure
 
@@ -215,8 +215,8 @@ unit if the sample contains other values...
 (**
 ## Processing philosophers
 
-In this section we look at an example that demonstrates how the type provider works
-on a simple document that lists authors that write about a specific topic. The
+In this section, we look at an example that demonstrates how the type provider works
+on a simple document that lists authors who write about a specific topic. The
 sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
 
     [lang=xml]
@@ -240,7 +240,7 @@ let authors =
 
 (**
 When initializing the `XmlProvider`, we can pass it a file name or a web URL.
-The `Load` and `AsyncLoad` methods allows reading the data from a file or from a web resource. The
+The `Load` and `AsyncLoad` methods allow reading the data from a file or from a web resource. The
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
@@ -260,7 +260,7 @@ for author in topic.Authors do
 (*** include-fsi-merged-output ***)
 
 (**
-The value `topic` has a property `Topic` (of type `string`) which returns the value
+The value `topic` has a property `Topic` (of type `string`), which returns the value
 of the attribute with the same name. It also has a property `Authors` that returns
 an array with all the authors. The `Born` property is missing for some authors,
 so it becomes `option<int>` and we need to print it using `Option.iter`.
@@ -285,7 +285,7 @@ Consider for example, the following sample (a simplified version of
       </div>
     </div>
 
-Here, a `<div>` element can contain other `<div>` elements and it is quite clear that
+Here, a `<div>` element can contain other `<div>` elements, and it is quite clear that
 they should all have the same type - we want to be able to write a recursive function
 that processes `<div>` elements. To make this possible, you need to set an optional
 parameter `Global` to `true`:
@@ -297,7 +297,7 @@ let html = Html.GetSample()
 (**
 When the `Global` parameter is `true`, the type provider _unifies_ all elements of the
 same name. This means that all `<div>` elements have the same type (with a union
-of all attributes and all possible children nodes that appear in the sample document).
+of all attributes and all possible child nodes that appear in the sample document).
 
 The type is located under a type `Html`, so we can write a `printDiv` function
 that takes `Html.Div` and acts as follows:
@@ -319,17 +319,17 @@ printDiv html
 (**
 
 The function first prints all text included as `<span>` (the element never has any
-attributes in our sample, so it is inferred as `string`), then it recursively prints
+attributes in our sample, so it is inferred as `string`), and then it recursively prints
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
 ## Loading Directly from a File or URL
 
-In many cases we might want to define schema using a local sample file, but then directly
+In many cases, we might want to define schema using a local sample file, but then directly
 load the data from disk or from a URL either synchronously (with `Load`) or asynchronously
 (with `AsyncLoad`).
 
-For this example I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
+For this example, I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
 which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so
 that it contains only the elements and attributes relevant to us:
 
@@ -370,7 +370,7 @@ let apiLinks =
 
 (**
 This US Census data is an interesting dataset with this top level API returning hundreds of other
-datasets each with their own API. Here we use the Census data to get a list of titles and URLs for
+datasets each with their own API. Here, we use the Census data to get a list of titles and URLs for
 the lower level APIs.
 *)
 
@@ -403,7 +403,7 @@ let cacheJanitor () =
 (**
 ## Reading RSS feeds
 
-To conclude this introduction with a more interesting example, let's look how to parse an
+To conclude this introduction with a more interesting example, let's look at how to parse an
 RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
 the type provider:
 *)
@@ -530,7 +530,7 @@ printfn "%s was born in %d" turing.Surname turing.BirthDate.Year
 (**
 The properties of the provided type are derived from the schema instead of being inferred from samples.
 
-Usually a schema is not specified as plain text but stored in a file like
+Usually, a schema is not specified as plain text but stored in a file like
 [`data/po.xsd`](../data/po.xsd) and the uri is set in the `Schema` parameter:
 *)
 
@@ -545,7 +545,7 @@ type RssXsd = XmlProvider<Schema="https://www.w3schools.com/xml/note.xsd">
 
 (**
 
-The schema is expected to define a root element (a global element with complex type).
+The schema is expected to define a root element (a global element with a complex type).
 In case of multiple root elements:
 *)
 
@@ -611,7 +611,7 @@ type FooSequence =
     </xs:schema>""">
 
 (**
-here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar`and `baz` elements, where the former is an array in order to hold multiple elements:
+here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar` and `baz` elements, where the former is an array in order to hold multiple elements:
 *)
 
 let fooSequence =
@@ -741,12 +741,12 @@ is still available.
 
 An important design decision is to focus on elements and not on complex types; while the latter
 may be valuable in schema design, our goal is simply to obtain an easy and safe way to access xml data.
-In other words the provided types are not intended for domain modeling (it's one of the very few cases
+In other words, the provided types are not intended for domain modeling (it's one of the very few cases
 where optional properties are preferred to sum types).
 Hence, we do not provide types corresponding to complex types in a schema but only corresponding
-to elements (of course the underlying complex types still affect the shape of the provided types
+to elements (of course, the underlying complex types still affect the shape of the provided types
 but this happens only implicitly).
-Focusing on element shapes let us generate a type that should be essentially the same as one
+Focusing on element shapes lets us generate a type that should be essentially the same as one
 inferred from a significant set of valid samples. This allows a smooth transition (replacing `Sample` with `Schema`)
 when a schema becomes available.
 

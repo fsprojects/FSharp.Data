@@ -31,7 +31,7 @@ This article demonstrates how to use HTML CSS selectors to browse the DOM of par
 We use the `cref:T:FSharp.Data.HtmlDocument` type and associated `cref:T:FSharp.Data.HtmlDocumentModule` module
 and `cref:T:FSharp.Data.HtmlDocumentExtensions` extensions.
 
-Usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
+The usage of CSS selectors is a very natural way to parse HTML when we come from Web developments.
 The HTML CSS selectors are based on the [JQuery selectors](https://api.jquery.com/category/selectors/).
 To use CSS selectors, reference the FSharp.Data package. You then need to open `FSharp.Data` namespace, which
 automatically exposes extension methods that implement the CSS selectors.
@@ -50,7 +50,7 @@ let doc = HtmlDocument.Load(googleUrl)
 (*** include-fsi-merged-output ***)
 (**
 To make sure we extract search results only, we will parse links in the `<div>` with id `search`.
-Then we can , for example, use the direct descendants selector to select another `<div>` with the
+Then we can, for example, use the direct descendants selector to select another `<div>` with the
 id `ires`. The CSS selector to do so is `div#search > div#ires`:
 *)
 let links =
@@ -70,7 +70,7 @@ let links =
 The rest of the selector (written as `li.g > div.s`) skips the first 4 sub-results targeting GitHub pages,
 so we only extract proper links.
 
-Now we might want the pages titles associated with their URLs. To do this, we can use the `List.zip` function:
+Now, we might want the page titles associated with their URLs. To do this, we can use the `List.zip` function:
 *)
 
 let searchResults =
@@ -85,7 +85,7 @@ let searchResults =
 ## Practice 2: Search F# books on Google Books
 
 We will parse links of the Google Books web site, searching for `F#`. After downloading the document,
-we simply ensure to match good links with their CSS's styles and DOM's hierachy. In case of Google Books,
+we simply ensure to match good links with their CSS's styles and DOM's hierarchy. In case of Google Books,
 we need to look for `<div>` with `class` set to `g`, then for `<h3>` with CSS class `r` and then for all `<a>` elements:
 *)
 let fsys = "https://www.google.com/search?tbm=bks&q=F%23"
@@ -107,7 +107,7 @@ You can also refer to the table below for a complete list of supported selectors
 
 ### Attribute Contains Prefix Selector
 
-Finds all links with an english hreflang attribute.
+Finds all links with an English hreflang attribute.
 *)
 let englishDoc =
     HtmlDocument.Parse(
