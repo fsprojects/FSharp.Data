@@ -1,3 +1,8 @@
+## 6.4.1 - Oct 2 2024
+- WorldBank URL fixed to https @pkese
+- Updated Fake and Paket @Thorium
+- Tests project to .NET8 @Thorium
+
 ## 6.4.0 - Mar 12 2024
 
 - Update FSharp.Core to 6.0.1 by @Thorium
