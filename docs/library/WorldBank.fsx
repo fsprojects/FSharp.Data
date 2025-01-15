@@ -85,7 +85,7 @@ WorldBank.GetDataContext()
 
 (**
 The above snippet specified "World Development Indicators" as the name of the data
-source (a collection of commonly available indicators) and it set the optional argument
+source (a collection of commonly available indicators) and it sets the optional argument
 `Asynchronous` to `true`. As a result, properties such as
 `Gross capital formation (% of GDP)` will now have a type `Async<(int * int)[]>` meaning
 that they represent an asynchronous computation that can be started and will eventually

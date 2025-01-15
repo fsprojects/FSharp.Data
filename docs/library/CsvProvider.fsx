@@ -47,7 +47,7 @@ present on the columns of that sample. The column names are obtained from the fi
     </div>
 </div>
 
-The type provider is located in the `FSharp.Data.dll` assembly. Assuming the package is referenged
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the package is referenced
 we can access its namespace as follows:
 *)
 
@@ -127,8 +127,8 @@ looks as follows:
 
 As you can see, the second and third columns are annotated with `metre` and `s`,
 respectively. To use units of measure in our code, we need to open the namespace with
-standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
-a static argument. Also note that in this case we're using the same data at runtime,
+standard unit names. Then, we pass the `SmallTest.csv` file to the type provider as
+a static argument. Also, note that in this case, we're using the same data at runtime,
 so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
@@ -173,11 +173,11 @@ meters per second against a value in kilometres per hour.
 
 ## Custom separators and tab-separated files
 
-By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
-files sometime use a different separator character than `,`. In some European
+By default, the CSV type provider uses a comma (`,`) as a separator. However, CSV
+files sometimes use a different separator character than `,`. In some European
 countries, `,` is already used as the numeric decimal separator, so a semicolon (`;`) is used
 instead to separate CSV columns. The `CsvProvider` has an optional `Separators` static parameter
-where you can specify what to use as separator. This means that you can consume
+where you can specify what to use as a separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
@@ -199,7 +199,7 @@ samples for the Statistical Computing language R. A short description of the dat
 If you are parsing a tab-separated file that uses `\t` as the separator, you can also
 specify the separator explicitly. However, if you're using an url or file that has
 the `.tsv` extension, the type provider will use `\t` by default. In the following example,
-we also set `IgnoreErrors` static parameter to `true` so that lines with incorrect number of elements
+we also set `IgnoreErrors` static parameter to `true` so that lines with an incorrect number of elements
 are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
@@ -225,13 +225,13 @@ for r in mortalityNy.Rows do
 
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains
-rows separated by either semicolon or a colon. You can use:
+rows separated by either a semicolon or a colon. You can use:
 `CsvProvider<"../data/AirQuality.csv", Separators=";,", ResolutionFolder=ResolutionFolder>`.
 
 ## Missing values
 
 It is quite common in statistical datasets for some values to be missing. If
-you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file you will see
+you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file, you will see
 that some values for the ozone observations are marked `#N/A`. Such values are
 parsed as float and will be marked with `Double.NaN` in F#. The values
 `NaN`, `NA`, `N/A`, `#N/A`, `:`, `-`, `TBA`, and `TBD`
@@ -278,8 +278,8 @@ will be set to either `int`, `int64`, `decimal`, or `float`, in that order of pr
 If a value is missing in any row, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
 (for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
-so by default we won't generate a `string option`. If you prefer to use optionals in all cases, you can set the static parameter
-`PreferOptionals` to `true`. In that case you'll never get an empty string or a `Double.NaN` and will always get a `None` instead.
+so by default, we won't generate a `string option`. If you prefer to use optionals in all cases, you can set the static parameter
+`PreferOptionals` to `true`. In that case, you'll never get an empty string or a `Double.NaN` and will always get a `None` instead.
 
 If you have other preferences, e.g. if you want a column to be a `float` instead of a `decimal`,
 you can override the default behaviour by specifying the types in the header column between braces, similar to what can be done to
@@ -347,7 +347,7 @@ You don't need to override all the columns, you can skip the ones to leave as de
 For example, in the titanic training dataset from Kaggle ([`data/Titanic.csv`](../data/Titanic.csv)),
 if you want to rename the 3rd column (the `PClass` column) to `Passenger Class` and override the
 6th column (the `Fare` column) to be a `float` instead of a `decimal`, you can define only that, and leave
-the other columns blank in the schema (you also don't need to add all the trailing commas).
+the other columns as blank in the schema (you also don't need to add all the trailing commas).
 
 *)
 type Titanic1 =
@@ -383,7 +383,7 @@ You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,
 
 In addition to reading, `CsvProvider` also has support for transforming the row collection of CSV files. The operations
 available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. All these operations
-preserve the schema, so after transforming you can save the results by using one of the overloads of
+preserve the schema, so after transforming, you can save the results by using one of the overloads of
 the `Save` method. You can also use the `SaveToString()` to get the output directly as a string.
 
 *)

@@ -63,7 +63,7 @@ The generated type provides a type space of tables that it has managed to parse 
 Each type's name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these
 entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flattened out into a list.
 The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
-The following sample calls the `Load` method with an URL that points to a live version of the same page on wikipedia.
+The following sample calls the `Load` method with an URL that points to a live version of the same page on Wikipedia.
 *)
 // Download the table for the 2017 F1 calendar from Wikipedia
 let f1Calendar = F1_2017.Load(F1_2017_URL).Tables.Calendar
@@ -95,7 +95,7 @@ be parsed as dates) while other columns are inferred as the correct type where p
 
 ### Parsing Nuget package stats
 
-This small sample shows how the HTML Type Provider can be used to scrape data from a website. In this example we analyze the download counts of the FSharp.Data package on NuGet.
+This small sample shows how the HTML Type Provider can be used to scrape data from a website. In this example, we analyze the download counts of the FSharp.Data package on NuGet.
 Note that we're using the live URL as the sample, so we can just use the default constructor as the runtime data will be the same as the compile time data.
 
 *)
@@ -107,7 +107,7 @@ type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 // load the live package stats for FSharp.Data
 let rawStats = NugetStats().Tables.``Version History of FSharp.Data``
 
-// helper function to analyze version numbers from nuget
+// helper function to analyze version numbers from Nuget
 let getMinorVersion (v: string) =
     System
         .Text
@@ -120,7 +120,7 @@ let getMinorVersion (v: string) =
     )
         .Value
 
-// group by minor version and calculate download count
+// group by minor version and calculate the download count
 let stats =
     rawStats.Rows
     |> Seq.groupBy (fun r -> getMinorVersion r.Version)

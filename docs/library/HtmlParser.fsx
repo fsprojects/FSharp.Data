@@ -38,7 +38,7 @@ independently of the actual HTML Type provider.
 open FSharp.Data
 
 (**
-The following example uses Google to search for `FSharp.Data` then parses the first set of
+The following example uses Google to search for `FSharp.Data` and then parses the first set of
 search results from the page, extracting the URL and Title of the link.
 We use the `cref:T:FSharp.Data.HtmlDocument` type.
 
@@ -52,7 +52,7 @@ let results = HtmlDocument.Load("http://www.google.co.uk/search?q=FSharp.Data")
 
 (**
 Now that we have a loaded HTML document we can begin to extract data from it.
-Firstly we want to extract all of the anchor tags `a` out of the document, then
+Firstly, we want to extract all of the anchor tags `a` out of the document, then
 inspect the links to see if it has a `href` attribute, using `cref:M:FSharp.Data.HtmlDocumentExtensions.Descendants`. If it does, extract the value,
 which in this case is the url that the search result is pointing to, and additionally the
 `InnerText` of the anchor tag to provide the name of the web page for the search result
@@ -70,7 +70,7 @@ let links =
 
 (**
 Now that we have extracted our search results you will notice that there are lots of
-other links to various Google services and cached/similar results. Ideally we would
+other links to various Google services and cached/similar results. Ideally, we would
 like to filter these results as we are probably not interested in them.
 At this point we simply have a sequence of Tuples, so F# makes this trivial using `Seq.filter`
 and `Seq.map`.
