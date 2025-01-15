@@ -161,7 +161,7 @@ type internal InferedTypeTag with
         | Heterogeneous -> "Choice"
         | Record None -> "Record"
         | Record (Some name) -> NameUtils.nicePascalName name
-        | Json _ -> "Json"
+        | Json -> "Json"
 
     /// Converts tag to string code that can be passed to generated code
     member x.Code =
