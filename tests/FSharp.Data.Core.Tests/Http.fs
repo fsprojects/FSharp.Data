@@ -48,12 +48,13 @@ let startHttpLocalServer() =
         )) |> ignore
 
     let freePort =
-        let mutable port = 55555 // base listener port for the tests
+        let random = new System.Random()
+        let mutable port = random.Next(10000, 65000) // Use a random high port instead of a fixed port
         while
             IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
             |> Array.map (fun x -> x.Port)
             |> Array.contains port do
-                port <- port + 1
+                port <- random.Next(10000, 65000)
         port
 
     let baseAddress = $"http://localhost:{freePort}"
