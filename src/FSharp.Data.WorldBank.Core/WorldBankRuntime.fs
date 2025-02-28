@@ -32,6 +32,7 @@ module Implementation =
           Name: string
           CapitalCity: string
           Region: string }
+
         member x.IsRegion = x.Region = "Aggregates"
 
     type internal TopicRecord =
@@ -43,9 +44,7 @@ module Implementation =
 
         let worldBankUrl (functions: string list) (props: (string * string) list) =
             let url =
-                serviceUrl
-                :: (List.map Uri.EscapeUriString functions)
-                |> String.concat "/"
+                serviceUrl :: (List.map Uri.EscapeUriString functions) |> String.concat "/"
 
             let query = [ "per_page", "1000"; "format", "json" ] @ props
             Http.AppendQueryToUrl(url, query)
@@ -122,10 +121,12 @@ module Implementation =
                               let name = ind?name.AsString().Trim([| '"' |]).Trim()
                               let sourceName = ind?source?value.AsString()
 
-                              if List.isEmpty sources
-                                 || sources
-                                    |> List.exists (fun source ->
-                                        String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then
+                              if
+                                  List.isEmpty sources
+                                  || sources
+                                     |> List.exists (fun source ->
+                                         String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0)
+                              then
                                   let topicIds =
                                       Seq.toList
                                       <| seq {
@@ -204,11 +205,7 @@ module Implementation =
         /// At compile time, download the schema
         let topics = lazy (getTopics () |> Async.RunSynchronously)
 
-        let topicsIndexed =
-            lazy
-                (topics.Force()
-                 |> Seq.map (fun t -> t.Id, t)
-                 |> dict)
+        let topicsIndexed = lazy (topics.Force() |> Seq.map (fun t -> t.Id, t) |> dict)
 
         let indicators =
             lazy
@@ -219,17 +216,12 @@ module Implementation =
                  |> Seq.toList)
 
         let indicatorsIndexed =
-            lazy
-                (indicators.Force()
-                 |> Seq.map (fun i -> i.Id, i)
-                 |> dict)
+            lazy (indicators.Force() |> Seq.map (fun i -> i.Id, i) |> dict)
 
         let indicatorsByTopic =
             lazy
                 (indicators.Force()
-                 |> Seq.collect (fun i ->
-                     i.TopicIds
-                     |> Seq.map (fun topicId -> topicId, i.Id))
+                 |> Seq.collect (fun i -> i.TopicIds |> Seq.map (fun topicId -> topicId, i.Id))
                  |> Seq.groupBy fst
                  |> Seq.map (fun (topicId, indicatorIds) -> topicId, indicatorIds |> Seq.map snd |> Seq.cache)
                  |> dict)
@@ -237,10 +229,7 @@ module Implementation =
         let countries = lazy (getCountries [] |> Async.RunSynchronously)
 
         let countriesIndexed =
-            lazy
-                (countries.Force()
-                 |> Seq.map (fun c -> c.Id, c)
-                 |> dict)
+            lazy (countries.Force() |> Seq.map (fun c -> c.Id, c) |> dict)
 
         let regions = lazy (getRegions () |> Async.RunSynchronously)
         let regionsIndexed = lazy (regions.Force() |> dict)
@@ -264,19 +253,18 @@ module Implementation =
                 return
                     seq {
                         for k, v in data do
-                            if not (String.IsNullOrEmpty v) then yield int k, float v
+                            if not (String.IsNullOrEmpty v) then
+                                yield int k, float v
                     }
                     // It's a time series - sort it :-)  We should probably also interpolate (e.g. see R time series library)
                     |> Seq.sortBy fst
             }
 
         member internal x.GetData(countryOrRegionCode, indicatorCode) =
-            x.GetDataAsync(countryOrRegionCode, indicatorCode)
-            |> Async.RunSynchronously
+            x.GetDataAsync(countryOrRegionCode, indicatorCode) |> Async.RunSynchronously
 
         member internal __.GetCountriesInRegion region =
-            getCountries [ "region", region ]
-            |> Async.RunSynchronously
+            getCountries [ "region", region ] |> Async.RunSynchronously
 
 /// <summary>Indicator data</summary>
 /// <namespacedoc>
@@ -285,9 +273,7 @@ module Implementation =
 [<DebuggerDisplay("{Name}")>]
 [<StructuredFormatDisplay("{Name}")>]
 type Indicator internal (connection: ServiceConnection, countryOrRegionCode: string, indicatorCode: string) =
-    let data =
-        connection.GetData(countryOrRegionCode, indicatorCode)
-        |> Seq.cache
+    let data = connection.GetData(countryOrRegionCode, indicatorCode) |> Seq.cache
 
     let dataDict = lazy (dict data)
 
@@ -537,8 +523,7 @@ type IWorldBankData =
 /// <exclude />
 type WorldBankData(serviceUrl: string, sources: string) =
     let sources =
-        sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
-        |> Array.toList
+        sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
 
     let restCache = createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays 30.0)
     let connection = new ServiceConnection(restCache, serviceUrl, sources)

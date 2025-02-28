@@ -26,12 +26,12 @@ module JsonSchemaExtensions =
     /// Parse a JSON Schema from a string
     let ParseJsonSchema (schemaString: string) =
         JsonSchema.parseSchemaFromString schemaString
-        
+
     /// Parse a JSON Schema from a file
     let LoadJsonSchema (schemaPath: string) =
         use reader = new StreamReader(schemaPath)
         JsonSchema.parseSchemaFromTextReader "" reader
-        
+
     /// Validate a JSON value against a schema
     let ValidateJsonAgainstSchema (schema: JsonSchema.JsonSchemaDefinition) (json: JsonValue) =
         match JsonSchema.validate schema json with

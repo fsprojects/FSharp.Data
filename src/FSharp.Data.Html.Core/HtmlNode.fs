@@ -125,7 +125,7 @@ type HtmlNode =
                 String(' ', indentation + plus) |> append
 
             match html with
-            | HtmlElement (name, attributes, elements) ->
+            | HtmlElement(name, attributes, elements) ->
                 let onlyText =
                     elements
                     |> List.forall (function
@@ -140,7 +140,7 @@ type HtmlNode =
                 append "<"
                 append name
 
-                for HtmlAttribute (name, value) in attributes do
+                for HtmlAttribute(name, value) in attributes do
                     append " "
                     append name
                     append "=\""
@@ -154,14 +154,19 @@ type HtmlNode =
                     appendEndTag name
                 else
                     append ">"
-                    if not (onlyText || isPreTag) then newLine 2
+
+                    if not (onlyText || isPreTag) then
+                        newLine 2
+
                     let mutable canAddNewLine = false
 
                     for element in elements do
                         serialize sb (indentation + 2) canAddNewLine element
                         canAddNewLine <- true
 
-                    if not (onlyText || isPreTag) then newLine 0
+                    if not (onlyText || isPreTag) then
+                        newLine 0
+
                     appendEndTag name
             | HtmlText str -> append str
             | HtmlComment str ->
@@ -213,14 +218,12 @@ type HtmlDocument =
 
     override x.ToString() =
         match x with
-        | HtmlDocument (docType, elements) ->
+        | HtmlDocument(docType, elements) ->
             (if String.IsNullOrEmpty docType then
                  ""
              else
                  "<!DOCTYPE " + docType + ">" + Environment.NewLine)
-            + (elements
-               |> List.map (fun x -> x.ToString())
-               |> String.Concat)
+            + (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]

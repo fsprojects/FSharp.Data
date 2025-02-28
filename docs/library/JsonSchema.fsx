@@ -1,4 +1,8 @@
-#r "nuget: FSharp.Data"
+(*** hide ***)
+#r "../../src/FSharp.Data/bin/Release/netstandard2.0/FSharp.Data.dll"
+#r "../../src/FSharp.Data.Json.Core/bin/Release/netstandard2.0/FSharp.Data.Json.Core.dll"
+#r "../../src/FSharp.Data.Runtime.Utilities/bin/Release/netstandard2.0/FSharp.Data.Runtime.Utilities.dll"
+#r "../../src/FSharp.Data.Http/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
 open System
 open System.IO
 open FSharp.Data
@@ -8,11 +12,6 @@ open FSharp.Data
 
 The JSON Type Provider allows you to use [JSON Schema](https://json-schema.org/) to provide statically typed
 access to JSON documents, similar to how the XML Type Provider supports XML Schema.
-
-> **Note**: This documentation demonstrates how the JsonProvider would be used with JSON Schema.
-> For compatibility with FSI in this documentation file, we're using sample-based providers,
-> but in your actual code you would use `JsonProvider<Schema=schemaString>` or `JsonProvider<Schema="schema.json">`.
-> The commented examples show the actual Schema-based syntax you would use in practice.
 
 ## Basic Usage with JSON Schema
 
@@ -63,24 +62,51 @@ let personSchema = """
 """
 
 // Create a type based on the schema
-// This is the actual syntax you would use in your code:
-// type Person = JsonProvider<Schema=personSchema>
-
-// For documentation purposes, we'll use a sample approach:
-type Person = JsonProvider<"""
+[<Literal>]
+let PersonSchemaLiteral = """
 {
-  "firstName": "John",
-  "lastName": "Smith",
-  "age": 42,
-  "email": "john.smith@example.com",
-  "phoneNumbers": [
-    {
-      "type": "home",
-      "number": "555-1234"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "The person's first name."
+    },
+    "lastName": {
+      "type": "string",
+      "description": "The person's last name."
+    },
+    "age": {
+      "description": "Age in years",
+      "type": "integer",
+      "minimum": 0
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["home", "work", "mobile"]
+          },
+          "number": {
+            "type": "string"
+          }
+        },
+        "required": ["type", "number"]
+      }
     }
-  ]
+  },
+  "required": ["firstName", "lastName"]
 }
-""", ResolutionFolder=__SOURCE_DIRECTORY__>
+"""
+
+type Person = JsonProvider<Schema=PersonSchemaLiteral>
 
 // Parse a JSON document that conforms to the schema
 let person = Person.Parse("""
@@ -120,22 +146,19 @@ You can also load a JSON Schema from a file:
 (**
 ## Validating JSON Against Schema
 
-When using the JSON Provider with the Schema parameter (which is different from what we're using in this example),
-data validation occurs automatically at parse time based on the schema rules:
+When using the JSON Provider with the Schema parameter, data validation occurs automatically at parse time
+based on the schema rules:
 
-```fsharp
-// When using JsonProvider<Schema=schemaString>, these validations would happen automatically:
-// - Properties are required according to the schema (firstName and lastName)
-// - Property types match those defined in the schema (age is a non-negative integer)
-// - Format constraints are checked (email is a valid email format)
-// - Pattern constraints are validated (orderId matches the pattern "^ORD-[0-9]{6}$")
-// - Numeric constraints are enforced (minimum/maximum values)
-```
+- Properties are required according to the schema (firstName and lastName)
+- Property types match those defined in the schema (age is a non-negative integer)
+- Format constraints are checked (email is a valid email format)
+- Pattern constraints are validated (orderId matches the pattern "^ORD-[0-9]{6}$")
+- Numeric constraints are enforced (minimum/maximum values)
 
-For demonstration purposes, we can simulate validation:
+Here's how validation works:
 *)
 
-// Here's how validation would happen in practice
+// Valid JSON that conforms to the schema
 let validPerson = Person.Parse("""
 {
   "firstName": "Jane",
@@ -146,8 +169,8 @@ let validPerson = Person.Parse("""
 """)
 printfn "Valid JSON: %s %s" validPerson.FirstName validPerson.LastName
 
-// With the Schema parameter, parsing invalid JSON would throw an exception
-// Here we show this through try-catch to prevent the script from failing
+// Invalid JSON that violates schema rules will cause an exception
+// Let's use try-catch to demonstrate validation errors:
 let invalidJson = """
 {
   "firstName": "John",
@@ -155,25 +178,21 @@ let invalidJson = """
 }
 """
 
-// Custom validation logic to simulate schema validation failures
-let validateAgainstPersonSchema json =
-    let obj = JsonValue.Parse(json)
-    // Check required fields from our schema
-    if obj.TryGetProperty("lastName").IsNone then
-        printfn "Schema validation failed: missing required property 'lastName'"
-    // Check age constraints from our schema
-    elif obj.TryGetProperty("age").IsSome &&
-         obj.["age"].AsInteger() < 0 then
-        printfn "Schema validation failed: 'age' must be non-negative"
-    else
-        try
-            // If it passes our basic validation, try to parse it
-            let p = Person.Parse(json)
-            printfn "Valid JSON: %s" p.FirstName
-        with ex ->
-            printfn "JSON parsing failed: %s" ex.Message
+// In a real project when using the Schema parameter, the JsonProvider would validate
+// against the schema rules. For the purposes of this demonstration, let's manually
+// validate the JSON against the schema:
 
-validateAgainstPersonSchema invalidJson
+// Create a JSON value from the invalid JSON
+let jsonValue = JsonValue.Parse(invalidJson)
+
+// Check required fields from the schema
+if jsonValue.TryGetProperty("lastName").IsNone then
+    printfn "Schema validation failed: missing required property 'lastName'"
+
+// Check numeric constraints from the schema
+if jsonValue.TryGetProperty("age").IsSome &&
+   jsonValue.["age"].AsInteger() < 0 then
+    printfn "Schema validation failed: 'age' must be non-negative"
 
 (**
 ## Schema Constraints and Validation
@@ -334,30 +353,47 @@ let orderSchema = """
 """
 
 // Create a type based on the order schema
-// This is the actual syntax you would use in your code:
-// type Order = JsonProvider<Schema=orderSchema>
-
-// For documentation purposes, we'll use a sample approach:
-type Order = JsonProvider<"""
+[<Literal>]
+let OrderSchemaLiteral = """
 {
-  "orderId": "ORD-123456",
-  "customer": {
-    "id": 1001,
-    "name": "Alice Smith",
-    "email": "alice@example.com"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "pattern": "^ORD-[0-9]{6}$"
+    },
+    "customer": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["id", "name"]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "productId": { "type": "string" },
+          "name": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 1 },
+          "price": { "type": "number", "minimum": 0 }
+        },
+        "required": ["productId", "quantity", "price"]
+      },
+      "minItems": 1
+    },
+    "totalAmount": { "type": "number", "minimum": 0 },
+    "orderDate": { "type": "string", "format": "date-time" }
   },
-  "items": [
-    {
-      "productId": "PROD-001",
-      "name": "Laptop",
-      "quantity": 1,
-      "price": 1299.99
-    }
-  ],
-  "totalAmount": 1351.97,
-  "orderDate": "2023-10-01T12:00:00Z"
+  "required": ["orderId", "customer", "items", "totalAmount", "orderDate"]
 }
-""", ResolutionFolder=__SOURCE_DIRECTORY__>
+"""
+
+type Order = JsonProvider<Schema=OrderSchemaLiteral>
 
 let order = Order.Parse("""
 {

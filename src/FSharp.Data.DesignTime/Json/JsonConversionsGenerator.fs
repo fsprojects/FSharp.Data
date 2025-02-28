@@ -18,9 +18,7 @@ open ProviderImplementation.QuotationBuilder
 let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<JsonValue option>) =
     if typ = typeof<string> then
         <@@ JsonRuntime.ConvertString(cultureStr, %value) @@>
-    elif typ = typeof<int>
-         || typ = typeof<Bit0>
-         || typ = typeof<Bit1> then
+    elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then
         <@@ JsonRuntime.ConvertInteger(cultureStr, %value) @@>
     elif typ = typeof<int64> then
         <@@ JsonRuntime.ConvertInteger64(cultureStr, %value) @@>

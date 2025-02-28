@@ -20,11 +20,8 @@ open System.Net
 
 [<TypeProvider>]
 type public XmlProvider(cfg: TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces
-        (
-            cfg,
-            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
-        )
+    inherit
+        DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     // Generate namespace and type 'FSharp.Data.XmlProvider'
     do AssemblyResolver.init ()
@@ -37,9 +34,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
     let buildTypes (typeName: string) (args: obj[]) =
 
         // Enable TLS 1.2 for samples requested through https.
-        ServicePointManager.SecurityProtocol <-
-            ServicePointManager.SecurityProtocol
-            ||| SecurityProtocolType.Tls12
+        ServicePointManager.SecurityProtocol <- ServicePointManager.SecurityProtocol ||| SecurityProtocolType.Tls12
 
         // Generate the required type
         let tpType =
@@ -79,10 +74,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 let inferedType =
                     use _holder = IO.logTime "Inference" sample
 
-                    schemaSet
-                    |> XsdParsing.getElements
-                    |> List.ofSeq
-                    |> XsdInference.inferElements
+                    schemaSet |> XsdParsing.getElements |> List.ofSeq |> XsdInference.inferElements
 
                 use _holder = IO.logTime "TypeGeneration" sample
 

@@ -16,9 +16,7 @@ open ProviderImplementation.QuotationBuilder
 let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<string option>) =
     if typ = typeof<string> then
         <@@ TextRuntime.ConvertString(%value) @@>
-    elif typ = typeof<int>
-         || typ = typeof<Bit0>
-         || typ = typeof<Bit1> then
+    elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then
         <@@ TextRuntime.ConvertInteger(cultureStr, %value) @@>
     elif typ = typeof<int64> then
         <@@ TextRuntime.ConvertInteger64(cultureStr, %value) @@>
@@ -40,9 +38,7 @@ let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<string o
         failwith "getConversionQuotation: Unsupported primitive type"
 
 let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<string> =
-    if typ = typeof<int>
-       || typ = typeof<Bit0>
-       || typ = typeof<Bit1> then
+    if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then
         <@ TextRuntime.ConvertIntegerBack(cultureStr, %%value) @>
     elif typ = typeof<int64> then
         <@ TextRuntime.ConvertInteger64Back(cultureStr, %%value) @>
