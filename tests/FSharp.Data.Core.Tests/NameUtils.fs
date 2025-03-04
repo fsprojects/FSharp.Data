@@ -9,28 +9,28 @@ open NUnit.Framework
 open FSharp.Data.Runtime.NameUtils
 
 [<Test>]
-let ``Formats empty string as PascalCase`` () = 
+let ``Formats empty string as PascalCase`` () =
   nicePascalName "" |> should equal ""
 
 [<Test>]
-let ``Formats empty string as camelCase`` () = 
+let ``Formats empty string as camelCase`` () =
   niceCamelName "" |> should equal ""
 
 [<Test>]
-let ``Formats one letter string as PascalCase`` () = 
+let ``Formats one letter string as PascalCase`` () =
   nicePascalName "b" |> should equal "B"
 
 [<Test>]
-let ``Formats one letter string as camelCase`` () = 
+let ``Formats one letter string as camelCase`` () =
   niceCamelName "a" |> should equal "a"
 
 [<Test>]
-let ``Removes non-character symbols`` () = 
+let ``Removes non-character symbols`` () =
   nicePascalName "__hello__" |> should equal "Hello"
   niceCamelName "__hello__"  |> should equal "hello"
 
 [<Test>]
-let ``Makes first letter uppercase`` () = 
+let ``Makes first letter uppercase`` () =
   nicePascalName "abc" |> should equal "Abc"
   niceCamelName "abc"  |> should equal "abc"
 
@@ -54,51 +54,51 @@ let ``Handles acronyms`` () =
   niceCamelName "abcABCWord"  |> should equal "abcAbcWord"
 
 [<Test>]
-let ``Detects word after underscore`` () = 
+let ``Detects word after underscore`` () =
   nicePascalName "hello_world" |> should equal "HelloWorld"
   niceCamelName "hello_world"  |> should equal "helloWorld"
 
 [<Test>]
-let ``Works with numbers`` () = 
+let ``Works with numbers`` () =
   nicePascalName "A21_SERVICE" |> should equal "A21Service"
   niceCamelName "A21_SERVICE"  |> should equal "a21Service"
 
 
 [<Test>]
-let ``Detects word after case change`` () = 
+let ``Detects word after case change`` () =
   nicePascalName "helloWorld" |> should equal "HelloWorld"
   niceCamelName "helloWorld"  |> should equal "helloWorld"
 
 [<Test>]
-let ``No new word after numbers`` () = 
+let ``No new word after numbers`` () =
   nicePascalName "hello123world" |> should equal "Hello123world"
   niceCamelName "hello123world"  |> should equal "hello123world"
 
 [<Test>]
-let ``Removes exclamation mark`` () = 
-  nicePascalName "hello!123" |> should equal "Hello123" 
+let ``Removes exclamation mark`` () =
+  nicePascalName "hello!123" |> should equal "Hello123"
   niceCamelName "hello!123"  |> should equal "hello123"
 
 [<Test>]
-let ``Handles long and ugly names`` () = 
+let ``Handles long and ugly names`` () =
   nicePascalName "HelloWorld123_hello__@__omg" |> should equal "HelloWorld123HelloOmg"
   niceCamelName "HelloWorld123_hello__@__omg"  |> should equal "helloWorld123HelloOmg"
 
 [<Test>]
-let ``Unique generator generates unique names`` () = 
+let ``Unique generator generates unique names`` () =
   let gen = uniqueGenerator nicePascalName
   let names = [ for _i in 0 .. 100 -> gen "test" ]
   Seq.length names  |> should equal (Seq.length (set names))
 
 [<Test>]
-let ``Unique generator works on single letter names`` () = 
+let ``Unique generator works on single letter names`` () =
   let gen = uniqueGenerator nicePascalName
   gen "a" |> should equal "A"
   gen "a" |> should equal "A2"
   gen "a" |> should equal "A3"
 
 [<Test>]
-let ``Trims HTML tags from string`` () = 
+let ``Trims HTML tags from string`` () =
   trimHtml "<b>hello</b><em>world</em>" |> should equal "hello world"
 
 [<Test>]
@@ -124,6 +124,8 @@ let ``Can pluralize names``() =
    check "status" "statuses"
    check "release" "releases"
    check "choice" "choices"
+   check "purchase" "purchases"
+   check "purchases" "purchases"
 
 [<Test>]
 let ``Can singularize names``() =
@@ -133,7 +135,7 @@ let ``Can singularize names``() =
    check "Item" "Item"
    check "Items" "Item"
    check "Entities" "Entity"
-   check "geese" "goose" 
+   check "geese" "goose"
    check "deer" "deer"
    check "sheep" "sheep"
    check "wolves" "wolf"
@@ -150,3 +152,5 @@ let ``Can singularize names``() =
    check "statuses" "status"
    check "releases" "release"
    check "choices" "choice"
+   check "purchase" "purchase"
+   check "purchases" "purchase"
