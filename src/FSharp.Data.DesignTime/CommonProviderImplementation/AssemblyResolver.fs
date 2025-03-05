@@ -23,5 +23,4 @@ let init () =
         if not (isNull WebRequest.DefaultWebProxy) then
             WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-        ProvidedTypes.ProvidedTypeDefinition.Logger
-        := Some FSharp.Data.Runtime.IO.log
+        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log

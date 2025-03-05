@@ -2244,8 +2244,7 @@ module internal HtmlCharRefs =
 
         if s.Length > 2 then
             let (delimeters, discriminator) =
-                s.ToLowerInvariant()
-                |> (fun ref -> (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
+                s.ToLowerInvariant() |> (fun ref -> (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
 
             match delimeters with
             | ("&#", _) ->
@@ -2270,10 +2269,10 @@ module internal HtmlCharRefs =
 
     let substitute (ref: string) =
         match ref with
-        | Number (num) ->
+        | Number(num) ->
             if num > 65535u then
                 let lead, tail = UnicodeHelper.getUnicodeSurrogatePair num
                 string lead + string tail
             else
                 string (char num)
-        | Lookup (ref) -> defaultArg (refs.TryFind ref) ref
+        | Lookup(ref) -> defaultArg (refs.TryFind ref) ref

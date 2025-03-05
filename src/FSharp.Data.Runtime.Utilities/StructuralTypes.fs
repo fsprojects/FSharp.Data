@@ -15,6 +15,7 @@ open FSharp.Data.Runtime
 type InferedProperty =
     { Name: string
       mutable Type: InferedType }
+
     override x.ToString() = sprintf "%A" x
 
 /// For heterogeneous types (types that have multiple possible forms
@@ -95,16 +96,12 @@ type InferedType =
         | Primitive(optional = true)
         | Record(optional = true)
         | Json(optional = true) -> x
-        | Primitive (typ, _, false, _) when
-            allowEmptyValues
-            && InferedType.CanHaveEmptyValues typ
-            ->
-            x
-        | Heterogeneous (map, false) -> Heterogeneous(map, true)
-        | Primitive (typ, unit, false, overrideOnMerge) -> Primitive(typ, unit, true, overrideOnMerge)
-        | Record (name, props, false) -> Record(name, props, true)
-        | Json (typ, false) -> Json(typ, true)
-        | Collection (order, types) ->
+        | Primitive(typ, _, false, _) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x
+        | Heterogeneous(map, false) -> Heterogeneous(map, true)
+        | Primitive(typ, unit, false, overrideOnMerge) -> Primitive(typ, unit, true, overrideOnMerge)
+        | Record(name, props, false) -> Record(name, props, true)
+        | Json(typ, false) -> Json(typ, true)
+        | Collection(order, types) ->
             let typesR =
                 types
                 |> Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ)
@@ -114,10 +111,10 @@ type InferedType =
 
     member x.GetDropOptionality() =
         match x with
-        | Primitive (typ, unit, true, overrideOnMerge) -> Primitive(typ, unit, false, overrideOnMerge), true
-        | Record (name, props, true) -> Record(name, props, false), true
-        | Json (typ, true) -> Json(typ, false), true
-        | Heterogeneous (map, true) -> Heterogeneous(map, false), true
+        | Primitive(typ, unit, true, overrideOnMerge) -> Primitive(typ, unit, false, overrideOnMerge), true
+        | Record(name, props, true) -> Record(name, props, false), true
+        | Json(typ, true) -> Json(typ, false), true
+        | Heterogeneous(map, true) -> Heterogeneous(map, false), true
         | _ -> x, false
 
     member x.DropOptionality() = x.GetDropOptionality() |> fst
@@ -130,11 +127,11 @@ type InferedType =
         if y :? InferedType then
             match x, y :?> InferedType with
             | a, b when Object.ReferenceEquals(a, b) -> true
-            | Primitive (t1, ot1, b1, x1), Primitive (t2, ot2, b2, x2) -> t1 = t2 && ot1 = ot2 && b1 = b2 && x1 = x2
-            | Record (s1, pl1, b1), Record (s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
-            | Json (t1, o1), Json (t2, o2) -> t1 = t2 && o1 = o2
-            | Collection (o1, t1), Collection (o2, t2) -> o1 = o2 && t1 = t2
-            | Heterogeneous (m1, o1), Heterogeneous (m2, o2) -> m1 = m2 && o1 = o2
+            | Primitive(t1, ot1, b1, x1), Primitive(t2, ot2, b2, x2) -> t1 = t2 && ot1 = ot2 && b1 = b2 && x1 = x2
+            | Record(s1, pl1, b1), Record(s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
+            | Json(t1, o1), Json(t2, o2) -> t1 = t2 && o1 = o2
+            | Collection(o1, t1), Collection(o2, t2) -> o1 = o2 && t1 = t2
+            | Heterogeneous(m1, o1), Heterogeneous(m2, o2) -> m1 = m2 && o1 = o2
             | Null, Null
             | Top, Top -> true
             | _ -> false
@@ -160,13 +157,13 @@ type internal InferedTypeTag with
         | Collection -> "Array"
         | Heterogeneous -> "Choice"
         | Record None -> "Record"
-        | Record (Some name) -> NameUtils.nicePascalName name
+        | Record(Some name) -> NameUtils.nicePascalName name
         | Json -> "Json"
 
     /// Converts tag to string code that can be passed to generated code
     member x.Code =
         match x with
-        | Record (Some name) -> "Record@" + name
+        | Record(Some name) -> "Record@" + name
         | _ -> x.NiceName
 
     /// Parses code returned by 'Code' member (to be used in provided code)
@@ -217,6 +214,7 @@ type TypeWrapper =
     | Option
     /// The type T will be converter to type Nullable<T>
     | Nullable
+
     static member FromOption optional =
         if optional then TypeWrapper.Option else TypeWrapper.None
 
@@ -228,6 +226,7 @@ type internal PrimitiveInferedValue =
       RuntimeType: Type
       UnitOfMeasure: Type option
       TypeWrapper: TypeWrapper }
+
     static member Create(typ, typWrapper, unit) =
         let runtimeTyp =
             if typ = typeof<Bit> then
@@ -251,6 +250,7 @@ type internal PrimitiveInferedValue =
 type internal PrimitiveInferedProperty =
     { Name: string
       Value: PrimitiveInferedValue }
+
     static member Create(name, typ, (typWrapper: TypeWrapper), unit) =
         { Name = name
           Value = PrimitiveInferedValue.Create(typ, typWrapper, unit) }

@@ -19,11 +19,8 @@ open System.Net
 
 [<TypeProvider>]
 type public JsonProvider(cfg: TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces
-        (
-            cfg,
-            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
-        )
+    inherit
+        DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     // Generate namespace and type 'FSharp.Data.JsonProvider'
     do AssemblyResolver.init ()
@@ -36,9 +33,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
     let buildTypes (typeName: string) (args: obj[]) =
 
         // Enable TLS 1.2 for samples requested through https.
-        ServicePointManager.SecurityProtocol <-
-            ServicePointManager.SecurityProtocol
-            ||| SecurityProtocolType.Tls12
+        ServicePointManager.SecurityProtocol <- ServicePointManager.SecurityProtocol ||| SecurityProtocolType.Tls12
 
         // Generate the required type
         let tpType =

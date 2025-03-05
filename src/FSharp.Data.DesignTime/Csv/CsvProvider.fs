@@ -23,11 +23,8 @@ open System.Net
 
 [<TypeProvider>]
 type public CsvProvider(cfg: TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces
-        (
-            cfg,
-            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
-        )
+    inherit
+        DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     // Generate namespace and type 'FSharp.Data.CsvProvider'
     do AssemblyResolver.init ()
@@ -40,9 +37,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
     let buildTypes (typeName: string) (args: obj[]) =
 
         // Enable TLS 1.2 for samples requested through https.
-        ServicePointManager.SecurityProtocol <-
-            ServicePointManager.SecurityProtocol
-            ||| SecurityProtocolType.Tls12
+        ServicePointManager.SecurityProtocol <- ServicePointManager.SecurityProtocol ||| SecurityProtocolType.Tls12
 
         let sample = args.[0] :?> string
         let separators = args.[1] :?> string
@@ -79,8 +74,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "Parsing" sample
 
                 let separators =
-                    if String.IsNullOrEmpty separators
-                       && extension.ToLowerInvariant() = ".tsv" then
+                    if String.IsNullOrEmpty separators && extension.ToLowerInvariant() = ".tsv" then
                         "\t"
                     else
                         separators
@@ -90,10 +84,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                         // synthesize sample from the schema
                         use reader = new StringReader(value)
 
-                        let schemaStr =
-                            CsvReader.readCsvFile reader "," '"'
-                            |> Seq.exactlyOne
-                            |> fst
+                        let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
 
                         Array.zeroCreate schemaStr.Length
                         |> String.concat (
@@ -132,18 +123,13 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
             let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
             let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
 
-            let paramType = typedefof<seq<_>>.MakeGenericType (rowType)
+            let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
 
             let headers =
                 match sampleCsv.Headers with
                 | None -> <@@ None: string[] option @@>
                 | Some headers ->
-                    Expr.NewArray(
-                        typeof<string>,
-                        headers
-                        |> Array.map (fun h -> Expr.Value(h))
-                        |> List.ofArray
-                    )
+                    Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray)
                     |> (fun x -> <@@ Some(%%x: string[]) @@>)
 
             let ctorCode (Singleton paramValue: Expr list) =

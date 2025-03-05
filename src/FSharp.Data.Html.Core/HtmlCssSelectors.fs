@@ -55,14 +55,9 @@ module internal HtmlCssSelectors =
                carriage return, or form feed) can be escaped with a backslash to
                remove its special meaning *)
             let isHexadecimalDigit =
-                Char.IsDigit(c)
-                || (Char.ToLower(c) >= 'a' && Char.ToLower(c) <= 'f')
+                Char.IsDigit(c) || (Char.ToLower(c) >= 'a' && Char.ToLower(c) <= 'f')
 
-            (isHexadecimalDigit
-             || c = '\n'
-             || c = '\f'
-             || c = '\r')
-            |> not
+            (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r') |> not
 
         let rec readString acc =
             function
@@ -93,10 +88,7 @@ module internal HtmlCssSelectors =
             if items.Length < candidates.Length then
                 None
             else
-                let start =
-                    items
-                    |> Seq.take (candidates.Length)
-                    |> Seq.toList
+                let start = items |> Seq.take (candidates.Length) |> Seq.toList
 
                 if (Seq.compareWith (fun a b -> (int a) - (int b)) start candidates) = 0 then
                     Some(items |> Seq.skip s.Length |> Seq.toList)
@@ -127,74 +119,48 @@ module internal HtmlCssSelectors =
                 | '.' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (CssClass(getOffset t + 1, s)
-                         :: ClassPrefix(getOffset t) :: acc)
-                        t'
+                    tokenize' (CssClass(getOffset t + 1, s) :: ClassPrefix(getOffset t) :: acc) t'
                 | '#' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (CssId(getOffset t + 1, s)
-                         :: IdPrefix(getOffset t) :: acc)
-                        t'
+                    tokenize' (CssId(getOffset t + 1, s) :: IdPrefix(getOffset t) :: acc) t'
                 | '[' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeName(getOffset t + 1, s)
-                         :: OpenAttribute(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeName(getOffset t + 1, s) :: OpenAttribute(getOffset t) :: acc) t'
                 | ']' :: t -> tokenize' (CloseAttribute(getOffset t) :: acc) t
                 | '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: Assign(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: Assign(getOffset t) :: acc) t'
                 | '$' :: '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: EndWith(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: EndWith(getOffset t) :: acc) t'
                 | '^' :: '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: StartWith(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: StartWith(getOffset t) :: acc) t'
                 | '|' :: '=' :: t ->
                     let s, t' = readString "" t
 
                     tokenize'
                         (AttributeValue(getOffset t + 1, s)
-                         :: AttributeContainsPrefix(getOffset t) :: acc)
+                         :: AttributeContainsPrefix(getOffset t)
+                         :: acc)
                         t'
                 | '*' :: '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: AttributeContains(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeContains(getOffset t) :: acc) t'
                 | '~' :: '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: AttributeContainsWord(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeContainsWord(getOffset t) :: acc) t'
                 | '!' :: '=' :: t ->
                     let s, t' = readString "" t
 
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: AttributeNotEqual(getOffset t) :: acc)
-                        t'
+                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeNotEqual(getOffset t) :: acc) t'
                 | StartsWith ":checkbox" t -> tokenize' (Checkbox(getOffset t + 1) :: acc) t
                 | StartsWith ":selected" t -> tokenize' (Selected(getOffset t + 1) :: acc) t
                 | StartsWith ":checked" t -> tokenize' (Checked(getOffset t + 1) :: acc) t
