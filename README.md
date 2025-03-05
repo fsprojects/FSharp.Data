@@ -15,12 +15,12 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Formatting
 
-    dotnet fake build -t Format
-    dotnet fake build -t CheckFormat
+    dotnet run --project build/build.fsproj -t Format
+    dotnet run --project build/build.fsproj -t CheckFormat
 
 ## Documentation
 
-This library comes with comprehensive documentation. The documentation is 
+This library comes with comprehensive documentation. The documentation is
 automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request!
 
  - [FSharp.Data package home page][3] with more information about the library, contributions, etc.
@@ -35,7 +35,7 @@ Releasing of docs is done by GitHub actions CI on each push to the main branch.
 
 ## Support and community
 
- - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
+ - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data).
  - If you want to submit a bug, a feature request or help with fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to FSharp.Data](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md).
  - To discuss more general issues about FSharp.Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
 
