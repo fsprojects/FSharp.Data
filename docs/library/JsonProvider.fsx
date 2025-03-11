@@ -52,7 +52,8 @@ If the loaded file does not match the structure of the sample, a runtime error m
     </div>
 </div>
 
-The type provider is located in the `FSharp.Data.dll` assembly and namespace: *)
+The type provider is located in the `FSharp.Data.dll` assembly and namespace:
+*)
 
 open FSharp.Data
 
@@ -141,7 +142,7 @@ for item in People.GetSamples() do
 
 (**
 The inferred type for `items` is a collection of (anonymous) JSON entities - each entity
-has properties `Name` and `Age`. As `Age` is not available for all records in the sample
+has properties `Name` and `Age`. As `Age` is unavailable for all records in the sample
 data set, it is inferred as `option<int>`. The above sample uses `Option.iter` to print
 the value only when it is available.
 
@@ -170,11 +171,11 @@ between the two options. This is similar to the handling of heterogeneous arrays
 Note that we have a `GetSamples` method because the sample is a JSON list. If it was a JSON
 object, we would have a `GetSample` method instead.
 
-#### More complex object type on root level
+#### More complex object type on the root level
 
 If you want the root type to be an object type, not an array, but
-you need more samples at root level, you can use the `SampleIsList` parameter.
-Applied to the previous example this would be:
+you need more samples at the root level, you can use the `SampleIsList` parameter.
+Applied to the previous example, this would be:
 
 *)
 
@@ -225,20 +226,20 @@ In the previous example, `Code` is inferred as a `float`,
 even though it looks more like it should be a `string`.
 (`4E5` is interpreted as an exponential float notation instead of a string)
 
-Now let's enable inline schemas:
+Now, let's enable inline schemas:
 *)
 
 open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
     JsonProvider<Sample="""
-        { "code":"typeof<string>", "length":"typeof<float<metre>>" }
+        { "code":"typeof<string>", "length":"typeof< float<metre> >" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
         """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
 
-let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
-let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
+let code2 = (AmbiguousEntity2.GetSamples().[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples().[1]).Length
 
 (*** include-fsi-merged-output ***)
 
@@ -270,14 +271,11 @@ inline schemas types are merged with other inferred types with the same preceden
 Since values-inferred types never have units, inline-schemas-inferred types will lose their
 unit if the sample contains other values...
 
-*)
-
-(**
 
 ## Loading WorldBank data
 
-Now let's use the type provider to process some real data. We use a data set returned by
-[the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
+Now, let's use the type provider to process some real data. We use a data set returned by
+[the WorldBank](https://data.worldbank.org), which has (roughly) the following structure:
 
     [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
@@ -288,7 +286,7 @@ Now let's use the type provider to process some real data. We use a data set ret
           "country": {"id":"CZ","value":"Czech Republic"},
           "value":"16.6567773464055","decimal":"1","date":"2010"} ] ]
 
-The response to a request contains an array with two items. The first item is a record
+The response to a request contains an array of two items. The first item is a record
 with general information about the response (page, total pages, etc.) and the second item
 is another array which contains the actual data points. For every data point, we get
 some information and the actual `value`. Note that the `value` is passed as a string
@@ -308,7 +306,7 @@ let doc = WorldBank.GetSample()
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
 let wbReq =
-    "http://api.worldbank.org/country/cz/indicator/"
+    "https://api.worldbank.org/country/cz/indicator/"
     + "GC.DOD.TOTL.GD.ZS?format=json"
 
 let docAsync = WorldBank.AsyncLoad(wbReq)
@@ -341,7 +339,7 @@ it to print the result only when the data point is available.
 
 ## Parsing Twitter stream
 
-We now look on how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
+We now look at how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
 Tweets are quite heterogeneous, so we infer the structure from a _list_ of inputs rather than from
 just a single input. To do that, we use the file [`data/TwitterStream.json`](../data/TwitterStream.json)
 (containing a list of tweets) and pass an optional parameter `SampleIsList=true` which tells the
@@ -439,7 +437,7 @@ newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issu
 
 You can use the types created by JSON type provider in a public API of a library that you are building,
 but there is one important thing to keep in mind - when the user references your library, the type
-provider will be loaded and the types will be generated at that time (the JSON provider is not
+provider will be loaded, and the types will be generated at that time (the JSON provider is not
 currently a _generative_ type provider). This means that the type provider will need to be able to
 access the sample JSON. This works fine when the sample is specified inline, but it won't work when
 the sample is specified as a local file (unless you distribute the samples with your library).

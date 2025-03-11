@@ -208,7 +208,9 @@ let private adjustCase (s: string) (template: string) =
 
         for i = 0 to template.Length - 1 do
             if Char.IsUpper template.[i] then
-                if i = 0 then firstUpper <- true
+                if i = 0 then
+                    firstUpper <- true
+
                 allLower <- false
                 foundUpperOrLower <- true
             else if Char.IsLower template.[i] then
@@ -223,8 +225,7 @@ let private adjustCase (s: string) (template: string) =
         else if allUpper then
             s.ToUpperInvariant()
         else if firstUpper && not <| Char.IsUpper s.[0] then
-            s.Substring(0, 1).ToUpperInvariant()
-            + s.Substring(1)
+            s.Substring(0, 1).ToUpperInvariant() + s.Substring(1)
         else
             s
 
@@ -279,8 +280,7 @@ let toSingular noun =
                 | None ->
                     if
                         noun.EndsWith("s", StringComparison.OrdinalIgnoreCase)
-                        && not
-                           <| noun.EndsWith("us", StringComparison.OrdinalIgnoreCase)
+                        && not <| noun.EndsWith("us", StringComparison.OrdinalIgnoreCase)
                     then
                         noun.Substring(0, noun.Length - 1)
                     else

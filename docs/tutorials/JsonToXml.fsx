@@ -64,7 +64,7 @@ produce a different value).
 Converting XML to JSON
 ----------------------
 
-Although XML and JSON are quite similar formats, there is a number of subtle differences.
+Although XML and JSON are quite similar formats, there are a number of subtle differences.
 In particular, XML distinguishes between _attributes_ and _child elements_. Moreover,
 all XML elements have a name, while JSON arrays or records are anonymous (but records
 have named fields). Consider, for example, the following XML:
@@ -77,7 +77,7 @@ have named fields). Consider, for example, the following XML:
     </channel>
 
 The JSON that we produce will ignore the top-level element name (`channel`). It produces
-a record that contains a unique field for every attribute and a name of a child element.
+a record that contains a unique field for every attribute and the name of a child element.
 If an element appears multiple times, it is turned into an array:
 
     [lang=js]
@@ -89,10 +89,10 @@ If an element appears multiple times, it is turned into an array:
 As you can see, the `item` element has been automatically pluralized to `items` and the
 array contains two record values that consist of the `value` attribute.
 
-The conversion function is a recursive function that takes a `XElement` and produces
+The conversion function is a recursive function that takes an `XElement` and produces
 `cref:T:FSharp.Data.JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
 `JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the
-sample does not imlement more sophisticated conversion that would turn numeric
+sample does not implement a more sophisticated conversion that would turn numeric
 attributes to a corresponding JSON type:
 *)
 

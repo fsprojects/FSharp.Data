@@ -53,8 +53,8 @@ and CsvFile
         [<Optional>] ?ignoreErrors,
         [<Optional>] ?skipRows
     ) as this =
-    inherit CsvFile<CsvRow>
-        (
+    inherit
+        CsvFile<CsvRow>(
             Func<_, _, _>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
             Func<_, _>(fun row -> row.Columns),
             readerFunc,
@@ -67,10 +67,7 @@ and CsvFile
 
     let headerDic =
         match this.Headers with
-        | Some headers ->
-            headers
-            |> Seq.mapi (fun index header -> header, index)
-            |> dict
+        | Some headers -> headers |> Seq.mapi (fun index header -> header, index) |> dict
         | None -> [] |> dict
 
     /// Returns the index of the column with the given name

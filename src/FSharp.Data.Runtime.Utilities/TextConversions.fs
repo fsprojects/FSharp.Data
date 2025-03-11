@@ -39,13 +39,12 @@ module private Helpers =
         lazy Regex(@"^/Date\((-?\d+)([-+]\d+)?\)/$", RegexOptions.Compiled)
 
     let dateTimeStyles =
-        DateTimeStyles.AllowWhiteSpaces
-        ||| DateTimeStyles.RoundtripKind
+        DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
     let ParseISO8601FormattedDateTime text cultureInfo =
         match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
-        | true, d -> d |> Some
-        | false, _ -> None
+        | true, d -> d |> ValueSome
+        | false, _ -> ValueNone
 
 // --------------------------------------------------------------------------------------
 
@@ -95,10 +94,7 @@ type TextConversions private () =
     static member private RemoveAdorners(value: string) =
         String(
             value.ToCharArray()
-            |> Array.filter (
-                not
-                << TextConversions.DefaultRemovableAdornerCharacters.Contains
-            )
+            |> Array.filter (not << TextConversions.DefaultRemovableAdornerCharacters.Contains)
         )
 
     /// Turns empty or null string value into None, otherwise returns Some
@@ -155,8 +151,9 @@ type TextConversions private () =
         else
             // Parse ISO 8601 format, fixing time zone if needed
             match ParseISO8601FormattedDateTime text cultureInfo with
-            | Some d when d.Kind = DateTimeKind.Unspecified -> new DateTime(d.Ticks, DateTimeKind.Local) |> Some
-            | x -> x
+            | ValueSome d when d.Kind = DateTimeKind.Unspecified -> new DateTime(d.Ticks, DateTimeKind.Local) |> Some
+            | ValueSome x -> Some x
+            | ValueNone -> None
 
     static member AsDateTimeOffset cultureInfo (text: string) =
         // get TimeSpan presentation from 4-digit integers like 0000 or -0600
@@ -167,26 +164,28 @@ type TextConversions private () =
 
         let offset str =
             match Int32.TryParse str with
-            | true, v -> getTimeSpanFromHourMin v |> Some
-            | false, _ -> None
+            | true, v -> getTimeSpanFromHourMin v |> ValueSome
+            | false, _ -> ValueNone
 
         let matchesMS = msDateRegex.Value.Match(text.Trim())
 
-        if matchesMS.Success
-           && matchesMS.Groups.[2].Success
-           && matchesMS.Groups.[2].Value.Length = 5 then
+        if
+            matchesMS.Success
+            && matchesMS.Groups.[2].Success
+            && matchesMS.Groups.[2].Value.Length = 5
+        then
             // only if the timezone offset is specified with '-' or '+' prefix, after the millis
             // e.g. 1231456+1000, 123123+0000, 123123-0500, etc.
             match offset matchesMS.Groups.[2].Value with
-            | Some ofst ->
+            | ValueSome ofst ->
                 matchesMS.Groups.[1].Value
                 |> Double.Parse
                 |> DateTimeOffset(1970, 1, 1, 0, 0, 0, ofst).AddMilliseconds
                 |> Some
-            | None -> None
+            | ValueNone -> None
         else
             match ParseISO8601FormattedDateTime text cultureInfo with
-            | Some d when d.Kind <> DateTimeKind.Unspecified ->
+            | ValueSome d when d.Kind <> DateTimeKind.Unspecified ->
                 match DateTimeOffset.TryParse(text, cultureInfo, dateTimeStyles) with
                 | true, dto -> dto |> Some
                 | false, _ -> None

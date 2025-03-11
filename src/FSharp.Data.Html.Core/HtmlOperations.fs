@@ -19,12 +19,12 @@ module HtmlAttribute =
     /// Gets the name of the given attribute
     let name attr =
         match attr with
-        | HtmlAttribute (name = name) -> name
+        | HtmlAttribute(name = name) -> name
 
     /// Gets the value of the given attribute
     let value attr =
         match attr with
-        | HtmlAttribute (value = value) -> value
+        | HtmlAttribute(value = value) -> value
 
 // --------------------------------------------------------------------------------------
 
@@ -49,13 +49,13 @@ module HtmlNode =
     /// Gets the given nodes name
     let name n =
         match n with
-        | HtmlNode.HtmlElement (name = name) -> name
+        | HtmlNode.HtmlElement(name = name) -> name
         | _ -> ""
 
     /// Gets all of the nodes immediately under this node
     let elements n =
         match n with
-        | HtmlNode.HtmlElement (elements = elements) -> elements
+        | HtmlNode.HtmlElement(elements = elements) -> elements
         | _ -> []
 
     /// <summary>
@@ -66,9 +66,7 @@ module HtmlNode =
     let inline elementsNamed names n =
         let nameSet = getNameSet names
 
-        n
-        |> elements
-        |> List.filter (name >> nameSet.Contains)
+        n |> elements |> List.filter (name >> nameSet.Contains)
 
     let private descendantsBy includeSelf recurseOnMatch predicate n =
         let rec descendantsBy includeSelf n =
@@ -77,7 +75,9 @@ module HtmlNode =
 
                 if includeSelf && predicate n then
                     yield n
-                    if not recurseOnMatch then proceed := false
+
+                    if not recurseOnMatch then
+                        proceed := false
 
                 if !proceed then
                     for element in elements n do
@@ -114,8 +114,7 @@ module HtmlNode =
     let inline descendantsNamed recurseOnMatch names n =
         let nameSet = getNameSet names
 
-        n
-        |> descendants recurseOnMatch (name >> nameSet.Contains)
+        n |> descendants recurseOnMatch (name >> nameSet.Contains)
 
     /// <summary>
     /// Finds all of the descendant nodes of this nodes that match the given set of names
@@ -127,8 +126,7 @@ module HtmlNode =
     let inline descendantsAndSelfNamed recurseOnMatch names n =
         let nameSet = getNameSet names
 
-        n
-        |> descendantsAndSelf recurseOnMatch (name >> nameSet.Contains)
+        n |> descendantsAndSelf recurseOnMatch (name >> nameSet.Contains)
 
     let private descendantsByWithPath includeSelf recurseOnMatch predicate n =
         let rec descendantsByWithPath includeSelf path n =
@@ -137,7 +135,9 @@ module HtmlNode =
 
                 if includeSelf && predicate n then
                     yield n, path
-                    if not recurseOnMatch then proceed := false
+
+                    if not recurseOnMatch then
+                        proceed := false
 
                 if !proceed then
                     for element in elements n do
@@ -174,8 +174,7 @@ module HtmlNode =
     let inline descendantsNamedWithPath recurseOnMatch names n =
         let nameSet = getNameSet names
 
-        n
-        |> descendantsWithPath recurseOnMatch (name >> nameSet.Contains)
+        n |> descendantsWithPath recurseOnMatch (name >> nameSet.Contains)
 
     /// <summary>
     /// Finds all of the descendant nodes of this nodes that match the given set of names
@@ -187,13 +186,12 @@ module HtmlNode =
     let inline descendantsAndSelfNamedWithPath recurseOnMatch names n =
         let nameSet = getNameSet names
 
-        n
-        |> descendantsAndSelfWithPath recurseOnMatch (name >> nameSet.Contains)
+        n |> descendantsAndSelfWithPath recurseOnMatch (name >> nameSet.Contains)
 
     /// Gets all of the attributes of this node
     let attributes n =
         match n with
-        | HtmlNode.HtmlElement (attributes = attributes) -> attributes
+        | HtmlNode.HtmlElement(attributes = attributes) -> attributes
         | _ -> []
 
     /// <summary>
@@ -202,9 +200,7 @@ module HtmlNode =
     /// <param name="name">The name of the attribute to return.</param>
     /// <param name="n">The given node</param>
     let inline tryGetAttribute name n =
-        n
-        |> attributes
-        |> List.tryFind (HtmlAttribute.name >> ((=) (toLower name)))
+        n |> attributes |> List.tryFind (HtmlAttribute.name >> ((=) (toLower name)))
 
     /// <summary>
     /// Returns the attribute with the given name. If the
@@ -223,11 +219,7 @@ module HtmlNode =
     /// <param name="name">The name of the attribute to get the value from</param>
     /// <param name="n">The given node</param>
     let inline attributeValue name n =
-        defaultArg
-            (n
-             |> tryGetAttribute name
-             |> Option.map HtmlAttribute.value)
-            ""
+        defaultArg (n |> tryGetAttribute name |> Option.map HtmlAttribute.value) ""
 
     /// <summary>
     /// Returns true if the current node has an attribute that
@@ -259,16 +251,16 @@ module HtmlNode =
     let private innerTextExcluding' recurse exclusions n =
         let rec innerText' n =
             match n with
-            | HtmlNode.HtmlElement (name, _, content) when List.forall ((<>) name) exclusions ->
+            | HtmlNode.HtmlElement(name, _, content) when List.forall ((<>) name) exclusions ->
                 seq {
                     for e in content do
                         match e with
-                        | HtmlNode.HtmlText (text) -> yield text
-                        | HtmlNode.HtmlComment (_) -> yield ""
+                        | HtmlNode.HtmlText(text) -> yield text
+                        | HtmlNode.HtmlComment(_) -> yield ""
                         | elem -> if recurse then yield innerText' elem else yield ""
                 }
                 |> String.Concat
-            | HtmlNode.HtmlText (text) -> text
+            | HtmlNode.HtmlText(text) -> text
             | _ -> ""
 
         innerText' n
@@ -292,18 +284,13 @@ module HtmlNode =
     let private getTargets level matched =
         match level with
         | FilterLevel.Children -> matched |> Seq.collect elements
-        | FilterLevel.Descendants ->
-            matched
-            |> Seq.collect (descendants true (fun _ -> true))
+        | FilterLevel.Descendants -> matched |> Seq.collect (descendants true (fun _ -> true))
         | _ -> matched |> Seq.ofList
 
     let private searchTag level matched tag =
         match level with
         | Children -> matched |> List.collect (elementsNamed [ tag ])
-        | _ ->
-            matched
-            |> Seq.collect (descendantsAndSelfNamed true [ tag ])
-            |> Seq.toList
+        | _ -> matched |> Seq.collect (descendantsAndSelfNamed true [ tag ]) |> Seq.toList
 
     let private filterByAttr level matched attr f =
         matched
@@ -314,10 +301,7 @@ module HtmlNode =
     let private attrExists level matched attr =
         matched
         |> getTargets level
-        |> Seq.filter (
-            attributes
-            >> Seq.exists (HtmlAttribute.name >> (=) attr)
-        )
+        |> Seq.filter (attributes >> Seq.exists (HtmlAttribute.name >> (=) attr))
         |> Seq.toList
 
     let private selectCssElements tokens nodes =
@@ -344,41 +328,38 @@ module HtmlNode =
                     |> List.map (fun (_, n) -> n)
 
                 let containsIgnoreCase (value: string) (word: string) =
-                    word.IndexOf(value, StringComparison.OrdinalIgnoreCase)
-                    <> -1
+                    word.IndexOf(value, StringComparison.OrdinalIgnoreCase) <> -1
 
                 let equalsIgnoreCase (value: string) (word: string) =
                     word.Equals(value, StringComparison.OrdinalIgnoreCase)
 
                 match source with
-                | TagName (_, name) :: t ->
+                | TagName(_, name) :: t ->
                     let selectedNodes = searchTag level acc name
                     selectElements' FilterLevel.Root selectedNodes t
-                | ClassPrefix _ :: CssClass (_, className) :: t ->
+                | ClassPrefix _ :: CssClass(_, className) :: t ->
                     let selectedNodes =
-                        filterByAttr level acc "class" (fun v ->
-                            v.Split(whiteSpaces)
-                            |> Array.exists ((=) className))
+                        filterByAttr level acc "class" (fun v -> v.Split(whiteSpaces) |> Array.exists ((=) className))
 
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | IdPrefix _ :: CssId (_, id) :: t ->
+                | IdPrefix _ :: CssId(_, id) :: t ->
                     let selectedNodes = filterByAttr level acc "id" (fun v -> v = id)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: Assign _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: Assign _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes = filterByAttr level acc name (fun v -> v = value)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: EndWith _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: EndWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes = filterByAttr level acc name (fun v -> v.EndsWith value)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: StartWith _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: StartWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes = filterByAttr level acc name (fun v -> v.StartsWith value)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: AttributeContainsPrefix _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsPrefix _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes =
                         filterByAttr level acc name (fun v ->
                             let chars =
@@ -392,29 +373,24 @@ module HtmlNode =
 
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: AttributeContains _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: AttributeContains _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes = filterByAttr level acc name (containsIgnoreCase value)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: AttributeContainsWord _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsWord _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes =
                         filterByAttr level acc name (fun v ->
-                            v.Split(whiteSpaces)
-                            |> Array.exists (equalsIgnoreCase value))
+                            v.Split(whiteSpaces) |> Array.exists (equalsIgnoreCase value))
 
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: AttributeNotEqual _ :: AttributeValue (_, value) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: AttributeNotEqual _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
                     let selectedNodes = filterByAttr level acc name ((<>) value)
                     selectElements' FilterLevel.Root selectedNodes t
 
-                | OpenAttribute _ :: AttributeName (_, name) :: CloseAttribute _ :: t ->
+                | OpenAttribute _ :: AttributeName(_, name) :: CloseAttribute _ :: t ->
                     let selectedNodes =
-                        acc
-                        |> List.filter (
-                            attributes
-                            >> List.exists (HtmlAttribute.name >> (=) name)
-                        )
+                        acc |> List.filter (attributes >> List.exists (HtmlAttribute.name >> (=) name))
 
                     selectElements' FilterLevel.Root selectedNodes t
 
@@ -438,10 +414,7 @@ module HtmlNode =
                 | Button _ :: t ->
                     let selectedNodes =
                         filterByAttr level acc "type" ((=) "button")
-                        |> Seq.append (
-                            acc
-                            |> Seq.collect (descendantsAndSelfNamed true [ "button" ])
-                        )
+                        |> Seq.append (acc |> Seq.collect (descendantsAndSelfNamed true [ "button" ]))
                         |> Seq.toList
 
                     selectElements' FilterLevel.Root selectedNodes t
@@ -457,8 +430,7 @@ module HtmlNode =
                             descendantsAndSelf true (fun _ -> true)
                             >> Seq.filter (fun d ->
                                 String.IsNullOrWhiteSpace(d |> directInnerText)
-                                && (d |> descendants true (fun _ -> true))
-                                   |> Seq.isEmpty)
+                                && (d |> descendants true (fun _ -> true)) |> Seq.isEmpty)
                         )
                         |> Seq.toList
 
@@ -476,11 +448,7 @@ module HtmlNode =
                     let selectedNodes =
                         acc
                         |> getTargets level
-                        |> Seq.filter (
-                            attributes
-                            >> Seq.exists (HtmlAttribute.name >> (=) "disabled")
-                            >> not
-                        )
+                        |> Seq.filter (attributes >> Seq.exists (HtmlAttribute.name >> (=) "disabled") >> not)
                         |> Seq.toList
 
                     selectElements' FilterLevel.Root selectedNodes t
@@ -900,12 +868,12 @@ module HtmlDocument =
     /// Returns the doctype of the document
     let docType doc =
         match doc with
-        | HtmlDocument (docType = docType) -> docType
+        | HtmlDocument(docType = docType) -> docType
 
     //// Gets all of the root elements of the document
     let elements doc =
         match doc with
-        | HtmlDocument (elements = elements) -> elements
+        | HtmlDocument(elements = elements) -> elements
 
     /// <summary>
     /// Returns all of the root elements of the document that match the set of names
@@ -915,9 +883,7 @@ module HtmlDocument =
     let inline elementsNamed names doc =
         let nameSet = getNameSet names
 
-        doc
-        |> elements
-        |> List.filter (HtmlNode.name >> nameSet.Contains)
+        doc |> elements |> List.filter (HtmlNode.name >> nameSet.Contains)
 
     /// <summary>
     /// Gets all of the descendants of this document that statisfy the given predicate
@@ -939,8 +905,7 @@ module HtmlDocument =
     let inline descendantsNamed recurseOnMatch names doc =
         let nameSet = getNameSet names
 
-        doc
-        |> descendants recurseOnMatch (HtmlNode.name >> nameSet.Contains)
+        doc |> descendants recurseOnMatch (HtmlNode.name >> nameSet.Contains)
 
     /// <summary>
     /// Gets all of the descendants of this document that statisfy the given predicate
@@ -962,8 +927,7 @@ module HtmlDocument =
     let inline descendantsNamedWithPath recurseOnMatch names doc =
         let nameSet = getNameSet names
 
-        doc
-        |> descendantsWithPath recurseOnMatch (HtmlNode.name >> nameSet.Contains)
+        doc |> descendantsWithPath recurseOnMatch (HtmlNode.name >> nameSet.Contains)
 
     /// <summary>
     /// Finds the body element of the given document,

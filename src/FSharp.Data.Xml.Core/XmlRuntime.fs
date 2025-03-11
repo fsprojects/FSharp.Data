@@ -75,9 +75,7 @@ type XmlElement =
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            XDocument
-                .Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace)
-                .Root.Elements()
+            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 
@@ -140,16 +138,13 @@ type XmlRuntime =
     // (This is used e.g. when transforming `<a>1</a><a>2</a>` to `int[]`)
 
     static member ConvertArray<'R>(xml: XmlElement, nameWithNS, f: Func<XmlElement, 'R>) : 'R[] =
-        XmlRuntime.GetChildrenArray(xml, nameWithNS)
-        |> Array.map f.Invoke
+        XmlRuntime.GetChildrenArray(xml, nameWithNS) |> Array.map f.Invoke
 
     static member ConvertOptional<'R>(xml: XmlElement, nameWithNS, f: Func<XmlElement, 'R>) =
-        XmlRuntime.GetChildOption(xml, nameWithNS)
-        |> Option.map f.Invoke
+        XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
 
     static member ConvertOptional2<'R>(xml: XmlElement, nameWithNS, f: Func<XmlElement, 'R option>) =
-        XmlRuntime.GetChildOption(xml, nameWithNS)
-        |> Option.bind f.Invoke
+        XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.bind f.Invoke
 
     /// Returns Some if the specified XmlElement has the specified name
     /// (otherwise None is returned). This is used when the current element
@@ -171,8 +166,7 @@ type XmlRuntime =
         match XmlRuntime.TryGetValue(xml) with
         | Some jsonStr ->
             try
-                JsonDocument.Create(new StringReader(jsonStr))
-                |> Some
+                JsonDocument.Create(new StringReader(jsonStr)) |> Some
             with _ ->
                 None
         | None -> None
@@ -292,9 +286,7 @@ type XmlRuntime =
                             failwithf "Unexpected element: %O" v
 
                         let v =
-                            (v,
-                             Seq.skip 1 parentNames
-                             |> Seq.mapi (fun x i -> x, i))
+                            (v, Seq.skip 1 parentNames |> Seq.mapi (fun x i -> x, i))
                             ||> Seq.fold (fun element ((_, nameWithNS) as key) ->
                                 if isNull element.Parent then
                                     let parent =
@@ -313,7 +305,8 @@ type XmlRuntime =
 
                                     element.Parent)
 
-                        if isNull v.Parent then element.Add v
+                        if isNull v.Parent then
+                            element.Add v
                     | :? string as v ->
                         let child = createElement element nameWithNS
                         child.Value <- v
@@ -337,22 +330,19 @@ module XmlSchema =
         let uri = // Uri must end with separator (maybe there's a better way)
             if resolutionFolder = "" then
                 ""
-            elif resolutionFolder.EndsWith "/"
-                 || resolutionFolder.EndsWith "\\" then
+            elif resolutionFolder.EndsWith "/" || resolutionFolder.EndsWith "\\" then
                 resolutionFolder
             else
                 resolutionFolder + "/"
 
         let useResolutionFolder (baseUri: System.Uri) =
-            resolutionFolder <> ""
-            && (isNull baseUri || baseUri.OriginalString = "")
+            resolutionFolder <> "" && (isNull baseUri || baseUri.OriginalString = "")
 
         let getEncoding xmlText = // peek encoding definition
             let settings = XmlReaderSettings(ConformanceLevel = ConformanceLevel.Fragment)
             use reader = XmlReader.Create(new System.IO.StringReader(xmlText), settings)
 
-            if reader.Read()
-               && reader.NodeType = XmlNodeType.XmlDeclaration then
+            if reader.Read() && reader.NodeType = XmlNodeType.XmlDeclaration then
                 match reader.GetAttribute "encoding" with
                 | null -> System.Text.Encoding.UTF8
                 | attr -> System.Text.Encoding.GetEncoding attr

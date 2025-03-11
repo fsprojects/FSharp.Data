@@ -21,18 +21,12 @@ module XElementExtensions =
             let headers = defaultArg (Option.map List.ofSeq headers) []
 
             let headers =
-                if
-                    headers
-                    |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-                then
+                if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent ""))) then
                     headers
                 else
-                    HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider"
-                    :: headers
+                    HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider" :: headers
 
-            let headers =
-                HttpRequestHeaders.ContentType HttpContentTypes.Xml
-                :: headers
+            let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
 
             Http.Request(
                 uri,
@@ -47,18 +41,12 @@ module XElementExtensions =
             let headers = defaultArg (Option.map List.ofSeq headers) []
 
             let headers =
-                if
-                    headers
-                    |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-                then
+                if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent ""))) then
                     headers
                 else
-                    HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider"
-                    :: headers
+                    HttpRequestHeaders.UserAgent "FSharp.Data XML Type Provider" :: headers
 
-            let headers =
-                HttpRequestHeaders.ContentType HttpContentTypes.Xml
-                :: headers
+            let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
 
             Http.AsyncRequest(
                 uri,

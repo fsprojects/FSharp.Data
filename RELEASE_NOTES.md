@@ -1,3 +1,18 @@
+## 6.5.0 - Unreleased
+- Add JSON Schema support to the JSON Type Provider
+- Add JSON validation against JSON Schema
+- Add documentation for working with JSON Schema
+
+## 6.4.1 - Oct 2 2024
+- WorldBank URL fixed to https @pkese
+- Updated Fake and Paket @Thorium
+- Tests project to .NET8 @Thorium
+
+## 6.4.0 - Mar 12 2024
+
+- Update FSharp.Core to 6.0.1 by @Thorium
+- Fix for a bug where FSharp.Data.DesignTime stays on la ock that prevents closing VS 2022 by @Thorium
+
 ## 6.3.0 - Apr 30 2023
 
 - Add support for plain control types by @kant2002 in https://github.com/fsprojects/FSharp.Data/pull/1487

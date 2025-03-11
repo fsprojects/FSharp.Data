@@ -8,6 +8,94 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 
+type SchemaBasedJson = JsonProvider<Schema="Data/PersonSchema.json">
+
+[<Test>]
+let ``Can parse JSON using JSON Schema``() = 
+    let person = SchemaBasedJson.Parse("""
+    {
+        "firstName": "John",
+        "lastName": "Doe",
+        "age": 30,
+        "email": "john.doe@example.com",
+        "phoneNumbers": [
+            {
+                "type": "home",
+                "number": "555-1234"
+            },
+            {
+                "type": "mobile",
+                "number": "555-5678"
+            }
+        ],
+        "address": {
+            "streetAddress": "123 Main St",
+            "city": "Anytown"
+        },
+        "isActive": true,
+        "registeredSince": "2020-01-01T00:00:00Z"
+    }
+    """)
+    
+    person.FirstName |> should equal "John"
+    person.LastName |> should equal "Doe"
+    person.Age |> should equal (Some 30)
+    person.Email |> should equal (Some "john.doe@example.com")
+    person.IsActive |> should equal (Some true)
+    person.PhoneNumbers.Length |> should equal 2
+    person.PhoneNumbers.[0].Type |> should equal "home"
+    person.PhoneNumbers.[0].Number |> should equal "555-1234"
+    person.Address.Value.StreetAddress |> should equal "123 Main St"
+    person.Address.Value.City |> should equal "Anytown"
+    person.Address.Value.PostalCode |> should equal None
+    // Convert to UTC to handle time zone differences between test environments
+    let expectedDate = DateTime.Parse("2020-01-01T00:00:00Z").ToUniversalTime()
+    let actualDate = person.RegisteredSince.Value.ToUniversalTime()
+    actualDate |> should equal expectedDate
+    
+[<Test>]
+let ``Can validate JSON against schema``() =
+    // Load the schema
+    let schema = LoadJsonSchema "Data/PersonSchema.json"
+    
+    // Valid JSON
+    let validJson = JsonValue.Parse("""
+    {
+        "firstName": "John",
+        "lastName": "Doe",
+        "age": 30,
+        "email": "john.doe@example.com",
+        "isActive": true
+    }
+    """)
+    
+    // Validate
+    let validResult = ValidateJsonAgainstSchema schema validJson
+    match validResult with
+    | Valid -> ()  // Expected outcome for valid JSON
+    | Invalid msg -> Assert.Fail($"Expected valid JSON but got error: {msg}")
+    
+    // Invalid JSON (missing required lastName)
+    let invalidJson = JsonValue.Parse("""
+    {
+        "firstName": "John",
+        "age": -5
+    }
+    """)
+    
+    // Validate
+    let invalidResult = ValidateJsonAgainstSchema schema invalidJson
+    match invalidResult with
+    | Valid -> Assert.Fail("Expected invalid JSON to fail validation")
+    | Invalid msg -> 
+        // Check that the error message mentions the missing required field
+        msg.Contains("lastName") |> should equal true
+
+// Note: We cannot test for compile-time errors in the type provider
+// with NUnit tests since the type provider runs at compile-time.
+// The validation that Schema and Sample/SampleIsList cannot be used together
+// is handled in the JsonProvider.fs file.
+
 type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 type EmbeddedResourceProvider = JsonProvider<"Data/TypeInference.json", EmbeddedResource = "FSharp.Data.Tests, FSharp.Data.Tests.Data.TypeInference.json">

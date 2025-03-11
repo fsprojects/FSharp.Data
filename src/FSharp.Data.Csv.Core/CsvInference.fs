@@ -13,7 +13,7 @@ open FSharp.Data.Runtime.StructuralInference
 /// This table specifies the mapping from (the names that users can use) to (the types used).
 /// The table here for the CsvProvider extends the mapping used for inline schemas by adding nullable and optionals.
 let private nameToTypeForCsv =
-    [ for KeyValue (k, v) in StructuralInference.nameToType -> k, v ]
+    [ for KeyValue(k, v) in StructuralInference.nameToType -> k, v ]
     @ [ "int?", (typeof<int>, TypeWrapper.Nullable)
         "int64?", (typeof<int64>, TypeWrapper.Nullable)
         "bool?", (typeof<bool>, TypeWrapper.Nullable)
@@ -97,7 +97,7 @@ let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =
                 str, None, None, false, ""
 
     match typ, unit with
-    | Some (typ, typWrapper), unit ->
+    | Some(typ, typWrapper), unit ->
         let prop = PrimitiveInferedProperty.Create(name, typ, typWrapper, unit)
 
         if isOverrideByName then
@@ -207,7 +207,7 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
                     | SchemaParseResult.Full prop ->
                         let name = if prop.Name = "" then headers.[index] else prop.Name
                         schema.[index] <- Some { prop with Name = makeUnique name }
-                    | SchemaParseResult.Rename (name, originalName) ->
+                    | SchemaParseResult.Rename(name, originalName) ->
                         let index =
                             headers
                             |> Array.tryFindIndex (fun header ->
@@ -216,7 +216,7 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
                         match index with
                         | Some index -> headers.[index] <- name
                         | None -> failwithf "Column '%s' not found in '%s'" originalName (headers |> String.concat ",")
-                    | SchemaParseResult.FullByName (prop, originalName) ->
+                    | SchemaParseResult.FullByName(prop, originalName) ->
                         let index =
                             headers
                             |> Array.tryFindIndex (fun header ->
@@ -244,12 +244,15 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
 
                 match parseResult with
                 | SchemaParseResult.Name name -> makeUnique name, None
-                | SchemaParseResult.NameAndUnit (name, unit) ->
+                | SchemaParseResult.NameAndUnit(name, unit) ->
                     // store the original header because the inferred type might not support units of measure.
                     // format: schemaDefinition \n schemaName
                     (makeUnique item) + "\n" + (makeUnique name), Some unit
                 | SchemaParseResult.Full prop ->
-                    let prop = { prop with Name = makeUnique prop.Name }
+                    let prop =
+                        { prop with
+                            Name = makeUnique prop.Name }
+
                     schema.[index] <- Some prop
                     prop.Name, None
                 | _ -> failwithf "inferType: Unexpected SchemaParseResult for header: %A" parseResult)
@@ -290,8 +293,7 @@ let internal inferType
                     yield Array.create headerNamesAndUnits.Length ""
             }
         else
-            Array.create headerNamesAndUnits.Length ""
-            |> Seq.singleton
+            Array.create headerNamesAndUnits.Length "" |> Seq.singleton
 
     let rows =
         if inferRows > 0 then
@@ -353,7 +355,7 @@ let internal inferType
 let internal getFields preferOptionals inferedType schema =
 
     match inferedType with
-    | InferedType.Record (None, fields, false) ->
+    | InferedType.Record(None, fields, false) ->
         fields
         |> List.mapi (fun index field ->
 
@@ -369,7 +371,7 @@ let internal getFields preferOptionals inferedType schema =
                         field.Name, field.Name
 
                 match field.Type with
-                | InferedType.Primitive (typ, unit, optional, _) ->
+                | InferedType.Primitive(typ, unit, optional, _) ->
 
                     // Transform the types as described above
                     let typ, typWrapper =
@@ -380,10 +382,12 @@ let internal getFields preferOptionals inferedType schema =
                                 typ, TypeWrapper.None
                             elif typ = typeof<decimal> then
                                 typeof<float>, TypeWrapper.None
-                            elif typ = typeof<Bit0>
-                                 || typ = typeof<Bit1>
-                                 || typ = typeof<int>
-                                 || typ = typeof<int64> then
+                            elif
+                                typ = typeof<Bit0>
+                                || typ = typeof<Bit1>
+                                || typ = typeof<int>
+                                || typ = typeof<int64>
+                            then
                                 typ, TypeWrapper.Nullable
                             else
                                 typ, TypeWrapper.Option
@@ -432,6 +436,7 @@ let internal inferColumnTypes
     ||> getFields preferOptionals
 
 type CsvFile with
+
     /// <summary>
     /// Infers the types of the columns of a CSV file
     /// </summary>

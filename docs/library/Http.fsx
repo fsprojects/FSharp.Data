@@ -126,7 +126,7 @@ Http.RequestString(
 (**
 ## Getting extra information
 
-Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
+Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unauthorized error,
 and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
 the response content, so it's easier to debug in F# interactive when the server returns extra info.
 

@@ -27,10 +27,10 @@ Formatter.Register(fun (x: obj) (writer: TextWriter) -> fprintfn writer "%120A" 
 
 # WorldBank Provider
 
-The [World Bank](http://www.worldbank.org) is an international organization that provides
+The [World Bank](https://www.worldbank.org) is an international organization that provides
 financial and technical assistance to developing countries around the world. As one of the
 activities, the World Bank also collects development indicators and other data about
-countries in the world. The [data catalog](http://data.worldbank.org/) contains over
+countries in the world. The [data catalog](https://data.worldbank.org/) contains over
 8,000 indicators that can be programmatically accessed.
 
 The WorldBank Type Provider makes the WorldBank data easily accessible to F# programs and
@@ -85,7 +85,7 @@ WorldBank.GetDataContext()
 
 (**
 The above snippet specified "World Development Indicators" as the name of the data
-source (a collection of commonly available indicators) and it set the optional argument
+source (a collection of commonly available indicators) and it sets the optional argument
 `Asynchronous` to `true`. As a result, properties such as
 `Gross capital formation (% of GDP)` will now have a type `Async<(int * int)[]>` meaning
 that they represent an asynchronous computation that can be started and will eventually

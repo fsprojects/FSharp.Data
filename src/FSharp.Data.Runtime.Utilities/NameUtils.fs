@@ -41,36 +41,36 @@ let nicePascalName (s: string) =
     else
         // Starting to parse a new segment
         let rec restart i =
-            seq {
-                match tryAt s i with
-                | EOF -> ()
-                | LetterDigit _ & Upper _ -> yield! upperStart i (i + 1)
-                | LetterDigit _ -> yield! consume i false (i + 1)
-                | _ -> yield! restart (i + 1)
-            }
+            match tryAt s i with
+            | EOF -> Seq.empty
+            | LetterDigit _ & Upper _ -> upperStart i (i + 1)
+            | LetterDigit _ -> consume i false (i + 1)
+            | _ -> restart (i + 1)
         // Parsed first upper case letter, continue either all lower or all upper
         and upperStart from i =
-            seq {
-                match tryAt s i with
-                | Upper _ -> yield! consume from true (i + 1)
-                | Lower _ -> yield! consume from false (i + 1)
-                | _ ->
-                    yield from, i
+            match tryAt s i with
+            | Upper _ -> consume from true (i + 1)
+            | Lower _ -> consume from false (i + 1)
+            | _ ->
+                seq {
+                    yield struct (from, i)
                     yield! restart (i + 1)
-            }
+                }
         // Consume are letters of the same kind (either all lower or all upper)
         and consume from takeUpper i =
-            seq {
-                match tryAt s i with
-                | Lower _ when not takeUpper -> yield! consume from takeUpper (i + 1)
-                | Upper _ when takeUpper -> yield! consume from takeUpper (i + 1)
-                | Lower _ when takeUpper ->
-                    yield from, (i - 1)
+            match takeUpper, tryAt s i with
+            | false, Lower _ -> consume from takeUpper (i + 1)
+            | true, Upper _ -> consume from takeUpper (i + 1)
+            | true, Lower _ ->
+                seq {
+                    yield struct (from, (i - 1))
                     yield! restart (i - 1)
-                | _ ->
-                    yield from, i
+                }
+            | _ ->
+                seq {
+                    yield struct (from, i)
                     yield! restart i
-            }
+                }
 
         // Split string into segments and turn them to PascalCase
         seq {
@@ -78,9 +78,7 @@ let nicePascalName (s: string) =
                 let sub = s.Substring(i1, i2 - i1)
 
                 if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-                    yield
-                        sub.[0].ToString().ToUpperInvariant()
-                        + sub.ToLowerInvariant().Substring(1)
+                    yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1)
         }
         |> String.Concat
 
@@ -89,8 +87,7 @@ let niceCamelName (s: string) =
     let name = nicePascalName s
 
     if name.Length > 0 then
-        name.[0].ToString().ToLowerInvariant()
-        + name.Substring(1)
+        name.[0].ToString().ToLowerInvariant() + name.Substring(1)
     else
         name
 
@@ -109,13 +106,14 @@ let uniqueGenerator (niceName: string -> string) =
 
     fun name ->
         let mutable name = niceName name
-        if name.Length = 0 then name <- "Unnamed"
+
+        if name.Length = 0 then
+            name <- "Unnamed"
 
         while set.Contains name do
             let mutable lastLetterPos = String.length name - 1
 
-            while Char.IsDigit name.[lastLetterPos]
-                  && lastLetterPos > 0 do
+            while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
                 lastLetterPos <- lastLetterPos - 1
 
             if lastLetterPos = name.Length - 1 then
@@ -128,9 +126,7 @@ let uniqueGenerator (niceName: string -> string) =
             else
                 let number = name.Substring(lastLetterPos + 1)
 
-                name <-
-                    name.Substring(0, lastLetterPos + 1)
-                    + (UInt64.Parse number + 1UL).ToString()
+                name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
 
         set.Add name |> ignore
         name
@@ -139,9 +135,7 @@ let capitalizeFirstLetter (s: string) =
     match s.Length with
     | 0 -> ""
     | 1 -> (Char.ToUpperInvariant s.[0]).ToString()
-    | _ ->
-        (Char.ToUpperInvariant s.[0]).ToString()
-        + s.Substring(1)
+    | _ -> (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive
@@ -160,10 +154,14 @@ let trimHtml (s: string) =
             match inside, c with
             | true, '>' -> loop (i + 1) false false
             | false, '<' ->
-                if emitSpace then res.Append(' ') |> ignore
+                if emitSpace then
+                    res.Append(' ') |> ignore
+
                 loop (i + 1) false true
             | _ ->
-                if not inside then res.Append(c) |> ignore
+                if not inside then
+                    res.Append(c) |> ignore
+
                 loop (i + 1) true inside
 
     loop 0 false false

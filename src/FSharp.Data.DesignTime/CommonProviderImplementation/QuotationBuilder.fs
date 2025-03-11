@@ -53,10 +53,7 @@ let (?) (typ: Type) (operation: string) (args1: 'T) (args2: 'U) : Expr =
                 [ convertValue args ]
 
         // Find a method that we want to call
-        let flags =
-            BindingFlags.Public
-            ||| BindingFlags.Static
-            ||| BindingFlags.Instance
+        let flags = BindingFlags.Public ||| BindingFlags.Static ||| BindingFlags.Instance
 
         match typ.GetMember(operation, MemberTypes.All, flags) with
         | [| :? MethodInfo as mi |] ->
