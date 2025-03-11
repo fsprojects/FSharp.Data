@@ -1,3 +1,8 @@
+## 6.5.0 - Unreleased
+- Add JSON Schema support to the JSON Type Provider
+- Add JSON validation against JSON Schema
+- Add documentation for working with JSON Schema
+
 ## 6.4.1 - Oct 2 2024
 - WorldBank URL fixed to https @pkese
 - Updated Fake and Paket @Thorium

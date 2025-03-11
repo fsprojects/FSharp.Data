@@ -67,12 +67,11 @@ let isCI = Environment.GetEnvironmentVariable("CI") <> null
 // Generate assembly info files with the right version & up-to-date information
 
 Target.create "AssemblyInfo" (fun _ ->
-    for file in !! "src/AssemblyInfo*.fs" do
+    for file in !!"src/AssemblyInfo*.fs" do
         let replace (oldValue: string) newValue (str: string) = str.Replace(oldValue, newValue)
 
         let title =
-            Path.GetFileNameWithoutExtension file
-            |> replace "AssemblyInfo" "FSharp.Data"
+            Path.GetFileNameWithoutExtension file |> replace "AssemblyInfo" "FSharp.Data"
 
         let versionSuffix = ".0"
         let version = release.AssemblyVersion + versionSuffix
@@ -90,8 +89,8 @@ Target.create "AssemblyInfo" (fun _ ->
 
 Target.create "Clean" (fun _ ->
     seq {
-        yield! !! "**/bin"
-        yield! !! "**/obj"
+        yield! !!"**/bin"
+        yield! !!"**/obj"
     }
     |> Shell.cleanDirs)
 
@@ -114,18 +113,18 @@ Target.create "Build" (fun _ ->
     |> DotNet.build (fun o ->
         { o with
             Configuration = DotNet.BuildConfiguration.Release
-            MSBuildParams = { o.MSBuildParams with DisableInternalBinLog = true } }))
+            MSBuildParams =
+                { o.MSBuildParams with
+                    DisableInternalBinLog = true } }))
 
 Target.create "RunTests" (fun _ ->
     let setParams (o: DotNet.TestOptions) =
         { o with
             Configuration = DotNet.BuildConfiguration.Release
-            MSBuildParams = { o.MSBuildParams with DisableInternalBinLog = true }
-            Logger =
-                if isCI then
-                    Some "GitHubActions"
-                else
-                    None }
+            MSBuildParams =
+                { o.MSBuildParams with
+                    DisableInternalBinLog = true }
+            Logger = if isCI then Some "GitHubActions" else None }
 
     "FSharp.Data.sln" |> DotNet.test setParams)
 
@@ -196,7 +195,7 @@ Target.create "Help" (fun _ ->
     printfn "")
 
 let sourceFiles =
-    !! "src/**/*.fs" ++ "src/**/*.fsi" ++ "build.fsx"
+    !!"src/**/*.fs" ++ "src/**/*.fsi" ++ "build.fsx"
     -- "src/**/obj/**/*.fs"
     -- "src/AssemblyInfo*.fs"
 
@@ -228,15 +227,9 @@ Target.create "CheckFormat" (fun _ ->
 
 Target.create "All" ignore
 
-"Clean"
-==> "AssemblyInfo"
-==> "CheckFormat"
-==> "Build"
+"Clean" ==> "AssemblyInfo" ==> "CheckFormat" ==> "Build"
 
-"Build"
-==> "CleanDocs"
-==> "GenerateDocs"
-==> "All"
+"Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
 
 "Build" ==> "Pack" ==> "All"
 "Build" ==> "All"

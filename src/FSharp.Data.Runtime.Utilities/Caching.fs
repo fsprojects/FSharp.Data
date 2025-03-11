@@ -107,9 +107,10 @@ let createInternetFileCache prefix expiration =
                     let cacheFile = cacheFile key
 
                     try
-                        if File.Exists cacheFile
-                           && DateTime.UtcNow
-                              - File.GetLastWriteTimeUtc cacheFile < expiration then
+                        if
+                            File.Exists cacheFile
+                            && DateTime.UtcNow - File.GetLastWriteTimeUtc cacheFile < expiration
+                        then
                             let result = File.ReadAllText cacheFile
                             if isWellFormedResult result then Some result else None
                         else

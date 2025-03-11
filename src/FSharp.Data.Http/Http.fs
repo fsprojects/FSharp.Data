@@ -1455,10 +1455,7 @@ module internal HttpHelpers =
             use stream = stream
             let output = new MemoryStream()
 
-            do!
-                stream.CopyToAsync(output)
-                |> Async.AwaitIAsyncResult
-                |> Async.Ignore
+            do! stream.CopyToAsync(output) |> Async.AwaitIAsyncResult |> Async.Ignore
 
             output.Seek(0L, SeekOrigin.Begin) |> ignore
             return output
@@ -1467,62 +1464,58 @@ module internal HttpHelpers =
     /// A stream class that abstracts away writing the contents of a series of other streams, closing them as they are consumed.  Non-seekable, reading-only stream.
     type CombinedStream(length, streams: Stream seq) =
         inherit Stream()
-        with
-            let mutable v = 0L
-            let mutable streams = streams |> Seq.cache
+        let mutable v = 0L
+        let mutable streams = streams |> Seq.cache
 
-            let rec readFromStream buffer offset count =
-                match streams |> Seq.tryHead with
-                | None -> 0
-                | Some stream ->
-                    let qty =
-                        if stream.CanSeek then
-                            min count (int stream.Length)
-                        else
-                            count
-
-                    let read = stream.Read(buffer, offset, qty)
-
-                    if read < count then
-                        stream.Dispose()
-                        streams <- streams |> Seq.skip 1
-                        let readFromRest = readFromStream buffer (offset + read) (count - read)
-                        read + readFromRest
+        let rec readFromStream buffer offset count =
+            match streams |> Seq.tryHead with
+            | None -> 0
+            | Some stream ->
+                let qty =
+                    if stream.CanSeek then
+                        min count (int stream.Length)
                     else
-                        read
+                        count
 
-            override x.CanRead = true
+                let read = stream.Read(buffer, offset, qty)
 
-            override x.CanSeek =
-                match length with
-                | None -> false
-                | Some _ -> true
+                if read < count then
+                    stream.Dispose()
+                    streams <- streams |> Seq.skip 1
+                    let readFromRest = readFromStream buffer (offset + read) (count - read)
+                    read + readFromRest
+                else
+                    read
 
-            override x.CanWrite = false
+        override x.CanRead = true
 
-            override x.Length =
-                length
-                |> Option.defaultWith (fun () ->
-                    failwith
-                        "One or more of the encompassed streams are not seekable and the length cannot be determine")
+        override x.CanSeek =
+            match length with
+            | None -> false
+            | Some _ -> true
 
-            override x.Position
-                with get () = v
-                and set (_) = failwith "no position setting"
+        override x.CanWrite = false
 
-            override x.Flush() = ()
-            override x.CanTimeout = false
-            override x.Seek(_, _) = failwith "no seeking"
-            override x.SetLength(_) = failwith "no setting length"
-            override x.Write(_, _, _) = failwith "no writing"
-            override x.WriteByte(_) = failwith "seriously, no writing"
-            override x.Read(buffer, offset, count) = readFromStream buffer offset count
+        override x.Length =
+            length
+            |> Option.defaultWith (fun () ->
+                failwith "One or more of the encompassed streams are not seekable and the length cannot be determine")
 
-            interface IDisposable with
-                member x.Dispose() =
-                    streams
-                    |> Seq.iter (fun s -> s.Dispose())
-                    |> ignore
+        override x.Position
+            with get () = v
+            and set (_) = failwith "no position setting"
+
+        override x.Flush() = ()
+        override x.CanTimeout = false
+        override x.Seek(_, _) = failwith "no seeking"
+        override x.SetLength(_) = failwith "no setting length"
+        override x.Write(_, _, _) = failwith "no writing"
+        override x.WriteByte(_) = failwith "seriously, no writing"
+        override x.Read(buffer, offset, count) = readFromStream buffer offset count
+
+        interface IDisposable with
+            member x.Dispose() =
+                streams |> Seq.iter (fun s -> s.Dispose()) |> ignore
 
     ///     1) compute length (parts.Length * boundary_size) + Sum(parts.Streams.Length)
     ///     2) foreach part (formFieldName, fileName, fileContent)
@@ -1543,29 +1536,28 @@ module internal HttpHelpers =
 
             let takeIfSeekable (str: Stream) =
                 seekable <- str.CanSeek
-                if str.CanSeek then length <- length + str.Length
+
+                if str.CanSeek then
+                    length <- length + str.Length
+
                 str.CanSeek
 
-            streams
-            |> Seq.takeWhile takeIfSeekable
-            |> List.ofSeq
-            |> ignore
+            streams |> Seq.takeWhile takeIfSeekable |> List.ofSeq |> ignore
 
             if seekable then Some length else None
 
         let segments =
             parts
-            |> Seq.map (fun (MultipartFileItem (formField, fileName, contentType, contentStream)) ->
+            |> Seq.map (fun (MultipartFileItem(formField, fileName, contentType, contentStream)) ->
                 let printHeader (header, value) = sprintf "%s: %s" header value
 
                 let headers =
                     match contentType with
-                    | Some (contentType) ->
+                    | Some(contentType) ->
                         [ prefixedBoundary
                           HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
                           |> printHeader
-                          HttpRequestHeaders.ContentType contentType
-                          |> printHeader ]
+                          HttpRequestHeaders.ContentType contentType |> printHeader ]
                     | None ->
                         [ prefixedBoundary
                           HttpRequestHeaders.ContentDisposition("form-data", Some formField, fileName)
@@ -1601,7 +1593,7 @@ module internal HttpHelpers =
     let writeMultipart (boundary: string) (parts: seq<MultipartItem>) (e: Encoding) =
         let fileParts =
             parts
-            |> Seq.map (fun (MultipartItem (formField, fileName, stream)) ->
+            |> Seq.map (fun (MultipartItem(formField, fileName, stream)) ->
                 let fileExt = Path.GetExtension fileName
                 let contentType = defaultArg (MimeTypes.tryFind fileExt) "application/octet-stream"
                 MultipartFileItem(formField, Some fileName, Some contentType, stream))
@@ -1610,10 +1602,7 @@ module internal HttpHelpers =
 
     let asyncCopy (source: Stream) (dest: Stream) =
         async {
-            do!
-                source.CopyToAsync(dest)
-                |> Async.AwaitIAsyncResult
-                |> Async.Ignore
+            do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
 
             source.Dispose()
         }
@@ -1626,7 +1615,9 @@ module internal HttpHelpers =
 
     let writeBody (req: HttpWebRequest) (data: Stream) =
         async {
-            if data.CanSeek then req.ContentLength <- data.Length
+            if data.CanSeek then
+                req.ContentLength <- data.Length
+
             use! output = req.GetRequestStreamAsync() |> Async.AwaitTask
             do! asyncCopy data output
             output.Flush()
@@ -1635,7 +1626,7 @@ module internal HttpHelpers =
     let reraisePreserveStackTrace (e: Exception) =
         try
             let remoteStackTraceString =
-                typeof<exn>.GetField ("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+                typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
 
             if not (isNull remoteStackTraceString) then
                 remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
@@ -1651,7 +1642,8 @@ module internal HttpHelpers =
             with
             // If an exception happens, augment the message with the response
             | :? WebException as exn ->
-                if isNull exn.Response then reraisePreserveStackTrace exn
+                if isNull exn.Response then
+                    reraisePreserveStackTrace exn
 
                 let responseExn =
                     try
@@ -1836,10 +1828,8 @@ module internal HttpHelpers =
                     || mimeType = HttpContentTypes.JsonRpc
                     || mimeType = "application/ecmascript"
                     || mimeType = "application/xml-dtd"
-                    || mimeType.StartsWith "application/"
-                       && mimeType.EndsWith "+xml"
-                    || mimeType.StartsWith "application/"
-                       && mimeType.EndsWith "+json"
+                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+json"
 
                 mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
                 |> Array.exists isText
@@ -1892,10 +1882,7 @@ module internal CookieHandling =
 
             while i < cookiesWithWrongSplit.Length - 1
                   && isInvalidCookie cookiesWithWrongSplit.[i + 1] do
-                currentCookie <-
-                    currentCookie
-                    + ","
-                    + cookiesWithWrongSplit.[i + 1]
+                currentCookie <- currentCookie + "," + cookiesWithWrongSplit.[i + 1]
 
                 i <- i + 1
 
@@ -1944,7 +1931,8 @@ module internal CookieHandling =
                             |> stripPrefix "http://"
                             |> stripPrefix "https://"
 
-                        if domain <> "" then cookie.Domain <- domain
+                        if domain <> "" then
+                            cookie.Domain <- domain
                 elif cookiePart |> equalsIgnoreCase "secure" then
                     cookie.Secure <- true
                 elif cookiePart |> equalsIgnoreCase "httponly" then
@@ -1957,7 +1945,9 @@ module internal CookieHandling =
 
                if cookieParts.Length > 0 then
                    let cookie = createCookie cookieParts
-                   if cookie.Domain = "" then cookie.Domain <- responseUri.Host
+
+                   if cookie.Domain = "" then
+                       cookie.Domain <- responseUri.Host
 
                    let uriString =
                        (if cookie.Secure then "https://" else "http://")
@@ -2020,12 +2010,7 @@ type Http private () =
         | query ->
             url
             + if url.Contains "?" then "&" else "?"
-            + String.concat
-                "&"
-                [ for k, v in query ->
-                      Uri.EscapeDataString k
-                      + "="
-                      + Uri.EscapeDataString v ]
+            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest
         (
@@ -2044,9 +2029,7 @@ type Http private () =
             [<Optional>] ?timeout
         ) =
 
-        let uri =
-            Http.AppendQueryToUrl(url, defaultArg query [])
-            |> Uri
+        let uri = Http.AppendQueryToUrl(url, defaultArg query []) |> Uri
 
         let req = WebRequest.CreateHttp uri
 
@@ -2058,9 +2041,7 @@ type Http private () =
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let hasContentType = setHeaders headers req
 
-        req.AutomaticDecompression <-
-            DecompressionMethods.GZip
-            ||| DecompressionMethods.Deflate
+        req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
 
         // set cookies
         let addCookiesFromHeadersToCookieContainer, cookieContainer =
@@ -2096,28 +2077,25 @@ type Http private () =
                     | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
                     | FormValues values ->
                         let bytes (e: Encoding) =
-                            [ for k, v in values ->
-                                  Http.EncodeFormData k
-                                  + "="
-                                  + Http.EncodeFormData v ]
+                            [ for k, v in values -> Http.EncodeFormData k + "=" + Http.EncodeFormData v ]
                             |> String.concat "&"
                             |> e.GetBytes
 
                         HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
-                    | Multipart (boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
-                    | MultipartFormData (boundary, parts) ->
+                    | Multipart(boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
+                    | MultipartFormData(boundary, parts) ->
                         let fileParts =
                             parts
                             |> Seq.map (fun p ->
                                 match p with
-                                | FormValue (formField, value) ->
+                                | FormValue(formField, value) ->
                                     MultipartFileItem(
                                         formField,
                                         None,
                                         None,
                                         new MemoryStream(Encoding.UTF8.GetBytes(value))
                                     )
-                                | FileValue (item) -> item)
+                                | FileValue(item) -> item)
 
                         HttpContentTypes.Multipart(boundary), writeMultipartFileItem boundary fileParts
 

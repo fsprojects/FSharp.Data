@@ -60,10 +60,7 @@ module XsdModel =
 module XsdParsing =
 
     let ofType<'a> (sequence: System.Collections.IEnumerable) =
-        sequence
-        |> Seq.cast<obj>
-        |> Seq.filter (fun x -> x :? 'a)
-        |> Seq.cast<'a>
+        sequence |> Seq.cast<obj> |> Seq.filter (fun x -> x :? 'a) |> Seq.cast<'a>
 
 
     type ParsingContext(xmlSchemaSet: XmlSchemaSet) =
@@ -90,15 +87,13 @@ module XsdParsing =
                     | false, _ -> ()
                     | true, substVal ->
                         for x in substVal do
-                            if items.Add x then collect x
+                            if items.Add x then
+                                collect x
 
                 collect elm
                 items |> List.ofSeq
 
-            let subst' =
-                subst.Keys
-                |> Seq.map (fun x -> x, collectSubst x)
-                |> dict
+            let subst' = subst.Keys |> Seq.map (fun x -> x, collectSubst x) |> dict
 
             fun elm ->
                 match subst'.TryGetValue elm with
@@ -164,10 +159,7 @@ module XsdParsing =
             | XmlSchemaContentType.TextOnly -> SimpleContent(getTypeCode x.Datatype)
             | XmlSchemaContentType.Mixed
             | XmlSchemaContentType.Empty
-            | XmlSchemaContentType.ElementOnly ->
-                x.ContentTypeParticle
-                |> parseParticle ctx
-                |> ComplexContent
+            | XmlSchemaContentType.ElementOnly -> x.ContentTypeParticle |> parseParticle ctx |> ComplexContent
             | _ -> failwithf "Unknown content type: %A." x.ContentType }
 
 
@@ -342,21 +334,19 @@ module internal XsdInference =
     // collects element definitions in a particle
     and getElements ctx parentMultiplicity =
         function
-        | XsdParticle.Element (occ, elm) ->
+        | XsdParticle.Element(occ, elm) ->
             let mult = combineMultiplicity (parentMultiplicity, getMultiplicity occ)
 
             match elm.IsAbstract, elm.SubstitutionGroup with
             | _, [] -> [ (elm, mult) ]
             | true, [ x ] -> [ (x, mult) ]
             | true, x -> x |> List.map (fun e -> e, makeOptional mult)
-            | false, x ->
-                elm :: x
-                |> List.map (fun e -> e, makeOptional mult)
-        | XsdParticle.Sequence (occ, particles)
-        | XsdParticle.All (occ, particles) ->
+            | false, x -> elm :: x |> List.map (fun e -> e, makeOptional mult)
+        | XsdParticle.Sequence(occ, particles)
+        | XsdParticle.All(occ, particles) ->
             let mult = combineMultiplicity (parentMultiplicity, getMultiplicity occ)
             particles |> List.collect (getElements ctx mult)
-        | XsdParticle.Choice (occ, particles) ->
+        | XsdParticle.Choice(occ, particles) ->
             let mult = makeOptional (getMultiplicity occ)
             let mult' = combineMultiplicity (parentMultiplicity, mult)
             particles |> List.collect (getElements ctx mult')
@@ -367,9 +357,7 @@ module internal XsdInference =
     let inferElements elms =
         let ctx = InferenceContext()
 
-        match elms
-              |> List.filter (fun elm -> not elm.IsAbstract)
-            with
+        match elms |> List.filter (fun elm -> not elm.IsAbstract) with
         | [] -> failwith "No suitable element definition found in the schema."
         | [ elm ] -> inferElementType ctx elm
         | elms ->

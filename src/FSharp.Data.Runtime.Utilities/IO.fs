@@ -14,9 +14,7 @@ type internal UriResolutionType =
     | RuntimeInFSI
 
 let internal isWeb (uri: Uri) =
-    uri.IsAbsoluteUri
-    && not uri.IsUnc
-    && uri.Scheme <> "file"
+    uri.IsAbsoluteUri && not uri.IsUnc && uri.Scheme <> "file"
 
 type internal UriResolver =
 
@@ -266,8 +264,7 @@ let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder forma
     let resolver =
         UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), defaultResolutionFolder, resolutionFolder)
 
-    asyncRead resolver formatName encodingStr uri
-    |> fst
+    asyncRead resolver formatName encodingStr uri |> fst
 
 /// Returns a TextReader for the uri using the designtime resolution rules
 let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri =
@@ -276,5 +273,4 @@ let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolution
     let resolver =
         UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
 
-    asyncRead resolver formatName encodingStr uri
-    |> fst
+    asyncRead resolver formatName encodingStr uri |> fst

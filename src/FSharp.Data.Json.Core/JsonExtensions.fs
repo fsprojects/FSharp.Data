@@ -1,7 +1,4 @@
-﻿/// Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
-/// This module also provides the dynamic operator.
-
-namespace FSharp.Data
+﻿namespace FSharp.Data
 
 open System
 open System.Globalization
@@ -11,7 +8,8 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Core
 
-/// Extension methods with operations on JSON values
+/// Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
+/// This module also provides the dynamic operator.
 [<Extension>]
 type JsonExtensions =
 
@@ -29,22 +27,18 @@ type JsonExtensions =
         match x with
         | JsonValue.Record properties ->
             match Array.tryFind (fst >> (=) propertyName) properties with
-            | Some (_, value) -> value
+            | Some(_, value) -> value
             | None ->
                 failwithf "Didn't find property '%s' in %s" propertyName
-                <| x.ToString(JsonSaveOptions.DisableFormatting)
-        | _ ->
-            failwithf "Not an object: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+                <| x.ToString JsonSaveOptions.DisableFormatting
+        | _ -> failwithf "Not an object: %s" <| x.ToString JsonSaveOptions.DisableFormatting
 
     /// Try to get a property of a JSON value.
     /// Returns None if the value is not an object or if the property is not present.
     [<Extension>]
     static member TryGetProperty(x, propertyName) =
         match x with
-        | JsonValue.Record properties ->
-            Array.tryFind (fst >> (=) propertyName) properties
-            |> Option.map snd
+        | JsonValue.Record properties -> Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
         | _ -> None
 
     /// Assuming the value is an object, get value with the specified name
@@ -77,9 +71,7 @@ type JsonExtensions =
 
         match JsonConversions.AsString false cultureInfo x with
         | Some s -> s
-        | _ ->
-            failwithf "Not a string: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a string: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get a number as an integer (assuming that the value fits in integer)
     [<Extension>]
@@ -88,9 +80,7 @@ type JsonExtensions =
 
         match JsonConversions.AsInteger cultureInfo x with
         | Some i -> i
-        | _ ->
-            failwithf "Not an int: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not an int: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
     [<Extension>]
@@ -99,9 +89,7 @@ type JsonExtensions =
 
         match JsonConversions.AsInteger64 cultureInfo x with
         | Some i -> i
-        | _ ->
-            failwithf "Not an int64: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not an int64: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get a number as a decimal (assuming that the value fits in decimal)
     [<Extension>]
@@ -110,9 +98,7 @@ type JsonExtensions =
 
         match JsonConversions.AsDecimal cultureInfo x with
         | Some d -> d
-        | _ ->
-            failwithf "Not a decimal: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a decimal: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get a number as a float (assuming that the value is convertible to a float)
     [<Extension>]
@@ -122,18 +108,14 @@ type JsonExtensions =
 
         match JsonConversions.AsFloat missingValues false cultureInfo x with
         | Some f -> f
-        | _ ->
-            failwithf "Not a float: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a float: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get the boolean value of an element (assuming that the value is a boolean)
     [<Extension>]
     static member AsBoolean(x) =
         match JsonConversions.AsBoolean x with
         | Some b -> b
-        | _ ->
-            failwithf "Not a boolean: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a boolean: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get the datetime value of an element (assuming that the value is a string
     /// containing well-formed ISO date or MSFT JSON date)
@@ -143,9 +125,7 @@ type JsonExtensions =
 
         match JsonConversions.AsDateTime cultureInfo x with
         | Some d -> d
-        | _ ->
-            failwithf "Not a datetime: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a datetime: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get the datetime offset value of an element (assuming that the value is a string
     /// containing well-formed ISO date time with offset or MSFT JSON datetime with offset)
@@ -167,18 +147,14 @@ type JsonExtensions =
 
         match JsonConversions.AsTimeSpan cultureInfo x with
         | Some t -> t
-        | _ ->
-            failwithf "Not a time span: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a time span: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get the guid value of an element (assuming that the value is a guid)
     [<Extension>]
     static member AsGuid(x) =
         match JsonConversions.AsGuid x with
         | Some g -> g
-        | _ ->
-            failwithf "Not a guid: %s"
-            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | _ -> failwithf "Not a guid: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
     /// Get inner text of an element
     [<Extension>]
@@ -198,6 +174,7 @@ module JsonExtensions =
     let (?) (jsonObject: JsonValue) propertyName = jsonObject.GetProperty(propertyName)
 
     type JsonValue with
+
         member x.Properties =
             match x with
             | JsonValue.Record properties -> properties
@@ -224,14 +201,12 @@ module Options =
         /// Returns None if the value is not an object or if the property is not present.
         member x.TryGetProperty(propertyName) =
             match x with
-            | JsonValue.Record properties ->
-                Array.tryFind (fst >> (=) propertyName) properties
-                |> Option.map snd
+            | JsonValue.Record properties -> Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
             | _ -> None
 
         /// Try to get a property of a JSON value.
         /// Returns None if the value is not a JSON object or if the property is not present.
-        member inline x.Item
+        member x.Item
             with get (propertyName) = x.TryGetProperty(propertyName)
 
         /// Get all the elements of a JSON value.
@@ -245,7 +220,7 @@ module Options =
         member inline x.GetEnumerator() = x.AsArray().GetEnumerator()
 
         /// Try to get the value at the specified index, if the value is a JSON array.
-        member inline x.Item
+        member x.Item
             with get (index) = x.AsArray().[index]
 
         /// Get the string value of an element (assuming that the value is a scalar)
@@ -304,10 +279,7 @@ module Options =
         member x.InnerText =
             match x.AsString() with
             | Some str -> str
-            | None ->
-                x.AsArray()
-                |> Array.map (fun e -> e.InnerText)
-                |> String.Concat
+            | None -> x.AsArray() |> Array.map (fun e -> e.InnerText) |> String.Concat
 
     [<Extension>]
     [<AbstractClass>]
@@ -317,7 +289,7 @@ module Options =
         [<Extension>]
         static member Properties(x) =
             match x with
-            | Some (json: JsonValue) -> json.Properties
+            | Some(json: JsonValue) -> json.Properties
             | None -> [||]
 
         /// Try to get a property of a JSON value.
@@ -325,9 +297,7 @@ module Options =
         [<Extension>]
         static member TryGetProperty(x, propertyName) =
             match x with
-            | Some (JsonValue.Record properties) ->
-                Array.tryFind (fst >> (=) propertyName) properties
-                |> Option.map snd
+            | Some(JsonValue.Record properties) -> Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
             | _ -> None
 
         /// Try to get a property of a JSON value.
@@ -341,7 +311,7 @@ module Options =
         [<Extension>]
         static member AsArray(x) =
             match x with
-            | Some (JsonValue.Array elements) -> elements
+            | Some(JsonValue.Array elements) -> elements
             | _ -> [||]
 
         /// Get all the elements of a JSON value (assuming that the value is an array)
@@ -359,32 +329,28 @@ module Options =
         static member AsString(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsString false cultureInfo)
+            x |> Option.bind (JsonConversions.AsString false cultureInfo)
 
         /// Get a number as an integer (assuming that the value fits in integer)
         [<Extension>]
         static member AsInteger(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsInteger cultureInfo)
+            x |> Option.bind (JsonConversions.AsInteger cultureInfo)
 
         /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
         [<Extension>]
         static member AsInteger64(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsInteger64 cultureInfo)
+            x |> Option.bind (JsonConversions.AsInteger64 cultureInfo)
 
         /// Get a number as a decimal (assuming that the value fits in decimal)
         [<Extension>]
         static member AsDecimal(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsDecimal cultureInfo)
+            x |> Option.bind (JsonConversions.AsDecimal cultureInfo)
 
         /// Get a number as a float (assuming that the value is convertible to a float)
         [<Extension>]
@@ -392,16 +358,14 @@ module Options =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
             let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
 
-            x
-            |> Option.bind (JsonConversions.AsFloat missingValues true cultureInfo)
+            x |> Option.bind (JsonConversions.AsFloat missingValues true cultureInfo)
 
         /// Get the boolean value of an element (assuming that the value is a boolean)
         [<Extension>]
         static member AsBoolean(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsBoolean cultureInfo)
+            x |> Option.bind (JsonConversions.AsBoolean cultureInfo)
 
         /// Get the datetime value of an element (assuming that the value is a string
         /// containing well-formed ISO date or MSFT JSON date)
@@ -409,8 +373,7 @@ module Options =
         static member AsDateTime(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsDateTime cultureInfo)
+            x |> Option.bind (JsonConversions.AsDateTime cultureInfo)
 
         /// Get the datetime offset value of an element (assuming that the value is a string
         /// containing well-formed ISO date time with offset)
@@ -418,8 +381,7 @@ module Options =
         static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) =
             let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
-            x
-            |> Option.bind (JsonConversions.AsDateTimeOffset cultureInfo)
+            x |> Option.bind (JsonConversions.AsDateTimeOffset cultureInfo)
 
         /// Get the timespan value of an element (assuming that the value is a timespan)
         [<Extension>]
@@ -443,13 +405,12 @@ module Options =
     /// <exclude />
     type JsonValueOverloads = JsonValueOverloads
         with
+
             static member inline ($)(x: JsonValue, JsonValueOverloads) =
                 fun propertyName -> x.TryGetProperty propertyName
 
             static member inline ($)(x: JsonValue option, JsonValueOverloads) =
-                fun propertyName ->
-                    x
-                    |> Option.bind (fun x -> x.TryGetProperty propertyName)
+                fun propertyName -> x |> Option.bind (fun x -> x.TryGetProperty propertyName)
 
     /// Get property of a JSON value (assuming that the value is an object)
     let inline (?) x (propertyName: string) = (x $ JsonValueOverloads) propertyName

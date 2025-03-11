@@ -91,10 +91,10 @@ module internal CsvTypeBuilder =
 
         // The erased csv type will be parameterised by the tuple type
         let csvErasedTypeWithRowErasedType =
-            typedefof<CsvFile<_>>.MakeGenericType (rowErasedType)
+            typedefof<CsvFile<_>>.MakeGenericType(rowErasedType)
 
         let csvErasedTypeWithGeneratedRowType =
-            typedefof<CsvFile<_>>.MakeGenericType (rowType)
+            typedefof<CsvFile<_>>.MakeGenericType(rowType)
 
         let csvType =
             ProvidedTypeDefinition(
@@ -121,7 +121,7 @@ module internal CsvTypeBuilder =
                 | cols -> Expr.NewTuple cols
 
             let delegateType =
-                typedefof<Func<_, _, _>>.MakeGenericType (typeof<obj>, typeof<string[]>, rowErasedType)
+                typedefof<Func<_, _, _>>.MakeGenericType(typeof<obj>, typeof<string[]>, rowErasedType)
 
             Expr.NewDelegate(delegateType, [ parentVar; rowVar ], body)
 
@@ -134,7 +134,7 @@ module internal CsvTypeBuilder =
                 Expr.NewArray(typeof<string>, [ for field in fields -> field.ConvertBack rowVarExpr ])
 
             let delegateType =
-                typedefof<Func<_, _>>.MakeGenericType (rowErasedType, typeof<string[]>)
+                typedefof<Func<_, _>>.MakeGenericType(rowErasedType, typeof<string[]>)
 
             Expr.NewDelegate(delegateType, [ rowVar ], body)
 

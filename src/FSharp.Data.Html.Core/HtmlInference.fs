@@ -56,9 +56,7 @@ let internal inferListType parameters (values: string[]) =
     if values.Length > 0 then
         let inferedtype value =
             // If there's only whitespace, treat it as a missing value and not as a string
-            if String.IsNullOrWhiteSpace value
-               || value = "&nbsp;"
-               || value = "&nbsp" then
+            if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then
                 InferedType.Null
             // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
             elif Array.exists ((=) <| value.Trim()) parameters.MissingValues then

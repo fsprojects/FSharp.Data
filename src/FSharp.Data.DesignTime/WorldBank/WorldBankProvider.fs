@@ -18,11 +18,8 @@ open FSharp.Data.Runtime.WorldBank
 
 [<TypeProvider>]
 type public WorldBankProvider(cfg: TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces
-        (
-            cfg,
-            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
-        )
+    inherit
+        DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     do AssemblyResolver.init ()
     let asm = System.Reflection.Assembly.GetExecutingAssembly()
@@ -76,7 +73,10 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                                       typeof<Async<Indicator>>,
                                       getterCode =
                                           (fun (Singleton arg) ->
-                                              <@@ ((%%arg: Indicators) :> IIndicators).AsyncGetIndicator(indicatorIdVal) @@>)
+                                              <@@
+                                                  ((%%arg: Indicators) :> IIndicators)
+                                                      .AsyncGetIndicator(indicatorIdVal)
+                                              @@>)
                                   )
                               else
                                   ProvidedProperty(
@@ -196,7 +196,8 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                           ProvidedProperty(
                               "Indicators",
                               indicatorsType,
-                              getterCode = (fun (Singleton arg) -> <@@ ((%%arg: Region) :> IRegion).GetIndicators() @@>)
+                              getterCode =
+                                  (fun (Singleton arg) -> <@@ ((%%arg: Region) :> IRegion).GetIndicators() @@>)
                           )
 
                       prop.AddXmlDoc("<summary>The indicators for the region</summary>")
@@ -206,7 +207,8 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                           ProvidedProperty(
                               "Countries",
                               countriesType,
-                              getterCode = (fun (Singleton arg) -> <@@ ((%%arg: Region) :> IRegion).GetCountries() @@>)
+                              getterCode =
+                                  (fun (Singleton arg) -> <@@ ((%%arg: Region) :> IRegion).GetCountries() @@>)
                           )
 
                       prop.AddXmlDoc("<summary>The indicators for the region</summary>")
@@ -235,7 +237,10 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                                   regionType,
                                   getterCode =
                                       (fun (Singleton arg) ->
-                                          <@@ ((%%arg: RegionCollection<Region>) :> IRegionCollection).GetRegion(code) @@>)
+                                          <@@
+                                              ((%%arg: RegionCollection<Region>) :> IRegionCollection)
+                                                  .GetRegion(code)
+                                          @@>)
                               )
 
                           prop.AddXmlDoc(sprintf "The data for region '%s'" name)
@@ -284,7 +289,10 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                                   topicType,
                                   getterCode =
                                       (fun (Singleton arg) ->
-                                          <@@ ((%%arg: TopicCollection<Topic>) :> ITopicCollection).GetTopic(topicIdVal) @@>)
+                                          <@@
+                                              ((%%arg: TopicCollection<Topic>) :> ITopicCollection)
+                                                  .GetTopic(topicIdVal)
+                                          @@>)
                               )
 
                           if not (String.IsNullOrEmpty topic.Description) then
@@ -309,7 +317,8 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                           "Countries",
                           countriesType,
                           getterCode =
-                              (fun (Singleton arg) -> <@@ ((%%arg: WorldBankData) :> IWorldBankData).GetCountries() @@>)
+                              (fun (Singleton arg) ->
+                                  <@@ ((%%arg: WorldBankData) :> IWorldBankData).GetCountries() @@>)
                       )
                       ProvidedProperty(
                           "Regions",
@@ -334,7 +343,13 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
                   let gdcCode _ =
                       <@@ WorldBankData(urlVal, sourcesVal) @@>
 
-                  ProvidedMethod("GetDataContext", [], worldBankDataServiceType, isStatic = true, invokeCode = gdcCode) ])
+                  ProvidedMethod(
+                      "GetDataContext",
+                      [],
+                      worldBankDataServiceType,
+                      isStatic = true,
+                      invokeCode = gdcCode
+                  ) ])
 
             resTy)
 
@@ -370,8 +385,7 @@ type public WorldBankProvider(cfg: TypeProviderConfig) as this =
             parameters,
             fun typeName providerArgs ->
                 let sources =
-                    (providerArgs.[0] :?> string)
-                        .Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
+                    (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
                     |> Array.toList
 
                 let isAsync = providerArgs.[1] :?> bool
