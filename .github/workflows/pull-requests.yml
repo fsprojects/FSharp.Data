@@ -36,11 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.425
-    - name: Setup .NET Core 8
+    - name: Setup .NET Core 9
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.400
@@ -48,8 +44,6 @@ jobs:
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
-    - name: Format code
-      run: dotnet fake build -t Format
     - name: Build and test
       run: dotnet run --project build/build.fsproj -- -t RunTests
     - name: Build (Debug)

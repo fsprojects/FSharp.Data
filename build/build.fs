@@ -215,7 +215,8 @@ let buildscript () =
         if result.ExitCode = 0 then
             Trace.log "No files need formatting"
         elif result.ExitCode = 99 then
-            failwith "Some files need formatting, run `dotnet fake build -t Format` to format them"
+            failwith
+                "Some files need formatting, run `dotnet run --project build/build.fsproj -- -t Format` to format them"
         else
             Trace.logf "Errors while formatting: %A" result.Errors
             failwith "Unknown errors while formatting")

@@ -2,15 +2,15 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "fsdocs-tool": {
-      "version": "20.0.1",
+    "paket": {
+      "version": "9.0.2",
       "commands": [
         "paket"
       ],
       "rollForward": false
     },
-    "paket": {
-      "version": "9.0.2",
+    "fsdocs-tool": {
+      "version": "20.0.1",
       "commands": [
         "fsdocs"
       ],
