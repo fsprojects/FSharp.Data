@@ -25,19 +25,14 @@ let generateSetupScript dir proj =
             Some(attr.Value)
 
     let (|??) (option1: 'a Option) option2 =
-        if option1.IsSome then
-            option1
-        else
-            option2
+        if option1.IsSome then option1 else option2
 
     let fsProjFile = Path.Combine(dir, proj + ".fsproj")
     let fsProjXml = XDocument.Load fsProjFile
 
     let refs =
         fsProjXml.Document.Descendants(getElemName "Reference")
-        |> Seq.choose (fun elem ->
-            getElemValue "HintPath" elem
-            |?? getAttrValue "Include" elem)
+        |> Seq.choose (fun elem -> getElemValue "HintPath" elem |?? getAttrValue "Include" elem)
         |> Seq.map (fun ref -> ref.Replace(@"\", @"\\").Split(',').[0])
         |> Seq.filter (fun ref ->
             ref <> "mscorlib"

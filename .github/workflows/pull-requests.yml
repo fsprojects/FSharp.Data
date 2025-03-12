@@ -48,6 +48,8 @@ jobs:
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
+    - name: Format code
+      run: dotnet fake build -t Format
     - name: Build and test
       run: dotnet run --project build/build.fsproj -- -t RunTests
     - name: Build (Debug)

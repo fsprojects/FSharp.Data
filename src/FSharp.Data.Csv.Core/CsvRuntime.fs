@@ -382,7 +382,7 @@ type CsvFile<'RowType>
         let probablyTabSeparated =
             parsedCsvLines.ColumnCount < 2
             && noSeparatorsSpecified
-            && fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.Contains("\t"))
+            && fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.Contains "\t")
 
         let parsedCsvLines =
             if probablyTabSeparated then

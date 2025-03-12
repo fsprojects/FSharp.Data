@@ -5,20 +5,23 @@
     "fsdocs-tool": {
       "version": "20.0.1",
       "commands": [
-        "fsdocs"
-      ]
+        "paket"
+      ],
+      "rollForward": false
     },
     "paket": {
       "version": "9.0.2",
       "commands": [
-        "paket"
-      ]
+        "fsdocs"
+      ],
+      "rollForward": false
     },
     "fantomas": {
       "version": "7.0.1",
       "commands": [
         "fantomas"
-      ]
+      ],
+      "rollForward": false
     }
   }
 }

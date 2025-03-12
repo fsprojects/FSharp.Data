@@ -436,6 +436,7 @@ let internal inferColumnTypes
     ||> getFields preferOptionals
 
 type CsvFile with
+
     /// <summary>
     /// Infers the types of the columns of a CSV file
     /// </summary>

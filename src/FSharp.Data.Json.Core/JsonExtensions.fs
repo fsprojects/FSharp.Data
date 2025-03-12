@@ -1,7 +1,4 @@
-﻿/// Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
-/// This module also provides the dynamic operator.
-
-namespace FSharp.Data
+﻿namespace FSharp.Data
 
 open System
 open System.Globalization
@@ -11,7 +8,8 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Core
 
-/// Extension methods with operations on JSON values
+/// Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
+/// This module also provides the dynamic operator.
 [<Extension>]
 type JsonExtensions =
 
@@ -32,8 +30,8 @@ type JsonExtensions =
             | Some(_, value) -> value
             | None ->
                 failwithf "Didn't find property '%s' in %s" propertyName
-                <| x.ToString(JsonSaveOptions.DisableFormatting)
-        | _ -> failwithf "Not an object: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
+                <| x.ToString JsonSaveOptions.DisableFormatting
+        | _ -> failwithf "Not an object: %s" <| x.ToString JsonSaveOptions.DisableFormatting
 
     /// Try to get a property of a JSON value.
     /// Returns None if the value is not an object or if the property is not present.
@@ -176,6 +174,7 @@ module JsonExtensions =
     let (?) (jsonObject: JsonValue) propertyName = jsonObject.GetProperty(propertyName)
 
     type JsonValue with
+
         member x.Properties =
             match x with
             | JsonValue.Record properties -> properties

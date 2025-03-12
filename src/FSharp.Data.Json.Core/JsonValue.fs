@@ -18,7 +18,7 @@ open System.Text
 open FSharp.Data.Runtime
 
 /// Specifies the formatting behaviour of JSON values
-[<RequireQualifiedAccess>]
+// [<RequireQualifiedAccess>]
 type JsonSaveOptions =
     /// Format (indent) the JsonValue
     | None = 0

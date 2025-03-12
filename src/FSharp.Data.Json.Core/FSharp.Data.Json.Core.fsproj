@@ -17,6 +17,7 @@
     <Compile Include="JsonDocument.fs" />
     <Compile Include="JsonRuntime.fs" />
     <Compile Include="JsonInference.fs" />
+    <Compile Include="JsonSchema.fs" />
     <Compile Include="..\AssemblyInfo.Json.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />

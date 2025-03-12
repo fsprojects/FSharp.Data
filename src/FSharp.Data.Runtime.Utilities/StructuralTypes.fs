@@ -144,6 +144,7 @@ type InferedType =
 // Additional operations for working with the inferred representation
 
 type internal InferedTypeTag with
+
     member x.NiceName =
         match x with
         | Null -> failwith "Null nodes should be skipped"
@@ -205,7 +206,7 @@ type Bit = Bit
 // ------------------------------------------------------------------------------------------------
 
 /// Represents a transformation of a type
-[<Struct; RequireQualifiedAccess>]
+[<RequireQualifiedAccess>]
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 type TypeWrapper =
     /// No transformation will be made to the type
