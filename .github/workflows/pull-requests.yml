@@ -12,10 +12,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.425
     - name: Setup .NET Core 8
       uses: actions/setup-dotnet@v1
       with:
@@ -27,7 +23,7 @@ jobs:
     - name: Build and test (Release)
       env:
         FAKE_DETAILED_ERRORS: true
-      run: dotnet fake build -t All
+      run: dotnet run --project build/build.fsproj -- -t All
     - name: Build (Debug)
       run: dotnet build -c Debug -v n
 
@@ -36,10 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.425
     - name: Setup .NET Core 8
       uses: actions/setup-dotnet@v1
       with:
@@ -48,9 +40,7 @@ jobs:
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
-    - name: Format code
-      run: dotnet fake build -t Format
     - name: Build and test
-      run: dotnet fake build -t RunTests
+      run: dotnet run --project build/build.fsproj -- -t RunTests
     - name: Build (Debug)
       run: dotnet build -c Debug -v n
