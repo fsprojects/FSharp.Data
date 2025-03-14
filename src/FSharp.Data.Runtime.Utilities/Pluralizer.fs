@@ -50,6 +50,7 @@ let private tables =
 
                "cis", "ces"
                "us", "uses"
+               "ase", "ases"
                "sis", "ses"
                "xis", "xes"
 
