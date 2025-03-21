@@ -1,6 +1,7 @@
 namespace FSharp.Data
-
+#if HIDE_REPRESENTATION
 [<AutoOpen>]
+#endif
 module HtmlActivePatterns =
     let (|HtmlElement|HtmlText|HtmlComment|HtmlCData|) (node: HtmlNode) =
         match node with
