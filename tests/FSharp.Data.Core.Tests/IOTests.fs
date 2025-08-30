@@ -95,7 +95,7 @@ let ``asyncReadTextAtRuntime creates proper async workflow for file URIs``() =
     let tempFile = Path.GetTempFileName()
     try
         File.WriteAllText(tempFile, "test content")
-        let fileUri = "file:///" + tempFile.Replace("\\", "/")
+        let fileUri = Uri(tempFile).ToString()
         
         let asyncReader = asyncReadTextAtRuntime false "C:\\default" "" "TEST" "" fileUri
         let result = asyncReader |> Async.RunSynchronously
@@ -111,7 +111,7 @@ let ``asyncReadTextAtRuntimeWithDesignTimeRules creates proper async workflow``(
     let tempFile = Path.GetTempFileName()
     try
         File.WriteAllText(tempFile, "design time content")
-        let fileUri = "file:///" + tempFile.Replace("\\", "/")
+        let fileUri = Uri(tempFile).ToString()
         
         let asyncReader = asyncReadTextAtRuntimeWithDesignTimeRules "C:\\default" "" "TEST" "" fileUri
         let result = asyncReader |> Async.RunSynchronously
@@ -133,7 +133,7 @@ let ``asyncReadTextAtRuntime handles encoding parameter``() =
         // Write UTF-8 content with BOM
         let content = "test content with special chars: àáâã"
         File.WriteAllText(tempFile, content, System.Text.Encoding.UTF8)
-        let fileUri = "file:///" + tempFile.Replace("\\", "/")
+        let fileUri = Uri(tempFile).ToString()
         
         let asyncReader = asyncReadTextAtRuntime false "C:\\default" "" "TEST" "utf-8" fileUri
         let result = asyncReader |> Async.RunSynchronously
