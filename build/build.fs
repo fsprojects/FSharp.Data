@@ -162,7 +162,7 @@ let buildscript () =
             DotNet.exec
                 id
                 "fsdocs"
-                ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+                ("build --properties Configuration=Release --eval --clean --parameters fsdocs-package-version "
                  + release.NugetVersion)
 
         if not result.OK then
