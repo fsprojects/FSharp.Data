@@ -158,11 +158,26 @@ let buildscript () =
     Target.create "GenerateDocs" (fun _ ->
         Shell.cleanDir ".fsdocs"
 
+        // List of projects to include in documentation (excluding benchmark project)
+        let docProjects = [
+            "src/FSharp.Data/FSharp.Data.fsproj"
+            "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
+            "src/FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj"
+            "src/FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj"
+            "src/FSharp.Data.Html.Core/FSharp.Data.Html.Core.fsproj"
+            "src/FSharp.Data.Http/FSharp.Data.Http.fsproj"
+            "src/FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj"
+            "src/FSharp.Data.Xml.Core/FSharp.Data.Xml.Core.fsproj"
+            "src/FSharp.Data.WorldBank.Core/FSharp.Data.WorldBank.Core.fsproj"
+        ]
+        
+        let projectArgs = docProjects |> String.concat " "
+
         let result =
             DotNet.exec
                 id
                 "fsdocs"
-                ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+                ("build --projects " + projectArgs + " --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
                  + release.NugetVersion)
 
         if not result.OK then
@@ -221,6 +236,23 @@ let buildscript () =
             Trace.logf "Errors while formatting: %A" result.Errors
             failwith "Unknown errors while formatting")
 
+    Target.create "RunBenchmarks" (fun _ ->
+        let benchmarkProject =
+            "tests" </> "FSharp.Data.Benchmarks" </> "FSharp.Data.Benchmarks.fsproj"
+
+        DotNet.build
+            (fun opts ->
+                { opts with
+                    Configuration = DotNet.BuildConfiguration.Release })
+            benchmarkProject
+
+        let benchmarkDir = "tests" </> "FSharp.Data.Benchmarks"
+
+        Shell.Exec("dotnet", "run -c Release -- --job dry --filter \"*ParseSimpleJson*\"", benchmarkDir)
+        |> fun exitCode ->
+            if exitCode <> 0 then
+                failwith "Benchmark execution failed")
+
     Target.create "All" ignore
 
     "Clean" ==> "AssemblyInfo" ==> "CheckFormat" ==> "Build"
@@ -230,6 +262,7 @@ let buildscript () =
     "Build" ==> "Pack" ==> "All"
     "Build" ==> "All"
     "Build" ==> "RunTests" ==> "All"
+    "Build" ==> "RunBenchmarks"
 
     Target.runOrDefaultWithArguments "Help"
 
