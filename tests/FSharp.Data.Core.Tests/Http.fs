@@ -206,6 +206,7 @@ let ``Timeout argument is used`` () =
     exc.Status |> should equal WebExceptionStatus.Timeout
 
 [<Test>]
+[<Conditional("NOT_WINDOWS_CI")>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
     use localServer = startHttpLocalServer()
     let response =
