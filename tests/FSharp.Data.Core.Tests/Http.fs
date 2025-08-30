@@ -206,14 +206,23 @@ let ``Timeout argument is used`` () =
     exc.Status |> should equal WebExceptionStatus.Timeout
 
 [<Test>]
-[<Conditional("NOT_WINDOWS_CI")>]
 let ``Setting timeout in customizeHttpRequest overrides timeout argument`` () =
-    use localServer = startHttpLocalServer()
-    let response =
-        Http.Request(localServer.BaseAddress + "/401?sleep=1000", silentHttpErrors = true,
-            customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
+    // Skip this test on Windows when running in CI because of flaky timeout behavior on some Windows CI agents.
+    let isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+    let inCi =
+        let env v = Environment.GetEnvironmentVariable v
+        [ "CI"; "GITHUB_ACTIONS"; "TF_BUILD"; "APPVEYOR"; "GITLAB_CI"; "JENKINS_URL" ]
+        |> List.exists (fun e -> not (String.IsNullOrEmpty (env e)))
 
-    response.StatusCode |> should equal 401
+    if isWindows && inCi then
+        Assert.Ignore("Skipping test on Windows in CI")
+    else
+        use localServer = startHttpLocalServer()
+        let response =
+            Http.Request(localServer.BaseAddress + "/401?sleep=1000", silentHttpErrors = true,
+                customizeHttpRequest = (fun req -> req.Timeout <- Threading.Timeout.Infinite; req), timeout = 1)
+
+        response.StatusCode |> should equal 401
 
 let testFormDataSizesInBytes = [
     4000    // previous test size
