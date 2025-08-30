@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-01 15:32:53
+# Effective stop-time: 2025-09-01 15:35:23
 
 name: "CI Failure Doctor"
 "on":
@@ -10,6 +10,7 @@ name: "CI Failure Doctor"
     types:
     - completed
     workflows:
+    - Build and Test PR
     - Daily Perf Improver
     - Daily Test Coverage Improver
 
@@ -85,7 +86,7 @@ jobs:
           WORKFLOW_NAME="CI Failure Doctor"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-01 15:32:53"
+          STOP_TIME="2025-09-01 15:35:23"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
