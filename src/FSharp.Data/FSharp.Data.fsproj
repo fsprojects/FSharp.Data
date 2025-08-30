@@ -14,23 +14,23 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\AssemblyInfo.fs" />
+    <Compile Include="../AssemblyInfo.fs" />
     <Compile Include="Runtime.fs" />
-    <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="../../docs/img/logo.png" Pack="true" PackagePath="" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj">
+    <ProjectReference Include="../FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj">
       <IsFSharpDesignTimeProvider>true</IsFSharpDesignTimeProvider>
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="..\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Xml.Core/FSharp.Data.Xml.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Html.Core/FSharp.Data.Html.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.WorldBank.Core/FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Http/FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="../../.paket/Paket.Restore.targets" />
 </Project>
