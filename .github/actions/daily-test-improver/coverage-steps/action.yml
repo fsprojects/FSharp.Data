@@ -1,0 +1,66 @@
+name: 'Coverage Steps for Daily Test Coverage Improver'
+description: 'Build, test, and generate coverage reports for FSharp.Data'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET Core 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.400
+        
+    - name: Restore .NET local tools
+      shell: bash
+      run: dotnet tool restore
+      
+    - name: Restore packages
+      shell: bash
+      run: dotnet paket restore
+      
+    - name: Build solution
+      shell: bash
+      env:
+        FAKE_DETAILED_ERRORS: true
+      run: dotnet run --project build/build.fsproj -- -t Build
+      
+    - name: Run tests with coverage collection
+      shell: bash
+      run: |
+        dotnet test FSharp.Data.sln \
+          --configuration Release \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults/ \
+          --logger:"console;verbosity=normal" \
+          --settings coverlet.runsettings
+          
+    - name: Install ReportGenerator tool
+      shell: bash
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool || true
+      
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        reportgenerator \
+          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -targetdir:"TestResults/CoverageReport" \
+          -reporttypes:"Html;Cobertura;TextSummary" \
+          -verbosity:Info
+          
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: TestResults/CoverageReport/
+        retention-days: 7
+        
+    - name: Display coverage summary
+      shell: bash
+      run: |
+        if [ -f "TestResults/CoverageReport/Summary.txt" ]; then
+          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat "TestResults/CoverageReport/Summary.txt" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "Coverage summary file not found" >> $GITHUB_STEP_SUMMARY
+        fi

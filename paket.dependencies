@@ -56,3 +56,5 @@ group Test
     nuget FsUnit  4.0.4
     nuget FsCheck 2.15.1
     nuget GitHubActionsTestLogger
+    nuget coverlet.collector
+    nuget coverlet.msbuild
