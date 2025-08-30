@@ -38,42 +38,63 @@ module internal CsvReader =
 
         /// Read quoted string value until the end (ends with end of stream or
         /// the " character, which can be encoded using double ")
-        let rec readString (chars: StringBuilder) =
-            match reader.Read() with
-            | -1 -> chars
-            | Quote when reader.Peek() = int quote ->
-                reader.Read() |> ignore
-                readString (chars.Append quote)
-            | Quote -> chars
-            | Char c -> readString (chars.Append c)
+        let readString (chars: StringBuilder) =
+            let mutable finished = false
+
+            while not finished do
+                match reader.Read() with
+                | -1 -> finished <- true
+                | Quote when reader.Peek() = int quote ->
+                    reader.Read() |> ignore
+                    chars.Append quote |> ignore
+                | Quote -> finished <- true
+                | Char c -> chars.Append c |> ignore
+
+            chars
 
         /// Reads a line with data that are separated using specified separators
         /// and may be quoted. Ends with newline or end of input.
-        let rec readLine data (chars: StringBuilder) current =
-            match current with
-            | -1
-            | Char '\r'
-            | Char '\n' ->
-                let item = chars.ToString()
-                item :: data
-            | Separator ->
-                let item = chars.ToString()
-                readLine (item :: data) (StringBuilder()) (reader.Read())
-            | Quote -> readLine data (readString chars) (reader.Read())
-            | Char c -> readLine data (chars.Append c) (reader.Read())
+        let readLine current =
+            let data = ResizeArray<string>()
+            let chars = StringBuilder()
+            let mutable currentChar = current
+            let mutable finished = false
+
+            while not finished do
+                match currentChar with
+                | -1
+                | Char '\r'
+                | Char '\n' ->
+                    data.Add(chars.ToString())
+                    finished <- true
+                | Separator ->
+                    data.Add(chars.ToString())
+                    chars.Clear() |> ignore
+                    currentChar <- reader.Read()
+                | Quote ->
+                    readString chars |> ignore
+                    currentChar <- reader.Read()
+                | Char c ->
+                    chars.Append c |> ignore
+                    currentChar <- reader.Read()
+
+            data.ToArray()
 
         /// Reads multiple lines from the input, skipping newline characters
-        let rec readLines lineNumber =
-            match reader.Read() with
-            | -1 -> Seq.empty
-            | Char '\r'
-            | Char '\n' -> readLines lineNumber
-            | current ->
-                seq {
-                    yield readLine [] (StringBuilder()) current |> List.rev |> Array.ofList, lineNumber
+        let readLines lineNumber =
+            seq {
+                let mutable currentLineNumber = lineNumber
+                let mutable finished = false
 
-                    yield! readLines (lineNumber + 1)
-                }
+                while not finished do
+                    match reader.Read() with
+                    | -1 -> finished <- true
+                    | Char '\r'
+                    | Char '\n' -> ()
+                    | current ->
+                        yield readLine current, currentLineNumber
+                        currentLineNumber <- currentLineNumber + 1
+            }
 
         readLines 0
 
