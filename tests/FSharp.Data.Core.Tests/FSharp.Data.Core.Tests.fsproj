@@ -21,6 +21,7 @@
     <Compile Include="Http.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
+    <Compile Include="Caching.fs" />
     <Compile Include="JsonValue.fs" />
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
