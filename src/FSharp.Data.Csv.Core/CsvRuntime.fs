@@ -64,20 +64,16 @@ module internal CsvReader =
 
         /// Reads multiple lines from the input, skipping newline characters
         let rec readLines lineNumber =
-            seq {
-                match reader.Read() with
-                | -1 -> ()
-                | Char '\r'
-                | Char '\n' -> yield! readLines lineNumber
-                | current ->
-                    yield
-                        readLine [] (StringBuilder()) current
-                        |> List.rev
-                        |> Array.ofList,
-                        lineNumber
+            match reader.Read() with
+            | -1 -> Seq.empty
+            | Char '\r'
+            | Char '\n' -> readLines lineNumber
+            | current ->
+                seq {
+                    yield readLine [] (StringBuilder()) current |> List.rev |> Array.ofList, lineNumber
 
                     yield! readLines (lineNumber + 1)
-            }
+                }
 
         readLines 0
 
@@ -140,10 +136,7 @@ module private CsvHelpers =
             if not hasHeaders then
                 None
             else
-                firstLine
-                |> fst
-                |> Array.map (fun columnName -> columnName.Trim())
-                |> Some
+                firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
 
         // If there are no headers, use the number of columns of the first line
         let numberOfColumns =
@@ -182,7 +175,9 @@ module private CsvHelpers =
         let firstSeq =
             seq {
                 use linesIterator = linesIterator
-                if not hasHeaders then yield firstLine
+
+                if not hasHeaders then
+                    yield firstLine
 
                 match secondLine with
                 | Some line -> yield line
@@ -331,28 +326,33 @@ type CsvFile<'RowType>
         let reader = new StringReader(text) :> TextReader
 
         let csv =
-            CsvFile<_>.Create
-                (stringArrayToRow,
-                 null,
-                 reader,
-                 separators,
-                 quote,
-                 hasHeaders = false,
-                 ignoreErrors = ignoreErrors,
-                 skipRows = 0,
-                 cacheRows = false)
+            CsvFile<_>
+                .Create(
+                    stringArrayToRow,
+                    null,
+                    reader,
+                    separators,
+                    quote,
+                    hasHeaders = false,
+                    ignoreErrors = ignoreErrors,
+                    skipRows = 0,
+                    cacheRows = false
+                )
 
         csv.Rows |> Seq.toArray
 
     /// <exclude />
-    new(stringArrayToRow: Func<obj, string[], 'RowType>,
-        rowToStringArray,
-        readerFunc: Func<TextReader>,
-        separators,
-        quote,
-        hasHeaders,
-        ignoreErrors,
-        skipRows) as this =
+    new
+        (
+            stringArrayToRow: Func<obj, string[], 'RowType>,
+            rowToStringArray,
+            readerFunc: Func<TextReader>,
+            separators,
+            quote,
+            hasHeaders,
+            ignoreErrors,
+            skipRows
+        ) as this =
 
         // Track created Readers so that we can dispose of all of them
         let disposeFuncs = new ResizeArray<_>()
@@ -367,8 +367,7 @@ type CsvFile<'RowType>
 
         let newReader () =
             if disposed then
-                raise
-                <| ObjectDisposedException(this.GetType().Name)
+                raise <| ObjectDisposedException(this.GetType().Name)
 
             let reader = readerFunc.Invoke()
             disposeFuncs.Add reader.Dispose
@@ -383,8 +382,7 @@ type CsvFile<'RowType>
         let probablyTabSeparated =
             parsedCsvLines.ColumnCount < 2
             && noSeparatorsSpecified
-            && fst parsedCsvLines.FirstLine
-               |> Array.exists (fun c -> c.Contains("\t"))
+            && fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.Contains "\t")
 
         let parsedCsvLines =
             if probablyTabSeparated then
@@ -419,7 +417,8 @@ type CsvFile<'RowType>
                                 ColumnCount = columnCount - 1
                                 Headers = Some headers.[.. columnCount - 2] }
                         else
-                            { parsedCsvLines with SecondLine = secondline }
+                            { parsedCsvLines with
+                                SecondLine = secondline }
                     | None -> parsedCsvLines
                 else
                     parsedCsvLines
@@ -475,9 +474,7 @@ type CsvFile<'RowType>
             |> writeLine (fun item ->
                 let item = item |> nullSafeguard
 
-                if item.Contains separator
-                   || item.Contains quote
-                   || item.Contains "\n" then
+                if item.Contains separator || item.Contains quote || item.Contains "\n" then
                     writer.Write quote
                     writer.Write(item.Replace(quote, doubleQuote))
                     writer.Write quote
@@ -521,7 +518,7 @@ type CsvFile<'RowType>
     /// Returns a new csv with only the first N rows of the underlying csv.
     member x.Take count = Seq.take count |> x.mapRows
 
-    /// Returns a csv that, when iterated, yields rowswhile the given predicate
+    /// Returns a csv that, when iterated, yields rows while the given predicate
     /// returns <c>true</c>, and then returns no further rows.
     member x.TakeWhile(predicate: Func<_, _>) =
         Seq.takeWhile predicate.Invoke |> x.mapRows

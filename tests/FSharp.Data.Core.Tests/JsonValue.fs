@@ -42,11 +42,11 @@ let ``Can parse document with iso date``() =
     j?anniversary.AsDateTime() |> should equal (new DateTime(2009, 05, 19, 14, 39, 22, 500, DateTimeKind.Local))
     j?anniversary.AsDateTime().Kind |> should equal DateTimeKind.Local
 
-let withCulture (cultureName: string) = 
+let withCulture (cultureName: string) =
     let originalCulture = CultureInfo.CurrentCulture;
     CultureInfo.CurrentCulture <- CultureInfo cultureName
-    { new IDisposable with 
-        member _.Dispose() = 
+    { new IDisposable with
+        member _.Dispose() =
             CultureInfo.CurrentCulture <- originalCulture }
 
 [<Test>]
@@ -139,7 +139,7 @@ let ``Can parse time span in different culture``() =
     j?duration.AsTimeSpan CultureInfo.CurrentCulture |> should equal (TimeSpan(1, 3, 16, 50, 500))
 
 [<Test>]
-let ``Can parse UTF-32 unicode characters`` () = 
+let ``Can parse UTF-32 unicode characters`` () =
   let j = JsonValue.Parse """{ "value": "\U00010343\U00010330\U0001033F\U00010339\U0001033B" }"""
   j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"
 
@@ -318,6 +318,26 @@ let ``Pretty printing works``() =
 }""")
 
 [<Test>]
+let ``Pretty printing with specified indentation works``() =
+    let text = """{"items":[{"id":"Open"},null,{"id":25}],"x":{"y":2},"z":[]}"""
+    let json = JsonValue.Parse text
+    json.ToString(indentationSpaces = 3) |> normalize |> should equal (normalize """{
+   "items": [
+      {
+         "id": "Open"
+      },
+      null,
+      {
+         "id": 25
+      }
+   ],
+   "x": {
+      "y": 2
+   },
+   "z": []
+}""")
+
+[<Test>]
 let ``Can parse various JSON documents``() =
     let IsFloatNear (l : float) (r : float) =
         if r < 16. * Double.Epsilon then
@@ -467,7 +487,7 @@ let ``Can parse various JSON documents``() =
         Assert.Fail <| failures.ToString ()
 
 [<Test>]
-let ``Basic special characters encoded correctly`` () = 
+let ``Basic special characters encoded correctly`` () =
   let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
   let w = new IO.StringWriter()
   JsonValue.JsonStringEncodeTo w input
@@ -475,7 +495,7 @@ let ``Basic special characters encoded correctly`` () =
   (w.GetStringBuilder().ToString()) |> should equal expected
 
 [<Test>]
-let ``Encoding of simple string is valid JSON`` () = 
+let ``Encoding of simple string is valid JSON`` () =
   let input = "sample \"json\" with \t\r\n \' quotes etc."
   let w = new IO.StringWriter()
   JsonValue.JsonStringEncodeTo w input

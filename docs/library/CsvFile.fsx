@@ -68,7 +68,7 @@ but please note that this will increase memory usage and should not be used in l
 
 ## Using CSV extensions
 
-Now we look at a number of extensions that become available after
+Now, we look at a number of extensions that become available after
 opening the `cref:T:FSharp.Data.CsvExtensionsModule` namespace. Once opened, we can write:
 
  * `row?column` uses the dynamic operator to obtain the column value named `column`;

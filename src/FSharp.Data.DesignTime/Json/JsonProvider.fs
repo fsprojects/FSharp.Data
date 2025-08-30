@@ -19,11 +19,8 @@ open System.Net
 
 [<TypeProvider>]
 type public JsonProvider(cfg: TypeProviderConfig) as this =
-    inherit DisposableTypeProviderForNamespaces
-        (
-            cfg,
-            assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ]
-        )
+    inherit
+        DisposableTypeProviderForNamespaces(cfg, assemblyReplacementMap = [ "FSharp.Data.DesignTime", "FSharp.Data" ])
 
     // Generate namespace and type 'FSharp.Data.JsonProvider'
     do AssemblyResolver.init ()
@@ -36,9 +33,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
     let buildTypes (typeName: string) (args: obj[]) =
 
         // Enable TLS 1.2 for samples requested through https.
-        ServicePointManager.SecurityProtocol <-
-            ServicePointManager.SecurityProtocol
-            ||| SecurityProtocolType.Tls12
+        ServicePointManager.SecurityProtocol <- ServicePointManager.SecurityProtocol ||| SecurityProtocolType.Tls12
 
         // Generate the required type
         let tpType =
@@ -61,6 +56,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let inferTypesFromValues = args.[7] :?> bool
         let preferDictionaries = args.[8] :?> bool
         let inferenceMode = args.[9] :?> InferenceMode
+        let schema = args.[10] :?> string
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -68,26 +64,42 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let cultureInfo = TextRuntime.GetCulture cultureStr
         let unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
+        if schema <> "" then
+            if sample <> "" then
+                failwith "When the Schema parameter is used, the Sample parameter cannot be used"
+
+            if sampleIsList then
+                failwith "When the Schema parameter is used, the SampleIsList parameter must be set to false"
+
         let getSpec _ value =
 
-            let samples =
-                use _holder = IO.logTime "Parsing" sample
-
-                if sampleIsList then
-                    JsonDocument.CreateList(new StringReader(value))
-                    |> Array.map (fun doc -> doc.JsonValue)
-                else
-                    [| JsonValue.Parse(value) |]
-
             let inferedType =
-                use _holder = IO.logTime "Inference" sample
+                use _holder = IO.logTime "Inference" (if schema <> "" then schema else sample)
 
-                samples
-                |> Array.map (fun sampleJson ->
-                    JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
-                |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                if schema <> "" then
+                    // Use the JSON Schema for type inference
+                    use _holder = IO.logTime "SchemaInference" schema
 
-            use _holder = IO.logTime "TypeGeneration" sample
+                    let schemaValue = JsonValue.Parse(value)
+                    let jsonSchema = JsonSchema.parseSchema schemaValue
+                    JsonSchema.schemaToInferedType unitsOfMeasureProvider jsonSchema
+                else
+                    // Use sample-based inference
+                    let samples =
+                        use _holder = IO.logTime "Parsing" sample
+
+                        if sampleIsList then
+                            JsonDocument.CreateList(new StringReader(value))
+                            |> Array.map (fun doc -> doc.JsonValue)
+                        else
+                            [| JsonValue.Parse(value) |]
+
+                    samples
+                    |> Array.map (fun sampleJson ->
+                        JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
+                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+
+            use _holder = IO.logTime "TypeGeneration" (if schema <> "" then schema else sample)
 
             let ctx =
                 JsonGenerationContext.Create(
@@ -108,13 +120,26 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               CreateFromValue =
                 Some(typeof<JsonValue>, (fun value -> result.Convert <@@ JsonDocument.Create(%value, "") @@>)) }
 
-        let source = if sampleIsList then SampleList sample else Sample sample
+        let source =
+            if schema <> "" then Schema schema
+            elif sampleIsList then SampleList sample
+            else Sample sample
 
-        generateType "JSON" source getSpec this cfg encodingStr resolutionFolder resource typeName None
+        generateType
+            (if schema <> "" then "JSON Schema" else "JSON")
+            source
+            getSpec
+            this
+            cfg
+            encodingStr
+            resolutionFolder
+            resource
+            typeName
+            None
 
     // Add static parameter that specifies the API we want to get (compile-time)
     let parameters =
-        [ ProvidedStaticParameter("Sample", typeof<string>)
+        [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root")
           ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
@@ -127,7 +152,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               "InferenceMode",
               typeof<InferenceMode>,
               parameterDefaultValue = InferenceMode.BackwardCompatible
-          ) ]
+          )
+          ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "") ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -137,11 +163,11 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
            <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
            <param name='Encoding'>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.</param>
            <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>
-           <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource 
+           <param name='EmbeddedResource'>When specified, the type provider first attempts to load the sample from the specified resource
               (e.g. 'MyCompany.MyAssembly, resource_name.json'). This is useful when exposing types generated by the type provider.</param>
            <param name='InferTypesFromValues'>
               This parameter is deprecated. Please use InferenceMode instead.
-              If true, turns on additional type inference from values. 
+              If true, turns on additional type inference from values.
               (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans.)</param>
            <param name='PreferDictionaries'>If true, json records are interpreted as dictionaries when the names of all the fields are inferred (by type inference rules) into the same non-string primitive type.</param>
            <param name='InferenceMode'>Possible values:
@@ -149,7 +175,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               | ValuesOnly -> Types of values are inferred from the Sample. Inline schema support is disabled. This is the default.
               | ValuesAndInlineSchemasHints -> Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&lt;type&gt; or typeof{type} or typeof&lt;type&lt;measure&gt;&gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>datetimeoffset</c>, <c>timespan</c>, <c>guid</c> and <c>string</c>.
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
-           </param>"""
+           </param>
+           <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

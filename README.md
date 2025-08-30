@@ -2,11 +2,14 @@
 
 The FSharp.Data package (`FSharp.Data.dll`) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
 
+The library supports both sample-based and schema-based type inference. The XML Type Provider supports XSD schemas, and the JSON Type Provider now supports JSON Schema for defining structured, strongly-typed access to JSON documents.
+
 We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) issues, or help to improve the [documentation][3].
 
 You can see the version history [here](RELEASE_NOTES.md).
 
 [![NuGet Badge](http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data)
+[![CI](https://github.com/fsprojects/FSharp.Data/actions/workflows/ci.yml/badge.svg)](https://github.com/fsprojects/FSharp.Data/actions/workflows/ci.yml)
 
 ## Building
 
@@ -15,12 +18,12 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Formatting
 
-    dotnet fake build -t Format
-    dotnet fake build -t CheckFormat
+    dotnet run --project build/build.fsproj -t Format
+    dotnet run --project build/build.fsproj -t CheckFormat
 
 ## Documentation
 
-This library comes with comprehensive documentation. The documentation is 
+This library comes with comprehensive documentation. The documentation is
 automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request!
 
  - [FSharp.Data package home page][3] with more information about the library, contributions, etc.
@@ -29,13 +32,13 @@ solution before trying out the samples to ensure that all needed packages are in
 
 ## Releasing
 
-Releasing of the NuGet package is done by GitHub actions CI from master branch when a new version is pushed.
+Releasing of the NuGet package is done by GitHub actions CI from the main branch when a new version is pushed.
 
-Releasing of docs is done by GitHub actions CI on each push to master branch.
+Releasing of docs is done by GitHub actions CI on each push to the main branch.
 
 ## Support and community
 
- - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
+ - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data).
  - If you want to submit a bug, a feature request or help with fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to FSharp.Data](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md).
  - To discuss more general issues about FSharp.Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
 

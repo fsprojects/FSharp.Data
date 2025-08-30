@@ -1,0 +1,30 @@
+name: 'Daily Perf Improver Build Steps'
+description: 'Sets up the environment for F# Data performance development work'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore .NET local tools
+      shell: bash
+      run: dotnet tool restore
+      
+    - name: Restore Paket packages
+      shell: bash  
+      run: dotnet paket restore
+      
+    - name: Build solution (Release)
+      shell: bash
+      run: dotnet run --project build/build.fsproj -- -t Build
+      
+    - name: Run tests to ensure everything works
+      shell: bash
+      run: dotnet run --project build/build.fsproj -- -t RunTests
+      
+    - name: Check code formatting
+      shell: bash
+      run: dotnet run --project build/build.fsproj -- -t CheckFormat

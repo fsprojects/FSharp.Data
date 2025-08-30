@@ -30,6 +30,7 @@ type internal XmlGenerationContext =
       UnifyGlobally: bool
       XmlTypeCache: Dictionary<InferedType, XmlGenerationResult>
       JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition> }
+
     static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally) =
         let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
         uniqueNiceName "XElement" |> ignore
@@ -79,14 +80,13 @@ module internal XmlTypeBuilder =
 
         match inferedProp with
         | { Type = (InferedType.Primitive _ | InferedType.Json _) as typ } -> Some([ typ ], [])
-        | { Type = InferedType.Collection (order, types) } -> Some([], inOrder order types)
-        | { Type = InferedType.Heterogeneous (cases, _) } ->
+        | { Type = InferedType.Collection(order, types) } -> Some([], inOrder order types)
+        | { Type = InferedType.Heterogeneous(cases, _) } ->
             let collections, others =
-                Map.toList cases
-                |> List.partition (fst >> (=) InferedTypeTag.Collection)
+                Map.toList cases |> List.partition (fst >> (=) InferedTypeTag.Collection)
 
             match collections with
-            | [ InferedTypeTag.Collection, InferedType.Collection (order, types) ] ->
+            | [ InferedTypeTag.Collection, InferedType.Collection(order, types) ] ->
                 Some(List.map snd others, inOrder order types)
             | [] -> Some(List.map snd others, [])
             | _ -> failwith "(|ContentType|_|): Only one collection type expected"
@@ -99,12 +99,12 @@ module internal XmlTypeBuilder =
     /// is thrown (this is unexpected, because XML elements are always records)
     let (|HeterogeneousRecords|_|) inferedType =
         match inferedType with
-        | InferedType.Heterogeneous (cases, _) ->
+        | InferedType.Heterogeneous(cases, _) ->
             let records =
                 cases
                 |> List.ofSeq
                 |> List.choose (function
-                    | KeyValue (InferedTypeTag.Record (Some name), v) -> Some(name, v)
+                    | KeyValue(InferedTypeTag.Record(Some name), v) -> Some(name, v)
                     | _ -> None)
 
             if cases.Count = records.Length then
@@ -127,7 +127,7 @@ module internal XmlTypeBuilder =
                       (StructuralInference.typeTag primitive).NiceName
 
               match primitive with
-              | InferedType.Primitive (typ, unit, optional, _) ->
+              | InferedType.Primitive(typ, unit, optional, _) ->
 
                   let optional = optional || forceOptional
                   let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
@@ -141,7 +141,7 @@ module internal XmlTypeBuilder =
 
                   typ, name, conv, optionalJustBecauseThereAreMultiple
 
-              | InferedType.Json (typ, optional) ->
+              | InferedType.Json(typ, optional) ->
 
                   let cultureStr = ctx.CultureStr
 
@@ -186,19 +186,18 @@ module internal XmlTypeBuilder =
         match inferedType with
 
         // If we already generated object for this type, return it
-        | InferedType.Record (Some _, _, false) when ctx.XmlTypeCache.ContainsKey inferedType ->
+        | InferedType.Record(Some _, _, false) when ctx.XmlTypeCache.ContainsKey inferedType ->
             ctx.XmlTypeCache.[inferedType]
 
         // If the element does not have any children and always contains only primitive type
         // then we turn it into a primitive value of type such as int/string/etc.
-        | InferedType.Record (Some _,
-                              [ { Name = ""
-                                  Type = (InferedType.Primitive _ | InferedType.Json _) as primitive } ],
-                              false) ->
+        | InferedType.Record(Some _,
+                             [ { Name = ""
+                                 Type = (InferedType.Primitive _ | InferedType.Json _) as primitive } ],
+                             false) ->
 
             let typ, _, conv, _ =
-                getTypesForPrimitives ctx false [ primitive ]
-                |> Seq.exactlyOne
+                getTypesForPrimitives ctx false [ primitive ] |> Seq.exactlyOne
 
             { ConvertedType = typ
               Converter = conv }
@@ -276,7 +275,7 @@ module internal XmlTypeBuilder =
               Converter = id }
 
         // If the element is more complicated, then we generate a type to represent it properly
-        | InferedType.Record (Some nameWithNS, props, false) ->
+        | InferedType.Record(Some nameWithNS, props, false) ->
 
             let names =
                 nameWithNS.Split [| '|' |]
@@ -302,9 +301,7 @@ module internal XmlTypeBuilder =
 
             // Split the properties into attributes and a
             // special property representing the content
-            let attrs, content =
-                props
-                |> List.partition (fun prop -> prop.Name <> "")
+            let attrs, content = props |> List.partition (fun prop -> prop.Name <> "")
 
             // to nameclash property names
             let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
@@ -335,7 +332,7 @@ module internal XmlTypeBuilder =
                           createMember typ conv
 
                       match attr.Type with
-                      | InferedType.Heterogeneous (types, _) ->
+                      | InferedType.Heterogeneous(types, _) ->
 
                           // If the attribute has multiple possible type (e.g. "bool|int") then we generate
                           // a choice type that is erased to 'option<string>' (for simplicity, assuming that
@@ -350,13 +347,13 @@ module internal XmlTypeBuilder =
 
                           ctx.ProvidedType.AddMember choiceTy
 
-                          for KeyValue (tag, typ) in types do
+                          for KeyValue(tag, typ) in types do
 
                               if typ.IsOptional then
                                   failwithf "generateXmlType: Type shouldn't be optional: %A" typ
 
                               match typ with
-                              | InferedType.Primitive (primTyp, unit, false, _) ->
+                              | InferedType.Primitive(primTyp, unit, false, _) ->
 
                                   let typ, conv =
                                       ctx.ConvertValue
@@ -374,9 +371,7 @@ module internal XmlTypeBuilder =
                                       <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, false, unit)
 
                                   let valueCode (Singleton arg: Expr list) =
-                                      arg
-                                      |> convBack
-                                      |> ProviderHelpers.some typeof<string>
+                                      arg |> convBack |> ProviderHelpers.some typeof<string>
 
                                   let valueCtor =
                                       let parameter = ProvidedParameter("value", typ)
@@ -390,13 +385,13 @@ module internal XmlTypeBuilder =
                                       typ
 
                           let defaultCtor =
-                              ProvidedConstructor([], invokeCode = fun _ -> <@@ option<string>.None @@>)
+                              ProvidedConstructor([], invokeCode = (fun _ -> <@@ option<string>.None @@>))
 
                           choiceTy.AddMember defaultCtor
 
                           createMember choiceTy (fun x -> x :> Expr)
 
-                      | InferedType.Primitive (typ, unit, optional, _) -> createPrimitiveMember typ unit optional
+                      | InferedType.Primitive(typ, unit, optional, _) -> createPrimitiveMember typ unit optional
                       | InferedType.Null -> createPrimitiveMember typeof<string> None false
 
                       | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type ]
@@ -405,7 +400,7 @@ module internal XmlTypeBuilder =
             // (either child elements or primitive values if the element contains only simple values)
             let primitiveResults, childResults =
                 match content with
-                | [ ContentType (primitives, children) ] ->
+                | [ ContentType(primitives, children) ] ->
 
                     // If there may be other children, make it optional
                     let forceOptional = children.Length > 0
@@ -414,15 +409,14 @@ module internal XmlTypeBuilder =
                         [ for typ, name, conv, optionalJustBecauseThereAreMultiple in
                               getTypesForPrimitives ctx forceOptional primitives ->
                               let nonOptionalType =
-                                  if optionalJustBecauseThereAreMultiple
-                                     && typ.IsGenericType then
+                                  if optionalJustBecauseThereAreMultiple && typ.IsGenericType then
                                       typ.GetGenericArguments().[0]
                                   else
                                       typ
 
                               let name = makeUnique name
 
-                              ProvidedProperty(name, typ, getterCode = fun (Singleton xml) -> conv xml),
+                              ProvidedProperty(name, typ, getterCode = (fun (Singleton xml) -> conv xml)),
                               ProvidedParameter(NameUtils.niceCamelName name, nonOptionalType) ]
 
                     // For every possible child element, generate a getter property
@@ -430,21 +424,20 @@ module internal XmlTypeBuilder =
                         [ for child in children ->
 
                               let isCollectionName parentName childName =
-                                  parentName = NameUtils.pluralize childName
-                                  || parentName.StartsWith childName
+                                  parentName = NameUtils.pluralize childName || parentName.StartsWith childName
 
                               let child =
                                   match child with
-                                  | InferedTypeTag.Record (Some parentNameWithNS),
+                                  | InferedTypeTag.Record(Some parentNameWithNS),
                                     (InferedMultiplicity.Single,
-                                     InferedType.Record (Some parentNameWithNS2,
-                                                         [ { Type = InferedType.Collection (_,
-                                                                                            SingletonMap (InferedTypeTag.Record (Some childNameWithNS),
-                                                                                                          (_,
-                                                                                                           InferedType.Record (Some childNameWithNS2,
-                                                                                                                               _,
-                                                                                                                               false) as multiplicityAndType))) } ],
-                                                         false)) when
+                                     InferedType.Record(Some parentNameWithNS2,
+                                                        [ { Type = InferedType.Collection(_,
+                                                                                          SingletonMap(InferedTypeTag.Record(Some childNameWithNS),
+                                                                                                       (_,
+                                                                                                        InferedType.Record(Some childNameWithNS2,
+                                                                                                                           _,
+                                                                                                                           false) as multiplicityAndType))) } ],
+                                                        false)) when
                                       parentNameWithNS = parentNameWithNS2
                                       && childNameWithNS = childNameWithNS2
                                       && isCollectionName
@@ -456,7 +449,7 @@ module internal XmlTypeBuilder =
                                   | x -> x
 
                               match child with
-                              | InferedTypeTag.Record (Some nameWithNS), (multiplicity, typ) ->
+                              | InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ) ->
 
                                   let names =
                                       nameWithNS.Split [| '|' |]
@@ -563,17 +556,12 @@ module internal XmlTypeBuilder =
             let childElemNames, childElemProperties, childElemParameters =
                 List.unzip3 childResults
 
-            objectTy.AddMembers(
-                attrProperties
-                @ primitiveElemProperties @ childElemProperties
-            )
+            objectTy.AddMembers(attrProperties @ primitiveElemProperties @ childElemProperties)
 
             let createConstrutor primitiveParam =
                 let parameters =
                     match primitiveParam with
-                    | Some primitiveParam ->
-                        attrParameters
-                        @ [ primitiveParam ] @ childElemParameters
+                    | Some primitiveParam -> attrParameters @ [ primitiveParam ] @ childElemParameters
                     | None -> attrParameters @ childElemParameters
 
                 let ctorCode (args: Expr list) =

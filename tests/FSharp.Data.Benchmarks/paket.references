@@ -1,0 +1,3 @@
+group Benchmarks
+FSharp.Core
+BenchmarkDotNet

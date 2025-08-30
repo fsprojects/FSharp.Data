@@ -25,9 +25,10 @@ let (|EmptyMap|_|) result (map: Map<_, _>) =
 
 let private getAttributes unitsOfMeasureProvider inferenceMode cultureInfo (element: XElement) =
     [ for attr in element.Attributes() do
-          if attr.Name.Namespace.NamespaceName
-             <> "http://www.w3.org/2000/xmlns/"
-             && attr.Name.ToString() <> "xmlns" then
+          if
+              attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/"
+              && attr.Name.ToString() <> "xmlns"
+          then
               yield
                   { Name = attr.Name.ToString()
                     Type = getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo attr.Value None } ]
@@ -41,15 +42,14 @@ let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (el
     | InferenceMode'.NoInference -> typ
     | _ ->
         match typ with
-        | InferedType.Primitive (t, _, optional, _) when
+        | InferedType.Primitive(t, _, optional, _) when
             t = typeof<string>
             && let v = (element.Value).TrimStart() in
                v.StartsWith "{" || v.StartsWith "["
             ->
             try
                 match JsonValue.Parse(element.Value) with
-                | (JsonValue.Record _
-                | JsonValue.Array _) as json ->
+                | (JsonValue.Record _ | JsonValue.Array _) as json ->
                     let jsonType =
                         json
                         |> JsonInference.inferType
@@ -93,10 +93,7 @@ let inferGlobalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyV
             // Get type of body based on primitive values only
             let bodyType =
                 [| for e in elements do
-                       if
-                           not e.HasElements
-                           && not (String.IsNullOrEmpty(e.Value))
-                       then
+                       if not e.HasElements && not (String.IsNullOrEmpty(e.Value)) then
                            yield getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo e |]
                 |> Array.fold (subtypeInfered allowEmptyValues) InferedType.Top
 
@@ -115,9 +112,9 @@ let inferGlobalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyV
     while changed do
         changed <- false
 
-        for KeyValue (_, value) in assignment do
+        for KeyValue(_, value) in assignment do
             match value with
-            | elements, InferedType.Record (Some _name, body :: _attributes, false) ->
+            | elements, InferedType.Record(Some _name, body :: _attributes, false) ->
                 if body.Name <> "" then
                     failwith "inferGlobalType: Assumed body element first"
 
@@ -130,7 +127,7 @@ let inferGlobalType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyV
 
                 let bodyType =
                     match childrenType with
-                    | InferedType.Collection (_, EmptyMap () _) -> body.Type
+                    | InferedType.Collection(_, EmptyMap () _) -> body.Type
                     | childrenType -> subtypeInfered allowEmptyValues childrenType body.Type
 
                 changed <- changed || body.Type <> bodyType

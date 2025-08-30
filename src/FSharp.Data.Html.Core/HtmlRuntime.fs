@@ -21,24 +21,25 @@ open FSharp.Data.HtmlActivePatterns
 type HtmlTableCell =
     | Cell of bool * string
     | Empty
+
     member x.IsHeader =
         match x with
         | Empty -> true
-        | Cell (h, _) -> h
+        | Cell(h, _) -> h
 
     member x.Data =
         match x with
         | Empty -> ""
-        | Cell (_, d) -> d
+        | Cell(_, d) -> d
 
 /// Representation of an HTML table cell
 type HtmlTable
     internal
     (
         name: string,
-        headerNamesAndUnits: (string * Type option)[] option,  // always set at designtime, never at runtime
-        inferedProperties: PrimitiveInferedProperty list option,  // sometimes set at designtime, never at runtime
-        hasHeaders: bool option,  // always set at designtime, never at runtime
+        headerNamesAndUnits: (string * Type option)[] option, // always set at designtime, never at runtime
+        inferedProperties: PrimitiveInferedProperty list option, // sometimes set at designtime, never at runtime
+        hasHeaders: bool option, // always set at designtime, never at runtime
         rows: string[][],
         html: HtmlNode
     ) =
@@ -69,8 +70,7 @@ type HtmlTable
 
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                sb.Append(data.[r, c].PadRight(widths.[c] + 1))
-                |> ignore
+                sb.Append(data.[r, c].PadRight(widths.[c] + 1)) |> ignore
 
             sb.AppendLine() |> ignore
 
@@ -81,6 +81,7 @@ type HtmlList =
     { Name: string
       Values: string[]
       Html: HtmlNode }
+
     override x.ToString() =
         let sb = StringBuilder()
         sb.AppendLine x.Name |> ignore
@@ -95,6 +96,7 @@ type HtmlDefinitionList =
     { Name: string
       Definitions: HtmlList list
       Html: HtmlNode }
+
     override x.ToString() =
         let sb = StringBuilder()
         sb.AppendLine x.Name |> ignore
@@ -125,12 +127,7 @@ type HtmlObjectDescription =
 module HtmlRuntime =
 
     let private normalizeWs (str: String) =
-        HtmlParser
-            .wsRegex
-            .Value
-            .Replace(str.Replace('–', '-'), " ")
-            .Replace("[edit]", null)
-            .Trim()
+        HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
 
     let private getName defaultName (element: HtmlNode) (parents: HtmlNode list) =
 
@@ -139,9 +136,7 @@ module HtmlRuntime =
         let tryGetName choices =
             choices
             |> List.tryPick (fun attrName ->
-                element
-                |> HtmlNode.tryGetAttribute attrName
-                |> Option.map HtmlAttribute.value)
+                element |> HtmlNode.tryGetAttribute attrName |> Option.map HtmlAttribute.value)
 
         let rec tryFindPrevious f (x: HtmlNode) (parents: HtmlNode list) =
             match parents with
@@ -161,9 +156,7 @@ module HtmlRuntime =
 
         let deriveFromSibling element parents =
             let isHeading s =
-                s
-                |> HtmlNode.name
-                |> HtmlParser.headingRegex.Value.IsMatch
+                s |> HtmlNode.name |> HtmlParser.headingRegex.Value.IsMatch
 
             tryFindPrevious isHeading element parents
 
@@ -176,10 +169,7 @@ module HtmlRuntime =
             else
                 normalizeWs innerText
         | _ ->
-            match
-                List.ofSeq
-                <| element.Descendants("caption", false)
-                with
+            match List.ofSeq <| element.Descendants("caption", false) with
             | [] ->
                 match tryGetName [ "id"; "name"; "title"; "summary"; "aria-label" ] with
                 | Some name -> normalizeWs name
@@ -211,19 +201,16 @@ module HtmlRuntime =
             let exclusions = if inRoot then [ "style"; "script" ] else exclusions
 
             match n with
-            | HtmlElement (name, _, content) when
-                List.forall ((<>) name) exclusions
-                && not (isAriaHidden n)
-                ->
+            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
                 seq {
                     for e in content do
                         match e with
-                        | HtmlText (text) -> yield text
-                        | HtmlComment (_) -> yield ""
+                        | HtmlText(text) -> yield text
+                        | HtmlComment(_) -> yield ""
                         | elem -> if recurse then yield innerText' false elem else yield ""
                 }
                 |> String.Concat
-            | HtmlText (text) -> text
+            | HtmlText(text) -> text
             | _ -> ""
 
         innerText' true n
@@ -253,8 +240,7 @@ module HtmlRuntime =
                     | _ -> []
                 | _ -> []
 
-            header
-            @ (table.Descendants("tr", false) |> List.ofSeq)
+            header @ (table.Descendants("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i, r)
 
         if rows.Length <= 1 then
@@ -263,13 +249,9 @@ module HtmlRuntime =
 
             let cells =
                 rows
-                |> List.map (fun (_, r) ->
-                    r.Elements [ "td"; "th" ]
-                    |> List.mapi (fun i e -> i, e))
+                |> List.map (fun (_, r) -> r.Elements [ "td"; "th" ] |> List.mapi (fun i e -> i, e))
 
-            let rowLengths =
-                cells
-                |> List.map (fun row -> row |> List.sumBy (snd >> colSpan))
+            let rowLengths = cells |> List.map (fun row -> row |> List.sumBy (snd >> colSpan))
 
             let numberOfColumns = List.max rowLengths
 
@@ -292,14 +274,13 @@ module HtmlRuntime =
                                 |> normalizeWs
 
                             match cell with
-                            | HtmlElement ("td", _, contents) -> Cell(false, getContents contents)
-                            | HtmlElement ("th", _, contents) -> Cell(true, getContents contents)
+                            | HtmlElement("td", _, contents) -> Cell(false, getContents contents)
+                            | HtmlElement("th", _, contents) -> Cell(true, getContents contents)
                             | _ -> Empty
 
                         let mutable col_i = colindex
 
-                        while col_i < res.[rowindex].Length
-                              && res.[rowindex].[col_i] <> Empty do
+                        while col_i < res.[rowindex].Length && res.[rowindex].[col_i] <> Empty do
                             col_i <- col_i + 1
 
                         for j in [ col_i .. (col_i + colSpan cell - 1) ] do
@@ -308,8 +289,7 @@ module HtmlRuntime =
                                     res.[i].[j] <- data
 
                 let numberOfHeaderRows =
-                    res
-                    |> Array.countWhile (Array.forall (fun cell -> cell.IsHeader))
+                    res |> Array.countWhile (Array.forall (fun cell -> cell.IsHeader))
 
                 let hasRealHeaders, res =
                     match numberOfHeaderRows with
@@ -321,9 +301,11 @@ module HtmlRuntime =
                                 let previousCell = res.[i - 1].[j]
                                 let thisCell = res.[i].[j]
 
-                                if previousCell.Data <> ""
-                                   && thisCell.Data <> ""
-                                   && thisCell.Data <> previousCell.Data then
+                                if
+                                    previousCell.Data <> ""
+                                    && thisCell.Data <> ""
+                                    && thisCell.Data <> previousCell.Data
+                                then
                                     res.[i].[j] <- Cell(true, previousCell.Data + " - " + thisCell.Data)
 
                         true, res.[numberOfHeaderRows - 1 ..]
@@ -363,10 +345,7 @@ module HtmlRuntime =
 
         let rows =
             list.Descendants("li", true)
-            |> Seq.map (
-                innerTextExcluding [ "table"; "ul"; "ol"; "dl"; "sup"; "sub" ]
-                >> normalizeWs
-            )
+            |> Seq.map (innerTextExcluding [ "table"; "ul"; "ol"; "dl"; "sup"; "sub" ] >> normalizeWs)
             |> Seq.toArray
 
         if rows.Length <= 1 then
@@ -426,10 +405,7 @@ module HtmlRuntime =
             else
                 tableElements
                 |> List.filter (fun (e, _) ->
-                    not (
-                        e.HasAttribute("cellspacing", "0")
-                        && e.HasAttribute("cellpadding", "0")
-                    ))
+                    not (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")))
 
         tableElements
         |> List.mapi (parseTable inferenceParameters includeLayoutTables (NameUtils.uniqueGenerator id))
@@ -451,13 +427,9 @@ module HtmlRuntime =
 
     let internal getHtmlObjects inferenceParameters includeLayoutTables (doc: HtmlDocument) =
         Seq.concat
-            [ doc
-              |> getTables inferenceParameters includeLayoutTables
-              |> List.map Table
+            [ doc |> getTables inferenceParameters includeLayoutTables |> List.map Table
               doc |> getLists |> List.map List
-              doc
-              |> getDefinitionLists
-              |> List.map DefinitionList ]
+              doc |> getDefinitionLists |> List.map DefinitionList ]
 
 // --------------------------------------------------------------------------------------
 
@@ -490,10 +462,7 @@ type HtmlDocument internal (doc, tables, lists, definitionLists) =
             |> Map.ofList
 
         let lists =
-            doc
-            |> HtmlRuntime.getLists
-            |> List.map (fun e -> e.Name, e)
-            |> Map.ofList
+            doc |> HtmlRuntime.getLists |> List.map (fun e -> e.Name, e) |> Map.ofList
 
         let definitionLists =
             doc

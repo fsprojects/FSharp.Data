@@ -33,15 +33,8 @@ type internal JsonGenerationContext =
       UnitsOfMeasureProvider: IUnitsOfMeasureProvider }
 
     static member Create
-        (
-            cultureStr,
-            tpType,
-            unitsOfMeasureProvider,
-            inferenceMode,
-            ?uniqueNiceName,
-            ?typeCache,
-            ?preferDictionaries
-        ) =
+        (cultureStr, tpType, unitsOfMeasureProvider, inferenceMode, ?uniqueNiceName, ?typeCache, ?preferDictionaries)
+        =
         let uniqueNiceName =
             defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
 
@@ -115,16 +108,16 @@ module JsonTypeBuilder =
         // normalize properties of the inferedType which don't affect code generation
         let rec normalize topLevel =
             function
-            | InferedType.Heterogeneous (map, _) ->
+            | InferedType.Heterogeneous(map, _) ->
                 map
                 |> Map.map (fun _ inferedType -> normalize false inferedType)
                 |> (fun x -> InferedType.Heterogeneous(x, false))
-            | InferedType.Collection (order, types) ->
+            | InferedType.Collection(order, types) ->
                 InferedType.Collection(
                     order,
                     Map.map (fun _ (multiplicity, inferedType) -> multiplicity, normalize false inferedType) types
                 )
-            | InferedType.Record (_, props, optional) ->
+            | InferedType.Record(_, props, optional) ->
                 let props =
                     props
                     |> List.map (fun { Name = name; Type = inferedType } ->
@@ -132,11 +125,11 @@ module JsonTypeBuilder =
                           Type = normalize false inferedType })
                 // optional only affects the parent, so at top level always set to true regardless of the actual value
                 InferedType.Record(None, props, optional || topLevel)
-            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when
+            | InferedType.Primitive(typ, unit, optional, shouldOverrideOnMerge) when
                 typ = typeof<Bit0> || typ = typeof<Bit1>
                 ->
                 InferedType.Primitive(typeof<int>, unit, optional, shouldOverrideOnMerge)
-            | InferedType.Primitive (typ, unit, optional, shouldOverrideOnMerge) when typ = typeof<Bit> ->
+            | InferedType.Primitive(typ, unit, optional, shouldOverrideOnMerge) when typ = typeof<Bit> ->
                 InferedType.Primitive(typeof<bool>, unit, optional, shouldOverrideOnMerge)
             | x -> x
 
@@ -157,11 +150,9 @@ module JsonTypeBuilder =
     let internal replaceJDocWithJValue (ctx: JsonGenerationContext) (typ: Type) =
         if typ = ctx.IJsonDocumentType then
             ctx.JsonValueType
-        elif typ.IsArray
-             && typ.GetElementType() = ctx.IJsonDocumentType then
+        elif typ.IsArray && typ.GetElementType() = ctx.IJsonDocumentType then
             ctx.JsonValueType.MakeArrayType()
-        elif typ.IsGenericType
-             && typ.GetGenericArguments() = [| ctx.IJsonDocumentType |] then
+        elif typ.IsGenericType && typ.GetGenericArguments() = [| ctx.IJsonDocumentType |] then
             typ.GetGenericTypeDefinition().MakeGenericType ctx.JsonValueType
         else
             typ
@@ -180,7 +171,7 @@ module JsonTypeBuilder =
 
         let types =
             types
-            |> Seq.map (fun (KeyValue (tag, (multiplicity, inferedType))) -> tag, multiplicity, inferedType)
+            |> Seq.map (fun (KeyValue(tag, (multiplicity, inferedType))) -> tag, multiplicity, inferedType)
             |> Seq.sortBy (fun (tag, _, _) -> tag)
             |> Seq.toArray
 
@@ -205,10 +196,8 @@ module JsonTypeBuilder =
                     | InferedMultiplicity.OptionalSingle
                     | InferedMultiplicity.Single ->
                         match inferedType with
-                        | InferedType.Primitive (typ, _, _, _) ->
-                            if typ = typeof<int>
-                               || typ = typeof<Bit0>
-                               || typ = typeof<Bit1> then
+                        | InferedType.Primitive(typ, _, _, _) ->
+                            if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then
                                 "Int"
                             elif typ = typeof<int64> then
                                 "Int64"
@@ -220,9 +209,7 @@ module JsonTypeBuilder =
                                 tag.NiceName
                         | _ -> tag.NiceName
 
-                types
-                |> Array.map getTypeName
-                |> String.concat "Or"
+                types |> Array.map getTypeName |> String.concat "Or"
             |> ctx.UniqueNiceName
 
         // Generate new type for the heterogeneous type
@@ -274,11 +261,7 @@ module JsonTypeBuilder =
             if forCollection then
                 let ctorCode (args: Expr list) =
                     let elements =
-                        Expr.NewArray(
-                            typeof<obj>,
-                            args
-                            |> List.map (fun a -> Expr.Coerce(a, typeof<obj>))
-                        )
+                        Expr.NewArray(typeof<obj>, args |> List.map (fun a -> Expr.Coerce(a, typeof<obj>)))
 
                     let cultureStr = ctx.CultureStr
                     <@@ JsonRuntime.CreateArray(%%elements, cultureStr) @@>
@@ -324,7 +307,7 @@ module JsonTypeBuilder =
 
         let inferedType =
             match inferedType with
-            | InferedType.Collection (order, types) ->
+            | InferedType.Collection(order, types) ->
                 InferedType.Collection(
                     List.filter ((<>) InferedTypeTag.Null) order,
                     Map.remove InferedTypeTag.Null types
@@ -333,7 +316,7 @@ module JsonTypeBuilder =
 
         match inferedType with
 
-        | InferedType.Primitive (inferedType, unit, optional, _) ->
+        | InferedType.Primitive(inferedType, unit, optional, _) ->
 
             let typ, conv, conversionCallingType =
                 PrimitiveInferedValue.Create(inferedType, optional, unit)
@@ -351,8 +334,8 @@ module JsonTypeBuilder =
               OptionalConverter = None
               ConversionCallingType = JsonDocument }
 
-        | InferedType.Collection (_, SingletonMap (_, (_, typ)))
-        | InferedType.Collection (_, EmptyMap InferedType.Top typ) ->
+        | InferedType.Collection(_, SingletonMap(_, (_, typ)))
+        | InferedType.Collection(_, EmptyMap InferedType.Top typ) ->
 
             let elementResult = generateJsonType ctx false false nameOverride typ
 
@@ -366,7 +349,7 @@ module JsonTypeBuilder =
               OptionalConverter = Some conv
               ConversionCallingType = JsonDocument }
 
-        | InferedType.Record (name, props, optional) ->
+        | InferedType.Record(name, props, optional) ->
             getOrCreateType ctx inferedType (fun () ->
 
                 if optional && not optionalityHandledByParent then
@@ -403,18 +386,18 @@ module JsonTypeBuilder =
 
                         let dropRecordName infType =
                             match infType with
-                            | InferedType.Record (_, fields, opt) -> InferedType.Record(None, fields, opt)
+                            | InferedType.Record(_, fields, opt) -> InferedType.Record(None, fields, opt)
                             | _ -> infType
 
                         let dropTagName tag =
                             match tag with
-                            | InferedTypeTag.Record (Some _) -> InferedTypeTag.Record None
+                            | InferedTypeTag.Record(Some _) -> InferedTypeTag.Record None
                             | _ -> tag
 
                         let infType = dropRecordName infType
 
                         match infType with
-                        | InferedType.Collection (order, types) ->
+                        | InferedType.Collection(order, types) ->
                             // Records in collections have the parent property as name.
                             // We drop it too so they can be merged into a unified type.
                             let order = order |> List.map dropTagName
@@ -445,10 +428,9 @@ module JsonTypeBuilder =
                             |> aggr
 
                         match infKeyType with
-                        | InferedType.Primitive (typ = typ) when typ <> typeof<string> ->
+                        | InferedType.Primitive(typ = typ) when typ <> typeof<string> ->
                             let inferValueType =
-                                ([ for prop in props -> prop.Type |> dropRecordsNames ]
-                                 |> aggr)
+                                ([ for prop in props -> prop.Type |> dropRecordsNames ] |> aggr)
                                     // Optional properties in the initial record should translate
                                     // to simply missing values in the dictionary, not an optional type.
                                     .DropOptionality()
@@ -457,7 +439,7 @@ module JsonTypeBuilder =
                         | _ -> None
 
                 match inferedKeyValueType with
-                | Some (inferedKeyType, inferedValueType) ->
+                | Some(inferedKeyType, inferedValueType) ->
                     // Add all record fields as dictionary items
                     let valueName = name + "Value"
 
@@ -470,7 +452,7 @@ module JsonTypeBuilder =
                             [| keyResult.ConvertedType; valueResult.ConvertedType |]
                         )
 
-                    let itemsSeqType = typedefof<_ seq>.MakeGenericType ([| tupleType |])
+                    let itemsSeqType = typedefof<_ seq>.MakeGenericType([| tupleType |])
 
                     let itemsGetter (Singleton jDoc) =
                         ctx.JsonRuntimeType?(nameof (JsonRuntime.ConvertRecordToDictionary))
@@ -492,17 +474,17 @@ module JsonTypeBuilder =
                         | [ f; s ] -> f, s
                         | _ -> failwith "Parameter mismatch"
 
-                    let itemGetter (Doubleton (jDoc, key)) =
+                    let itemGetter (Doubleton(jDoc, key)) =
                         ctx.JsonRuntimeType?(nameof (JsonRuntime.GetValueByKeyFromInferedDictionary))
                             (keyResult.ConvertedType, valueConvertedTypeErased)
                             (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
-                    let tryFindCode (Doubleton (jDoc, key)) =
+                    let tryFindCode (Doubleton(jDoc, key)) =
                         ctx.JsonRuntimeType?(nameof (JsonRuntime.TryGetValueByKeyFromInferedDictionary))
                             (keyResult.ConvertedType, valueConvertedTypeErased)
                             (jDoc, keyResult.ConverterFunc ctx, valueResult.ConverterFunc ctx, key)
 
-                    let containsKeyCode (Doubleton (jDoc, key)) =
+                    let containsKeyCode (Doubleton(jDoc, key)) =
                         ctx.JsonRuntimeType?(nameof (JsonRuntime.InferedDictionaryContainsKey))
                             (keyResult.ConvertedType)
                             (jDoc, keyResult.ConverterFunc ctx, key)
@@ -609,8 +591,7 @@ module JsonTypeBuilder =
                                          | _ -> <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
 
                               let convertedType =
-                                  if prop.Type.IsOptional
-                                     && not optionalityHandledByProperty then
+                                  if prop.Type.IsOptional && not optionalityHandledByProperty then
                                       ctx.MakeOptionType propResult.ConvertedType
                                   else
                                       propResult.ConvertedType
@@ -653,7 +634,7 @@ module JsonTypeBuilder =
 
                 objectTy)
 
-        | InferedType.Collection (_, types) ->
+        | InferedType.Collection(_, types) ->
             getOrCreateType ctx inferedType (fun () ->
 
                 // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
@@ -686,13 +667,11 @@ module JsonTypeBuilder =
                                 (result.ConvertedTypeErased ctx)
                                 (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)))
 
-        | InferedType.Heterogeneous (types, _) ->
+        | InferedType.Heterogeneous(types, _) ->
             getOrCreateType ctx inferedType (fun () ->
 
                 // Generate a choice type that always calls `TryGetValueByTypeTag`
-                let types =
-                    types
-                    |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
+                let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
 
                 generateMultipleChoiceType ctx types false nameOverride (fun multiplicity result tagCode ->
                     fun (Singleton jDoc) ->

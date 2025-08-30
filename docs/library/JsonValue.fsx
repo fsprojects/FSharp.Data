@@ -68,7 +68,7 @@ of extensions that become available after opening the `cref:T:FSharp.Data.JsonEx
 module. Once opened, we can write:
 
  * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`.
- * `value.AsInteger()` returns the value as integer if it is numeric and can be
+ * `value.AsInteger()` returns the value as an integer if it is numeric and can be
    converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
    `value.AsFloat()` behave similarly.
  * `value.AsString()` returns the value as a string.
@@ -147,7 +147,7 @@ let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 asynchronous version available too: *)
 
 let wbReq =
-    "http://api.worldbank.org/country/cz/indicator/"
+    "https://api.worldbank.org/country/cz/indicator/"
     + "GC.DOD.TOTL.GD.ZS?format=json"
 
 let valueAsync = JsonValue.AsyncLoad(wbReq)
