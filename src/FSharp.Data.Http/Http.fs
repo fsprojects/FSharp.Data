@@ -2043,6 +2043,12 @@ type Http private () =
 
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
 
+        // Optimize HTTP performance with connection keep-alive and pooling
+        req.KeepAlive <- true
+        req.ServicePoint.UseNagleAlgorithm <- false // Disable Nagle for better latency
+        req.ServicePoint.Expect100Continue <- false // Reduce handshake overhead
+        req.ServicePoint.ConnectionLimit <- 10 // Allow more concurrent connections per endpoint
+
         // set cookies
         let addCookiesFromHeadersToCookieContainer, cookieContainer =
             match cookieContainer with
