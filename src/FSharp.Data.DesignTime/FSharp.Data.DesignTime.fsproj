@@ -12,37 +12,37 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
+    <Compile Include="../../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypes.fsi">
       <Link>ProvidedTypes.fsi</Link>
     </Compile>
-    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fs">
+    <Compile Include="../../paket-files/fsprojects/FSharp.TypeProviders.SDK/src/ProvidedTypes.fs">
       <Link>ProvidedTypes.fs</Link>
     </Compile>
-    <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
-    <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
-    <Compile Include="CommonProviderImplementation\Helpers.fs" />
-    <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
-    <Compile Include="Json\JsonConversionsGenerator.fs" />
-    <Compile Include="Json\JsonGenerator.fs" />
-    <Compile Include="Json\JsonProvider.fs" />
-    <Compile Include="Xml\XmlGenerator.fs" />
-    <Compile Include="Xml\XmlProvider.fs" />
-    <Compile Include="Csv\CsvGenerator.fs" />
-    <Compile Include="Csv\CsvProvider.fs" />
-    <Compile Include="WorldBank\WorldBankProvider.fs" />
-    <Compile Include="Html\HtmlGenerator.fs" />
-    <Compile Include="Html\HtmlProvider.fs" />
-    <Compile Include="..\AssemblyInfo.DesignTime.fs" />
-    <None Include="..\Test.fsx" />
+    <Compile Include="CommonProviderImplementation/QuotationBuilder.fs" />
+    <Compile Include="CommonProviderImplementation/AssemblyResolver.fs" />
+    <Compile Include="CommonProviderImplementation/Helpers.fs" />
+    <Compile Include="CommonProviderImplementation/ConversionsGenerator.fs" />
+    <Compile Include="Json/JsonConversionsGenerator.fs" />
+    <Compile Include="Json/JsonGenerator.fs" />
+    <Compile Include="Json/JsonProvider.fs" />
+    <Compile Include="Xml/XmlGenerator.fs" />
+    <Compile Include="Xml/XmlProvider.fs" />
+    <Compile Include="Csv/CsvGenerator.fs" />
+    <Compile Include="Csv/CsvProvider.fs" />
+    <Compile Include="WorldBank/WorldBankProvider.fs" />
+    <Compile Include="Html/HtmlGenerator.fs" />
+    <Compile Include="Html/HtmlProvider.fs" />
+    <Compile Include="../AssemblyInfo.DesignTime.fs" />
+    <None Include="../Test.fsx" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Xml.Core\FSharp.Data.Xml.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Xml.Core/FSharp.Data.Xml.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Html.Core/FSharp.Data.Html.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.WorldBank.Core/FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="../../.paket/Paket.Restore.targets" />
 </Project>
