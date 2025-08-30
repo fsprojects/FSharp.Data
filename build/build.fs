@@ -221,6 +221,23 @@ let buildscript () =
             Trace.logf "Errors while formatting: %A" result.Errors
             failwith "Unknown errors while formatting")
 
+    Target.create "RunBenchmarks" (fun _ ->
+        let benchmarkProject =
+            "tests" </> "FSharp.Data.Benchmarks" </> "FSharp.Data.Benchmarks.fsproj"
+
+        DotNet.build
+            (fun opts ->
+                { opts with
+                    Configuration = DotNet.BuildConfiguration.Release })
+            benchmarkProject
+
+        let benchmarkDir = "tests" </> "FSharp.Data.Benchmarks"
+
+        Shell.Exec("dotnet", "run -c Release -- --job dry --filter \"*ParseSimpleJson*\"", benchmarkDir)
+        |> fun exitCode ->
+            if exitCode <> 0 then
+                failwith "Benchmark execution failed")
+
     Target.create "All" ignore
 
     "Clean" ==> "AssemblyInfo" ==> "CheckFormat" ==> "Build"
@@ -230,6 +247,7 @@ let buildscript () =
     "Build" ==> "Pack" ==> "All"
     "Build" ==> "All"
     "Build" ==> "RunTests" ==> "All"
+    "Build" ==> "RunBenchmarks"
 
     Target.runOrDefaultWithArguments "Help"
 

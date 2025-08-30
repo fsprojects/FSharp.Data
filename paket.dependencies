@@ -56,3 +56,10 @@ group Test
     nuget FsUnit  4.0.4
     nuget FsCheck 2.15.1
     nuget GitHubActionsTestLogger
+
+group Benchmarks
+    frameworks: net8.0
+    source https://api.nuget.org/v3/index.json
+
+    nuget FSharp.Core 6.0.1
+    nuget BenchmarkDotNet
