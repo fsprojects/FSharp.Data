@@ -158,27 +158,11 @@ let buildscript () =
     Target.create "GenerateDocs" (fun _ ->
         Shell.cleanDir ".fsdocs"
 
-        // List of projects to include in documentation (excluding benchmark project)
-        let docProjects =
-            [ "src/FSharp.Data/FSharp.Data.fsproj"
-              "src/FSharp.Data.DesignTime/FSharp.Data.DesignTime.fsproj"
-              "src/FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj"
-              "src/FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj"
-              "src/FSharp.Data.Html.Core/FSharp.Data.Html.Core.fsproj"
-              "src/FSharp.Data.Http/FSharp.Data.Http.fsproj"
-              "src/FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj"
-              "src/FSharp.Data.Xml.Core/FSharp.Data.Xml.Core.fsproj"
-              "src/FSharp.Data.WorldBank.Core/FSharp.Data.WorldBank.Core.fsproj" ]
-
-        let projectArgs = docProjects |> String.concat " "
-
         let result =
             DotNet.exec
                 id
                 "fsdocs"
-                ("build --projects "
-                 + projectArgs
-                 + " --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+                ("build --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
                  + release.NugetVersion)
 
         if not result.OK then
