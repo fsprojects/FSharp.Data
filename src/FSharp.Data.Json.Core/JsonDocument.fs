@@ -91,7 +91,22 @@ type JsonDocument =
         use reader = reader
         let text = reader.ReadToEnd()
 
-        match JsonValue.ParseMultiple(text) |> Seq.toArray with
-        | [| JsonValue.Array array |] -> array
-        | array -> array
-        |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
+        // Optimization: Process parsed values more efficiently to reduce allocations
+        let parsedSequence = JsonValue.ParseMultiple(text)
+
+        // Convert to array only once and handle the special case efficiently
+        let parsedArray = parsedSequence |> Seq.toArray
+
+        let valuesArray =
+            match parsedArray with
+            | [| JsonValue.Array array |] -> array
+            | array -> array
+
+        // Optimization: Pre-allocate result array instead of using Array.mapi
+        // This avoids creating intermediate mapping functions and reduces allocations
+        let resultArray = Array.zeroCreate<IJsonDocument> valuesArray.Length
+
+        for i = 0 to valuesArray.Length - 1 do
+            resultArray.[i] <- JsonDocument.Create(valuesArray.[i], "[" + (string i) + "]")
+
+        resultArray

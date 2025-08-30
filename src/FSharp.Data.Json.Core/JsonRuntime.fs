@@ -93,12 +93,19 @@ type JsonRuntime =
     static member ConvertArray<'T>(doc: IJsonDocument, mapping: Func<IJsonDocument, 'T>) =
         match doc.JsonValue with
         | JsonValue.Array elements ->
-            elements
-            |> Array.filter (function
-                | JsonValue.Null -> false
-                | JsonValue.String s when s |> TextConversions.AsString |> Option.isNone -> false
-                | _ -> true)
-            |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
+            // Optimization: Filter and map in single pass to reduce array allocations
+            let result = ResizeArray<'T>()
+            let mutable index = 0
+
+            for value in elements do
+                match value with
+                | JsonValue.Null -> ()
+                | JsonValue.String s when s |> TextConversions.AsString |> Option.isNone -> ()
+                | _ ->
+                    result.Add(doc.CreateNew(value, "[" + (string index) + "]") |> mapping.Invoke)
+                    index <- index + 1
+
+            result.ToArray()
         | JsonValue.Null -> [||]
         | x ->
             failwithf "Expecting an array at '%s', got %s" (doc.Path())
@@ -247,9 +254,17 @@ type JsonRuntime =
         =
         match doc.JsonValue with
         | JsonValue.Array elements ->
-            elements
-            |> Array.filter (JsonRuntime.Matches cultureStr (InferedTypeTag.ParseCode tagCode))
-            |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
+            // Optimization: Filter and map in single pass to reduce array allocations
+            let result = ResizeArray<'T>()
+            let mutable index = 0
+            let matchFunc = JsonRuntime.Matches cultureStr (InferedTypeTag.ParseCode tagCode)
+
+            for value in elements do
+                if matchFunc value then
+                    result.Add(doc.CreateNew(value, "[" + (string index) + "]") |> mapping.Invoke)
+                    index <- index + 1
+
+            result.ToArray()
         | JsonValue.Null -> [||]
         | x ->
             failwithf "Expecting an array at '%s', got %s" (doc.Path())
