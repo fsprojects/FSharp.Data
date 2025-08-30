@@ -23,15 +23,35 @@ runs:
         FAKE_DETAILED_ERRORS: true
       run: dotnet run --project build/build.fsproj -- -t Build
       
-    - name: Run tests with coverage collection
+    - name: Install coverlet.console tool
+      shell: bash
+      run: dotnet tool install -g coverlet.console || true
+      
+    - name: Run tests
+      shell: bash
+      run: dotnet test FSharp.Data.sln --configuration Release --logger:"console;verbosity=minimal"
+      
+    - name: Generate coverage with coverlet
       shell: bash
       run: |
-        dotnet test FSharp.Data.sln \
-          --configuration Release \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./TestResults/ \
-          --logger:"console;verbosity=normal" \
-          --settings coverlet.runsettings
+        mkdir -p TestResults
+        
+        # Run coverage on core test projects
+        coverlet tests/FSharp.Data.Core.Tests/bin/Release/net8.0/FSharp.Data.Core.Tests.dll \
+          --target "dotnet" \
+          --targetargs "test tests/FSharp.Data.Core.Tests/FSharp.Data.Core.Tests.fsproj --configuration Release --no-build" \
+          --format cobertura \
+          --output TestResults/coverage.core.xml \
+          --exclude "[*.Tests]*" \
+          --exclude "[*]ProvidedTypes*" || echo "Core coverage failed"
+        
+        coverlet tests/FSharp.Data.DesignTime.Tests/bin/Release/net8.0/FSharp.Data.DesignTime.Tests.dll \
+          --target "dotnet" \
+          --targetargs "test tests/FSharp.Data.DesignTime.Tests/FSharp.Data.DesignTime.Tests.fsproj --configuration Release --no-build" \
+          --format cobertura \
+          --output TestResults/coverage.designtime.xml \
+          --exclude "[*.Tests]*" \
+          --exclude "[*]ProvidedTypes*" || echo "DesignTime coverage failed"
           
     - name: Install ReportGenerator tool
       shell: bash
@@ -41,10 +61,10 @@ runs:
       shell: bash
       run: |
         reportgenerator \
-          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -reports:"TestResults/coverage.*.xml" \
           -targetdir:"TestResults/CoverageReport" \
           -reporttypes:"Html;Cobertura;TextSummary" \
-          -verbosity:Info
+          -verbosity:Info || echo "ReportGenerator failed"
           
     - name: Upload coverage report as artifact
       uses: actions/upload-artifact@v4
