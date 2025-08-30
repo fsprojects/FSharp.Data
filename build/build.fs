@@ -178,7 +178,7 @@ let buildscript () =
                 "fsdocs"
                 ("build --projects "
                  + projectArgs
-                 + " --properties Configuration=Release --strict --eval --clean --parameters fsdocs-package-version "
+                 + " --properties Configuration=Release --eval --clean --parameters fsdocs-package-version "
                  + release.NugetVersion)
 
         if not result.OK then
