@@ -25,6 +25,7 @@
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
+    <Compile Include="CsvFile.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
