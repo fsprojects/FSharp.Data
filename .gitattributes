@@ -30,3 +30,5 @@
 
 # correct file type displays in gitlab to not be so overwhelmingly HTML
 tests/FSharp.Data.Tests/Data/**.htm* -linguist-detectable
+
+.github/workflows/*.lock.yml linguist-generated=true merge=ours
