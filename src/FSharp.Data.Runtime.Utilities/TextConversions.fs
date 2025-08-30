@@ -139,14 +139,58 @@ type TextConversions private () =
                     Some f)
 
     static member AsBoolean(text: string) =
-        match text.Trim() with
-        | StringEqualsIgnoreCase "true"
-        | StringEqualsIgnoreCase "yes"
-        | StringEqualsIgnoreCase "1" -> Some true
-        | StringEqualsIgnoreCase "false"
-        | StringEqualsIgnoreCase "no"
-        | StringEqualsIgnoreCase "0" -> Some false
-        | _ -> None
+        // Fast path: check for common single-character boolean values without allocation
+        if text.Length = 1 then
+            match text.[0] with
+            | '1' -> Some true
+            | '0' -> Some false
+            | _ -> None
+        else
+            // Fast path: check if text needs trimming
+            let needsTrimming =
+                text.Length > 0
+                && (Char.IsWhiteSpace(text.[0]) || Char.IsWhiteSpace(text.[text.Length - 1]))
+
+            let processedText = if needsTrimming then text.Trim() else text
+
+            // Optimized case-insensitive matching using direct comparisons for common values
+            match processedText.Length with
+            | 2 when
+                (processedText.[0] = 'n' || processedText.[0] = 'N')
+                && (processedText.[1] = 'o' || processedText.[1] = 'O')
+                ->
+                Some false
+            | 3 when
+                (processedText.[0] = 'y' || processedText.[0] = 'Y')
+                && (processedText.[1] = 'e' || processedText.[1] = 'E')
+                && (processedText.[2] = 's' || processedText.[2] = 'S')
+                ->
+                Some true
+            | 4 when
+                (processedText.[0] = 't' || processedText.[0] = 'T')
+                && (processedText.[1] = 'r' || processedText.[1] = 'R')
+                && (processedText.[2] = 'u' || processedText.[2] = 'U')
+                && (processedText.[3] = 'e' || processedText.[3] = 'E')
+                ->
+                Some true
+            | 5 when
+                (processedText.[0] = 'f' || processedText.[0] = 'F')
+                && (processedText.[1] = 'a' || processedText.[1] = 'A')
+                && (processedText.[2] = 'l' || processedText.[2] = 'L')
+                && (processedText.[3] = 's' || processedText.[3] = 'S')
+                && (processedText.[4] = 'e' || processedText.[4] = 'E')
+                ->
+                Some false
+            | _ ->
+                // Fallback to original method for other cases
+                match processedText with
+                | StringEqualsIgnoreCase "true"
+                | StringEqualsIgnoreCase "yes"
+                | StringEqualsIgnoreCase "1" -> Some true
+                | StringEqualsIgnoreCase "false"
+                | StringEqualsIgnoreCase "no"
+                | StringEqualsIgnoreCase "0" -> Some false
+                | _ -> None
 
     /// Parse date time using either the JSON milliseconds format or using ISO 8601
     /// that is, either `/Date(<msec-since-1/1/1970>)/` or something

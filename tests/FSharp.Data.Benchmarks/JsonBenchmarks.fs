@@ -81,3 +81,16 @@ type JsonConversionBenchmarks() =
             | Some (_, JsonValue.Array elements) -> elements
             | _ -> [||]
         | _ -> [||]
+
+[<MemoryDiagnoser>]
+[<SimpleJob>]
+type TypeConversionBenchmarks() =
+    
+    let commonBooleanValues = [| "true"; "false"; "1"; "0"; "yes"; "no"; "True"; "False"; "YES"; "NO"; " true "; " false " |]
+    
+    [<Benchmark>]
+    member this.BooleanConversions() =
+        commonBooleanValues
+        |> Array.map FSharp.Data.TextConversions.AsBoolean
+        |> Array.choose id
+        |> Array.length
