@@ -38,6 +38,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Json.Core", "sr
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{750148EC-6A05-421D-96A4-E5AC9D18AF58}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Benchmarks", "tests\FSharp.Data.Benchmarks\FSharp.Data.Benchmarks.fsproj", "{A1B2C3D4-5E6F-7890-ABCD-EF1234567890}"
+EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj", "{44E0DF97-D8FD-4805-8A84-B888D9589C8A}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Html.Core", "src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj", "{E91BF68E-257C-43E6-BDE9-672D4E3BFAFA}"

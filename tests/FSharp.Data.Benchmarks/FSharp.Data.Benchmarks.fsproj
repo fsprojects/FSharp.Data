@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:44</OtherFlags>
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../FSharp.Data.Tests/Data/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Compile Include="JsonBenchmarks.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FSharp.Data.Json.Core\FSharp.Data.Json.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
