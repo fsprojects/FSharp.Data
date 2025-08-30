@@ -509,3 +509,229 @@ let ``Encoding of markup is not overzealous`` () =
   JsonValue.JsonStringEncodeTo w input
   let expected = input // Should not escape </>
   (w.GetStringBuilder().ToString()) |> should equal expected
+
+// --------------------------------------------------------------------------------------
+// Additional tests for improved coverage
+// --------------------------------------------------------------------------------------
+
+[<Test>]
+let ``JsonSaveOptions DisableFormatting produces compact JSON`` () =
+    let json = JsonValue.Record [| ("name", JsonValue.String "test"); ("values", JsonValue.Array [| JsonValue.Number 1M; JsonValue.Number 2M |]) |]
+    let result = json.ToString(JsonSaveOptions.DisableFormatting)
+    result |> should equal """{"name":"test","values":[1,2]}"""
+
+[<Test>]
+let ``JsonSaveOptions CompactSpaceAfterComma adds spaces after commas`` () =
+    let json = JsonValue.Record [| ("a", JsonValue.Number 1M); ("b", JsonValue.Number 2M) |]
+    let result = json.ToString(JsonSaveOptions.CompactSpaceAfterComma)
+    result |> should equal """{"a":1, "b":2}"""
+
+[<Test>]
+let ``JsonSaveOptions None produces formatted JSON`` () =
+    let json = JsonValue.Record [| ("name", JsonValue.String "test") |]
+    let result = json.ToString(JsonSaveOptions.None)
+    result.Contains("\n") |> should equal true
+    result.Contains("  ") |> should equal true
+
+[<Test>]
+let ``JsonValue handles Float infinity as null during serialization`` () =
+    let json = JsonValue.Float System.Double.PositiveInfinity
+    let result = json.ToString()
+    result |> should equal "null"
+
+[<Test>]
+let ``JsonValue handles Float negative infinity as null during serialization`` () =
+    let json = JsonValue.Float System.Double.NegativeInfinity
+    let result = json.ToString()
+    result |> should equal "null"
+
+[<Test>]
+let ``JsonValue handles Float NaN as null during serialization`` () =
+    let json = JsonValue.Float System.Double.NaN
+    let result = json.ToString()
+    result |> should equal "null"
+
+[<Test>]
+let ``JsonValue ToString handles long content appropriately`` () =
+    let longString = String.replicate 600 "a"
+    let json = JsonValue.String longString
+    let result = json.ToString()
+    result.Contains(longString) |> should equal true
+    result.StartsWith("\"") |> should equal true
+    result.EndsWith("\"") |> should equal true
+
+[<Test>]
+let ``JsonValue ToString preserves short strings`` () =
+    let shortString = "short"
+    let json = JsonValue.String shortString
+    let result = json.ToString()
+    result |> should equal "\"short\""
+
+[<Test>]
+let ``JsonValue parsing with single-line comments`` () =
+    let jsonWithComments = """{
+        // This is a comment
+        "name": "test",
+        "value": 42 // Another comment
+    }"""
+    let result = JsonValue.Parse jsonWithComments
+    result?name.AsString() |> should equal "test"
+    result?value.AsInteger() |> should equal 42
+
+[<Test>]
+let ``JsonValue parsing with multi-line comments`` () =
+    let jsonWithComments = """{
+        /* This is a
+           multi-line comment */
+        "data": "valid"
+    }"""
+    let result = JsonValue.Parse jsonWithComments
+    result?data.AsString() |> should equal "valid"
+
+[<Test>]
+let ``JsonValue parsing with mixed whitespace and comments`` () =
+    let jsonWithCommentsAndWhitespace = """  
+        {
+            // Comment 1
+            "a": 1,
+            /* Comment 2 */ "b": 2
+            // Final comment
+        }  
+    """
+    let result = JsonValue.Parse jsonWithCommentsAndWhitespace
+    result?a.AsInteger() |> should equal 1
+    result?b.AsInteger() |> should equal 2
+
+[<Test>]
+let ``JsonValue parsing handles unicode escape sequences`` () =
+    let jsonWithUnicode = """{"unicode": "Hello \u0041\u0042\u0043"}"""
+    let result = JsonValue.Parse jsonWithUnicode
+    result?unicode.AsString() |> should equal "Hello ABC"
+
+[<Test>]
+let ``JsonValue parsing handles low-value unicode escapes`` () =
+    let jsonWithUnicode = """{"control": "\u0001\u0002\u0003"}"""
+    let result = JsonValue.Parse jsonWithUnicode
+    result?control.AsString().Length |> should equal 3
+
+[<Test>]
+let ``JsonValue parsing throws on malformed JSON`` () =
+    let malformedJson = """{"incomplete": """
+    (fun () -> JsonValue.Parse malformedJson |> ignore) |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``JsonValue parsing throws on invalid unicode escape`` () =
+    let invalidUnicode = """{"bad": "\uXYZ"}"""
+    (fun () -> JsonValue.Parse invalidUnicode |> ignore) |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``JsonValue parsing throws on incomplete unicode escape`` () =
+    let incompleteUnicode = """{"bad": "\u12"}"""
+    (fun () -> JsonValue.Parse incompleteUnicode |> ignore) |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``JsonValue parsing handles empty arrays`` () =
+    let json = JsonValue.Parse "[]"
+    match json with
+    | JsonValue.Array elements -> elements.Length |> should equal 0
+    | _ -> failwith "Expected array"
+
+[<Test>]
+let ``JsonValue parsing handles empty objects`` () =
+    let json = JsonValue.Parse "{}"
+    match json with
+    | JsonValue.Record properties -> properties.Length |> should equal 0
+    | _ -> failwith "Expected record"
+
+[<Test>]
+let ``JsonValue parsing handles nested structures`` () =
+    let nestedJson = """{"level1": {"level2": {"level3": "deep"}}}"""
+    let result = JsonValue.Parse nestedJson
+    result?level1?level2?level3.AsString() |> should equal "deep"
+
+[<Test>]
+let ``JsonValue parsing handles arrays with mixed types`` () =
+    let mixedArray = """[1, "text", true, null, 3.14]"""
+    let result = JsonValue.Parse mixedArray
+    match result with
+    | JsonValue.Array elements ->
+        elements.[0] |> should equal (JsonValue.Number 1M)
+        elements.[1] |> should equal (JsonValue.String "text")
+        elements.[2] |> should equal (JsonValue.Boolean true)
+        elements.[3] |> should equal JsonValue.Null
+        elements.[4].AsFloat() |> should equal 3.14  // Use AsFloat for comparison
+    | _ -> failwith "Expected array"
+
+[<Test>]
+let ``JsonValue handles number parsing with exponential notation`` () =
+    let json = JsonValue.Parse """{"exp": 1.23e10}"""
+    json?exp.AsFloat() |> should equal 1.23e10
+
+[<Test>]
+let ``JsonValue handles number parsing with negative exponential`` () =
+    let json = JsonValue.Parse """{"exp": 1.23e-5}"""
+    json?exp.AsFloat() |> should equal 1.23e-5
+
+[<Test>]
+let ``JsonValue handles number parsing with positive exponential`` () =
+    let json = JsonValue.Parse """{"exp": 1.23e+3}"""
+    json?exp.AsFloat() |> should equal 1.23e3
+
+[<Test>]
+let ``JsonStringEncodeTo handles null or empty string`` () =
+    let w = new System.IO.StringWriter()
+    JsonValue.JsonStringEncodeTo w null
+    w.ToString() |> should equal ""
+    
+    w.GetStringBuilder().Clear() |> ignore
+    JsonValue.JsonStringEncodeTo w ""
+    w.ToString() |> should equal ""
+
+[<Test>]
+let ``JsonStringEncodeTo handles control characters`` () =
+    let controlChars = "\u0001\u0002\u0003\u0004\u0005\u0006\u0007"
+    let w = new System.IO.StringWriter()
+    JsonValue.JsonStringEncodeTo w controlChars
+    let result = w.ToString()
+    result |> should equal "\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007"
+
+[<Test>]
+let ``JsonStringEncodeTo handles high-value control characters`` () =
+    let controlChars = "\u000e\u000f\u0010\u001f"
+    let w = new System.IO.StringWriter()
+    JsonValue.JsonStringEncodeTo w controlChars
+    let result = w.ToString()
+    result |> should equal "\\u000e\\u000f\\u0010\\u001f"
+
+[<Test>]
+let ``JsonStringEncodeTo preserves normal characters`` () =
+    let normalText = "Hello, World! 123 ABC xyz"
+    let w = new System.IO.StringWriter()
+    JsonValue.JsonStringEncodeTo w normalText
+    let result = w.ToString()
+    result |> should equal normalText
+
+[<Test>]
+let ``JsonValue ToString with custom indentation`` () =
+    let json = JsonValue.Record [| ("nested", JsonValue.Record [| ("value", JsonValue.Number 42M) |]) |]
+    let result = json.ToString(indentationSpaces = 4)
+    result.Contains("    ") |> should equal true
+
+[<Test>]
+let ``JsonValue obsolete Object pattern still works`` () =
+    let json = JsonValue.Record [| ("a", JsonValue.Number 1M); ("b", JsonValue.Number 2M) |]
+    match json with
+    | JsonValue.Object map ->
+        map.["a"] |> should equal (JsonValue.Number 1M)
+        map.["b"] |> should equal (JsonValue.Number 2M)
+    | _ -> failwith "Pattern matching failed"
+
+[<Test>]
+let ``JsonValue obsolete Object constructor still works`` () =
+    let map = Map.ofList [("key", JsonValue.String "value"); ("num", JsonValue.Number 123M)]
+    let json = JsonValue.Object map
+    match json with
+    | JsonValue.Record properties ->
+        properties |> Array.exists (fun (k, v) -> k = "key" && v = JsonValue.String "value") |> should equal true
+        properties |> Array.exists (fun (k, v) -> k = "num" && v = JsonValue.Number 123M) |> should equal true
+    | _ -> failwith "Expected record"
