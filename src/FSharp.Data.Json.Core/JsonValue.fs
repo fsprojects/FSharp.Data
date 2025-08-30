@@ -187,7 +187,7 @@ type private JsonParser(jsonText: string) =
     // Helper functions
 
     let isNumChar c =
-        Char.IsDigit c || c = '.' || c = 'e' || c = 'E' || c = '+' || c = '-'
+        c >= '0' && c <= '9' || c = '.' || c = 'e' || c = 'E' || c = '+' || c = '-'
 
     let throw () =
         let msg =
