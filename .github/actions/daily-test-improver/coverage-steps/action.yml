@@ -1,0 +1,64 @@
+name: 'Generate Test Coverage Report'
+description: 'Build project, run tests with coverage collection, and generate coverage report'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET Core 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.400
+
+    - name: Restore .NET local tools
+      shell: bash
+      run: dotnet tool restore
+
+    - name: Restore packages
+      shell: bash
+      run: dotnet paket restore
+
+    - name: Build all projects
+      shell: bash
+      run: dotnet run --project build/build.fsproj -- -t Build
+
+    - name: Run tests with coverage collection
+      shell: bash
+      run: |
+        dotnet test FSharp.Data.sln \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults/ \
+          --logger "console;verbosity=detailed" \
+          --no-build
+
+    - name: Install ReportGenerator tool (if not already available)
+      shell: bash
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool || true
+
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        reportgenerator \
+          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -targetdir:"TestResults/CoverageReport" \
+          -reporttypes:"Html;Cobertura;TextSummary" \
+          -verbosity:Info
+
+    - name: Display coverage summary
+      shell: bash
+      run: |
+        echo "=== COVERAGE SUMMARY ==="
+        if [ -f "TestResults/CoverageReport/Summary.txt" ]; then
+          cat "TestResults/CoverageReport/Summary.txt"
+        else
+          echo "Coverage summary file not found"
+        fi
+        echo "========================"
+
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: |
+          TestResults/CoverageReport/
+          TestResults/**/coverage.cobertura.xml
+        retention-days: 30
