@@ -54,13 +54,32 @@ module internal List =
     /// (If the inputs contain the same keys, then the order
     /// of the elements is preserved.)
     let internal pairBy f first second =
-        let vals1 = [ for o in first -> f o, o ]
-        let vals2 = [ for o in second -> f o, o ]
-        let d1, d2 = dict vals1, dict vals2
-        let k1, k2 = set d1.Keys, set d2.Keys
-        let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
+        // Optimized version: process data in single pass with efficient data structures
+        let d1 = System.Collections.Generic.Dictionary()
+        let d2 = System.Collections.Generic.Dictionary()
+        let keysInOrder = System.Collections.Generic.List()
+        let keysSeen = System.Collections.Generic.HashSet()
 
-        [ for k in keys -> k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
+        // First pass: populate d1 and collect keys in order
+        for item in first do
+            let key = f item
+
+            if keysSeen.Add(key) then
+                keysInOrder.Add(key)
+
+            d1.[key] <- item
+
+        // Second pass: populate d2 and add any new keys
+        for item in second do
+            let key = f item
+
+            if keysSeen.Add(key) then
+                keysInOrder.Add(key)
+
+            d2.[key] <- item
+
+        // Generate result in single pass
+        [ for key in keysInOrder -> key, asOption (d1.TryGetValue(key)), asOption (d2.TryGetValue(key)) ]
 
 // ------------------------------------------------------------------------------------------------
 
