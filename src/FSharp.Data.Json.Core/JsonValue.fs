@@ -125,26 +125,53 @@ type JsonValue =
 
         serialize 0 x
 
+    // Optimized JSON string encoding with reduced allocations and bulk writing
     // Encode characters that are not valid in JS string. The implementation is based
     // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
     static member internal JsonStringEncodeTo (w: TextWriter) (value: string) =
         if not (String.IsNullOrEmpty value) then
+            let mutable lastWritePos = 0
+
             for i = 0 to value.Length - 1 do
                 let c = value.[i]
                 let ci = int c
 
-                if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
-                    w.Write("\\u{0:x4}", ci) |> ignore
-                else
-                    match c with
-                    | '\b' -> w.Write "\\b"
-                    | '\t' -> w.Write "\\t"
-                    | '\n' -> w.Write "\\n"
-                    | '\f' -> w.Write "\\f"
-                    | '\r' -> w.Write "\\r"
-                    | '"' -> w.Write "\\\""
-                    | '\\' -> w.Write "\\\\"
-                    | _ -> w.Write c
+                let needsEscaping =
+                    ci >= 0 && ci <= 7
+                    || ci = 11
+                    || ci >= 14 && ci <= 31
+                    || c = '\b'
+                    || c = '\t'
+                    || c = '\n'
+                    || c = '\f'
+                    || c = '\r'
+                    || c = '"'
+                    || c = '\\'
+
+                if needsEscaping then
+                    // Write all accumulated unescaped characters in one operation using Substring
+                    if i > lastWritePos then
+                        w.Write(value.Substring(lastWritePos, i - lastWritePos))
+
+                    // Write the escaped character
+                    if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
+                        w.Write("\\u{0:x4}", ci) |> ignore
+                    else
+                        match c with
+                        | '\b' -> w.Write "\\b"
+                        | '\t' -> w.Write "\\t"
+                        | '\n' -> w.Write "\\n"
+                        | '\f' -> w.Write "\\f"
+                        | '\r' -> w.Write "\\r"
+                        | '"' -> w.Write "\\\""
+                        | '\\' -> w.Write "\\\\"
+                        | _ -> w.Write c
+
+                    lastWritePos <- i + 1
+
+            // Write any remaining unescaped characters
+            if lastWritePos < value.Length then
+                w.Write(value.Substring(lastWritePos))
 
     member x.ToString(saveOptions, ?indentationSpaces: int) =
         let w = new StringWriter(CultureInfo.InvariantCulture)
