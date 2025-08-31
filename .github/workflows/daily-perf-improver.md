@@ -127,7 +127,7 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
    4a. Create a new branch.
    
-   4b. Make the changes to work towards the performance improvement goal you selected. This may involve:
+   4b. Work towards the performance improvement goal you selected. This may involve:
      - Refactoring code
      - Optimizing algorithms
      - Changing data structures
@@ -141,6 +141,8 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
      - Using profiling tools to identify bottlenecks
      - Improving engineering practices
      - Other techniques to improve performance 
+
+     If you do benchmarking then make sure you actually take before/after benchmarking performance figures. Provide benchmarking, profiling or other evidence that the thing you're optimizing is important to a significant realistic workload.
 
    4c. Ensure the code still works as expected and that any existing relevant tests pass. 
 
@@ -181,6 +183,8 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
    - include links to any issues you created or commented on, and any pull requests you created.
    - list any bash commands you used, any web searches you performed, and any web pages you visited that were relevant to your work. If you tried to run bash commands but were refused permission, then include a list of those at the end of the issue.
 
+   Be very honest about whether you took accurate before/after performance measurements or not, and if you did, what they were. If you didn't, explain why not. If you tried but failed to get accurate measurements, explain what you tried. Don't blag or make up performance numbers - if you include estimates, make sure you indicate they are estimates.
+
    5d. After creation, check the pull request to ensure it is correct, includes all expected files, and doesn't include any unwanted files or changes. Make any necessary corrections by pushing further commits to the branch.
 
    5e. Add a very brief comment to the issue from step 1a if it exists, saying you have worked on the particular performance goal and linking to the pull request you created.
@@ -200,8 +204,6 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 @include agentics/shared/tool-refused.md
 
 @include agentics/shared/include-link.md
-
-@include agentics/shared/job-summary.md
 
 @include agentics/shared/xpia.md
 
