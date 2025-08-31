@@ -19,13 +19,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />
+    <Compile Include="HttpRequestHeaders.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="IOTests.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="Caching.fs" />
+    <Compile Include="TextRuntime.fs" />
     <Compile Include="JsonValue.fs" />
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
+    <Compile Include="JsonRuntime.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvFile.fs" />
     <Compile Include="HtmlCharRefs.fs" />
