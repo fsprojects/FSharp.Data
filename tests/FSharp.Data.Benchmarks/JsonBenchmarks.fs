@@ -69,14 +69,27 @@ type JsonConversionBenchmarks() =
     
     [<Benchmark>]
     member this.AccessProperties() =
-        sampleJson.Properties()
-        |> Array.head
-        |> fun (_, value) -> value
+        match sampleJson with
+        | JsonValue.Array elements when elements.Length > 0 ->
+            // Get properties of the first issue in the GitHub issues array
+            elements.[0].Properties()
+            |> Array.head
+            |> fun (_, value) -> value
+        | JsonValue.Record _ ->
+            // Fallback for record-type JSON
+            sampleJson.Properties()
+            |> Array.head
+            |> fun (_, value) -> value
+        | _ -> JsonValue.Null
     
     [<Benchmark>]
     member this.GetArrayElements() =
         match sampleJson with
+        | JsonValue.Array elements -> 
+            // GitHub.json is an array of issues, return the array elements
+            elements
         | JsonValue.Record props -> 
+            // Fallback: look for an "items" property
             match Array.tryFind (fun (k, _) -> k = "items") props with
             | Some (_, JsonValue.Array elements) -> elements
             | _ -> [||]
