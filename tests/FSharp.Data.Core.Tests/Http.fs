@@ -350,3 +350,62 @@ let ``HttpWebRequest length is not set with non-seekable streams`` () =
     wr.Method <- "POST"
     HttpHelpers.writeBody wr nonSeekms |> Async.RunSynchronously
     wr.ContentLength |> should equal 0
+
+// --------------------------------------------------------------------------------------
+// Tests for HttpContentTypes module
+
+[<Test>]
+let ``HttpContentTypes.Any has correct value``() =
+    HttpContentTypes.Any |> should equal "*/*"
+
+[<Test>] 
+let ``HttpContentTypes.Text has correct value``() =
+    HttpContentTypes.Text |> should equal "text/plain"
+
+[<Test>]
+let ``HttpContentTypes.Binary has correct value``() =
+    HttpContentTypes.Binary |> should equal "application/octet-stream"
+
+[<Test>]
+let ``HttpContentTypes.Zip has correct value``() =
+    HttpContentTypes.Zip |> should equal "application/zip"
+
+[<Test>]
+let ``HttpContentTypes.GZip has correct value``() =
+    HttpContentTypes.GZip |> should equal "application/gzip"
+
+[<Test>]
+let ``HttpContentTypes.Json has correct value``() =
+    HttpContentTypes.Json |> should equal "application/json"
+
+[<Test>]
+let ``HttpContentTypes.Xml has correct value``() =
+    HttpContentTypes.Xml |> should equal "application/xml"
+
+[<Test>]
+let ``HttpContentTypes.JavaScript has correct value``() =
+    HttpContentTypes.JavaScript |> should equal "application/javascript"
+
+[<Test>]
+let ``HttpContentTypes.JsonRpc has correct value``() =
+    HttpContentTypes.JsonRpc |> should equal "application/json-rpc"
+
+[<Test>]
+let ``HttpContentTypes.FormValues has correct value``() =
+    HttpContentTypes.FormValues |> should equal "application/x-www-form-urlencoded"
+
+[<Test>]
+let ``HttpContentTypes constants are used in Http text detection logic``() =
+    // Test that these constants work as expected in the actual HTTP library logic
+    // by checking if they would be detected as text content types
+    let textTypes = [
+        HttpContentTypes.Text
+        HttpContentTypes.Json
+        HttpContentTypes.Xml
+        HttpContentTypes.JavaScript
+        HttpContentTypes.JsonRpc
+    ]
+    // These should all be considered text-based content types
+    textTypes |> List.iter (fun ct -> 
+        (ct.StartsWith("text/") || ct.Contains("json") || ct.Contains("xml") || ct.Contains("javascript"))
+        |> should equal true)

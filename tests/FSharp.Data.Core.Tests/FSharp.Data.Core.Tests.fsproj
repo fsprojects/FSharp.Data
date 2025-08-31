@@ -38,6 +38,7 @@
     <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlAttributeExtensions.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
+    <Compile Include="HtmlTableCell.fs" />
     <Compile Include="StructuralTypes.fs" />
     <Compile Include="BaseTypesHtmlDocument.fs" />
     <Compile Include="XmlExtensions.fs" />
