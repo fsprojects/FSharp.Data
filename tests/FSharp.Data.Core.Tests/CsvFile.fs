@@ -263,3 +263,93 @@ let ``Complex CSV with quotes and newlines handled correctly`` () =
     rows.[0].["Description"] |> should equal "Software Engineer, Senior"
     rows.[1].["Description"] |> should equal "Product Manager\"s Assistant"
     rows.[2].["Description"] |> should equal "Data Scientist\nwith ML focus"
+
+// Sample CSV data with time/date fields for testing extension methods
+let csvWithDateTimeData = """StartDate,EndDate,Duration,Offset
+2023-01-15,2023-01-20,5.00:00:00,2023-01-15T10:30:00+02:00
+2023-02-01,2023-02-03,2.12:30:45,2023-02-01T14:15:30-05:00
+2023-03-10,2023-03-15,4.08:15:20,2023-03-10T09:45:00+00:00"""
+
+// StringExtensions tests for CSV context - Missing coverage area
+[<Test>]
+let ``StringExtensions.AsTimeSpan works with valid input`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let firstRow = csv.Rows |> Seq.head
+    
+    firstRow.["Duration"].AsTimeSpan() |> should equal (System.TimeSpan(5, 0, 0, 0))
+
+[<Test>]
+let ``StringExtensions.AsTimeSpan works with complex time format`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let rows = csv.Rows |> Array.ofSeq
+    
+    rows.[1].["Duration"].AsTimeSpan() |> should equal (System.TimeSpan(2, 12, 30, 45))
+    rows.[2].["Duration"].AsTimeSpan() |> should equal (System.TimeSpan(4, 8, 15, 20))
+
+[<Test>]
+let ``StringExtensions.AsTimeSpan throws with invalid input`` () =
+    let csv = CsvFile.Parse("InvalidTime\ninvalid_time")
+    let row = csv.Rows |> Seq.head
+    
+    Assert.Throws<System.Exception>(fun () -> row.["InvalidTime"].AsTimeSpan() |> ignore) |> ignore
+
+[<Test>]
+let ``StringExtensions.AsDateTimeOffset works with valid input`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let firstRow = csv.Rows |> Seq.head
+    
+    let result = firstRow.["Offset"].AsDateTimeOffset()
+    result.DateTime |> should equal (System.DateTime(2023, 1, 15, 10, 30, 0))
+    result.Offset |> should equal (System.TimeSpan(2, 0, 0))
+
+[<Test>]
+let ``StringExtensions.AsDateTimeOffset works with negative offset`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let rows = csv.Rows |> Array.ofSeq
+    
+    let result = rows.[1].["Offset"].AsDateTimeOffset()
+    result.DateTime |> should equal (System.DateTime(2023, 2, 1, 14, 15, 30))
+    result.Offset |> should equal (System.TimeSpan(-5, 0, 0))
+
+[<Test>]
+let ``StringExtensions.AsDateTimeOffset works with zero offset`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let rows = csv.Rows |> Array.ofSeq
+    
+    let result = rows.[2].["Offset"].AsDateTimeOffset()
+    result.DateTime |> should equal (System.DateTime(2023, 3, 10, 9, 45, 0))
+    result.Offset |> should equal (System.TimeSpan.Zero)
+
+[<Test>]
+let ``StringExtensions.AsDateTimeOffset throws with invalid input`` () =
+    let csv = CsvFile.Parse("InvalidOffset\ninvalid_offset")
+    let row = csv.Rows |> Seq.head
+    
+    Assert.Throws<System.Exception>(fun () -> row.["InvalidOffset"].AsDateTimeOffset() |> ignore) |> ignore
+
+[<Test>]
+let ``StringExtensions.AsTimeSpan with custom culture`` () =
+    let csv = CsvFile.Parse("Duration\n01:30:45")
+    let row = csv.Rows |> Seq.head
+    
+    let result = row.["Duration"].AsTimeSpan(System.Globalization.CultureInfo.InvariantCulture)
+    result |> should equal (System.TimeSpan(1, 30, 45))
+
+[<Test>]
+let ``StringExtensions.AsDateTimeOffset with custom culture`` () =
+    let csv = CsvFile.Parse("Timestamp\n2023-06-15T16:20:30+03:00")
+    let row = csv.Rows |> Seq.head
+    
+    let result = row.["Timestamp"].AsDateTimeOffset(System.Globalization.CultureInfo.InvariantCulture)
+    result.DateTime |> should equal (System.DateTime(2023, 6, 15, 16, 20, 30))
+    result.Offset |> should equal (System.TimeSpan(3, 0, 0))
+
+[<Test>]
+let ``StringExtensions methods work with dynamic operator`` () =
+    let csv = CsvFile.Parse(csvWithDateTimeData)
+    let row = csv.Rows |> Seq.head
+    
+    // Test that the ? operator integrates properly with extension methods
+    row?Duration.AsTimeSpan() |> should equal (System.TimeSpan(5, 0, 0, 0))
+    let offsetResult = row?Offset.AsDateTimeOffset()
+    offsetResult.Offset |> should equal (System.TimeSpan(2, 0, 0))
