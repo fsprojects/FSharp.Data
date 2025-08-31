@@ -36,6 +36,7 @@
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
+    <Compile Include="BaseTypesHtmlDocument.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
