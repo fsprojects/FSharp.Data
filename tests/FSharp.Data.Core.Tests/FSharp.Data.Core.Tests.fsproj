@@ -29,6 +29,7 @@
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="JsonRuntime.fs" />
+    <Compile Include="JsonSchema.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvFile.fs" />
     <Compile Include="HtmlCharRefs.fs" />
