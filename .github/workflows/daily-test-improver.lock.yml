@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-02 17:17:54
+# Effective stop-time: 2025-09-02 20:17:44
 
 name: "Daily Test Coverage Improver"
 "on":
@@ -73,7 +73,7 @@ jobs:
           WORKFLOW_NAME="Daily Test Coverage Improver"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-02 17:17:54"
+          STOP_TIME="2025-09-02 20:17:44"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -301,6 +301,7 @@ jobs:
           # Allowed tools (sorted):
           # - Bash
           # - Edit
+          # - ExitPlanMode
           # - Glob
           # - Grep
           # - LS
@@ -309,6 +310,7 @@ jobs:
           # - NotebookRead
           # - Read
           # - Task
+          # - TodoWrite
           # - WebFetch
           # - WebSearch
           # - Write
@@ -364,7 +366,7 @@ jobs:
           # - mcp__github__search_users
           # - mcp__github__update_issue
           # - mcp__github__update_pull_request
-          allowed_tools: "Bash,Edit,Glob,Grep,LS,MultiEdit,NotebookEdit,NotebookRead,Read,Task,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_branch,mcp__github__create_issue,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__push_files,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users,mcp__github__update_issue,mcp__github__update_pull_request"
+          allowed_tools: "Bash,Edit,ExitPlanMode,Glob,Grep,LS,MultiEdit,NotebookEdit,NotebookRead,Read,Task,TodoWrite,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_branch,mcp__github__create_issue,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__push_files,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users,mcp__github__update_issue,mcp__github__update_pull_request"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -400,13 +402,15 @@ jobs:
           name: workflow-complete
           path: workflow-complete.txt
       - name: Upload engine output files
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agent_outputs
           path: |
             output.txt
           if-no-files-found: ignore
+      - name: Clean up engine output files
+        run: |
+          rm -f output.txt
       - name: Parse agent logs for step summary
         if: always()
         uses: actions/github-script@v7
