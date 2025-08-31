@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-02 21:58:14
+# Effective stop-time: 2025-09-02 22:31:27
 
 name: "Daily Perf Improver"
 "on":
@@ -73,7 +73,7 @@ jobs:
           WORKFLOW_NAME="Daily Perf Improver"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-02 21:58:14"
+          STOP_TIME="2025-09-02 22:31:27"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -269,6 +269,10 @@ jobs:
           
           - List labels: `gh label list ...`
           - View label: `gh label view <label-name> ...`
+          
+          ## Git Configuration
+          
+          When using `git commit`, ensure you set the author name and email appropriately. Do this by using a `--author` flag with `git commit`, for example `git commit --author "${{ github.workflow }} <github-actions@users.noreply.github.com>" ...`.
           
           <!-- You can whitelist tools in .github/workflows/build-tools.md file -->
           
