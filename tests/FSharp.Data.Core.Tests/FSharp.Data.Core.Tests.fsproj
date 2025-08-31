@@ -19,6 +19,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />
+    <Compile Include="HttpRequestHeaders.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="IOTests.fs" />
     <Compile Include="TextConversions.fs" />
