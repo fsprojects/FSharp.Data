@@ -80,13 +80,20 @@ let private appendToLog logFile line = appendToLogMultiple logFile [ line ]
 
 let internal log str =
 #if TIMESTAMPS_IN_LOG
-    "["
-    + DateTime.Now.TimeOfDay.ToString()
-    + "] "
-    + String(' ', indentation * 2)
-    + str
+    let sb = StringBuilder()
+    sb.Append("[") |> ignore
+    sb.Append(DateTime.Now.TimeOfDay.ToString()) |> ignore
+    sb.Append("] ") |> ignore
+    sb.Append(String(' ', indentation * 2)) |> ignore
+    sb.Append(str) |> ignore
+
+    sb.ToString()
 #else
-    String(' ', indentation * 2) + str
+    let sb = StringBuilder()
+    sb.Append(String(' ', indentation * 2)) |> ignore
+    sb.Append(str) |> ignore
+
+    sb.ToString()
 #endif
     |> appendToLog "log.txt"
 
@@ -227,7 +234,14 @@ let internal asyncRead (uriResolver: UriResolver) formatName encodingStr (uri: U
                 @ [ HttpContentTypes.Any ]
 
             let headers =
-                [ HttpRequestHeaders.UserAgent("FSharp.Data " + formatName + " Type Provider")
+                let userAgentSb =
+                    StringBuilder("FSharp.Data ".Length + formatName.Length + " Type Provider".Length)
+
+                userAgentSb.Append("FSharp.Data ") |> ignore
+                userAgentSb.Append(formatName) |> ignore
+                userAgentSb.Append(" Type Provider") |> ignore
+
+                [ HttpRequestHeaders.UserAgent(userAgentSb.ToString())
                   HttpRequestHeaders.Accept(String.concat ", " contentTypes) ]
             // Download the whole web resource at once, otherwise with some servers we won't get the full file
             let! text =

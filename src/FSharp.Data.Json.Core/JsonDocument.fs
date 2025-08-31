@@ -5,6 +5,7 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
+open System.Text
 open FSharp.Data
 
 #nowarn "10001"
@@ -94,4 +95,10 @@ type JsonDocument =
         match JsonValue.ParseMultiple(text) |> Seq.toArray with
         | [| JsonValue.Array array |] -> array
         | array -> array
-        |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
+        |> Array.mapi (fun i value ->
+            let indexStr = string i
+            let sb = StringBuilder(1 + indexStr.Length + 1)
+            sb.Append("[") |> ignore
+            sb.Append(indexStr) |> ignore
+            sb.Append("]") |> ignore
+            JsonDocument.Create(value, sb.ToString()))

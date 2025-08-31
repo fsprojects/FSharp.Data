@@ -65,8 +65,11 @@ let createInternetFileCache prefix expiration =
     // %UserProfile%\AppData\Local\Microsoft\Windows\INetCache
     let cacheFolder =
         if Environment.OSVersion.Platform = PlatformID.Unix then
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-            + "/.cache/fsharp-data"
+            let userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            let sb = StringBuilder(userProfile.Length + 20)
+            sb.Append(userProfile) |> ignore
+            sb.Append("/.cache/fsharp-data") |> ignore
+            sb.ToString()
         else
             Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
@@ -76,7 +79,10 @@ let createInternetFileCache prefix expiration =
     let cacheFile key =
         let sha1 = hashString key
         let encoded = Uri.EscapeDataString sha1
-        Path.Combine(downloadCache, encoded + ".txt")
+        let sb = StringBuilder(encoded.Length + 4)
+        sb.Append(encoded) |> ignore
+        sb.Append(".txt") |> ignore
+        Path.Combine(downloadCache, sb.ToString())
 
     // A simple check for now. This is to guard against a corrupted cache file.
     let isWellFormedResult result = not (String.IsNullOrEmpty result)
