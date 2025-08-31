@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-02 16:50:52
+# Effective stop-time: 2025-09-02 17:10:12
 
 name: "PR Fix"
 on:
@@ -401,7 +401,7 @@ jobs:
           WORKFLOW_NAME="PR Fix"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-02 16:50:52"
+          STOP_TIME="2025-09-02 17:10:12"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -453,7 +453,7 @@ jobs:
           
           > NOTE: If you are refused permission to run an MCP tool or particular 'bash' commands, or need to request access to other tools or resources, then please include a request for access in the output, explaining the exact name of the tool and/or the exact prefix of bash commands needed, or other resources you need access to.
           
-          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request you create. Do this in addition to any other footers you are instructed to include.
+          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request description you create. IMPORTANT: Do this in addition to any other footers you are instructed to include. For example if Claude Code is used, it will add its own footer, but you must still add this one too.
           
           ```markdown
           > AI-generated content by [${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) may contain mistakes.
