@@ -77,16 +77,15 @@ module internal HtmlParser =
             String(buffer)
 
     type CharList =
-        { mutable Contents: char list }
+        { mutable Contents: StringBuilder }
 
-        static member Empty = { Contents = [] }
+        static member Empty = { Contents = StringBuilder() }
 
-        override x.ToString() =
-            String(x.Contents |> List.rev |> List.toArray)
+        override x.ToString() = x.Contents.ToString()
 
-        member x.Cons(c) = x.Contents <- c :: x.Contents
+        member x.Cons(c: char) = x.Contents.Append(c) |> ignore
         member x.Length = x.Contents.Length
-        member x.Clear() = x.Contents <- []
+        member x.Clear() = x.Contents.Clear() |> ignore
 
     type InsertionMode =
         | DefaultMode
@@ -116,8 +115,8 @@ module internal HtmlParser =
 
         static member Create(reader: TextReader) =
             { Attributes = []
-              CurrentTag = CharList.Empty
-              Content = CharList.Empty
+              CurrentTag = { Contents = StringBuilder() }
+              Content = { Contents = StringBuilder() }
               HasFormattedParent = false
               InsertionMode = DefaultMode
               Tokens = []
@@ -133,7 +132,7 @@ module internal HtmlParser =
         member x.ContentLength = x.Content.Length
 
         member x.NewAttribute() =
-            x.Attributes <- (CharList.Empty, CharList.Empty) :: x.Attributes
+            x.Attributes <- ({ Contents = StringBuilder() }, { Contents = StringBuilder() }) :: x.Attributes
 
         member x.ConsAttrName() =
             match x.Attributes with
@@ -170,7 +169,7 @@ module internal HtmlParser =
         member x.EmitSelfClosingTag() =
             let name = x.CurrentTag.ToString().Trim()
             let result = Tag(true, name, x.GetAttributes())
-            x.CurrentTag <- CharList.Empty
+            x.CurrentTag <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
@@ -212,7 +211,7 @@ module internal HtmlParser =
                 else
                     DefaultMode
 
-            x.CurrentTag <- CharList.Empty
+            x.CurrentTag <- { Contents = StringBuilder() }
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
 
@@ -223,7 +222,7 @@ module internal HtmlParser =
             for c in content.ToCharArray() do
                 x.ConsAttrValue c
 
-            x.Content <- CharList.Empty
+            x.Content <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
 
         member x.Emit() : unit =
@@ -247,7 +246,7 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData(content.Replace("<![CDATA[", "").Replace("]]>", ""))
 
-            x.Content <- CharList.Empty
+            x.Content <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
 
             match result with
@@ -255,9 +254,9 @@ module internal HtmlParser =
             | _ -> x.Tokens <- result :: x.Tokens
 
         member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
-        member x.Cons(char) = x.Content.Cons(char)
-        member x.Cons(char) = Array.iter (x.Content.Cons) char
-        member x.Cons(char: string) = x.Cons(char.ToCharArray())
+        member x.Cons(char: char) = x.Content.Cons(char)
+        member x.Cons(chars: char array) = Array.iter (x.Content.Cons) chars
+        member x.Cons(chars: string) = x.Cons(chars.ToCharArray())
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
