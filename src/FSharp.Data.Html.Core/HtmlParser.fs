@@ -110,7 +110,7 @@ module internal HtmlParser =
           mutable Content: CharList
           mutable HasFormattedParent: bool
           mutable InsertionMode: InsertionMode
-          mutable Tokens: HtmlToken list
+          mutable Tokens: ResizeArray<HtmlToken>
           Reader: TextReader }
 
         static member Create(reader: TextReader) =
@@ -119,7 +119,7 @@ module internal HtmlParser =
               Content = { Contents = StringBuilder() }
               HasFormattedParent = false
               InsertionMode = DefaultMode
-              Tokens = []
+              Tokens = ResizeArray<HtmlToken>()
               Reader = reader }
 
         member x.Pop() = x.Reader.Read() |> ignore
@@ -172,7 +172,7 @@ module internal HtmlParser =
             x.CurrentTag <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
             x.Attributes <- []
-            x.Tokens <- result :: x.Tokens
+            x.Tokens.Add(result)
 
         member x.IsFormattedTag =
             match x.CurrentTagName().ToLower() with
@@ -213,7 +213,7 @@ module internal HtmlParser =
 
             x.CurrentTag <- { Contents = StringBuilder() }
             x.Attributes <- []
-            x.Tokens <- result :: x.Tokens
+            x.Tokens.Add(result)
 
         member x.EmitToAttributeValue() =
             assert (x.InsertionMode = InsertionMode.CharRefMode)
@@ -251,7 +251,7 @@ module internal HtmlParser =
 
             match result with
             | Text t when String.IsNullOrEmpty(t) -> ()
-            | _ -> x.Tokens <- result :: x.Tokens
+            | _ -> x.Tokens.Add(result)
 
         member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
         member x.Cons(char: char) = x.Content.Cons(char)
@@ -277,7 +277,7 @@ module internal HtmlParser =
                 else
                     state.Pop()
                     tagOpen state
-            | TextParser.EndOfFile _ -> state.Tokens <- EOF :: state.Tokens
+            | TextParser.EndOfFile _ -> state.Tokens.Add(EOF)
             | '&' ->
                 if state.ContentLength > 0 then
                     state.Emit()
@@ -933,7 +933,7 @@ module internal HtmlParser =
             data state
             next <- state.Reader.Peek()
 
-        state.Tokens |> List.rev
+        state.Tokens |> List.ofSeq
 
     let private parse reader =
         let canNotHaveChildren (name: string) =

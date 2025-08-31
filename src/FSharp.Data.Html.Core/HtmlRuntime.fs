@@ -144,12 +144,11 @@ module HtmlRuntime =
                     |> HtmlNode.descendants true (fun _ -> true)
                     |> Seq.takeWhile ((<>) x)
                     |> Seq.filter f
-                    |> Seq.toList
-                    |> List.rev
+                    |> Seq.tryLast
 
                 match nearest with
-                | [] -> tryFindPrevious f p rest
-                | h :: _ -> Some h
+                | None -> tryFindPrevious f p rest
+                | Some h -> Some h
             | [] -> None
 
         let deriveFromSibling element parents =
@@ -360,17 +359,27 @@ module HtmlRuntime =
     let private parseDefinitionList makeUnique index (definitionList: HtmlNode, parents: HtmlNode list) =
 
         let rec createDefinitionGroups (nodes: HtmlNode list) =
-            let rec loop state ((groupName, _, elements) as currentGroup) (nodes: HtmlNode list) =
+            let rec loop
+                (state: ResizeArray<string * HtmlNode * ResizeArray<string>>)
+                ((groupName, _, elements) as currentGroup)
+                (nodes: HtmlNode list)
+                =
                 match nodes with
-                | [] -> (currentGroup :: state) |> List.rev
+                | [] ->
+                    state.Add(currentGroup)
+                    state |> List.ofSeq
                 | h :: t when HtmlNode.name h = "dt" ->
-                    loop (currentGroup :: state) (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
-                | h :: t -> loop state (groupName, h, ((HtmlNode.innerText h) :: elements)) t
+                    state.Add(currentGroup)
+                    loop state (NameUtils.nicePascalName (HtmlNode.innerText h), h, ResizeArray<string>()) t
+                | h :: t ->
+                    elements.Add(HtmlNode.innerText h)
+                    loop state (groupName, h, elements) t
 
             match nodes with
             | [] -> []
-            | h :: t when HtmlNode.name h = "dt" -> loop [] (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
-            | h :: t -> loop [] ("Undefined", h, []) t
+            | h :: t when HtmlNode.name h = "dt" ->
+                loop (ResizeArray()) (NameUtils.nicePascalName (HtmlNode.innerText h), h, ResizeArray<string>()) t
+            | h :: t -> loop (ResizeArray()) ("Undefined", h, ResizeArray<string>()) t
 
         let data =
             definitionList
@@ -379,7 +388,7 @@ module HtmlRuntime =
             |> createDefinitionGroups
             |> List.map (fun (group, node, values) ->
                 { Name = group
-                  Values = values |> List.rev |> List.toArray
+                  Values = values |> Array.ofSeq
                   Html = node })
 
         if data.Length <= 1 then
