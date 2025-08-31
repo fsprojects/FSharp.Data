@@ -60,9 +60,7 @@ we are looking at.
 *)
 let links =
     results.Descendants [ "a" ]
-    |> Seq.choose (fun x ->
-        x.TryGetAttribute("href")
-        |> Option.map (fun a -> x.InnerText(), a.Value()))
+    |> Seq.choose (fun x -> x.TryGetAttribute("href") |> Option.map (fun a -> x.InnerText(), a.Value()))
     |> Seq.truncate 10
     |> Seq.toList
 
@@ -78,14 +76,7 @@ and `Seq.map`.
 
 let searchResults =
     links
-    |> List.filter (fun (name, url) ->
-        name <> "Cached"
-        && name <> "Similar"
-        && url.StartsWith("/url?"))
-    |> List.map (fun (name, url) ->
-        name,
-        url
-            .Substring(0, url.IndexOf("&sa="))
-            .Replace("/url?q=", ""))
+    |> List.filter (fun (name, url) -> name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
+    |> List.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
 
 (*** include-fsi-merged-output ***)

@@ -4,8 +4,11 @@ open NUnit.Framework
 open FsUnit
 open System
 open System.Globalization
+open System.IO
+open System.Reflection
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 
 [<Test>]
 let ``ConvertString with Some JsonValue String should return the string value`` () =
@@ -279,3 +282,78 @@ let ``CreateArray should flatten nested arrays`` () =
         elems.[1] |> should equal (JsonValue.String "b")
         elems.[2] |> should equal (JsonValue.String "c")
     | _ -> failwith "Expected JsonValue.Array"
+
+// ============================================
+// JsonDocument Coverage Tests - Focus on accessible methods
+// ============================================
+
+[<Test>]
+let ``JsonDocument from TextReader should parse simple JSON correctly`` () =
+    let jsonText = """{"name": "test", "value": 42}"""
+    use reader = new StringReader(jsonText)
+    
+    // Create via reflection to avoid compiler warnings
+    let docType = typeof<JsonDocument>
+    let createMethod = docType.GetMethod("Create", [| typeof<TextReader> |])
+    let doc = createMethod.Invoke(null, [| reader |]) :?> IJsonDocument
+    
+    match doc.JsonValue with
+    | JsonValue.Record props ->
+        props |> should contain ("name", JsonValue.String "test")
+        props |> should contain ("value", JsonValue.Number 42m)
+    | _ -> failwith "Expected JsonValue.Record"
+
+[<Test>]
+let ``JsonDocument from TextReader should handle empty JSON`` () =
+    let jsonText = "{}"
+    use reader = new StringReader(jsonText)
+    
+    let docType = typeof<JsonDocument>
+    let createMethod = docType.GetMethod("Create", [| typeof<TextReader> |])
+    let doc = createMethod.Invoke(null, [| reader |]) :?> IJsonDocument
+    
+    match doc.JsonValue with
+    | JsonValue.Record props -> props |> should equal [||]
+    | _ -> failwith "Expected JsonValue.Record"
+
+[<Test>]
+let ``JsonDocument from TextReader should handle JSON arrays`` () =
+    let jsonText = """[1, 2, 3]"""
+    use reader = new StringReader(jsonText)
+    
+    let docType = typeof<JsonDocument>
+    let createMethod = docType.GetMethod("Create", [| typeof<TextReader> |])
+    let doc = createMethod.Invoke(null, [| reader |]) :?> IJsonDocument
+    
+    match doc.JsonValue with
+    | JsonValue.Array values ->
+        values |> should equal [| JsonValue.Number 1m; JsonValue.Number 2m; JsonValue.Number 3m |]
+    | _ -> failwith "Expected JsonValue.Array"
+
+[<Test>]
+let ``JsonDocument.CreateList should parse single JSON array`` () =
+    let jsonText = """[{"id": 1}, {"id": 2}]"""
+    use reader = new StringReader(jsonText)
+    
+    let docType = typeof<JsonDocument>
+    let createListMethod = docType.GetMethod("CreateList", [| typeof<TextReader> |])
+    let docs = createListMethod.Invoke(null, [| reader |]) :?> IJsonDocument[]
+    
+    docs.Length |> should equal 2
+    
+    match docs.[0].JsonValue with
+    | JsonValue.Record props -> props |> should contain ("id", JsonValue.Number 1m)
+    | _ -> failwith "Expected JsonValue.Record"
+
+[<Test>]
+let ``JsonDocument.CreateList should handle multiple JSON objects`` () =
+    let jsonText = """{"a": 1}
+{"b": 2}
+{"c": 3}"""
+    use reader = new StringReader(jsonText)
+    
+    let docType = typeof<JsonDocument>
+    let createListMethod = docType.GetMethod("CreateList", [| typeof<TextReader> |])
+    let docs = createListMethod.Invoke(null, [| reader |]) :?> IJsonDocument[]
+    
+    docs.Length |> should equal 3

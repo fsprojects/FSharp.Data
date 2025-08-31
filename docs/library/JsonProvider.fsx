@@ -180,9 +180,12 @@ Applied to the previous example, this would be:
 *)
 
 type People2 =
-    JsonProvider<"""
+    JsonProvider<
+        """
   [ { "name":"John", "age":94 },
-    { "name":"Tomas" } ] """, SampleIsList=true>
+    { "name":"Tomas" } ] """,
+        SampleIsList=true
+     >
 
 let person = People2.Parse("""{ "name":"Gustavo" }""")
 
@@ -210,11 +213,14 @@ Let's consider an example where this can be useful:
 *)
 
 type AmbiguousEntity =
-    JsonProvider<Sample="""
+    JsonProvider<
+        Sample="""
         { "code":"000", "length":"0" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
-        """, SampleIsList=true>
+        """,
+        SampleIsList=true
+     >
 
 let code = (AmbiguousEntity.GetSamples()[1]).Code
 let length = (AmbiguousEntity.GetSamples()[1]).Length
@@ -232,11 +238,15 @@ Now, let's enable inline schemas:
 open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
-    JsonProvider<Sample="""
+    JsonProvider<
+        Sample="""
         { "code":"typeof<string>", "length":"typeof< float<metre> >" }
         { "code":"123", "length":"42" }
         { "code":"4E5", "length":"1.83" }
-        """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
+        """,
+        SampleIsList=true,
+        InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides
+     >
 
 let code2 = (AmbiguousEntity2.GetSamples().[1]).Code
 let length2 = (AmbiguousEntity2.GetSamples().[1]).Length
@@ -325,8 +335,7 @@ printfn "Showing page %d of %d. Total records %d" info.Page info.Pages info.Tota
 
 // Print all data points
 for record in doc.Array do
-    record.Value
-    |> Option.iter (fun value -> printfn "%d: %f" record.Date value)
+    record.Value |> Option.iter (fun value -> printfn "%d: %f" record.Date value)
 
 (*** include-fsi-merged-output ***)
 
@@ -448,7 +457,11 @@ project file). If you are building a library `MyLib.dll`, you can write:
 
 *)
 type WB =
-    JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, MyLib.data.worldbank.json", ResolutionFolder=ResolutionFolder>
+    JsonProvider<
+        "../data/WorldBank.json",
+        EmbeddedResource="MyLib, MyLib.data.worldbank.json",
+        ResolutionFolder=ResolutionFolder
+     >
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`.
