@@ -196,3 +196,97 @@ let ``Conversions handle different number formats`` () =
     JsonValue.String "123.456" |> asDecimal |> should equal (Some 123.456M)
     JsonValue.String "0" |> asDecimal |> should equal (Some 0M)
     JsonValue.String "-99.99" |> asDecimal |> should equal (Some -99.99M)
+
+[<Test>]
+let ``Integer conversions test range boundaries for helper functions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+
+    // Test exact boundary values to trigger inRangeDecimal helper function
+    JsonValue.Number (decimal System.Int32.MaxValue) |> asInteger |> should equal (Some System.Int32.MaxValue)
+    JsonValue.Number (decimal System.Int32.MinValue) |> asInteger |> should equal (Some System.Int32.MinValue)
+    
+    // Test values just outside boundaries to trigger inRangeDecimal helper function 
+    JsonValue.Number ((decimal System.Int32.MaxValue) + 1M) |> asInteger |> should equal None
+    JsonValue.Number ((decimal System.Int32.MinValue) - 1M) |> asInteger |> should equal None
+    
+    // Test exact boundary values for Int64 to trigger inRangeDecimal helper function
+    JsonValue.Number (decimal System.Int64.MaxValue) |> asInteger64 |> should equal (Some System.Int64.MaxValue)
+    JsonValue.Number (decimal System.Int64.MinValue) |> asInteger64 |> should equal (Some System.Int64.MinValue)
+
+[<Test>]
+let ``Float integer conversions test range boundaries for helper functions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+
+    // Test exact boundary values with floats to trigger inRangeFloat helper function
+    JsonValue.Float (float System.Int32.MaxValue) |> asInteger |> should equal (Some System.Int32.MaxValue)
+    JsonValue.Float (float System.Int32.MinValue) |> asInteger |> should equal (Some System.Int32.MinValue)
+    
+    // Test values just outside boundaries with floats to trigger inRangeFloat helper function
+    JsonValue.Float ((float System.Int32.MaxValue) + 1.0) |> asInteger |> should equal None
+    JsonValue.Float ((float System.Int32.MinValue) - 1.0) |> asInteger |> should equal None
+    
+    // Test large values for Int64 with floats to trigger inRangeFloat helper function
+    // Use values that don't hit floating-point precision limits
+    JsonValue.Float 1000000000000.0 |> asInteger64 |> should equal (Some 1000000000000L)
+    JsonValue.Float -1000000000000.0 |> asInteger64 |> should equal (Some -1000000000000L)
+
+[<Test>]
+let ``Integer detection tests for decimal values to trigger isIntegerDecimal helper`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+
+    // Test decimal values that are integers to trigger isIntegerDecimal helper function
+    JsonValue.Number 42.0M |> asInteger |> should equal (Some 42)
+    JsonValue.Number -123.000M |> asInteger |> should equal (Some -123)
+    JsonValue.Number 0.0M |> asInteger |> should equal (Some 0)
+    JsonValue.Number 1.0M |> asInteger64 |> should equal (Some 1L)
+    
+    // Test decimal values that are NOT integers to trigger isIntegerDecimal helper function
+    JsonValue.Number 42.1M |> asInteger |> should equal None
+    JsonValue.Number -123.5M |> asInteger |> should equal None
+    JsonValue.Number 0.001M |> asInteger |> should equal None
+    JsonValue.Number 1.99999M |> asInteger64 |> should equal None
+
+[<Test>]
+let ``Integer detection tests for float values to trigger isIntegerFloat helper`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+
+    // Test float values that are integers to trigger isIntegerFloat helper function
+    JsonValue.Float 42.0 |> asInteger |> should equal (Some 42)
+    JsonValue.Float -123.000 |> asInteger |> should equal (Some -123)
+    JsonValue.Float 0.0 |> asInteger |> should equal (Some 0)
+    JsonValue.Float 1.0 |> asInteger64 |> should equal (Some 1L)
+    
+    // Test float values that are NOT integers to trigger isIntegerFloat helper function
+    JsonValue.Float 42.1 |> asInteger |> should equal None
+    JsonValue.Float -123.5 |> asInteger |> should equal None
+    JsonValue.Float 0.001 |> asInteger |> should equal None
+    JsonValue.Float 1.99999 |> asInteger64 |> should equal None
+    
+    // Test special float cases to trigger isIntegerFloat helper function
+    JsonValue.Float System.Double.NaN |> asInteger |> should equal None
+    JsonValue.Float System.Double.PositiveInfinity |> asInteger |> should equal None
+    JsonValue.Float System.Double.NegativeInfinity |> asInteger64 |> should equal None
+
+[<Test>]
+let ``Combined edge cases to exercise all helper functions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+
+    // Large integers that exercise both range checking and integer detection helpers
+    JsonValue.Number 2147483647.0M |> asInteger |> should equal (Some 2147483647) // Int32.MaxValue
+    JsonValue.Float 2147483647.0 |> asInteger |> should equal (Some 2147483647)
+    
+    JsonValue.Number 2147483648.0M |> asInteger |> should equal None // Just over Int32.MaxValue
+    JsonValue.Float 2147483648.0 |> asInteger |> should equal None
+    
+    // Large values that work for Int64 but not Int32
+    JsonValue.Number 3000000000M |> asInteger |> should equal None 
+    JsonValue.Number 3000000000M |> asInteger64 |> should equal (Some 3000000000L)
+    
+    // Values that are in range but not integers
+    JsonValue.Number 100.5M |> asInteger |> should equal None
+    JsonValue.Float 100.5 |> asInteger |> should equal None
