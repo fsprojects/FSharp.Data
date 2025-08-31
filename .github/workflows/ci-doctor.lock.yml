@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-02 17:10:12
+# Effective stop-time: 2025-09-02 17:17:54
 
 name: "CI Failure Doctor"
 "on":
@@ -85,7 +85,7 @@ jobs:
           WORKFLOW_NAME="CI Failure Doctor"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-02 17:10:12"
+          STOP_TIME="2025-09-02 17:17:54"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -453,7 +453,6 @@ jobs:
           script: |
             function main() {
               const fs = require('fs');
-              const core = require('@actions/core');
               try {
                 // Get the log file path from environment
                 const logFile = process.env.AGENT_LOG_FILE;
