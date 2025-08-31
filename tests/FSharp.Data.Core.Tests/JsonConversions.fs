@@ -196,3 +196,95 @@ let ``Conversions handle different number formats`` () =
     JsonValue.String "123.456" |> asDecimal |> should equal (Some 123.456M)
     JsonValue.String "0" |> asDecimal |> should equal (Some 0M)
     JsonValue.String "-99.99" |> asDecimal |> should equal (Some -99.99M)
+
+// --------------------------------------------------------------------------------------
+// Tests specifically designed to exercise the private Helpers module functions:
+// inRangeDecimal, inRangeFloat, isIntegerDecimal, isIntegerFloat
+// --------------------------------------------------------------------------------------
+
+[<Test>]
+let ``inRangeDecimal helper function via integer conversions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    
+    // Test boundary values for decimal range checking (inRangeDecimal function)
+    JsonValue.Number (decimal System.Int32.MaxValue) |> asInteger |> should equal (Some System.Int32.MaxValue)
+    JsonValue.Number (decimal System.Int32.MinValue) |> asInteger |> should equal (Some System.Int32.MinValue)
+    
+    // Values outside int32 range should return None (testing inRangeDecimal lo hi logic)
+    JsonValue.Number ((decimal System.Int32.MaxValue) + 1M) |> asInteger |> should equal None
+    JsonValue.Number ((decimal System.Int32.MinValue) - 1M) |> asInteger |> should equal None
+    
+    // Edge cases at boundaries
+    JsonValue.Number (decimal (System.Int32.MaxValue - 1)) |> asInteger |> should equal (Some (System.Int32.MaxValue - 1))
+    JsonValue.Number (decimal (System.Int32.MinValue + 1)) |> asInteger |> should equal (Some (System.Int32.MinValue + 1))
+
+[<Test>]
+let ``inRangeFloat helper function via integer conversions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    
+    // Test boundary values for float range checking (inRangeFloat function)
+    JsonValue.Float (float System.Int32.MaxValue) |> asInteger |> should equal (Some System.Int32.MaxValue)
+    JsonValue.Float (float System.Int32.MinValue) |> asInteger |> should equal (Some System.Int32.MinValue)
+    
+    // Values outside int32 range should return None (testing inRangeFloat lo hi logic) 
+    JsonValue.Float ((float System.Int32.MaxValue) + 1.0) |> asInteger |> should equal None
+    JsonValue.Float ((float System.Int32.MinValue) - 1.0) |> asInteger |> should equal None
+    
+    // Edge cases near boundaries
+    JsonValue.Float (float (System.Int32.MaxValue - 100)) |> asInteger |> should equal (Some (System.Int32.MaxValue - 100))
+    JsonValue.Float (float (System.Int32.MinValue + 100)) |> asInteger |> should equal (Some (System.Int32.MinValue + 100))
+
+[<Test>]
+let ``isIntegerDecimal helper function via integer conversions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    
+    // Test integer detection for decimal values (isIntegerDecimal function)
+    JsonValue.Number 42M |> asInteger |> should equal (Some 42)       // Integer decimal
+    JsonValue.Number 0M |> asInteger |> should equal (Some 0)         // Zero  
+    JsonValue.Number -123M |> asInteger |> should equal (Some -123)   // Negative integer
+    JsonValue.Number 42.0M |> asInteger |> should equal (Some 42)     // Decimal that equals integer
+    
+    // Non-integer decimals should return None (Math.Round v = v check fails)
+    JsonValue.Number 42.1M |> asInteger |> should equal None          // Has fractional part
+    JsonValue.Number 42.5M |> asInteger |> should equal None          // Has fractional part  
+    JsonValue.Number 42.9M |> asInteger |> should equal None          // Has fractional part
+    JsonValue.Number -42.3M |> asInteger |> should equal None         // Negative with fractional part
+    
+    // Edge cases for integer detection
+    JsonValue.Number 1.0000000000M |> asInteger |> should equal (Some 1)  // Very small fractional part (rounds to integer)
+    JsonValue.Number 0.0000000001M |> asInteger |> should equal None       // Very small but non-zero fractional part
+
+[<Test>]
+let ``isIntegerFloat helper function via integer conversions`` () =
+    let asInteger = JsonConversions.AsInteger System.Globalization.CultureInfo.InvariantCulture
+    
+    // Test integer detection for float values (isIntegerFloat function)
+    JsonValue.Float 42.0 |> asInteger |> should equal (Some 42)       // Integer float
+    JsonValue.Float 0.0 |> asInteger |> should equal (Some 0)         // Zero
+    JsonValue.Float -123.0 |> asInteger |> should equal (Some -123)   // Negative integer float
+    
+    // Non-integer floats should return None (Math.Round v = v check fails)
+    JsonValue.Float 42.1 |> asInteger |> should equal None            // Has fractional part
+    JsonValue.Float 42.5 |> asInteger |> should equal None            // Has fractional part
+    JsonValue.Float 42.9 |> asInteger |> should equal None            // Has fractional part  
+    JsonValue.Float -42.3 |> asInteger |> should equal None           // Negative with fractional part
+    
+    // Edge cases for float integer detection
+    JsonValue.Float 1.0 |> asInteger |> should equal (Some 1)         // Exact integer
+    JsonValue.Float 0.0000000001 |> asInteger |> should equal None    // Very small fractional part
+
+[<Test>]
+let ``Combined range and integer checks via int64 conversions`` () =
+    let asInteger64 = JsonConversions.AsInteger64 System.Globalization.CultureInfo.InvariantCulture
+    
+    // Test combined inRangeDecimal and isIntegerDecimal logic for int64
+    JsonValue.Number (decimal System.Int64.MaxValue) |> asInteger64 |> should equal (Some System.Int64.MaxValue)
+    JsonValue.Number (decimal System.Int64.MinValue) |> asInteger64 |> should equal (Some System.Int64.MinValue)
+    
+    // Test combined inRangeFloat and isIntegerFloat logic for int64 with safe values  
+    JsonValue.Float 123456789012345.0 |> asInteger64 |> should equal (Some 123456789012345L)
+    JsonValue.Float -123456789012345.0 |> asInteger64 |> should equal (Some -123456789012345L)
+    
+    // Non-integers should fail even if in range
+    JsonValue.Number ((decimal System.Int64.MaxValue) - 0.5M) |> asInteger64 |> should equal None
+    JsonValue.Float 123456789012345.1 |> asInteger64 |> should equal None
