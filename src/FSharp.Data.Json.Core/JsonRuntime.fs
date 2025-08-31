@@ -79,9 +79,7 @@ type JsonRuntime =
 
         match opt, originalValue with
         | Some value, _ -> value
-        | None,
-          Some ((JsonValue.Array _
-          | JsonValue.Record _) as x) ->
+        | None, Some((JsonValue.Array _ | JsonValue.Record _) as x) ->
             failwithf "Expecting %s at '%s', got %s" (getTypeName ()) path
             <| x.ToString(JsonSaveOptions.DisableFormatting)
         | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
@@ -100,9 +98,7 @@ type JsonRuntime =
                 | JsonValue.Null -> false
                 | JsonValue.String s when s |> TextConversions.AsString |> Option.isNone -> false
                 | _ -> true)
-            |> Array.mapi (fun i value ->
-                doc.CreateNew(value, "[" + (string i) + "]")
-                |> mapping.Invoke)
+            |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
         | JsonValue.Null -> [||]
         | x ->
             failwithf "Expecting an array at '%s', got %s" (doc.Path())
@@ -119,16 +115,11 @@ type JsonRuntime =
 
     /// Converts JSON record to dictionary
     static member ConvertRecordToDictionary<'Key, 'Value when 'Key: equality>
-        (
-            doc: IJsonDocument,
-            mappingKey: Func<IJsonDocument, 'Key>,
-            mappingValue: Func<IJsonDocument, 'Value>
-        ) =
+        (doc: IJsonDocument, mappingKey: Func<IJsonDocument, 'Key>, mappingValue: Func<IJsonDocument, 'Value>)
+        =
         JsonRuntime.GetRecordProperties(doc)
         |> Seq.map (fun (k, v) ->
-            let key =
-                doc.CreateNew(JsonValue.String k, k)
-                |> mappingKey.Invoke
+            let key = doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke
 
             let value = doc.CreateNew(v, k) |> mappingValue.Invoke
             key, value)
@@ -136,45 +127,27 @@ type JsonRuntime =
 
     /// Get a value by the key from infered dictionary
     static member InferedDictionaryContainsKey<'Key when 'Key: equality>
-        (
-            doc: IJsonDocument,
-            mappingKey: Func<IJsonDocument, 'Key>,
-            key: 'Key
-        ) =
+        (doc: IJsonDocument, mappingKey: Func<IJsonDocument, 'Key>, key: 'Key)
+        =
         let finder (k, _) =
-            (doc.CreateNew(JsonValue.String k, k)
-             |> mappingKey.Invoke) = key
+            (doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke) = key
 
-        (JsonRuntime.GetRecordProperties(doc)
-         |> Array.tryFind finder)
-            .IsSome
+        (JsonRuntime.GetRecordProperties(doc) |> Array.tryFind finder).IsSome
 
     /// Try get a value by the key from infered dictionary
     static member TryGetValueByKeyFromInferedDictionary<'Key, 'Value when 'Key: equality>
-        (
-            doc: IJsonDocument,
-            mappingKey: Func<IJsonDocument, 'Key>,
-            mappingValue: Func<IJsonDocument, 'Value>,
-            key: 'Key
-        ) =
+        (doc: IJsonDocument, mappingKey: Func<IJsonDocument, 'Key>, mappingValue: Func<IJsonDocument, 'Value>, key: 'Key) =
         let picker (k, v) =
-            if (doc.CreateNew(JsonValue.String k, k)
-                |> mappingKey.Invoke) = key then
+            if (doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke) = key then
                 doc.CreateNew(v, k) |> mappingValue.Invoke |> Some
             else
                 None
 
-        JsonRuntime.GetRecordProperties(doc)
-        |> Array.tryPick picker
+        JsonRuntime.GetRecordProperties(doc) |> Array.tryPick picker
 
     /// Get a value by the key from infered dictionary
     static member GetValueByKeyFromInferedDictionary<'Key, 'Value when 'Key: equality>
-        (
-            doc: IJsonDocument,
-            mappingKey: Func<IJsonDocument, 'Key>,
-            mappingValue: Func<IJsonDocument, 'Value>,
-            key: 'Key
-        ) =
+        (doc: IJsonDocument, mappingKey: Func<IJsonDocument, 'Key>, mappingValue: Func<IJsonDocument, 'Value>, key: 'Key) =
         match JsonRuntime.TryGetValueByKeyFromInferedDictionary(doc, mappingKey, mappingValue, key) with
         | Some value -> value
         | _ ->
@@ -185,21 +158,15 @@ type JsonRuntime =
 
     /// Get keys from infered dictionary
     static member GetKeysFromInferedDictionary<'Key when 'Key: equality>
-        (
-            doc: IJsonDocument,
-            mappingKey: Func<IJsonDocument, 'Key>
-        ) =
+        (doc: IJsonDocument, mappingKey: Func<IJsonDocument, 'Key>)
+        =
         JsonRuntime.GetRecordProperties(doc)
-        |> Array.map (fun (k, _) ->
-            doc.CreateNew(JsonValue.String k, k)
-            |> mappingKey.Invoke)
+        |> Array.map (fun (k, _) -> doc.CreateNew(JsonValue.String k, k) |> mappingKey.Invoke)
 
     /// Get values from infered dictionary
     static member GetValuesFromInferedDictionary<'Value>
-        (
-            doc: IJsonDocument,
-            mappingValue: Func<IJsonDocument, 'Value>
-        ) =
+        (doc: IJsonDocument, mappingValue: Func<IJsonDocument, 'Value>)
+        =
         JsonRuntime.GetRecordProperties(doc)
         |> Array.map (fun (k, v) -> doc.CreateNew(v, k) |> mappingValue.Invoke)
 
@@ -237,8 +204,7 @@ type JsonRuntime =
 
     /// Get optional json property and convert to a specified type
     static member ConvertOptionalProperty<'T>(doc: IJsonDocument, name, mapping: Func<IJsonDocument, 'T>) =
-        JsonRuntime.TryGetPropertyPacked(doc, name)
-        |> Option.map mapping.Invoke
+        JsonRuntime.TryGetPropertyPacked(doc, name) |> Option.map mapping.Invoke
 
     static member private Matches cultureStr tag =
         match tag with
@@ -261,9 +227,7 @@ type JsonRuntime =
         | InferedTypeTag.DateTimeOffset ->
             let cultureInfo = TextRuntime.GetCulture cultureStr
             fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome
-        | InferedTypeTag.TimeSpan ->
-            JsonConversions.AsTimeSpan(TextRuntime.GetCulture cultureStr)
-            >> Option.isSome
+        | InferedTypeTag.TimeSpan -> JsonConversions.AsTimeSpan(TextRuntime.GetCulture cultureStr) >> Option.isSome
         | InferedTypeTag.Guid -> JsonConversions.AsGuid >> Option.isSome
         | InferedTypeTag.Collection ->
             function
@@ -279,19 +243,13 @@ type JsonRuntime =
 
     /// Returns all array values that match the specified tag
     static member GetArrayChildrenByTypeTag<'T>
-        (
-            doc: IJsonDocument,
-            cultureStr,
-            tagCode,
-            mapping: Func<IJsonDocument, 'T>
-        ) =
+        (doc: IJsonDocument, cultureStr, tagCode, mapping: Func<IJsonDocument, 'T>)
+        =
         match doc.JsonValue with
         | JsonValue.Array elements ->
             elements
             |> Array.filter (JsonRuntime.Matches cultureStr (InferedTypeTag.ParseCode tagCode))
-            |> Array.mapi (fun i value ->
-                doc.CreateNew(value, "[" + (string i) + "]")
-                |> mapping.Invoke)
+            |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
         | JsonValue.Null -> [||]
         | x ->
             failwithf "Expecting an array at '%s', got %s" (doc.Path())
@@ -381,11 +339,8 @@ type JsonRuntime =
 
     // Creates a JsonValue.Record from key*value seq and wraps it in a json document
     static member CreateRecordFromDictionary<'Key, 'Value when 'Key: equality>
-        (
-            keyValuePairs: ('Key * 'Value) seq,
-            cultureStr,
-            mappingKeyBack: Func<'Key, string>
-        ) =
+        (keyValuePairs: ('Key * 'Value) seq, cultureStr, mappingKeyBack: Func<'Key, string>)
+        =
         let cultureInfo = TextRuntime.GetCulture cultureStr
 
         let json =

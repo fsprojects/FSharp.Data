@@ -60,7 +60,7 @@ module internal ActivePatterns =
         if map.Count <> 1 then
             None
         else
-            let (KeyValue (k, v)) = Seq.head map
+            let (KeyValue(k, v)) = Seq.head map
             Some(k, v)
 
 // ----------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ module internal ReflectionHelpers =
     let makeDelegate (exprfunc: Expr -> Expr) argType =
         let var = Var("t", argType)
         let convBody = exprfunc (Expr.Var var)
-        Expr.NewDelegateUnchecked(typedefof<Func<_, _>>.MakeGenericType (argType, convBody.Type), [ var ], convBody)
+        Expr.NewDelegateUnchecked(typedefof<Func<_, _>>.MakeGenericType(argType, convBody.Type), [ var ], convBody)
 
 // ----------------------------------------------------------------------------------------------
 
@@ -95,7 +95,9 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
             for i = disposeActions.Count - 1 downto 0 do
                 let disposeAction = disposeActions.[i]
                 let discard = disposeAction typeNameOpt
-                if discard then disposeActions.RemoveAt(i))
+
+                if discard then
+                    disposeActions.RemoveAt(i))
 
     do
         log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
@@ -166,9 +168,7 @@ module internal ProviderHelpers =
     let private cacheDuration = TimeSpan.FromMinutes 30.0
 
     let private invalidChars =
-        [ for c in "\"|<>{}[]," -> c ]
-        @ [ for i in 0..31 -> char i ]
-        |> set
+        [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
 
     let private webUrisCache = createInternetFileCache "DesignTimeURIs" cacheDuration
 
@@ -245,9 +245,7 @@ module internal ProviderHelpers =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
             | false, _ -> None
             | true, uri ->
-                if str.Trim() = ""
-                   || not uri.IsAbsoluteUri
-                      && Seq.exists invalidChars.Contains str then
+                if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str then
                     None
                 else
                     Some uri
@@ -283,8 +281,7 @@ module internal ProviderHelpers =
                     let reader, toWatch = asyncRead resolver formatName encodingStr uri
                     // Non need to register file watchers in fsc.exe and fsi.exe
                     if cfg.IsInvalidationSupported then
-                        toWatch
-                        |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
+                        toWatch |> Option.iter (fun path -> tp.SetFileToWatch(fullTypeName, path))
 
                     use reader = reader |> Async.RunSynchronously
 
@@ -391,8 +388,7 @@ module internal ProviderHelpers =
                 tp.AddDisposeAction(fun typeNameBeingDisposedOpt ->
 
                     // might be called more than once for each watcher, but the Dispose action is a NOP the second time
-                    watcher
-                    |> Option.iter (fun watcher -> watcher.Dispose())
+                    watcher |> Option.iter (fun watcher -> watcher.Dispose())
 
                     match typeNameBeingDisposedOpt with
                     | Some typeNameBeingDisposed when fullTypeName = typeNameBeingDisposed ->
@@ -413,7 +409,7 @@ module internal ProviderHelpers =
                         false)
 
         match providedTypesCache.TryRetrieve(fullTypeName, true) with
-        | Some (providedType, fullKey2, watchedFile) when fullKey = fullKey2 ->
+        | Some(providedType, fullKey2, watchedFile) when fullKey = fullKey2 ->
             log "Retrieved from cache"
             setupDisposeAction providedType watchedFile
             providedType
@@ -481,7 +477,7 @@ module internal ProviderHelpers =
             let spec = parseResult.Spec
 
             let resultType = spec.RepresentationType
-            let resultTypeAsync = typedefof<Async<_>>.MakeGenericType (resultType)
+            let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType)
 
             use _holder = logTime "CommonTypeGeneration" valueToBeParsedOrItsUri
 
@@ -490,8 +486,7 @@ module internal ProviderHelpers =
 
               let m =
                   let parseCode (Singleton text: Expr list) =
-                      <@ new StringReader(%%text) :> TextReader @>
-                      |> spec.CreateFromTextReader
+                      <@ new StringReader(%%text) :> TextReader @> |> spec.CreateFromTextReader
 
                   ProvidedMethod("Parse", args, resultType, isStatic = true, invokeCode = parseCode)
 
@@ -505,8 +500,7 @@ module internal ProviderHelpers =
                   let args = [ ProvidedParameter("text", typeof<string>) ]
 
                   let parseListCode (Singleton text: Expr list) =
-                      <@ new StringReader(%%text) :> TextReader @>
-                      |> listParser
+                      <@ new StringReader(%%text) :> TextReader @> |> listParser
 
                   let m =
                       ProvidedMethod("ParseList", args, resultTypeList, isStatic = true, invokeCode = parseListCode)
@@ -589,7 +583,7 @@ module internal ProviderHelpers =
               // Generate static Load value method
               match spec.CreateFromValue with
               | None -> ()
-              | Some (valueType, valueMapper) ->
+              | Some(valueType, valueMapper) ->
                   let args = [ ProvidedParameter("value", valueType) ]
 
                   let loadCode (Singleton value: Expr list) =
@@ -611,7 +605,7 @@ module internal ProviderHelpers =
                       if not resultType.IsArray then
 
                           let resultTypeArray = resultType.MakeArrayType()
-                          let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType (resultTypeArray)
+                          let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray)
 
                           // Generate static GetSamples method
                           let getSamplesCode _ =
@@ -654,8 +648,7 @@ module internal ProviderHelpers =
                                               valueToBeParsedOrItsUri
                                       @>
 
-                                  spec.CreateFromTextReaderForSampleList
-                                  |> asyncMap resultTypeArray readerAsync
+                                  spec.CreateFromTextReaderForSampleList |> asyncMap resultTypeArray readerAsync
 
                               let m =
                                   ProvidedMethod(

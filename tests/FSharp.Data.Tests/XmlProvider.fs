@@ -61,7 +61,7 @@ let ``Jim should have an age of 24``() =
     nextPerson.Age |> should equal 24
 
 [<Test>]
-let ``Type of attribute with empty value is string`` =
+let ``Type of attribute with empty value is string`` () =
   XmlProvider<"Data/emptyValue.xml">.GetSample().A |> should equal ""
 
 [<Test>]

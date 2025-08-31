@@ -32,31 +32,15 @@ type JsonConversions =
 
     static member AsInteger cultureInfo =
         function
-        | JsonValue.Number n when
-            inRangeDecimal Int32.MinValue Int32.MaxValue n
-            && isIntegerDecimal n
-            ->
-            Some(int n)
-        | JsonValue.Float f when
-            inRangeFloat Int32.MinValue Int32.MaxValue f
-            && isIntegerFloat f
-            ->
-            Some(int f)
+        | JsonValue.Number n when inRangeDecimal Int32.MinValue Int32.MaxValue n && isIntegerDecimal n -> Some(int n)
+        | JsonValue.Float f when inRangeFloat Int32.MinValue Int32.MaxValue f && isIntegerFloat f -> Some(int f)
         | JsonValue.String s -> TextConversions.AsInteger cultureInfo s
         | _ -> None
 
     static member AsInteger64 cultureInfo =
         function
-        | JsonValue.Number n when
-            inRangeDecimal Int64.MinValue Int64.MaxValue n
-            && isIntegerDecimal n
-            ->
-            Some(int64 n)
-        | JsonValue.Float f when
-            inRangeFloat Int64.MinValue Int64.MaxValue f
-            && isIntegerFloat f
-            ->
-            Some(int64 f)
+        | JsonValue.Number n when inRangeDecimal Int64.MinValue Int64.MaxValue n && isIntegerDecimal n -> Some(int64 n)
+        | JsonValue.Float f when inRangeFloat Int64.MinValue Int64.MaxValue f && isIntegerFloat f -> Some(int64 f)
         | JsonValue.String s -> TextConversions.AsInteger64 cultureInfo s
         | _ -> None
 

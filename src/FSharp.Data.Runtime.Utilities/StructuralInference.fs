@@ -21,6 +21,7 @@ type InferenceMode' =
     | ValuesOnly
     | ValuesAndInlineSchemasHints
     | ValuesAndInlineSchemasOverrides
+
     /// Converts from the public api enum with backward compat to the internal representation with only valid cases.
     /// If the user sets InferenceMode manually (to a value other than BackwardCompatible)
     /// then the legacy InferTypesFromValues is ignored.
@@ -91,21 +92,19 @@ let supportsUnitsOfMeasure typ = List.exists ((=) typ) numericTypes
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let typeTag inferredType =
     match inferredType with
-    | InferedType.Record (name = n) -> InferedTypeTag.Record n
+    | InferedType.Record(name = n) -> InferedTypeTag.Record n
     | InferedType.Collection _ -> InferedTypeTag.Collection
     | InferedType.Null
     | InferedType.Top -> InferedTypeTag.Null
     | InferedType.Heterogeneous _ -> InferedTypeTag.Heterogeneous
-    | InferedType.Primitive (typ = typ) ->
-        if typ = typeof<Bit>
-           || List.exists ((=) typ) numericTypes then
+    | InferedType.Primitive(typ = typ) ->
+        if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then
             InferedTypeTag.Number
         elif typ = typeof<bool> then
             InferedTypeTag.Boolean
         elif typ = typeof<string> then
             InferedTypeTag.String
-        elif typ = typeof<DateTime>
-             || typ = typeof<DateTimeOffset> then
+        elif typ = typeof<DateTime> || typ = typeof<DateTimeOffset> then
             InferedTypeTag.DateTime
         elif typ = typeof<TimeSpan> then
             InferedTypeTag.TimeSpan
@@ -147,10 +146,7 @@ let private subtypePrimitives typ1 typ2 =
 
     let convertibleTo typ source =
         typ = source
-        || conversionTable
-           |> List.find (fst >> (=) typ)
-           |> snd
-           |> List.exists ((=) source)
+        || conversionTable |> List.find (fst >> (=) typ) |> snd |> List.exists ((=) source)
 
     // If both types are the same, then that's good
     if typ1 = typ2 then
@@ -160,8 +156,7 @@ let private subtypePrimitives typ1 typ2 =
         conversionTable
         |> List.map fst
         |> List.tryPick (fun superType ->
-            if convertibleTo superType typ1
-               && convertibleTo superType typ2 then
+            if convertibleTo superType typ1 && convertibleTo superType typ2 then
                 Some superType
             else
                 None)
@@ -171,9 +166,9 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
     function
     // When a type should override the other, make sure we preserve optionality
     // (so that null and inline schemas are always considered at the same level of importance)
-    | InferedType.Primitive (t, u, o1, true), InferedType.Primitive (_, _, o2, false)
-    | InferedType.Primitive (_, _, o2, false), InferedType.Primitive (t, u, o1, true) -> Some(t, u, o1 || o2, true)
-    | InferedType.Primitive (t1, u1, o1, x1), InferedType.Primitive (t2, u2, o2, x2) ->
+    | InferedType.Primitive(t, u, o1, true), InferedType.Primitive(_, _, o2, false)
+    | InferedType.Primitive(_, _, o2, false), InferedType.Primitive(t, u, o1, true) -> Some(t, u, o1 || o2, true)
+    | InferedType.Primitive(t1, u1, o1, x1), InferedType.Primitive(t2, u2, o2, x2) ->
 
         // Re-annotate with the unit, if it is the same one
         match subtypePrimitives t1 t2 with
@@ -181,11 +176,7 @@ let private (|SubtypePrimitives|_|) allowEmptyValues =
             let unit = if u1 = u2 then u1 else None
 
             let optional =
-                (o1 || o2)
-                && not (
-                    allowEmptyValues
-                    && InferedType.CanHaveEmptyValues t
-                )
+                (o1 || o2) && not (allowEmptyValues && InferedType.CanHaveEmptyValues t)
 
             assert (x1 = x2) // The other cases should be handled above.
             Some(t, unit, optional, x1)
@@ -210,21 +201,17 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
     match ot1, ot2 with
     // Subtype of matching types or one of equal types
     | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
-    | InferedType.Record (n1, t1, o1), InferedType.Record (n2, t2, o2) when n1 = n2 ->
+    | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 ->
         InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
-    | InferedType.Json (t1, o1), InferedType.Json (t2, o2) ->
+    | InferedType.Json(t1, o1), InferedType.Json(t2, o2) ->
         InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
-    | InferedType.Heterogeneous (t1, o1), InferedType.Heterogeneous (t2, o2) ->
+    | InferedType.Heterogeneous(t1, o1), InferedType.Heterogeneous(t2, o2) ->
         InferedType.Heterogeneous(
             let map, containsOptional = unionHeterogeneousTypes allowEmptyValues t1 t2
             map |> Map.ofList, containsOptional || o1 || o2
         )
-    | InferedType.Collection (o1, t1), InferedType.Collection (o2, t2) ->
-        InferedType.Collection(
-            unionCollectionOrder o1 o2,
-            unionCollectionTypes allowEmptyValues t1 t2
-            |> Map.ofList
-        )
+    | InferedType.Collection(o1, t1), InferedType.Collection(o2, t2) ->
+        InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2 |> Map.ofList)
 
     // Top type can be merged with anything else
     | t, InferedType.Top
@@ -234,8 +221,8 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
     | InferedType.Null, t -> t.EnsuresHandlesMissingValues allowEmptyValues
 
     // Heterogeneous can be merged with any type
-    | InferedType.Heterogeneous (h, o), other
-    | other, InferedType.Heterogeneous (h, o) ->
+    | InferedType.Heterogeneous(h, o), other
+    | other, InferedType.Heterogeneous(h, o) ->
         // Add the other type as another option. We should never add
         // heterogeneous type as an option of other heterogeneous type.
         assert (typeTag other <> InferedTypeTag.Heterogeneous)
@@ -248,15 +235,15 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
         // When other is a primitive infered from an inline schema in overriding mode,
         // try to replace the heterogeneous type with the overriding primitive:
         match other with
-        | InferedType.Primitive (_, _, _, true) ->
+        | InferedType.Primitive(_, _, _, true) ->
             let primitiveOverrides, nonPrimitives =
                 let primitiveOverrides, nonPrimitives = ResizeArray(), ResizeArray()
 
                 tagMerged
                 |> List.iter (fun (tag, typ) ->
                     match typ with
-                    | InferedType.Primitive (_, _, _, true) -> primitiveOverrides.Add(tag, typ)
-                    | InferedType.Primitive (_, _, _, false) -> () // We don't need to track normal primitives
+                    | InferedType.Primitive(_, _, _, true) -> primitiveOverrides.Add(tag, typ)
+                    | InferedType.Primitive(_, _, _, false) -> () // We don't need to track normal primitives
                     | _ -> nonPrimitives.Add(tag, typ))
 
                 primitiveOverrides |> List.ofSeq, nonPrimitives |> List.ofSeq
@@ -270,7 +257,7 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
             // return only this overriding primitive (and take care to reestablish optionality if needed).
             | [ (_, singlePrimitive) ], [] ->
                 match singlePrimitive with
-                | InferedType.Primitive (t, u, o, x) -> InferedType.Primitive(t, u, o || containsOptional, x)
+                | InferedType.Primitive(t, u, o, x) -> InferedType.Primitive(t, u, o || containsOptional, x)
                 | _ -> failwith "There should be only primitive types here."
             // If there are non primitives, keep the heterogeneous type.
             | [ singlePrimitive ], nonPrimitives ->
@@ -303,15 +290,15 @@ let rec internal subtypeInfered allowEmptyValues ot1 ot2 =
 and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
     let mutable containsOptional = false
 
-    List.pairBy (fun (KeyValue (k, _)) -> k) cases1 cases2
+    List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
     |> List.map (fun (tag, fst, snd) ->
         match tag, fst, snd with
-        | tag, Some (KeyValue (_, t)), None
-        | tag, None, Some (KeyValue (_, t)) ->
+        | tag, Some(KeyValue(_, t)), None
+        | tag, None, Some(KeyValue(_, t)) ->
             let typ, wasOptional = t.GetDropOptionality()
             containsOptional <- containsOptional || wasOptional
             tag, typ
-        | tag, Some (KeyValue (_, t1)), Some (KeyValue (_, t2)) ->
+        | tag, Some(KeyValue(_, t1)), Some(KeyValue(_, t2)) ->
             let typ, wasOptional = (subtypeInfered allowEmptyValues t1 t2).GetDropOptionality()
             containsOptional <- containsOptional || wasOptional
             tag, typ
@@ -323,17 +310,17 @@ and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
 /// (this is essentially the same as `unionHeterogeneousTypes`, but
 /// it also handles the multiplicity)
 and private unionCollectionTypes allowEmptyValues cases1 cases2 =
-    List.pairBy (fun (KeyValue (k, _)) -> k) cases1 cases2
+    List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
     |> List.map (fun (tag, fst, snd) ->
         match tag, fst, snd with
-        | tag, Some (KeyValue (_, (m, t))), None
-        | tag, None, Some (KeyValue (_, (m, t))) ->
+        | tag, Some(KeyValue(_, (m, t))), None
+        | tag, None, Some(KeyValue(_, (m, t))) ->
             // If one collection contains something exactly once
             // but the other does not contain it, then it is optional
             let m = if m = Single then OptionalSingle else m
             let t = if m <> Single then t.DropOptionality() else t
             tag, (m, t)
-        | tag, Some (KeyValue (_, (m1, t1))), Some (KeyValue (_, (m2, t2))) ->
+        | tag, Some(KeyValue(_, (m1, t1))), Some(KeyValue(_, (m2, t2))) ->
             let m =
                 match m1, m2 with
                 | Multiple, _
@@ -348,9 +335,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
         | _ -> failwith "unionCollectionTypes: pairBy returned None, None")
 
 and internal unionCollectionOrder order1 order2 =
-    order1
-    @ (order2
-       |> List.filter (fun x -> not (List.exists ((=) x) order1)))
+    order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
@@ -361,7 +346,9 @@ and internal unionRecordTypes allowEmptyValues t1 t2 =
         match fst, snd with
         // If one is missing, return the other, but optional
         | Some p, None
-        | None, Some p -> { p with Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
+        | None, Some p ->
+            { p with
+                Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
         // If both reference the same object, we return one
         // (This is needed to support recursive type structures)
         | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) -> p1
@@ -484,13 +471,10 @@ let parseTypeAndUnit unitsOfMeasureProvider (nameToType: IDictionary<string, (Ty
                 Some typ, unit
     else
         // it is not a full type with unit, so it can be either type or a unit
-        let typ =
-            str.ToLowerInvariant()
-            |> nameToType.TryGetValue
-            |> asOption
+        let typ = str.ToLowerInvariant() |> nameToType.TryGetValue |> asOption
 
         match typ with
-        | Some (typ, typWrapper) ->
+        | Some(typ, typWrapper) ->
             // Just type
             Some(typ, typWrapper), None
         | None ->
@@ -534,12 +518,10 @@ let inferPrimitiveType
     let isFakeDate (date: DateTime) value =
         // If this can be considered a decimal under the invariant culture,
         // it's a safer bet to consider it a string than a DateTime
-        TextConversions.AsDecimal CultureInfo.InvariantCulture value
-        |> Option.isSome
+        TextConversions.AsDecimal CultureInfo.InvariantCulture value |> Option.isSome
         ||
         // Prevent stuff like 12-002 being considered a date
-        date.Year < 1000
-        && numberOfNumberGroups value <> 3
+        date.Year < 1000 && numberOfNumberGroups value <> 3
         ||
         // Prevent stuff like ad3mar being considered a date
         cultureInfo.Calendar.Eras
@@ -587,7 +569,7 @@ let inferPrimitiveType
 
                 match typ, unit with
                 | None, _ -> None
-                | Some (typ, typeWrapper), unit ->
+                | Some(typ, typeWrapper), unit ->
                     match typeWrapper with
                     | TypeWrapper.None -> Some(InferedType.Primitive(typ, unit, false, useInlineSchemasOverrides))
                     // To keep it simple and prevent weird situations (and preserve backward compat),
@@ -600,9 +582,7 @@ let inferPrimitiveType
 
     match inferenceMode with
     | InferenceMode'.NoInference -> fallbackType
-    | InferenceMode'.ValuesOnly ->
-        matchValue value
-        |> Option.defaultValue fallbackType
+    | InferenceMode'.ValuesOnly -> matchValue value |> Option.defaultValue fallbackType
     | InferenceMode'.ValuesAndInlineSchemasHints ->
         matchInlineSchema false value
         |> Option.orElseWith (fun () -> matchValue value)

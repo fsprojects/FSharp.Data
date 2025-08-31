@@ -12,11 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.425
-    - name: Setup .NET Core
+    - name: Setup .NET Core 8
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.400
@@ -25,7 +21,7 @@ jobs:
     - name: Restore packages
       run: dotnet paket restore
     - name: Build and test
-      run: dotnet fake build -t All
+      run: dotnet run --project build/build.fsproj -- -t All
     - name: Deploy documentation from master
       uses: peaceiris/actions-gh-pages@v3
       with:

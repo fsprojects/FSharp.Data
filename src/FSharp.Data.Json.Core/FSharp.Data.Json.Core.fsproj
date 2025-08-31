@@ -17,14 +17,15 @@
     <Compile Include="JsonDocument.fs" />
     <Compile Include="JsonRuntime.fs" />
     <Compile Include="JsonInference.fs" />
-    <Compile Include="..\AssemblyInfo.Json.Core.fs" />
+    <Compile Include="JsonSchema.fs" />
+    <Compile Include="../AssemblyInfo.Json.Core.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
-    <None Include="..\..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="../../docs/img/logo.png" Pack="true" PackagePath="" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FSharp.Data.Http\FSharp.Data.Http.fsproj" />
-    <ProjectReference Include="..\FSharp.Data.Runtime.Utilities\FSharp.Data.Runtime.Utilities.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Http/FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="../../.paket/Paket.Restore.targets" />
 </Project>

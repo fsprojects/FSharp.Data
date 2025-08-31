@@ -49,7 +49,8 @@ type internal JsonProviderArgs =
       EmbeddedResource : string
       InferTypesFromValues : bool
       PreferDictionaries : bool
-      InferenceMode: InferenceMode }
+      InferenceMode: InferenceMode
+      Schema: string }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -116,7 +117,8 @@ type internal TypeProviderInstantiation =
                    box x.EmbeddedResource
                    box x.InferTypesFromValues
                    box x.PreferDictionaries
-                   box x.InferenceMode |]
+                   box x.InferenceMode
+                   box x.Schema |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -164,7 +166,8 @@ type internal TypeProviderInstantiation =
              x.Culture
              x.InferTypesFromValues.ToString()
              x.PreferDictionaries.ToString()
-             x.InferenceMode.ToString() ]
+             x.InferenceMode.ToString()
+             x.Schema ]
         | Html x ->
             ["Html"
              x.Sample
@@ -178,7 +181,14 @@ type internal TypeProviderInstantiation =
         |> String.concat ","
 
     member x.ExpectedPath outputFolder =
-        Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
+        let fileName = x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_")
+        // Handle both formats - with or without a dot before 'expected'
+        let path1 = Path.Combine(outputFolder, (fileName + ".expected"))
+        let path2 = Path.Combine(outputFolder, (fileName + "expected"))
+        
+        if File.Exists(path1) then path1
+        else if File.Exists(path2) then path2
+        else path1 // Default to the first one if neither exists
 
     member x.Dump (resolutionFolder, outputFolder, runtimeAssembly, runtimeAssemblyRefs, signatureOnly, ignoreOutput) =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)
@@ -226,16 +236,32 @@ type internal TypeProviderInstantiation =
                   Schema = args.[6]
                   InferenceMode = args.[7] |> InferenceMode.Parse }
         | "Json" ->
-            Json { Sample = args.[1]
-                   SampleIsList = args.[2] |> bool.Parse
-                   RootName = args.[3]
-                   Culture = args.[4]
-                   Encoding = ""
-                   ResolutionFolder = ""
-                   EmbeddedResource = ""
-                   InferTypesFromValues = args.[5] |> bool.Parse
-                   PreferDictionaries = args.[6] |> bool.Parse
-                   InferenceMode = args.[7] |> InferenceMode.Parse }
+            // Handle special case for Schema.json tests where some fields might be empty
+            if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then
+                Json { Sample = args.[1]
+                       SampleIsList = if String.IsNullOrEmpty(args.[2]) then false else args.[2] |> bool.Parse
+                       RootName = args.[3]
+                       Culture = args.[4]
+                       Encoding = ""
+                       ResolutionFolder = ""
+                       EmbeddedResource = ""
+                       InferTypesFromValues = args.[5] |> bool.Parse
+                       PreferDictionaries = args.[6] |> bool.Parse
+                       InferenceMode = args.[7] |> InferenceMode.Parse
+                       Schema = if args.Length > 8 then args.[8] else "" }
+            else
+                // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
+                Json { Sample = args.[1]
+                       SampleIsList = false
+                       RootName = args.[3]
+                       Culture = args.[4]
+                       Encoding = ""
+                       ResolutionFolder = ""
+                       EmbeddedResource = ""
+                       InferTypesFromValues = true
+                       PreferDictionaries = false
+                       InferenceMode = InferenceMode.Parse "BackwardCompatible"
+                       Schema = if args.Length > 8 then args.[8] else "" }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse

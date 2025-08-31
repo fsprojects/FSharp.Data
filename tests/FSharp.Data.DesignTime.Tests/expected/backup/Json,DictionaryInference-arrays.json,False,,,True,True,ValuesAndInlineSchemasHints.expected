@@ -1,0 +1,99 @@
+class JsonProvider : obj
+    static member AsyncGetSample: () -> JsonProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "DictionaryInference-arrays.json"), f)
+
+    static member AsyncLoad: uri:string -> JsonProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
+
+    static member GetSample: () -> JsonProvider+Root
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "JSON" "" "DictionaryInference-arrays.json")))
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+Root
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Root
+    JsonDocument.Create(reader)
+
+    static member Load: uri:string -> JsonProvider+Root
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "JSON" "" uri)))
+
+    static member Load: value:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(value, "")
+
+    static member Parse: text:string -> JsonProvider+Root
+    JsonDocument.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseList: text:string -> JsonProvider+JsonProvider+Root[]
+    JsonDocument.CreateList(((new StringReader(text)) :> TextReader))
+
+
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
+    new : mappings:JsonProvider+Mappings -> JsonProvider+Root
+    JsonRuntime.CreateRecord([| ("Mappings",
+                                 (mappings :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
+    member Mappings: JsonProvider+Mappings with get
+    JsonRuntime.GetPropertyPacked(this, "Mappings")
+
+
+class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
+    new : items:int * JsonProvider+JsonProvider+MappingsValue[] seq -> JsonProvider+Mappings
+    JsonRuntime.CreateRecordFromDictionary(items, "", new Func<_,_>(fun (t:int) -> TextRuntime.ConvertIntegerBack("", Some t)))
+
+    new : jsonValue:JsonValue -> JsonProvider+Mappings
+    JsonDocument.Create(jsonValue, "")
+
+    member ContainsKey: key:int -> bool
+    JsonRuntime.InferedDictionaryContainsKey(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)), key)
+
+    member Count: int with get
+    JsonRuntime.GetRecordProperties(this).Length
+
+    member IsEmpty: bool with get
+    (Operators.op_Equality JsonRuntime.GetRecordProperties(this).Length 0)
+
+    member Item: JsonProvider+JsonProvider+MappingsValue[] with get
+    JsonRuntime.GetValueByKeyFromInferedDictionary(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))), key)
+
+    member Items: int * JsonProvider+JsonProvider+MappingsValue[] seq with get
+    JsonRuntime.ConvertRecordToDictionary(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+
+    member Keys: int[] with get
+    JsonRuntime.GetKeysFromInferedDictionary(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+
+    member TryFind: key:int -> JsonProvider+JsonProvider+MappingsValue[] option
+    JsonRuntime.TryGetValueByKeyFromInferedDictionary(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))), key)
+
+    member Values: JsonProvider+JsonProvider+JsonProvider+MappingsValue[][] with get
+    JsonRuntime.GetValuesFromInferedDictionary(this, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+
+
+class JsonProvider+MappingsValue : FDR.BaseTypes.IJsonDocument
+    new : groupId:int -> canDelete:bool -> errorMessage:string option -> JsonProvider+MappingsValue
+    JsonRuntime.CreateRecord([| ("GroupId",
+                                 (groupId :> obj))
+                                ("CanDelete",
+                                 (canDelete :> obj))
+                                ("ErrorMessage",
+                                 (errorMessage :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+MappingsValue
+    JsonDocument.Create(jsonValue, "")
+
+    member CanDelete: bool with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "CanDelete")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
+
+    member ErrorMessage: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "ErrorMessage"))
+
+    member GroupId: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "GroupId")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+

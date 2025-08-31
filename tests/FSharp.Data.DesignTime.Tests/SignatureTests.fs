@@ -36,6 +36,15 @@ let normalize (str:string) =
 let ``Validate signature didn't change `` (testCaseSpec: string) =
     let _, testCase = TypeProviderInstantiation.Parse testCaseSpec
     let path = testCase.ExpectedPath expectedDirectory
+    
+    // Create expected file if it doesn't exist 
+    // This is for initialization of tests and will be used on the first run
+    if not (File.Exists(path)) then
+        let assemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs()
+        let outputRaw = testCase.Dump (resolutionFolder, "", netstandard2RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)
+        File.WriteAllText(path, outputRaw)
+        printfn "Created new expected file: %s" path
+    
     let expected = path |> File.ReadAllText |> normalize
     let assemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs()
     let outputRaw = testCase.Dump (resolutionFolder, "", netstandard2RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=false)

@@ -50,10 +50,11 @@ module internal HtmlParser =
         | Comment of string
         | CData of string
         | EOF
+
         override x.ToString() =
             match x with
             | DocType dt -> sprintf "doctype %s" dt
-            | Tag (selfClose, name, _) -> sprintf "tag %b %s" selfClose name
+            | Tag(selfClose, name, _) -> sprintf "tag %b %s" selfClose name
             | TagEnd name -> sprintf "tagEnd %s" name
             | Text _ -> "text"
             | Comment _ -> "comment"
@@ -62,7 +63,7 @@ module internal HtmlParser =
 
         member x.IsEndTag name =
             match x with
-            | TagEnd (endName) when name = endName -> true
+            | TagEnd(endName) when name = endName -> true
             | _ -> false
 
     type TextReader with
@@ -76,15 +77,15 @@ module internal HtmlParser =
             String(buffer)
 
     type CharList =
-        { mutable Contents: char list }
-        static member Empty = { Contents = [] }
+        { mutable Contents: StringBuilder }
 
-        override x.ToString() =
-            String(x.Contents |> List.rev |> List.toArray)
+        static member Empty = { Contents = StringBuilder() }
 
-        member x.Cons(c) = x.Contents <- c :: x.Contents
+        override x.ToString() = x.Contents.ToString()
+
+        member x.Cons(c: char) = x.Contents.Append(c) |> ignore
         member x.Length = x.Contents.Length
-        member x.Clear() = x.Contents <- []
+        member x.Clear() = x.Contents.Clear() |> ignore
 
     type InsertionMode =
         | DefaultMode
@@ -93,6 +94,7 @@ module internal HtmlParser =
         | CommentMode
         | DocTypeMode
         | CDATAMode
+
         override x.ToString() =
             match x with
             | DefaultMode -> "default"
@@ -110,10 +112,11 @@ module internal HtmlParser =
           mutable InsertionMode: InsertionMode
           mutable Tokens: HtmlToken list
           Reader: TextReader }
+
         static member Create(reader: TextReader) =
             { Attributes = []
-              CurrentTag = CharList.Empty
-              Content = CharList.Empty
+              CurrentTag = { Contents = StringBuilder() }
+              Content = { Contents = StringBuilder() }
               HasFormattedParent = false
               InsertionMode = DefaultMode
               Tokens = []
@@ -123,14 +126,13 @@ module internal HtmlParser =
         member x.Peek() = x.Reader.PeekChar()
 
         member x.Pop(count) =
-            [| 0 .. (count - 1) |]
-            |> Array.map (fun _ -> x.Reader.ReadChar())
+            [| 0 .. (count - 1) |] |> Array.map (fun _ -> x.Reader.ReadChar())
 
         member x.Contents = x.Content.ToString()
         member x.ContentLength = x.Content.Length
 
         member x.NewAttribute() =
-            x.Attributes <- (CharList.Empty, CharList.Empty) :: x.Attributes
+            x.Attributes <- ({ Contents = StringBuilder() }, { Contents = StringBuilder() }) :: x.Attributes
 
         member x.ConsAttrName() =
             match x.Attributes with
@@ -159,8 +161,7 @@ module internal HtmlParser =
             x.Attributes
             |> List.choose (fun (key, value) ->
                 if key.Length > 0 then
-                    Some
-                    <| HtmlAttribute(key.ToString(), value.ToString())
+                    Some <| HtmlAttribute(key.ToString(), value.ToString())
                 else
                     None)
             |> List.rev
@@ -168,7 +169,7 @@ module internal HtmlParser =
         member x.EmitSelfClosingTag() =
             let name = x.CurrentTag.ToString().Trim()
             let result = Tag(true, name, x.GetAttributes())
-            x.CurrentTag <- CharList.Empty
+            x.CurrentTag <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
@@ -210,7 +211,7 @@ module internal HtmlParser =
                 else
                     DefaultMode
 
-            x.CurrentTag <- CharList.Empty
+            x.CurrentTag <- { Contents = StringBuilder() }
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
 
@@ -221,7 +222,7 @@ module internal HtmlParser =
             for c in content.ToCharArray() do
                 x.ConsAttrValue c
 
-            x.Content <- CharList.Empty
+            x.Content <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
 
         member x.Emit() : unit =
@@ -245,7 +246,7 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData(content.Replace("<![CDATA[", "").Replace("]]>", ""))
 
-            x.Content <- CharList.Empty
+            x.Content <- { Contents = StringBuilder() }
             x.InsertionMode <- DefaultMode
 
             match result with
@@ -253,9 +254,9 @@ module internal HtmlParser =
             | _ -> x.Tokens <- result :: x.Tokens
 
         member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
-        member x.Cons(char) = x.Content.Cons(char)
-        member x.Cons(char) = Array.iter (x.Content.Cons) char
-        member x.Cons(char: string) = x.Cons(char.ToCharArray())
+        member x.Cons(char: char) = x.Content.Cons(char)
+        member x.Cons(chars: char array) = Array.iter (x.Content.Cons) chars
+        member x.Cons(chars: string) = x.Cons(chars.ToCharArray())
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
@@ -957,26 +958,17 @@ module internal HtmlParser =
 
         let isImplicitlyClosedByStartTag expectedTagEnd startTag =
             match expectedTagEnd, startTag with
-            | ("td"
-              | "th"),
-              ("tr"
-              | "td"
-              | "th") -> true
+            | ("td" | "th"), ("tr" | "td" | "th") -> true
             | "tr", "tr" -> true
             | "li", "li" -> true
             | _ -> false
 
         let implicitlyCloseByStartTag expectedTagEnd startTag tokens =
             match expectedTagEnd, startTag with
-            | ("td"
-              | "th"),
-              "tr" ->
+            | ("td" | "th"), "tr" ->
                 // the new tr is closing the cell and previous row
                 TagEnd expectedTagEnd :: TagEnd "tr" :: tokens
-            | ("td"
-              | "th"),
-              ("td"
-              | "th")
+            | ("td" | "th"), ("td" | "th")
             | "tr", "tr"
             | "li", "li" ->
                 // tags are on same level, just close
@@ -985,13 +977,7 @@ module internal HtmlParser =
 
         let isImplicitlyClosedByEndTag expectedTagEnd startTag =
             match expectedTagEnd, startTag with
-            | ("td"
-              | "th"
-              | "tr"),
-              ("thead"
-              | "tbody"
-              | "tfoot"
-              | "table") -> true
+            | ("td" | "th" | "tr"), ("thead" | "tbody" | "tfoot" | "table") -> true
             | "li", "ul" -> true
             | _ -> false
 
@@ -1028,16 +1014,16 @@ module internal HtmlParser =
 
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
-            | Tag (_, "br", []) :: rest ->
+            | Tag(_, "br", []) :: rest ->
                 let t = HtmlNode.HtmlText Environment.NewLine
                 parse' docType (t :: elements) expectedTagEnd parentTagName rest
-            | Tag (true, name, attributes) :: rest ->
+            | Tag(true, name, attributes) :: rest ->
                 let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
-            | Tag (false, name, attributes) :: rest when canNotHaveChildren name ->
+            | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
                 let e = HtmlNode.HtmlElement(name, attributes, [])
                 parse' docType (e :: elements) expectedTagEnd parentTagName rest
-            | Tag (_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
+            | Tag(_, name, _) :: _ when isImplicitlyClosedByStartTag expectedTagEnd name ->
                 // insert missing </tr> </td> or </th> when starting new row/cell/header
                 parse'
                     docType
@@ -1045,11 +1031,11 @@ module internal HtmlParser =
                     expectedTagEnd
                     parentTagName
                     (implicitlyCloseByStartTag expectedTagEnd name tokens)
-            | TagEnd (name) :: _ when isImplicitlyClosedByEndTag expectedTagEnd name ->
+            | TagEnd(name) :: _ when isImplicitlyClosedByEndTag expectedTagEnd name ->
                 // insert missing </tr> </td> or </th> when starting new row/cell/header
                 parse' docType elements expectedTagEnd parentTagName (implicitlyCloseByEndTag expectedTagEnd tokens)
 
-            | Tag (_, name, attributes) :: rest ->
+            | Tag(_, name, attributes) :: rest ->
                 (docType, elements, expectedTagEnd, parentTagName, name, attributes)
                 |> callstack.Push
 
@@ -1059,8 +1045,7 @@ module internal HtmlParser =
                 parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
             | TagEnd name :: rest when
                 name <> expectedTagEnd
-                && (name
-                    <> (new String(expectedTagEnd.ToCharArray() |> Array.rev)))
+                && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev)))
                 ->
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd parentTagName rest
@@ -1090,7 +1075,10 @@ module internal HtmlParser =
 
         let tokens = tokenise reader
         let docType, _, elements = tokens |> parse' (new Stack<_>()) "" [] "" ""
-        if List.isEmpty elements then failwith "Invalid HTML"
+
+        if List.isEmpty elements then
+            failwith "Invalid HTML"
+
         docType, elements
 
     /// All attribute names and tag names will be normalized to lowercase
@@ -1134,8 +1122,7 @@ module HtmlAutoOpens =
 
         /// Loads HTML from the specified uri
         static member Load(uri: string, [<Optional>] ?encoding) =
-            HtmlDocument.AsyncLoad(uri, ?encoding = encoding)
-            |> Async.RunSynchronously
+            HtmlDocument.AsyncLoad(uri, ?encoding = encoding) |> Async.RunSynchronously
 
     type HtmlNode with
 

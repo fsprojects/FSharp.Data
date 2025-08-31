@@ -19,16 +19,28 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />
+    <Compile Include="HttpRequestHeaders.fs" />
     <Compile Include="NameUtils.fs" />
+    <Compile Include="Pluralizer.fs" />
+    <Compile Include="IOTests.fs" />
     <Compile Include="TextConversions.fs" />
+    <Compile Include="Caching.fs" />
+    <Compile Include="TextRuntime.fs" />
     <Compile Include="JsonValue.fs" />
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
+    <Compile Include="JsonRuntime.fs" />
+    <Compile Include="JsonSchema.fs" />
     <Compile Include="CsvReader.fs" />
+    <Compile Include="CsvFile.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlAttributeExtensions.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
+    <Compile Include="BaseTypesHtmlDocument.fs" />
+    <Compile Include="XmlExtensions.fs" />
+    <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

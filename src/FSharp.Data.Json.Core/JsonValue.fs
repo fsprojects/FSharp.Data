@@ -18,7 +18,7 @@ open System.Text
 open FSharp.Data.Runtime
 
 /// Specifies the formatting behaviour of JSON values
-[<RequireQualifiedAccess>]
+// [<RequireQualifiedAccess>]
 type JsonSaveOptions =
     /// Format (indent) the JsonValue
     | None = 0
@@ -96,7 +96,10 @@ type JsonValue =
 
                 for i = 0 to properties.Length - 1 do
                     let k, v = properties.[i]
-                    if i > 0 then comma ()
+
+                    if i > 0 then
+                        comma ()
+
                     newLine indentation indentationSpaces
                     w.Write "\""
                     JsonValue.JsonStringEncodeTo w k
@@ -109,37 +112,66 @@ type JsonValue =
                 w.Write "["
 
                 for i = 0 to elements.Length - 1 do
-                    if i > 0 then comma ()
+                    if i > 0 then
+                        comma ()
+
                     newLine indentation indentationSpaces
                     serialize (indentation + indentationSpaces) elements.[i]
 
-                if elements.Length > 0 then newLine indentation 0
+                if elements.Length > 0 then
+                    newLine indentation 0
+
                 w.Write "]"
 
         serialize 0 x
 
+    // Optimized JSON string encoding with reduced allocations and bulk writing
     // Encode characters that are not valid in JS string. The implementation is based
     // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
     static member internal JsonStringEncodeTo (w: TextWriter) (value: string) =
         if not (String.IsNullOrEmpty value) then
+            let mutable lastWritePos = 0
+
             for i = 0 to value.Length - 1 do
                 let c = value.[i]
                 let ci = int c
 
-                if ci >= 0 && ci <= 7
-                   || ci = 11
-                   || ci >= 14 && ci <= 31 then
-                    w.Write("\\u{0:x4}", ci) |> ignore
-                else
-                    match c with
-                    | '\b' -> w.Write "\\b"
-                    | '\t' -> w.Write "\\t"
-                    | '\n' -> w.Write "\\n"
-                    | '\f' -> w.Write "\\f"
-                    | '\r' -> w.Write "\\r"
-                    | '"' -> w.Write "\\\""
-                    | '\\' -> w.Write "\\\\"
-                    | _ -> w.Write c
+                let needsEscaping =
+                    ci >= 0 && ci <= 7
+                    || ci = 11
+                    || ci >= 14 && ci <= 31
+                    || c = '\b'
+                    || c = '\t'
+                    || c = '\n'
+                    || c = '\f'
+                    || c = '\r'
+                    || c = '"'
+                    || c = '\\'
+
+                if needsEscaping then
+                    // Write all accumulated unescaped characters in one operation using Substring
+                    if i > lastWritePos then
+                        w.Write(value.Substring(lastWritePos, i - lastWritePos))
+
+                    // Write the escaped character
+                    if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
+                        w.Write("\\u{0:x4}", ci) |> ignore
+                    else
+                        match c with
+                        | '\b' -> w.Write "\\b"
+                        | '\t' -> w.Write "\\t"
+                        | '\n' -> w.Write "\\n"
+                        | '\f' -> w.Write "\\f"
+                        | '\r' -> w.Write "\\r"
+                        | '"' -> w.Write "\\\""
+                        | '\\' -> w.Write "\\\\"
+                        | _ -> w.Write c
+
+                    lastWritePos <- i + 1
+
+            // Write any remaining unescaped characters
+            if lastWritePos < value.Length then
+                w.Write(value.Substring(lastWritePos))
 
     member x.ToString(saveOptions, ?indentationSpaces: int) =
         let w = new StringWriter(CultureInfo.InvariantCulture)
@@ -182,12 +214,7 @@ type private JsonParser(jsonText: string) =
     // Helper functions
 
     let isNumChar c =
-        Char.IsDigit c
-        || c = '.'
-        || c = 'e'
-        || c = 'E'
-        || c = '+'
-        || c = '-'
+        Char.IsDigit c || c = '.' || c = 'e' || c = 'E' || c = '+' || c = '-'
 
     let throw () =
         let msg =
@@ -202,7 +229,9 @@ type private JsonParser(jsonText: string) =
 
         failwith msg
 
-    let ensure cond = if not cond then throw ()
+    let ensure cond =
+        if not cond then
+            throw ()
 
 
     let rec skipCommentsAndWhitespace () =
@@ -221,9 +250,7 @@ type private JsonParser(jsonText: string) =
                 else if i < s.Length && s.[i] = '*' then
                     i <- i + 1
 
-                    while i + 1 < s.Length
-                          && s.[i] <> '*'
-                          && s.[i + 1] <> '/' do
+                    while i + 1 < s.Length && s.[i] <> '*' && s.[i + 1] <> '/' do
                         i <- i + 1
 
                     ensure (i + 1 < s.Length && s.[i] = '*' && s.[i + 1] = '/')
@@ -288,7 +315,8 @@ type private JsonParser(jsonText: string) =
                         else failwith "hexdigit"
 
                     let unicodeChar (s: string) =
-                        if s.Length <> 4 then failwith "unicodeChar"
+                        if s.Length <> 4 then
+                            failwith "unicodeChar"
 
                         char (
                             hexdigit s.[0] * 4096
@@ -304,8 +332,11 @@ type private JsonParser(jsonText: string) =
                     ensure (i + 9 < s.Length)
 
                     let unicodeChar (s: string) =
-                        if s.Length <> 8 then failwithf "unicodeChar (%O)" s
-                        if s.[0..1] <> "00" then failwithf "unicodeChar (%O)" s
+                        if s.Length <> 8 then
+                            failwithf "unicodeChar (%O)" s
+
+                        if s.[0..1] <> "00" then
+                            failwithf "unicodeChar (%O)" s
 
                         UnicodeHelper.getUnicodeSurrogatePair
                         <| System.UInt32.Parse(s, NumberStyles.HexNumber)
@@ -430,7 +461,10 @@ type private JsonParser(jsonText: string) =
     member x.Parse() =
         let value = parseValue id
         skipCommentsAndWhitespace ()
-        if i <> s.Length then throw ()
+
+        if i <> s.Length then
+            throw ()
+
         value
 
     member x.ParseMultiple() =
@@ -474,8 +508,7 @@ type JsonValue with
 
     /// Loads JSON from the specified uri
     static member Load(uri: string, [<Optional>] ?encoding) =
-        JsonValue.AsyncLoad(uri, ?encoding = encoding)
-        |> Async.RunSynchronously
+        JsonValue.AsyncLoad(uri, ?encoding = encoding) |> Async.RunSynchronously
 
     /// Parses the specified string into multiple JSON values
     static member ParseMultiple(text) = JsonParser(text).ParseMultiple()
@@ -485,14 +518,10 @@ type JsonValue with
         let headers = defaultArg (Option.map List.ofSeq headers) []
 
         let headers =
-            if
-                headers
-                |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
-            then
+            if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent ""))) then
                 headers
             else
-                HttpRequestHeaders.UserAgent "FSharp.Data JSON Type Provider"
-                :: headers
+                HttpRequestHeaders.UserAgent "FSharp.Data JSON Type Provider" :: headers
 
         let headers =
             HttpRequestHeaders.ContentTypeWithEncoding(HttpContentTypes.Json, Encoding.UTF8)

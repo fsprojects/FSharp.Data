@@ -17,11 +17,7 @@ open FSharp.Data.Runtime
 let (++) a b = Path.Combine(a, b)
 
 let resolutionFolder =
-    __SOURCE_DIRECTORY__
-    ++ ".."
-    ++ "tests"
-    ++ "FSharp.Data.Tests"
-    ++ "Data"
+    __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 
 let outputFolder =
     __SOURCE_DIRECTORY__
@@ -39,10 +35,7 @@ let dump signatureOnly ignoreOutput saveToFileSystem (inst: TypeProviderInstanti
 
     inst.Dump(
         resolutionFolder,
-        (if saveToFileSystem then
-             outputFolder
-         else
-             ""),
+        (if saveToFileSystem then outputFolder else ""),
         runtimeAssembly,
         runtimeAssemblyRefs,
         signatureOnly,
