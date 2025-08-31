@@ -13,6 +13,7 @@ module internal FSharp.Data.Runtime.Pluralizer
 
 open System
 open System.Collections.Generic
+open System.Text
 
 // Pluralization service for nice 'NameUtils.fs' based on C# code from
 // http://blogs.msdn.com/b/dmitryr/archive/2007/01/11/simple-english-noun-pluralizer-in-c.aspx
@@ -225,23 +226,33 @@ let private adjustCase (s: string) (template: string) =
         else if allUpper then
             s.ToUpperInvariant()
         else if firstUpper && not <| Char.IsUpper s.[0] then
-            s.Substring(0, 1).ToUpperInvariant() + s.Substring(1)
+            // Optimize: Use StringBuilder to avoid string concatenation
+            let sb = StringBuilder(s.Length)
+            sb.Append(Char.ToUpperInvariant(s.[0])) |> ignore
+            sb.Append(s, 1, s.Length - 1) |> ignore
+            sb.ToString()
         else
             s
 
 let private tryToPlural (word: string) suffixRule =
     if word.EndsWith(suffixRule.SingularSuffix, StringComparison.OrdinalIgnoreCase) then
-        Some
-        <| word.Substring(0, word.Length - suffixRule.SingularSuffix.Length)
-           + suffixRule.PluralSuffix
+        // Optimize: Use StringBuilder to avoid string concatenation
+        let rootLength = word.Length - suffixRule.SingularSuffix.Length
+        let sb = StringBuilder(rootLength + suffixRule.PluralSuffix.Length)
+        sb.Append(word, 0, rootLength) |> ignore
+        sb.Append(suffixRule.PluralSuffix) |> ignore
+        Some(sb.ToString())
     else
         None
 
 let private tryToSingular (word: string) suffixRule =
     if word.EndsWith(suffixRule.PluralSuffix, StringComparison.OrdinalIgnoreCase) then
-        Some
-        <| word.Substring(0, word.Length - suffixRule.PluralSuffix.Length)
-           + suffixRule.SingularSuffix
+        // Optimize: Use StringBuilder to avoid string concatenation
+        let rootLength = word.Length - suffixRule.PluralSuffix.Length
+        let sb = StringBuilder(rootLength + suffixRule.SingularSuffix.Length)
+        sb.Append(word, 0, rootLength) |> ignore
+        sb.Append(suffixRule.SingularSuffix) |> ignore
+        Some(sb.ToString())
     else
         None
 
@@ -261,7 +272,11 @@ let toPlural noun =
                     if noun.EndsWith("s", StringComparison.OrdinalIgnoreCase) then
                         noun
                     else
-                        noun + "s"
+                        // Optimize: Use StringBuilder for simple "s" appending
+                        let sb = StringBuilder(noun.Length + 1)
+                        sb.Append(noun) |> ignore
+                        sb.Append('s') |> ignore
+                        sb.ToString()
 
         (plural, noun) ||> adjustCase
 
