@@ -6,6 +6,7 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
+open System.Text
 open System.Xml.Linq
 
 #nowarn "10001"
@@ -74,7 +75,12 @@ type XmlElement =
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
+            let sb = StringBuilder(text.Length + 13) // 13 = length of "<root></root>"
+            sb.Append("<root>") |> ignore
+            sb.Append(text) |> ignore
+            sb.Append("</root>") |> ignore
+
+            XDocument.Parse(sb.ToString(), LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 

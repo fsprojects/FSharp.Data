@@ -1882,7 +1882,13 @@ module internal CookieHandling =
 
             while i < cookiesWithWrongSplit.Length - 1
                   && isInvalidCookie cookiesWithWrongSplit.[i + 1] do
-                currentCookie <- currentCookie + "," + cookiesWithWrongSplit.[i + 1]
+                let sb =
+                    StringBuilder(currentCookie.Length + 1 + cookiesWithWrongSplit.[i + 1].Length)
+
+                sb.Append(currentCookie) |> ignore
+                sb.Append(",") |> ignore
+                sb.Append(cookiesWithWrongSplit.[i + 1]) |> ignore
+                currentCookie <- sb.ToString()
 
                 i <- i + 1
 
@@ -2008,9 +2014,22 @@ type Http private () =
         match query with
         | [] -> url
         | query ->
-            url
-            + if url.Contains "?" then "&" else "?"
-            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+            let sb = StringBuilder(url.Length + 32) // Estimate initial capacity
+            sb.Append(url) |> ignore
+            sb.Append(if url.Contains "?" then "&" else "?") |> ignore
+
+            let mutable isFirst = true
+
+            for k, v in query do
+                if not isFirst then
+                    sb.Append("&") |> ignore
+
+                sb.Append(Uri.EscapeDataString k) |> ignore
+                sb.Append("=") |> ignore
+                sb.Append(Uri.EscapeDataString v) |> ignore
+                isFirst <- false
+
+            sb.ToString()
 
     static member private InnerRequest
         (
@@ -2077,9 +2096,19 @@ type Http private () =
                     | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> _)
                     | FormValues values ->
                         let bytes (e: Encoding) =
-                            [ for k, v in values -> Http.EncodeFormData k + "=" + Http.EncodeFormData v ]
-                            |> String.concat "&"
-                            |> e.GetBytes
+                            let sb = StringBuilder()
+                            let mutable isFirst = true
+
+                            for k, v in values do
+                                if not isFirst then
+                                    sb.Append("&") |> ignore
+
+                                sb.Append(Http.EncodeFormData k) |> ignore
+                                sb.Append("=") |> ignore
+                                sb.Append(Http.EncodeFormData v) |> ignore
+                                isFirst <- false
+
+                            sb.ToString() |> e.GetBytes
 
                         HttpContentTypes.FormValues, (fun e -> new MemoryStream(bytes e) :> _)
                     | Multipart(boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
