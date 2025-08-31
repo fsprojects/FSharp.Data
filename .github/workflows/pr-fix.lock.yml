@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-02 22:31:27
+# Effective stop-time: 2025-09-02 22:33:34
 
 name: "PR Fix"
 on:
@@ -400,7 +400,7 @@ jobs:
           WORKFLOW_NAME="PR Fix"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-02 22:31:27"
+          STOP_TIME="2025-09-02 22:33:34"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -490,7 +490,7 @@ jobs:
           
           ## Git Configuration
           
-          When using `git commit`, ensure you set the author name and email appropriately. Do this by using a `--author` flag with `git commit`, for example `git commit --author "${{ github.workflow }} <github-actions@users.noreply.github.com>" ...`.
+          When using `git commit`, ensure you set the author name and email appropriately. Do this by using a `--author` flag with `git commit`, for example `git commit --author "${{ github.workflow }} <github-actions[bot]@users.noreply.github.com>" ...`.
           
           <!-- You can whitelist tools in .github/workflows/build-tools.md file -->
           
