@@ -78,7 +78,14 @@ let nicePascalName (s: string) =
                 let sub = s.Substring(i1, i2 - i1)
 
                 if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-                    yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1)
+                    // Optimized: Use StringBuilder to avoid intermediate string allocations
+                    let sb = Text.StringBuilder(sub.Length)
+                    sb.Append(Char.ToUpperInvariant(sub.[0])) |> ignore
+
+                    if sub.Length > 1 then
+                        sb.Append(sub.ToLowerInvariant().Substring(1)) |> ignore
+
+                    yield sb.ToString()
         }
         |> String.Concat
 
@@ -87,7 +94,14 @@ let niceCamelName (s: string) =
     let name = nicePascalName s
 
     if name.Length > 0 then
-        name.[0].ToString().ToLowerInvariant() + name.Substring(1)
+        // Optimized: Use StringBuilder to avoid intermediate string allocations
+        let sb = Text.StringBuilder(name.Length)
+        sb.Append(Char.ToLowerInvariant(name.[0])) |> ignore
+
+        if name.Length > 1 then
+            sb.Append(name.Substring(1)) |> ignore
+
+        sb.ToString()
     else
         name
 
@@ -117,16 +131,25 @@ let uniqueGenerator (niceName: string -> string) =
                 lastLetterPos <- lastLetterPos - 1
 
             if lastLetterPos = name.Length - 1 then
+                // Optimized: Use StringBuilder to avoid string concatenation overhead
+                let sb = Text.StringBuilder(name.Length + 2)
+                sb.Append(name) |> ignore
+
                 if name.Contains " " then
-                    name <- name + " 2"
+                    sb.Append(" 2") |> ignore
                 else
-                    name <- name + "2"
+                    sb.Append("2") |> ignore
+
+                name <- sb.ToString()
             elif lastLetterPos = 0 && name.Length = 1 then
                 name <- (UInt64.Parse name + 1UL).ToString()
             else
                 let number = name.Substring(lastLetterPos + 1)
-
-                name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
+                // Optimized: Use StringBuilder to avoid string concatenation overhead
+                let sb = Text.StringBuilder(name.Length + 4)
+                sb.Append(name.Substring(0, lastLetterPos + 1)) |> ignore
+                sb.Append((UInt64.Parse number + 1UL).ToString()) |> ignore
+                name <- sb.ToString()
 
         set.Add name |> ignore
         name
@@ -135,21 +158,26 @@ let capitalizeFirstLetter (s: string) =
     match s.Length with
     | 0 -> ""
     | 1 -> (Char.ToUpperInvariant s.[0]).ToString()
-    | _ -> (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
+    | _ ->
+        // Optimized: Use StringBuilder to avoid string concatenation overhead
+        let sb = Text.StringBuilder(s.Length)
+        sb.Append(Char.ToUpperInvariant(s.[0])) |> ignore
+        sb.Append(s.Substring(1)) |> ignore
+        sb.ToString()
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive
 /// implementation that is somewhat faster than regular expression.)
 let trimHtml (s: string) =
-    let chars = s.ToCharArray()
-    let res = new Text.StringBuilder()
+    // Optimized: Avoid ToCharArray() allocation - work directly with string indexing
+    let res = new Text.StringBuilder(s.Length)
 
     // Loop and keep track of whether we're inside a tag or not
     let rec loop i emitSpace inside =
-        if i >= chars.Length then
+        if i >= s.Length then
             ()
         else
-            let c = chars.[i]
+            let c = s.[i]
 
             match inside, c with
             | true, '>' -> loop (i + 1) false false
