@@ -107,94 +107,150 @@ module internal HtmlCssSelectors =
             equal x chars
 
         let tokenize () =
-            let rec tokenize' acc sourceChars =
+            let rec tokenize' (acc: ResizeArray<SelectorToken>) sourceChars =
                 match sourceChars with
                 | w :: t when Char.IsWhiteSpace(w) ->
-                    let seqtoken = acc |> List.tail
+                    if acc.Count > 0 then
+                        let lastToken = acc.[acc.Count - 1]
 
-                    match acc.Head with
-                    | AllChildren _ -> tokenize' (AllChildren(getOffset t) :: seqtoken) t
-                    | DirectChildren _ -> tokenize' (DirectChildren(getOffset t) :: seqtoken) t
-                    | _ -> tokenize' (AllChildren(getOffset t) :: acc) t
+                        match lastToken with
+                        | AllChildren _ ->
+                            acc.[acc.Count - 1] <- AllChildren(getOffset t)
+                            tokenize' acc t
+                        | DirectChildren _ ->
+                            acc.[acc.Count - 1] <- DirectChildren(getOffset t)
+                            tokenize' acc t
+                        | _ ->
+                            acc.Add(AllChildren(getOffset t))
+                            tokenize' acc t
+                    else
+                        acc.Add(AllChildren(getOffset t))
+                        tokenize' acc t
                 | '.' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (CssClass(getOffset t + 1, s) :: ClassPrefix(getOffset t) :: acc) t'
+                    acc.Add(ClassPrefix(getOffset t))
+                    acc.Add(CssClass(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '#' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (CssId(getOffset t + 1, s) :: IdPrefix(getOffset t) :: acc) t'
+                    acc.Add(IdPrefix(getOffset t))
+                    acc.Add(CssId(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '[' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeName(getOffset t + 1, s) :: OpenAttribute(getOffset t) :: acc) t'
-                | ']' :: t -> tokenize' (CloseAttribute(getOffset t) :: acc) t
+                    acc.Add(OpenAttribute(getOffset t))
+                    acc.Add(AttributeName(getOffset t + 1, s))
+                    tokenize' acc t'
+                | ']' :: t ->
+                    acc.Add(CloseAttribute(getOffset t))
+                    tokenize' acc t
                 | '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: Assign(getOffset t) :: acc) t'
+                    acc.Add(Assign(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '$' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: EndWith(getOffset t) :: acc) t'
+                    acc.Add(EndWith(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '^' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: StartWith(getOffset t) :: acc) t'
+                    acc.Add(StartWith(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '|' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize'
-                        (AttributeValue(getOffset t + 1, s)
-                         :: AttributeContainsPrefix(getOffset t)
-                         :: acc)
-                        t'
+                    acc.Add(AttributeContainsPrefix(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '*' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeContains(getOffset t) :: acc) t'
+                    acc.Add(AttributeContains(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '~' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeContainsWord(getOffset t) :: acc) t'
+                    acc.Add(AttributeContainsWord(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
                 | '!' :: '=' :: t ->
                     let s, t' = readString "" t
-
-                    tokenize' (AttributeValue(getOffset t + 1, s) :: AttributeNotEqual(getOffset t) :: acc) t'
-                | StartsWith ":checkbox" t -> tokenize' (Checkbox(getOffset t + 1) :: acc) t
-                | StartsWith ":selected" t -> tokenize' (Selected(getOffset t + 1) :: acc) t
-                | StartsWith ":checked" t -> tokenize' (Checked(getOffset t + 1) :: acc) t
-                | StartsWith ":button" t -> tokenize' (Button(getOffset t + 1) :: acc) t
-                | StartsWith ":hidden" t -> tokenize' (Hidden(getOffset t + 1) :: acc) t
-                | StartsWith ":radio" t -> tokenize' (Radio(getOffset t + 1) :: acc) t
-                | StartsWith ":password" t -> tokenize' (Password(getOffset t + 1) :: acc) t
-                | StartsWith ":empty" t -> tokenize' (EmptyNode(getOffset t + 1) :: acc) t
-                | StartsWith ":image" t -> tokenize' (Image(getOffset t + 1) :: acc) t
-                | StartsWith ":even" t -> tokenize' (Even(getOffset t + 1) :: acc) t
-                | StartsWith ":odd" t -> tokenize' (Odd(getOffset t + 1) :: acc) t
+                    acc.Add(AttributeNotEqual(getOffset t))
+                    acc.Add(AttributeValue(getOffset t + 1, s))
+                    tokenize' acc t'
+                | StartsWith ":checkbox" t ->
+                    acc.Add(Checkbox(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":selected" t ->
+                    acc.Add(Selected(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":checked" t ->
+                    acc.Add(Checked(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":button" t ->
+                    acc.Add(Button(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":hidden" t ->
+                    acc.Add(Hidden(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":radio" t ->
+                    acc.Add(Radio(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":password" t ->
+                    acc.Add(Password(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":empty" t ->
+                    acc.Add(EmptyNode(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":image" t ->
+                    acc.Add(Image(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":even" t ->
+                    acc.Add(Even(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":odd" t ->
+                    acc.Add(Odd(getOffset t + 1))
+                    tokenize' acc t
                 | TokenStr ":disabled" t ->
                     let _, t' = readString "" t
-                    tokenize' (Disabled(getOffset t + 1) :: acc) t'
-                | StartsWith ":enabled" t -> tokenize' (Enabled(getOffset t + 1) :: acc) t
-                | StartsWith ":file" t -> tokenize' (File(getOffset t + 1) :: acc) t
-                | StartsWith ":submit" t -> tokenize' (Submit(getOffset t + 1) :: acc) t
+                    acc.Add(Disabled(getOffset t + 1))
+                    tokenize' acc t'
+                | StartsWith ":enabled" t ->
+                    acc.Add(Enabled(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":file" t ->
+                    acc.Add(File(getOffset t + 1))
+                    tokenize' acc t
+                | StartsWith ":submit" t ->
+                    acc.Add(Submit(getOffset t + 1))
+                    tokenize' acc t
 
                 | '>' :: t ->
-                    let seqtoken = acc |> List.toSeq |> Seq.skip (1) |> Seq.toList
+                    if acc.Count > 0 then
+                        let lastToken = acc.[acc.Count - 1]
 
-                    match acc.Head with
-                    | AllChildren _ -> tokenize' (DirectChildren(getOffset t) :: seqtoken) t
-                    | _ -> tokenize' (DirectChildren(getOffset t) :: acc) t
+                        match lastToken with
+                        | AllChildren _ ->
+                            acc.[acc.Count - 1] <- DirectChildren(getOffset t)
+                            tokenize' acc t
+                        | _ ->
+                            acc.Add(DirectChildren(getOffset t))
+                            tokenize' acc t
+                    else
+                        acc.Add(DirectChildren(getOffset t))
+                        tokenize' acc t
                 | c :: t when Char.IsLetterOrDigit(c) ->
                     let str = c.ToString()
                     let s, t' = readString str t
-                    tokenize' (TagName(getOffset t, s) :: acc) t'
-                | [] -> List.rev acc
+                    acc.Add(TagName(getOffset t, s))
+                    tokenize' acc t'
+                | [] -> List.ofSeq acc
                 | c :: t ->
                     let offset = getOffset (c :: t)
                     failwith (sprintf "Invalid css selector syntax (char '%c' at offset %d)" c offset)
 
-            tokenize' [] source
+            tokenize' (ResizeArray<SelectorToken>()) source
 
         member public x.Tokenize(pCssSelector: string) =
             cssSelector <- pCssSelector
