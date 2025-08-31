@@ -36,7 +36,9 @@
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlAttributeExtensions.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
+    <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="6.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
