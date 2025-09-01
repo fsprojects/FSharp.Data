@@ -21,6 +21,7 @@
     <Compile Include="Http.fs" />
     <Compile Include="HttpContentTypes.fs" />
     <Compile Include="HttpRequestHeaders.fs" />
+    <Compile Include="HttpEncodings.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="Pluralizer.fs" />
     <Compile Include="IOTests.fs" />
