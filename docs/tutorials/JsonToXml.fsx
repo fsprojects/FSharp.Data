@@ -106,8 +106,7 @@ let rec fromXml (xml: XElement) =
     // Function that turns a collection of XElement values
     // into an array of JsonValue (using fromXml recursively)
     let createArray xelems =
-        [| for xelem in xelems -> fromXml xelem |]
-        |> JsonValue.Array
+        [| for xelem in xelems -> fromXml xelem |] |> JsonValue.Array
 
     // Group child elements by their name and then turn all single-
     // element groups into a record (recursively) and all multi-
@@ -121,8 +120,7 @@ let rec fromXml (xml: XElement) =
             | children -> key + "s", createArray children)
 
     // Concatenate elements produced for child elements & attributes
-    Array.append (Array.ofList attrs) (Array.ofSeq children)
-    |> JsonValue.Record
+    Array.append (Array.ofList attrs) (Array.ofSeq children) |> JsonValue.Record
 
 (**
 
@@ -193,10 +191,7 @@ let toXml (x: JsonValue) =
 
         // JSON array is turned into a
         // sequence of <item> elements
-        | JsonValue.Array elements ->
-            elements
-            |> Array.map (fun item -> elem "item" (toXml item))
-            :> obj
+        | JsonValue.Array elements -> elements |> Array.map (fun item -> elem "item" (toXml item)) :> obj
 
     // Perform the conversion and cast the result to sequence
     // of objects (may fail for unexpected inputs!)

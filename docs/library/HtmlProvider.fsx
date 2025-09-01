@@ -109,16 +109,7 @@ let rawStats = NugetStats().Tables.``Version History of FSharp.Data``
 
 // helper function to analyze version numbers from Nuget
 let getMinorVersion (v: string) =
-    System
-        .Text
-        .RegularExpressions
-        .Regex(
-            @"\d.\d"
-        )
-        .Match(
-        v
-    )
-        .Value
+    System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
 
 // group by minor version and calculate the download count
 let stats =
@@ -150,8 +141,7 @@ let viewersByDoctor =
     |> Seq.groupBy (fun season -> season.``Directed by``)
     |> Seq.map (fun (doctor, seasons) ->
         let averaged =
-            seasons
-            |> Seq.averageBy (fun season -> season.``UK viewers (millions)``)
+            seasons |> Seq.averageBy (fun season -> season.``UK viewers (millions)``)
 
         doctor, averaged)
     |> Seq.toArray

@@ -216,9 +216,7 @@ let cc = CookieContainer()
 // Send a request to switch the language
 Http.RequestString(
     msdnUrl "system.datetime",
-    query =
-        [ "cs-save-lang", "1"
-          "cs-lang", "fsharp" ],
+    query = [ "cs-save-lang", "1"; "cs-lang", "fsharp" ],
     cookieContainer = cc
 )
 |> ignore

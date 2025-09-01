@@ -3,6 +3,7 @@
 #r "../../src/FSharp.Data.Json.Core/bin/Release/netstandard2.0/FSharp.Data.Json.Core.dll"
 #r "../../src/FSharp.Data.Runtime.Utilities/bin/Release/netstandard2.0/FSharp.Data.Runtime.Utilities.dll"
 #r "../../src/FSharp.Data.Http/bin/Release/netstandard2.0/FSharp.Data.Http.dll"
+
 open System
 open System.IO
 open FSharp.Data
@@ -18,7 +19,8 @@ access to JSON documents, similar to how the XML Type Provider supports XML Sche
 Let's start with a basic JSON Schema example:
 *)
 
-let personSchema = """
+let personSchema =
+    """
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -63,7 +65,8 @@ let personSchema = """
 
 // Create a type based on the schema
 [<Literal>]
-let PersonSchemaLiteral = """
+let PersonSchemaLiteral =
+    """
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -109,7 +112,9 @@ let PersonSchemaLiteral = """
 type Person = JsonProvider<Schema=PersonSchemaLiteral>
 
 // Parse a JSON document that conforms to the schema
-let person = Person.Parse("""
+let person =
+    Person.Parse(
+        """
 {
   "firstName": "John",
   "lastName": "Smith",
@@ -126,7 +131,8 @@ let person = Person.Parse("""
     }
   ]
 }
-""")
+"""
+    )
 
 // Access the strongly typed properties
 printfn "Name: %s %s" person.FirstName person.LastName
@@ -159,19 +165,24 @@ Here's how validation works:
 *)
 
 // Valid JSON that conforms to the schema
-let validPerson = Person.Parse("""
+let validPerson =
+    Person.Parse(
+        """
 {
   "firstName": "Jane",
   "lastName": "Doe",
   "age": 35,
   "email": "jane.doe@example.com"
 }
-""")
+"""
+    )
+
 printfn "Valid JSON: %s %s" validPerson.FirstName validPerson.LastName
 
 // Invalid JSON that violates schema rules will cause an exception
 // Let's use try-catch to demonstrate validation errors:
-let invalidJson = """
+let invalidJson =
+    """
 {
   "firstName": "John",
   "age": -5
@@ -190,8 +201,7 @@ if jsonValue.TryGetProperty("lastName").IsNone then
     printfn "Schema validation failed: missing required property 'lastName'"
 
 // Check numeric constraints from the schema
-if jsonValue.TryGetProperty("age").IsSome &&
-   jsonValue.["age"].AsInteger() < 0 then
+if jsonValue.TryGetProperty("age").IsSome && jsonValue.["age"].AsInteger() < 0 then
     printfn "Schema validation failed: 'age' must be non-negative"
 
 (**
@@ -313,7 +323,8 @@ To use JSON Schema with the JSON Type Provider:
 Here's a more complex example with nested objects:
 *)
 
-let orderSchema = """
+let orderSchema =
+    """
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -354,7 +365,8 @@ let orderSchema = """
 
 // Create a type based on the order schema
 [<Literal>]
-let OrderSchemaLiteral = """
+let OrderSchemaLiteral =
+    """
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -395,7 +407,9 @@ let OrderSchemaLiteral = """
 
 type Order = JsonProvider<Schema=OrderSchemaLiteral>
 
-let order = Order.Parse("""
+let order =
+    Order.Parse(
+        """
 {
   "orderId": "ORD-123456",
   "customer": {
@@ -420,7 +434,8 @@ let order = Order.Parse("""
   "totalAmount": 1351.97,
   "orderDate": "2023-10-01T12:00:00Z"
 }
-""")
+"""
+    )
 
 printfn "Order: %s" order.OrderId
 printfn "Customer: %s" order.Customer.Name

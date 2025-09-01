@@ -86,10 +86,7 @@ The following sample calls the `Load` method with an URL that points to a live C
 *)
 
 // Download the stock prices
-let msft =
-    Stocks
-        .Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv")
-        .Cache()
+let msft = Stocks.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -133,7 +130,7 @@ so we use the `GetSample` method instead of calling `Load` and passing the same 
 *)
 
 let small =
-    CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>.GetSample ()
+    CsvProvider<"../data/SmallTest.csv", ResolutionFolder=ResolutionFolder>.GetSample()
 
 (*** include-fsi-merged-output ***)
 
@@ -160,7 +157,7 @@ open FSharp.Data.UnitSystems.SI.UnitNames
 for row in small.Rows do
     let speed = row.Distance / row.Time
 
-    if speed > 15.0M<metre/second> then
+    if speed > 15.0M<metre / second> then
         printfn "%s (%A m/s)" row.Name speed
 
 (*** include-fsi-merged-output ***)
@@ -204,13 +201,12 @@ are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/Mor
 *)
 
 let mortalityNy =
-    CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=ResolutionFolder>.GetSample ()
+    CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true, ResolutionFolder=ResolutionFolder>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
 let cause =
-    mortalityNy.Rows
-    |> Seq.find (fun r -> r.``Cause of death Code`` = "V13.4")
+    mortalityNy.Rows |> Seq.find (fun r -> r.``Cause of death Code`` = "V13.4")
 
 // Print the number of injured cyclists
 printfn "CAUSE: %s" cause.``Cause of death``
@@ -240,9 +236,7 @@ the `MissingValues` static parameter of `CsvProvider` as a comma-separated strin
 For example, to ignore `this` and `that` we could do:
 *)
 
-CsvProvider<"X,Y,Z\nthis,that,1.0", MissingValues="this,that">
-    .GetSample()
-    .Rows
+CsvProvider<"X,Y,Z\nthis,that,1.0", MissingValues="this,that">.GetSample().Rows
 (*** include-fsi-merged-output ***)
 (**
 
@@ -390,9 +384,7 @@ the `Save` method. You can also use the `SaveToString()` to get the output direc
 
 // Saving the first 10 rows that don't have missing values to a new csv file
 airQuality
-    .Filter(fun row ->
-        not (Double.IsNaN row.Ozone)
-        && not (Double.IsNaN row.``Solar.R``))
+    .Filter(fun row -> not (Double.IsNaN row.Ozone) && not (Double.IsNaN row.``Solar.R``))
     .Truncate(10)
     .SaveToString()
 
@@ -434,8 +426,7 @@ It's even possible to create csv files without parsing at all:
 type MyCsvType = CsvProvider<Schema="A (int), B (string), C (date option)", HasHeaders=false>
 
 let myRows =
-    [ MyCsvType.Row(1, "a", None)
-      MyCsvType.Row(2, "B", Some System.DateTime.Now) ]
+    [ MyCsvType.Row(1, "a", None); MyCsvType.Row(2, "B", Some System.DateTime.Now) ]
 
 let myCsv = new MyCsvType(myRows)
 myCsv.SaveToString()

@@ -142,3 +142,57 @@ let ``Can get direct inner text``() =
 let ``Inner text on a comment should be String.Empty``() =
     let comment = HtmlNode.NewComment "Hello World"
     HtmlNode.innerText comment |> should equal String.Empty
+
+// --------------------------------------------------------------------------------------
+// Tests for Utils module functions (tested indirectly through public API)
+
+[<Test>]
+let ``Case-insensitive element name matching works via getNameSet``() =
+    let html = "<div><P>Para 1</P><span>Span</span><p>Para 2</p></div>" 
+               |> HtmlNode.Parse |> Seq.head
+    let result = html |> HtmlNode.elementsNamed ["p"]
+    result.Length |> should equal 2
+    result |> List.map HtmlNode.innerText |> should equal ["Para 1"; "Para 2"]
+
+[<Test>]
+let ``Case-insensitive descendant name matching works with mixed case input``() =
+    let html = "<div><DIV><P>Test</P></DIV><p>Another</p></div>" 
+               |> HtmlNode.Parse |> Seq.head
+    let result = html |> HtmlNode.descendantsNamed false ["P"; "div"] |> List.ofSeq
+    result.Length |> should equal 2
+
+[<Test>]
+let ``Case-insensitive attribute matching works via toLower``() =
+    let html = "<div ID='Test' Class='highlight'>Content</div>" 
+               |> HtmlNode.Parse |> Seq.head
+    html |> HtmlNode.hasAttribute "id" "test" |> should equal true
+    html |> HtmlNode.hasAttribute "ID" "TEST" |> should equal true 
+    html |> HtmlNode.hasAttribute "class" "HIGHLIGHT" |> should equal true
+
+[<Test>]
+let ``getNameSet handles empty name collections``() =
+    let html = "<div><p>Test</p></div>" |> HtmlNode.Parse |> Seq.head
+    let result = html |> HtmlNode.elementsNamed []
+    result.Length |> should equal 0
+
+[<Test>]
+let ``getNameSet handles duplicate names (case variations)``() =
+    let html = "<div><P>Para 1</P><span>Span</span><p>Para 2</p></div>" 
+               |> HtmlNode.Parse |> Seq.head
+    // Test with duplicate names in different cases
+    let result = html |> HtmlNode.elementsNamed ["p"; "P"; "p"]
+    result.Length |> should equal 2
+    
+[<Test>]
+let ``toLower handles special characters in attribute values``() =
+    let html = "<div title='Ñoño Café'>Content</div>" 
+               |> HtmlNode.Parse |> Seq.head
+    html |> HtmlNode.hasAttribute "title" "ñoño café" |> should equal true
+
+[<Test>]
+let ``Case-insensitive matching works in descendantsNamedWithPath``() =
+    let html = "<html><head><Title>Test</Title></head></html>" 
+               |> HtmlNode.Parse |> Seq.head
+    let result = html |> HtmlNode.descendantsNamedWithPath false ["title"]
+    result |> Seq.length |> should equal 1
+    result |> Seq.head |> fst |> HtmlNode.innerText |> should equal "Test"

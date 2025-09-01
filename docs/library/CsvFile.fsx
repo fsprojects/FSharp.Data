@@ -50,10 +50,7 @@ points to a live CSV file on the Yahoo finance web site:
 *)
 
 // Download the stock prices
-let msft =
-    CsvFile
-        .Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv")
-        .Cache()
+let msft = CsvFile.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Print the prices in the HLOC format
 for row in msft.Rows |> Seq.truncate 10 do
@@ -111,10 +108,7 @@ separator and quote characters when saving.
 *)
 
 // Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:
-msft
-    .Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
-    .Truncate(10)
-    .SaveToString('\t')
+msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat()).Truncate(10).SaveToString('\t')
 
 (*** include-fsi-merged-output ***)
 (**
