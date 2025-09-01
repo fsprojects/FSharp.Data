@@ -19,6 +19,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />
+    <Compile Include="HttpContentTypes.fs" />
     <Compile Include="HttpRequestHeaders.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="Pluralizer.fs" />
@@ -29,6 +30,7 @@
     <Compile Include="JsonValue.fs" />
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
+    <Compile Include="JsonDocument.fs" />
     <Compile Include="JsonRuntime.fs" />
     <Compile Include="JsonSchema.fs" />
     <Compile Include="CsvReader.fs" />
