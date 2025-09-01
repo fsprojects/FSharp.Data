@@ -57,11 +57,7 @@ let links =
     doc.CssSelect("div#search > div#ires div.g > div.s div.kv cite")
     |> List.map (fun n ->
         match n.InnerText() with
-        | t when
-            (t.StartsWith("https://")
-             || t.StartsWith("http://"))
-            ->
-            t
+        | t when (t.StartsWith("https://") || t.StartsWith("http://")) -> t
         | t -> "http://" + t)
 
 (*** include-fsi-merged-output ***)

@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-01 15:35:23
+# Effective stop-time: 2025-09-03 00:25:37
 
 name: "PR Fix"
 on:
@@ -26,6 +26,8 @@ jobs:
   task:
     if: ((contains(github.event.issue.body, '@pr-fix')) || (contains(github.event.comment.body, '@pr-fix'))) || (contains(github.event.pull_request.body, '@pr-fix'))
     runs-on: ubuntu-latest
+    outputs:
+      text: ${{ steps.compute-text.outputs.text }}
     steps:
       - name: Check team membership for alias workflow
         id: check-team-member
@@ -64,6 +66,193 @@ jobs:
           echo "❌ Access denied: Only team members can trigger alias workflows"
           echo "User ${{ github.actor }} is not a team member"
           exit 1
+      - name: Compute current body text
+        id: compute-text
+        uses: actions/github-script@v7
+        with:
+          script: |
+            /**
+             * Sanitizes content for safe output in GitHub Actions
+             * @param {string} content - The content to sanitize
+             * @returns {string} The sanitized content
+             */
+            function sanitizeContent(content) {
+              if (!content || typeof content !== 'string') {
+                return '';
+              }
+              // Read allowed domains from environment variable
+              const allowedDomainsEnv = process.env.GITHUB_AW_ALLOWED_DOMAINS;
+              const defaultAllowedDomains = [
+                'github.com',
+                'github.io',
+                'githubusercontent.com',
+                'githubassets.com',
+                'github.dev',
+                'codespaces.new'
+              ];
+              const allowedDomains = allowedDomainsEnv
+                ? allowedDomainsEnv.split(',').map(d => d.trim()).filter(d => d)
+                : defaultAllowedDomains;
+              let sanitized = content;
+              // Neutralize @mentions to prevent unintended notifications
+              sanitized = neutralizeMentions(sanitized);
+              // Remove control characters (except newlines and tabs)
+              sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+              // XML character escaping
+              sanitized = sanitized
+                .replace(/&/g, '&amp;')   // Must be first to avoid double-escaping
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+              // URI filtering - replace non-https protocols with "(redacted)"
+              // Step 1: Temporarily mark HTTPS URLs to protect them
+              sanitized = sanitizeUrlProtocols(sanitized);
+              // Domain filtering for HTTPS URIs
+              // Match https:// URIs and check if domain is in allowlist
+              sanitized = sanitizeUrlDomains(sanitized);
+              // Limit total length to prevent DoS (0.5MB max)
+              const maxLength = 524288;
+              if (sanitized.length > maxLength) {
+                sanitized = sanitized.substring(0, maxLength) + '\n[Content truncated due to length]';
+              }
+              // Limit number of lines to prevent log flooding (65k max)
+              const lines = sanitized.split('\n');
+              const maxLines = 65000;
+              if (lines.length > maxLines) {
+                sanitized = lines.slice(0, maxLines).join('\n') + '\n[Content truncated due to line count]';
+              }
+              // Remove ANSI escape sequences
+              sanitized = sanitized.replace(/\x1b\[[0-9;]*[mGKH]/g, '');
+              // Neutralize common bot trigger phrases
+              sanitized = neutralizeBotTriggers(sanitized);
+              // Trim excessive whitespace
+              return sanitized.trim();
+              /**
+               * Remove unknown domains
+               * @param {string} s - The string to process
+               * @returns {string} The string with unknown domains redacted
+               */
+              function sanitizeUrlDomains(s) {
+                s = s.replace(/\bhttps:\/\/([^\/\s\])}'"<>&\x00-\x1f]+)/gi, (match, domain) => {
+                  // Extract the hostname part (before first slash, colon, or other delimiter)
+                  const hostname = domain.split(/[\/:\?#]/)[0].toLowerCase();
+                  // Check if this domain or any parent domain is in the allowlist
+                  const isAllowed = allowedDomains.some(allowedDomain => {
+                    const normalizedAllowed = allowedDomain.toLowerCase();
+                    return hostname === normalizedAllowed || hostname.endsWith('.' + normalizedAllowed);
+                  });
+                  return isAllowed ? match : '(redacted)';
+                });
+                return s;
+              }
+              /**
+               * Remove unknown protocols except https
+               * @param {string} s - The string to process
+               * @returns {string} The string with non-https protocols redacted
+               */
+              function sanitizeUrlProtocols(s) {
+                // Match both protocol:// and protocol: patterns
+                // This covers URLs like https://example.com, javascript:alert(), mailto:user@domain.com, etc.
+                return s.replace(/\b(\w+):(?:\/\/)?[^\s\])}'"<>&\x00-\x1f]+/gi, (match, protocol) => {
+                  // Allow https (case insensitive), redact everything else
+                  return protocol.toLowerCase() === 'https' ? match : '(redacted)';
+                });
+              }
+              /**
+               * Neutralizes @mentions by wrapping them in backticks
+               * @param {string} s - The string to process
+               * @returns {string} The string with neutralized mentions
+               */
+              function neutralizeMentions(s) {
+                // Replace @name or @org/team outside code with `@name`
+                return s.replace(/(^|[^\w`])@([A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?(?:\/[A-Za-z0-9._-]+)?)/g,
+                  (_m, p1, p2) => `${p1}\`@${p2}\``);
+              }
+              /**
+               * Neutralizes bot trigger phrases by wrapping them in backticks
+               * @param {string} s - The string to process
+               * @returns {string} The string with neutralized bot triggers
+               */
+              function neutralizeBotTriggers(s) {
+                // Neutralize common bot trigger phrases like "fixes #123", "closes #asdfs", etc.
+                return s.replace(/\b(fixes?|closes?|resolves?|fix|close|resolve)\s+#(\w+)/gi,
+                  (match, action, ref) => `\`${action} #${ref}\``);
+              }
+            }
+            async function main() {
+              let text = '';
+              const actor = context.actor;
+              const { owner, repo } = context.repo;
+              // Check if the actor has repository access (admin, maintain permissions)
+              const repoPermission = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: owner,
+                repo: repo,
+                username: actor
+              });
+              const permission = repoPermission.data.permission;
+              console.log(`Repository permission level: ${permission}`);
+              if (permission !== 'admin' && permission !== 'maintain') {
+                core.setOutput('text', '');
+                return;
+              }
+              // Determine current body text based on event context
+              switch (context.eventName) {
+                case 'issues':
+                  // For issues: title + body
+                  if (context.payload.issue) {
+                    const title = context.payload.issue.title || '';
+                    const body = context.payload.issue.body || '';
+                    text = `${title}\n\n${body}`;
+                  }
+                  break;
+                case 'pull_request':
+                  // For pull requests: title + body
+                  if (context.payload.pull_request) {
+                    const title = context.payload.pull_request.title || '';
+                    const body = context.payload.pull_request.body || '';
+                    text = `${title}\n\n${body}`;
+                  }
+                  break;
+                case 'pull_request_target':
+                  // For pull request target events: title + body
+                  if (context.payload.pull_request) {
+                    const title = context.payload.pull_request.title || '';
+                    const body = context.payload.pull_request.body || '';
+                    text = `${title}\n\n${body}`;
+                  }
+                  break;
+                case 'issue_comment':
+                  // For issue comments: comment body
+                  if (context.payload.comment) {
+                    text = context.payload.comment.body || '';
+                  }
+                  break;
+                case 'pull_request_review_comment':
+                  // For PR review comments: comment body
+                  if (context.payload.comment) {
+                    text = context.payload.comment.body || '';
+                  }
+                  break;
+                case 'pull_request_review':
+                  // For PR reviews: review body
+                  if (context.payload.review) {
+                    text = context.payload.review.body || '';
+                  }
+                  break;
+                default:
+                  // Default: empty text
+                  text = '';
+                  break;
+              }
+              // Sanitize the text before output
+              const sanitizedText = sanitizeContent(text);
+              // Display sanitized text in logs
+              console.log(`text: ${sanitizedText}`);
+              // Set the sanitized text as output
+              core.setOutput('text', sanitizedText);
+            }
+            await main();
 
   add_reaction:
     needs: task
@@ -80,12 +269,21 @@ jobs:
         uses: actions/github-script@v7
         env:
           GITHUB_AW_REACTION: eyes
+          GITHUB_AW_ALIAS: pr-fix
         with:
           script: |
             async function main() {
-              // Read inputs from environment variables
+              // Read inputs from environment variables  
               const reaction = process.env.GITHUB_AW_REACTION || 'eyes';
+              const alias = process.env.GITHUB_AW_ALIAS; // Only present for alias workflows
+              const runId = context.runId;
+              const runUrl = context.payload.repository 
+                ? `${context.payload.repository.html_url}/actions/runs/${runId}`
+                : `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
               console.log('Reaction type:', reaction);
+              console.log('Alias name:', alias || 'none');
+              console.log('Run ID:', runId);
+              console.log('Run URL:', runUrl);
               // Validate reaction type
               const validReactions = ['+1', '-1', 'laugh', 'confused', 'heart', 'hooray', 'rocket', 'eyes'];
               if (!validReactions.includes(reaction)) {
@@ -93,7 +291,9 @@ jobs:
                 return;
               }
               // Determine the API endpoint based on the event type
-              let endpoint;
+              let reactionEndpoint;
+              let commentUpdateEndpoint;
+              let shouldEditComment = false;
               const eventName = context.eventName;
               const owner = context.repo.owner;
               const repo = context.repo.repo;
@@ -105,7 +305,9 @@ jobs:
                       core.setFailed('Issue number not found in event payload');
                       return;
                     }
-                    endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/reactions`;
+                    reactionEndpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/reactions`;
+                    // Don't edit issue bodies for now - this might be more complex
+                    shouldEditComment = false;
                     break;
                   case 'issue_comment':
                     const commentId = context.payload?.comment?.id;
@@ -113,17 +315,21 @@ jobs:
                       core.setFailed('Comment ID not found in event payload');
                       return;
                     }
-                    endpoint = `/repos/${owner}/${repo}/issues/comments/${commentId}/reactions`;
+                    reactionEndpoint = `/repos/${owner}/${repo}/issues/comments/${commentId}/reactions`;
+                    commentUpdateEndpoint = `/repos/${owner}/${repo}/issues/comments/${commentId}`;
+                    // Only edit comments for alias workflows
+                    shouldEditComment = alias ? true : false;
                     break;
                   case 'pull_request':
-                  case 'pull_request_target':
                     const prNumber = context.payload?.pull_request?.number;
                     if (!prNumber) {
                       core.setFailed('Pull request number not found in event payload');
                       return;
                     }
                     // PRs are "issues" for the reactions endpoint
-                    endpoint = `/repos/${owner}/${repo}/issues/${prNumber}/reactions`;
+                    reactionEndpoint = `/repos/${owner}/${repo}/issues/${prNumber}/reactions`;
+                    // Don't edit PR bodies for now - this might be more complex
+                    shouldEditComment = false;
                     break;
                   case 'pull_request_review_comment':
                     const reviewCommentId = context.payload?.comment?.id;
@@ -131,18 +337,33 @@ jobs:
                       core.setFailed('Review comment ID not found in event payload');
                       return;
                     }
-                    endpoint = `/repos/${owner}/${repo}/pulls/comments/${reviewCommentId}/reactions`;
+                    reactionEndpoint = `/repos/${owner}/${repo}/pulls/comments/${reviewCommentId}/reactions`;
+                    commentUpdateEndpoint = `/repos/${owner}/${repo}/pulls/comments/${reviewCommentId}`;
+                    // Only edit comments for alias workflows
+                    shouldEditComment = alias ? true : false;
                     break;
                   default:
                     core.setFailed(`Unsupported event type: ${eventName}`);
                     return;
                 }
-                console.log('API endpoint:', endpoint);
-                await addReaction(endpoint, reaction);
+                console.log('Reaction API endpoint:', reactionEndpoint);
+                // Add reaction first
+                await addReaction(reactionEndpoint, reaction);
+                // Then edit comment if applicable and if it's a comment event
+                if (shouldEditComment && commentUpdateEndpoint) {
+                  console.log('Comment update endpoint:', commentUpdateEndpoint);
+                  await editCommentWithWorkflowLink(commentUpdateEndpoint, runUrl);
+                } else {
+                  if (!alias && commentUpdateEndpoint) {
+                    console.log('Skipping comment edit - only available for alias workflows');
+                  } else {
+                    console.log('Skipping comment edit for event type:', eventName);
+                  }
+                }
               } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
-                console.error('Failed to add reaction:', errorMessage);
-                core.setFailed(`Failed to add reaction: ${errorMessage}`);
+                console.error('Failed to process reaction and comment edit:', errorMessage);
+                core.setFailed(`Failed to process reaction and comment edit: ${errorMessage}`);
               }
             }
             /**
@@ -166,6 +387,43 @@ jobs:
                 core.setOutput('reaction-id', '');
               }
             }
+            /**
+             * Edit a comment to add a workflow run link
+             * @param {string} endpoint - The GitHub API endpoint to update the comment
+             * @param {string} runUrl - The URL of the workflow run
+             */
+            async function editCommentWithWorkflowLink(endpoint, runUrl) {
+              try {
+                // First, get the current comment content
+                const getResponse = await github.request('GET ' + endpoint, {
+                  headers: {
+                    'Accept': 'application/vnd.github+json'
+                  }
+                });
+                const originalBody = getResponse.data.body || '';
+                const workflowLinkText = `\n\n---\n*🤖 [Workflow run](${runUrl}) triggered by this comment*`;
+                // Check if we've already added a workflow link to avoid duplicates
+                if (originalBody.includes('*🤖 [Workflow run](')) {
+                  console.log('Comment already contains a workflow run link, skipping edit');
+                  return;
+                }
+                const updatedBody = originalBody + workflowLinkText;
+                // Update the comment
+                const updateResponse = await github.request('PATCH ' + endpoint, {
+                  body: updatedBody,
+                  headers: {
+                    'Accept': 'application/vnd.github+json'
+                  }
+                });
+                console.log(`Successfully updated comment with workflow link`);
+                console.log(`Comment ID: ${updateResponse.data.id}`);
+              } catch (error) {
+                // Don't fail the entire job if comment editing fails - just log it
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.warn('Failed to edit comment with workflow link:', errorMessage);
+                console.warn('This is not critical - the reaction was still added successfully');
+              }
+            }
             await main();
 
   pr-fix:
@@ -176,7 +434,6 @@ jobs:
       checks: read
       contents: write
       issues: read
-      models: read
       pull-requests: write
       statuses: read
     steps:
@@ -212,7 +469,7 @@ jobs:
           WORKFLOW_NAME="PR Fix"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-01 15:35:23"
+          STOP_TIME="2025-09-03 00:25:37"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -242,19 +499,21 @@ jobs:
           
           You are an AI assistant specialized in fixing pull requests with failing CI checks. Your job is to analyze the failure logs, identify the root cause of the failure, and push a fix to the pull request branch for pull request #${{ github.event.issue.number }} in the repository ${{ github.repository }}.
           
-          1. Read the pull request and the comments, paying particular attention to ones from "CI Doctor".
+          1. Read the pull request and the comments
           
-          2. Analyze the failure logs from the workflow run associated with the pull request. Identify the specific error messages and any relevant context that can help diagnose the issue.
+          2. Take heed of these instructions: "${{ needs.task.outputs.text }}"
           
-          3. Based on your analysis, determine the root cause of the failure. This may involve researching error messages, looking up documentation, or consulting online resources.
+            - (If there are no particular instructions there, analyze the failure logs from any failing workflow run associated with the pull request. Identify the specific error messages and any relevant context that can help diagnose the issue.  Based on your analysis, determine the root cause of the failure. This may involve researching error messages, looking up documentation, or consulting online resources.)
           
-          4. Once you have identified the root cause, formulate a plan to fix the issue. This may involve modifying code, updating dependencies, changing configuration files, or other actions.
+          3. Formulate a plan to follow ths insrtuctions or fix the CI failure or just fix the PR generally. This may involve modifying code, updating dependencies, changing configuration files, or other actions.
           
-          5. Implement the fix by pushing changes to the pull request branch. Ensure that your changes are well-documented and follow best practices for code quality and maintainability.
+          4. Implement the fix.
           
-          6. Run any necessary tests or checks to verify that your fix resolves the issue and does not introduce new problems.
+          5. Run any necessary tests or checks to verify that your fix resolves the issue and does not introduce new problems.
           
-          7. Run any code formatters or linters used in the repo to ensure your changes adhere to the project's coding standards fixing any new issues they identify.
+          6. Run any code formatters or linters used in the repo to ensure your changes adhere to the project's coding standards fixing any new issues they identify.
+          
+          7. Push the changes to the pull request branch.
           
           8. Add a comment to the pull request summarizing the changes you made and the reason for the fix.
           
@@ -262,31 +521,11 @@ jobs:
           
           > NOTE: If you are refused permission to run an MCP tool or particular 'bash' commands, or need to request access to other tools or resources, then please include a request for access in the output, explaining the exact name of the tool and/or the exact prefix of bash commands needed, or other resources you need access to.
           
-          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request you create. Do this in addition to any other footers you are instructed to include.
+          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request description you create. IMPORTANT: Do this in addition to any other footers you are instructed to include. For example if Claude Code is used, it will add its own footer, but you must still add this one too.
           
           ```markdown
           > AI-generated content by [${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) may contain mistakes.
           ```
-          
-          ### Output Report implemented via GitHub Action Job Summary
-          
-          You will use the Job Summary for GitHub Actions run ${{ github.run_id }} in ${{ github.repository }} to report progess. This means writing to the special file $GITHUB_STEP_SUMMARY. You can write the file using "echo" or the "Write" tool. GITHUB_STEP_SUMMARY is an environment variable set by GitHub Actions which you can use to write the report. You can read this environment variable using the bash command "echo $GITHUB_STEP_SUMMARY".
-          
-          At the end of the workflow, finalize the job summry with a very, very succinct summary in note form of 
-            - the steps you took
-            - the problems you found
-            - the actions you took
-            - the exact bash commands you executed
-            - the exact web searches you performed
-            - the exact MCP function/tool calls you used
-          
-          If any step fails, then make this really obvious with emoji. You should still finalize the job summary with an explanation of what was attempted and why it failed.
-          
-          Include this at the end of the job summary:
-          
-            ```
-            > AI-generated content by [${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) may contain mistakes.
-            ```
           
           ## Security and XPIA Protection
           
@@ -317,6 +556,10 @@ jobs:
           
           - List labels: `gh label list ...`
           - View label: `gh label view <label-name> ...`
+          
+          ## Git Configuration
+          
+          When using `git commit`, ensure you set the author name and email appropriately. Do this by using a `--author` flag with `git commit`, for example `git commit --author "${{ github.workflow }} <github-actions[bot]@users.noreply.github.com>" ...`.
           
           <!-- You can whitelist tools in .github/workflows/build-tools.md file -->
           
@@ -375,14 +618,17 @@ jobs:
         with:
           # Allowed tools (sorted):
           # - Bash
+          # - BashOutput
           # - Edit
+          # - ExitPlanMode
           # - Glob
           # - Grep
+          # - KillBash
           # - LS
-          # - MultiEdit
           # - NotebookRead
           # - Read
           # - Task
+          # - TodoWrite
           # - WebFetch
           # - WebSearch
           # - Write
@@ -432,7 +678,7 @@ jobs:
           # - mcp__github__search_pull_requests
           # - mcp__github__search_repositories
           # - mcp__github__search_users
-          allowed_tools: "Bash,Edit,Glob,Grep,LS,MultiEdit,NotebookRead,Read,Task,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_issue,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users"
+          allowed_tools: "Bash,BashOutput,Edit,ExitPlanMode,Glob,Grep,KillBash,LS,NotebookRead,Read,Task,TodoWrite,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_issue,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -468,13 +714,290 @@ jobs:
           name: workflow-complete
           path: workflow-complete.txt
       - name: Upload engine output files
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agent_outputs
           path: |
             output.txt
           if-no-files-found: ignore
+      - name: Clean up engine output files
+        run: |
+          rm -f output.txt
+      - name: Parse agent logs for step summary
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          AGENT_LOG_FILE: /tmp/pr-fix.log
+        with:
+          script: |
+            function main() {
+              const fs = require('fs');
+              try {
+                // Get the log file path from environment
+                const logFile = process.env.AGENT_LOG_FILE;
+                if (!logFile) {
+                  console.log('No agent log file specified');
+                  return;
+                }
+                if (!fs.existsSync(logFile)) {
+                  console.log(`Log file not found: ${logFile}`);
+                  return;
+                }
+                const logContent = fs.readFileSync(logFile, 'utf8');
+                const markdown = parseClaudeLog(logContent);
+                // Append to GitHub step summary
+                core.summary.addRaw(markdown).write();
+              } catch (error) {
+                console.error('Error parsing Claude log:', error.message);
+                core.setFailed(error.message);
+              }
+            }
+            function parseClaudeLog(logContent) {
+              try {
+                const logEntries = JSON.parse(logContent);
+                if (!Array.isArray(logEntries)) {
+                  return '## Agent Log Summary\n\nLog format not recognized as Claude JSON array.\n';
+                }
+                let markdown = '## 🤖 Commands and Tools\n\n';
+                const toolUsePairs = new Map(); // Map tool_use_id to tool_result
+                const commandSummary = []; // For the succinct summary
+                // First pass: collect tool results by tool_use_id
+                for (const entry of logEntries) {
+                  if (entry.type === 'user' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'tool_result' && content.tool_use_id) {
+                        toolUsePairs.set(content.tool_use_id, content);
+                      }
+                    }
+                  }
+                }
+                // Collect all tool uses for summary
+                for (const entry of logEntries) {
+                  if (entry.type === 'assistant' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'tool_use') {
+                        const toolName = content.name;
+                        const input = content.input || {};
+                        // Skip internal tools - only show external commands and API calls
+                        if (['Read', 'Write', 'Edit', 'MultiEdit', 'LS', 'Grep', 'Glob', 'TodoWrite'].includes(toolName)) {
+                          continue; // Skip internal file operations and searches
+                        }
+                        // Find the corresponding tool result to get status
+                        const toolResult = toolUsePairs.get(content.id);
+                        let statusIcon = '❓';
+                        if (toolResult) {
+                          statusIcon = toolResult.is_error === true ? '❌' : '✅';
+                        }
+                        // Add to command summary (only external tools)
+                        if (toolName === 'Bash') {
+                          const formattedCommand = formatBashCommand(input.command || '');
+                          commandSummary.push(`* ${statusIcon} \`${formattedCommand}\``);
+                        } else if (toolName.startsWith('mcp__')) {
+                          const mcpName = formatMcpName(toolName);
+                          commandSummary.push(`* ${statusIcon} \`${mcpName}(...)\``);
+                        } else {
+                          // Handle other external tools (if any)
+                          commandSummary.push(`* ${statusIcon} ${toolName}`);
+                        }
+                      }
+                    }
+                  }
+                }
+                // Add command summary
+                if (commandSummary.length > 0) {
+                  for (const cmd of commandSummary) {
+                    markdown += `${cmd}\n`;
+                  }
+                } else {
+                  markdown += 'No commands or tools used.\n';
+                }
+                // Add Information section from the last entry with result metadata
+                markdown += '\n## 📊 Information\n\n';
+                // Find the last entry with metadata
+                const lastEntry = logEntries[logEntries.length - 1];
+                if (lastEntry && (lastEntry.num_turns || lastEntry.duration_ms || lastEntry.total_cost_usd || lastEntry.usage)) {
+                  if (lastEntry.num_turns) {
+                    markdown += `**Turns:** ${lastEntry.num_turns}\n\n`;
+                  }
+                  if (lastEntry.duration_ms) {
+                    const durationSec = Math.round(lastEntry.duration_ms / 1000);
+                    const minutes = Math.floor(durationSec / 60);
+                    const seconds = durationSec % 60;
+                    markdown += `**Duration:** ${minutes}m ${seconds}s\n\n`;
+                  }
+                  if (lastEntry.total_cost_usd) {
+                    markdown += `**Total Cost:** $${lastEntry.total_cost_usd.toFixed(4)}\n\n`;
+                  }
+                  if (lastEntry.usage) {
+                    const usage = lastEntry.usage;
+                    if (usage.input_tokens || usage.output_tokens) {
+                      markdown += `**Token Usage:**\n`;
+                      if (usage.input_tokens) markdown += `- Input: ${usage.input_tokens.toLocaleString()}\n`;
+                      if (usage.cache_creation_input_tokens) markdown += `- Cache Creation: ${usage.cache_creation_input_tokens.toLocaleString()}\n`;
+                      if (usage.cache_read_input_tokens) markdown += `- Cache Read: ${usage.cache_read_input_tokens.toLocaleString()}\n`;
+                      if (usage.output_tokens) markdown += `- Output: ${usage.output_tokens.toLocaleString()}\n`;
+                      markdown += '\n';
+                    }
+                  }
+                  if (lastEntry.permission_denials && lastEntry.permission_denials.length > 0) {
+                    markdown += `**Permission Denials:** ${lastEntry.permission_denials.length}\n\n`;
+                  }
+                }
+                markdown += '\n## 🤖 Reasoning\n\n';
+                // Second pass: process assistant messages in sequence
+                for (const entry of logEntries) {
+                  if (entry.type === 'assistant' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'text' && content.text) {
+                        // Add reasoning text directly (no header)
+                        const text = content.text.trim();
+                        if (text && text.length > 0) {
+                          markdown += text + '\n\n';
+                        }
+                      } else if (content.type === 'tool_use') {
+                        // Process tool use with its result
+                        const toolResult = toolUsePairs.get(content.id);
+                        const toolMarkdown = formatToolUse(content, toolResult);
+                        if (toolMarkdown) {
+                          markdown += toolMarkdown;
+                        }
+                      }
+                    }
+                  }
+                }
+                return markdown;
+              } catch (error) {
+                return `## Agent Log Summary\n\nError parsing Claude log: ${error.message}\n`;
+              }
+            }
+            function formatToolUse(toolUse, toolResult) {
+              const toolName = toolUse.name;
+              const input = toolUse.input || {};
+              // Skip TodoWrite except the very last one (we'll handle this separately)
+              if (toolName === 'TodoWrite') {
+                return ''; // Skip for now, would need global context to find the last one
+              }
+              // Helper function to determine status icon
+              function getStatusIcon() {
+                if (toolResult) {
+                  return toolResult.is_error === true ? '❌' : '✅';
+                }
+                return '❓'; // Unknown by default
+              }
+              let markdown = '';
+              const statusIcon = getStatusIcon();
+              switch (toolName) {
+                case 'Bash':
+                  const command = input.command || '';
+                  const description = input.description || '';
+                  // Format the command to be single line
+                  const formattedCommand = formatBashCommand(command);
+                  if (description) {
+                    markdown += `${description}:\n\n`;
+                  }
+                  markdown += `${statusIcon} \`${formattedCommand}\`\n\n`;
+                  break;
+                case 'Read':
+                  const filePath = input.file_path || input.path || '';
+                  const relativePath = filePath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, ''); // Remove /home/runner/work/repo/repo/ prefix
+                  markdown += `${statusIcon} Read \`${relativePath}\`\n\n`;
+                  break;
+                case 'Write':
+                case 'Edit':
+                case 'MultiEdit':
+                  const writeFilePath = input.file_path || input.path || '';
+                  const writeRelativePath = writeFilePath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, '');
+                  markdown += `${statusIcon} Write \`${writeRelativePath}\`\n\n`;
+                  break;
+                case 'Grep':
+                case 'Glob':
+                  const query = input.query || input.pattern || '';
+                  markdown += `${statusIcon} Search for \`${truncateString(query, 80)}\`\n\n`;
+                  break;
+                case 'LS':
+                  const lsPath = input.path || '';
+                  const lsRelativePath = lsPath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, '');
+                  markdown += `${statusIcon} LS: ${lsRelativePath || lsPath}\n\n`;
+                  break;
+                default:
+                  // Handle MCP calls and other tools
+                  if (toolName.startsWith('mcp__')) {
+                    const mcpName = formatMcpName(toolName);
+                    const params = formatMcpParameters(input);
+                    markdown += `${statusIcon} ${mcpName}(${params})\n\n`;
+                  } else {
+                    // Generic tool formatting - show the tool name and main parameters
+                    const keys = Object.keys(input);
+                    if (keys.length > 0) {
+                      // Try to find the most important parameter
+                      const mainParam = keys.find(k => ['query', 'command', 'path', 'file_path', 'content'].includes(k)) || keys[0];
+                      const value = String(input[mainParam] || '');
+                      if (value) {
+                        markdown += `${statusIcon} ${toolName}: ${truncateString(value, 100)}\n\n`;
+                      } else {
+                        markdown += `${statusIcon} ${toolName}\n\n`;
+                      }
+                    } else {
+                      markdown += `${statusIcon} ${toolName}\n\n`;
+                    }
+                  }
+              }
+              return markdown;
+            }
+            function formatMcpName(toolName) {
+              // Convert mcp__github__search_issues to github::search_issues
+              if (toolName.startsWith('mcp__')) {
+                const parts = toolName.split('__');
+                if (parts.length >= 3) {
+                  const provider = parts[1]; // github, etc.
+                  const method = parts.slice(2).join('_'); // search_issues, etc.
+                  return `${provider}::${method}`;
+                }
+              }
+              return toolName;
+            }
+            function formatMcpParameters(input) {
+              const keys = Object.keys(input);
+              if (keys.length === 0) return '';
+              const paramStrs = [];
+              for (const key of keys.slice(0, 4)) { // Show up to 4 parameters
+                const value = String(input[key] || '');
+                paramStrs.push(`${key}: ${truncateString(value, 40)}`);
+              }
+              if (keys.length > 4) {
+                paramStrs.push('...');
+              }
+              return paramStrs.join(', ');
+            }
+            function formatBashCommand(command) {
+              if (!command) return '';
+              // Convert multi-line commands to single line by replacing newlines with spaces
+              // and collapsing multiple spaces
+              let formatted = command
+                .replace(/\n/g, ' ')           // Replace newlines with spaces
+                .replace(/\r/g, ' ')           // Replace carriage returns with spaces
+                .replace(/\t/g, ' ')           // Replace tabs with spaces
+                .replace(/\s+/g, ' ')          // Collapse multiple spaces into one
+                .trim();                       // Remove leading/trailing whitespace
+              // Escape backticks to prevent markdown issues
+              formatted = formatted.replace(/`/g, '\\`');
+              // Truncate if too long (keep reasonable length for summary)
+              const maxLength = 80;
+              if (formatted.length > maxLength) {
+                formatted = formatted.substring(0, maxLength) + '...';
+              }
+              return formatted;
+            }
+            function truncateString(str, maxLength) {
+              if (!str) return '';
+              if (str.length <= maxLength) return str;
+              return str.substring(0, maxLength) + '...';
+            }
+            // Export for testing
+            if (typeof module !== 'undefined' && module.exports) {
+              module.exports = { parseClaudeLog, formatToolUse, formatBashCommand, truncateString };
+            }
+            main();
       - name: Upload agent logs
         if: always()
         uses: actions/upload-artifact@v4

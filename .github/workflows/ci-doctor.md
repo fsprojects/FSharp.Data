@@ -1,7 +1,7 @@
 ---
 on:
   workflow_run:
-    workflows: ["Build and Test PR", "Daily Perf Improver", "Daily Test Coverage Improver"]  # Monitor the CI workflow specifically
+    workflows: ["Daily Perf Improver", "Daily Test Coverage Improver"]  # Monitor the CI workflow specifically
     types:
       - completed
     # This will trigger only when the CI workflow completes with failure
@@ -17,7 +17,6 @@ permissions:
   statuses: read # needed to read commit statuses
   issues: write # needed to create investigation issues
   pull-requests: write # needed to comment on PRs if failure is related
-  models: read # typically needed for AI workflows
 
 tools:
   github:
@@ -207,7 +206,5 @@ When creating an investigation issue, use this structure:
 @include agentics/shared/tool-refused.md
 
 @include agentics/shared/include-link.md
-
-@include agentics/shared/job-summary.md
 
 @include agentics/shared/xpia.md

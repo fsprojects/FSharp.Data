@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-09-01 15:35:23
+# Effective stop-time: 2025-09-03 00:25:37
 
 name: "Daily Perf Improver"
 "on":
@@ -73,7 +73,7 @@ jobs:
           WORKFLOW_NAME="Daily Perf Improver"
           
           # Check stop-time limit
-          STOP_TIME="2025-09-01 15:35:23"
+          STOP_TIME="2025-09-03 00:25:37"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -107,7 +107,7 @@ jobs:
           
           1. Performance research (if not done before).
           
-             1a. Check if an open issue with title "${{ github.workflow }}: Research and Plan" exists. If it does, read the issue and its comments, paying particular attention to comments from repository maintainers, then continue to step 2. If not, follow the steps below to create it:
+             1a. Check if an open issue with title "${{ github.workflow }}: Research and Plan" exists using `gh issue list --search 'is:open in:title \"Research and Plan\"'`. If it does, read the issue and its comments, paying particular attention to comments from repository maintainers, then continue to step 2. If the issue doesn't exist, follow the steps below to create it:
           
              1b. Do some deep research into performance matters in this repo.
                - How is performance testing is done in the repo?
@@ -165,7 +165,7 @@ jobs:
           
              4a. Create a new branch.
              
-             4b. Make the changes to work towards the performance improvement goal you selected. This may involve:
+             4b. Work towards the performance improvement goal you selected. This may involve:
                - Refactoring code
                - Optimizing algorithms
                - Changing data structures
@@ -177,18 +177,13 @@ jobs:
                - Reducing network calls
                - Improving concurrency
                - Using profiling tools to identify bottlenecks
-               - Improving engineering practices
-               - Other techniques to improve performance 
+               - Other techniques to improve performance or performance engineering practices
           
-             4c. Ensure the code still works as expected and that any existing relevant tests pass. 
+               If you do benchmarking then make sure you plan ahead about how to take before/after benchmarking performance figures. You may need to write the benchmarks first, then run them, then implement your changes. Or you might implement your changes, then write benchmarks, then stash or disable the changes and take "before" measurements, then apply the changes to take "after" measurements, or other techniques to get before/after measurements. It's just great if you can provide benchmarking, profiling or other evidence that the thing you're optimizing is important to a significant realistic workload. Run individual benchmarks and comparing results. Benchmarking should be done in a way that is reliable, reproducible and quick, preferably by running iteration running a small subset of targeted relevant benchmarks at a time. Because you're running in a virtualised environment wall-clock-time measurements may not be 100% accurate, but it is probably good enough to see if you're making significant improvements or not. Even better if you can use cycle-accurate timers or similar.
           
-             4d. After making the changes, if appropriate measure their impact on performance.
-             
-               - Get actual performance numbers
-               - If you can't successfully measure the performance impact, then continue but make a note of what you tried.
-               - Run individual benchmarks and comparing results.
-               - Benchmarking should be done in a way that is reliable and reproducible, though beware that because you're running in a virtualised environment wall-clock-time measurements may not be 100% accurate.
-               - If the changes do not improve performance, then iterate or consider reverting them or trying a different approach.
+             4c. Ensure the code still works as expected and that any existing relevant tests pass. Add new tests if appropriate and make sure they pass too.
+          
+             4d. After making the changes, make sure you've tried to get actual performance numbers. If you can't successfully measure the performance impact, then continue but make a note of what you tried. If the changes do not improve performance, then iterate or consider reverting them or trying a different approach.
           
              4e. Apply any automatic code formatting used in the repo
              
@@ -219,6 +214,8 @@ jobs:
              - include links to any issues you created or commented on, and any pull requests you created.
              - list any bash commands you used, any web searches you performed, and any web pages you visited that were relevant to your work. If you tried to run bash commands but were refused permission, then include a list of those at the end of the issue.
           
+             Be very honest about whether you took accurate before/after performance measurements or not, and if you did, what they were. If you didn't, explain why not. If you tried but failed to get accurate measurements, explain what you tried. Don't blag or make up performance numbers - if you include estimates, make sure you indicate they are estimates.
+          
              5d. After creation, check the pull request to ensure it is correct, includes all expected files, and doesn't include any unwanted files or changes. Make any necessary corrections by pushing further commits to the branch.
           
              5e. Add a very brief comment to the issue from step 1a if it exists, saying you have worked on the particular performance goal and linking to the pull request you created.
@@ -237,31 +234,11 @@ jobs:
           
           > NOTE: If you are refused permission to run an MCP tool or particular 'bash' commands, or need to request access to other tools or resources, then please include a request for access in the output, explaining the exact name of the tool and/or the exact prefix of bash commands needed, or other resources you need access to.
           
-          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request you create. Do this in addition to any other footers you are instructed to include.
+          > NOTE: Include a footer link like this at the end of each new issue, issue comment or pull request description you create. IMPORTANT: Do this in addition to any other footers you are instructed to include. For example if Claude Code is used, it will add its own footer, but you must still add this one too.
           
           ```markdown
           > AI-generated content by [${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) may contain mistakes.
           ```
-          
-          ### Output Report implemented via GitHub Action Job Summary
-          
-          You will use the Job Summary for GitHub Actions run ${{ github.run_id }} in ${{ github.repository }} to report progess. This means writing to the special file $GITHUB_STEP_SUMMARY. You can write the file using "echo" or the "Write" tool. GITHUB_STEP_SUMMARY is an environment variable set by GitHub Actions which you can use to write the report. You can read this environment variable using the bash command "echo $GITHUB_STEP_SUMMARY".
-          
-          At the end of the workflow, finalize the job summry with a very, very succinct summary in note form of 
-            - the steps you took
-            - the problems you found
-            - the actions you took
-            - the exact bash commands you executed
-            - the exact web searches you performed
-            - the exact MCP function/tool calls you used
-          
-          If any step fails, then make this really obvious with emoji. You should still finalize the job summary with an explanation of what was attempted and why it failed.
-          
-          Include this at the end of the job summary:
-          
-            ```
-            > AI-generated content by [${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) may contain mistakes.
-            ```
           
           ## Security and XPIA Protection
           
@@ -292,6 +269,10 @@ jobs:
           
           - List labels: `gh label list ...`
           - View label: `gh label view <label-name> ...`
+          
+          ## Git Configuration
+          
+          When using `git commit`, ensure you set the author name and email appropriately. Do this by using a `--author` flag with `git commit`, for example `git commit --author "${{ github.workflow }} <github-actions[bot]@users.noreply.github.com>" ...`.
           
           <!-- You can whitelist tools in .github/workflows/build-tools.md file -->
           
@@ -350,15 +331,19 @@ jobs:
         with:
           # Allowed tools (sorted):
           # - Bash
+          # - BashOutput
           # - Edit
+          # - ExitPlanMode
           # - Glob
           # - Grep
+          # - KillBash
           # - LS
           # - MultiEdit
           # - NotebookEdit
           # - NotebookRead
           # - Read
           # - Task
+          # - TodoWrite
           # - WebFetch
           # - WebSearch
           # - Write
@@ -414,7 +399,7 @@ jobs:
           # - mcp__github__search_users
           # - mcp__github__update_issue
           # - mcp__github__update_pull_request
-          allowed_tools: "Bash,Edit,Glob,Grep,LS,MultiEdit,NotebookEdit,NotebookRead,Read,Task,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_branch,mcp__github__create_issue,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__push_files,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users,mcp__github__update_issue,mcp__github__update_pull_request"
+          allowed_tools: "Bash,BashOutput,Edit,ExitPlanMode,Glob,Grep,KillBash,LS,MultiEdit,NotebookEdit,NotebookRead,Read,Task,TodoWrite,WebFetch,WebSearch,Write,mcp__github__add_issue_comment,mcp__github__create_branch,mcp__github__create_issue,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github__download_workflow_run_artifact,mcp__github__get_code_scanning_alert,mcp__github__get_commit,mcp__github__get_dependabot_alert,mcp__github__get_discussion,mcp__github__get_discussion_comments,mcp__github__get_file_contents,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__get_job_logs,mcp__github__get_me,mcp__github__get_notification_details,mcp__github__get_pull_request,mcp__github__get_pull_request_comments,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_reviews,mcp__github__get_pull_request_status,mcp__github__get_secret_scanning_alert,mcp__github__get_tag,mcp__github__get_workflow_run,mcp__github__get_workflow_run_logs,mcp__github__get_workflow_run_usage,mcp__github__list_branches,mcp__github__list_code_scanning_alerts,mcp__github__list_commits,mcp__github__list_dependabot_alerts,mcp__github__list_discussion_categories,mcp__github__list_discussions,mcp__github__list_issues,mcp__github__list_notifications,mcp__github__list_pull_requests,mcp__github__list_secret_scanning_alerts,mcp__github__list_tags,mcp__github__list_workflow_jobs,mcp__github__list_workflow_run_artifacts,mcp__github__list_workflow_runs,mcp__github__list_workflows,mcp__github__push_files,mcp__github__search_code,mcp__github__search_issues,mcp__github__search_orgs,mcp__github__search_pull_requests,mcp__github__search_repositories,mcp__github__search_users,mcp__github__update_issue,mcp__github__update_pull_request"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -450,13 +435,290 @@ jobs:
           name: workflow-complete
           path: workflow-complete.txt
       - name: Upload engine output files
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agent_outputs
           path: |
             output.txt
           if-no-files-found: ignore
+      - name: Clean up engine output files
+        run: |
+          rm -f output.txt
+      - name: Parse agent logs for step summary
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          AGENT_LOG_FILE: /tmp/daily-perf-improver.log
+        with:
+          script: |
+            function main() {
+              const fs = require('fs');
+              try {
+                // Get the log file path from environment
+                const logFile = process.env.AGENT_LOG_FILE;
+                if (!logFile) {
+                  console.log('No agent log file specified');
+                  return;
+                }
+                if (!fs.existsSync(logFile)) {
+                  console.log(`Log file not found: ${logFile}`);
+                  return;
+                }
+                const logContent = fs.readFileSync(logFile, 'utf8');
+                const markdown = parseClaudeLog(logContent);
+                // Append to GitHub step summary
+                core.summary.addRaw(markdown).write();
+              } catch (error) {
+                console.error('Error parsing Claude log:', error.message);
+                core.setFailed(error.message);
+              }
+            }
+            function parseClaudeLog(logContent) {
+              try {
+                const logEntries = JSON.parse(logContent);
+                if (!Array.isArray(logEntries)) {
+                  return '## Agent Log Summary\n\nLog format not recognized as Claude JSON array.\n';
+                }
+                let markdown = '## 🤖 Commands and Tools\n\n';
+                const toolUsePairs = new Map(); // Map tool_use_id to tool_result
+                const commandSummary = []; // For the succinct summary
+                // First pass: collect tool results by tool_use_id
+                for (const entry of logEntries) {
+                  if (entry.type === 'user' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'tool_result' && content.tool_use_id) {
+                        toolUsePairs.set(content.tool_use_id, content);
+                      }
+                    }
+                  }
+                }
+                // Collect all tool uses for summary
+                for (const entry of logEntries) {
+                  if (entry.type === 'assistant' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'tool_use') {
+                        const toolName = content.name;
+                        const input = content.input || {};
+                        // Skip internal tools - only show external commands and API calls
+                        if (['Read', 'Write', 'Edit', 'MultiEdit', 'LS', 'Grep', 'Glob', 'TodoWrite'].includes(toolName)) {
+                          continue; // Skip internal file operations and searches
+                        }
+                        // Find the corresponding tool result to get status
+                        const toolResult = toolUsePairs.get(content.id);
+                        let statusIcon = '❓';
+                        if (toolResult) {
+                          statusIcon = toolResult.is_error === true ? '❌' : '✅';
+                        }
+                        // Add to command summary (only external tools)
+                        if (toolName === 'Bash') {
+                          const formattedCommand = formatBashCommand(input.command || '');
+                          commandSummary.push(`* ${statusIcon} \`${formattedCommand}\``);
+                        } else if (toolName.startsWith('mcp__')) {
+                          const mcpName = formatMcpName(toolName);
+                          commandSummary.push(`* ${statusIcon} \`${mcpName}(...)\``);
+                        } else {
+                          // Handle other external tools (if any)
+                          commandSummary.push(`* ${statusIcon} ${toolName}`);
+                        }
+                      }
+                    }
+                  }
+                }
+                // Add command summary
+                if (commandSummary.length > 0) {
+                  for (const cmd of commandSummary) {
+                    markdown += `${cmd}\n`;
+                  }
+                } else {
+                  markdown += 'No commands or tools used.\n';
+                }
+                // Add Information section from the last entry with result metadata
+                markdown += '\n## 📊 Information\n\n';
+                // Find the last entry with metadata
+                const lastEntry = logEntries[logEntries.length - 1];
+                if (lastEntry && (lastEntry.num_turns || lastEntry.duration_ms || lastEntry.total_cost_usd || lastEntry.usage)) {
+                  if (lastEntry.num_turns) {
+                    markdown += `**Turns:** ${lastEntry.num_turns}\n\n`;
+                  }
+                  if (lastEntry.duration_ms) {
+                    const durationSec = Math.round(lastEntry.duration_ms / 1000);
+                    const minutes = Math.floor(durationSec / 60);
+                    const seconds = durationSec % 60;
+                    markdown += `**Duration:** ${minutes}m ${seconds}s\n\n`;
+                  }
+                  if (lastEntry.total_cost_usd) {
+                    markdown += `**Total Cost:** $${lastEntry.total_cost_usd.toFixed(4)}\n\n`;
+                  }
+                  if (lastEntry.usage) {
+                    const usage = lastEntry.usage;
+                    if (usage.input_tokens || usage.output_tokens) {
+                      markdown += `**Token Usage:**\n`;
+                      if (usage.input_tokens) markdown += `- Input: ${usage.input_tokens.toLocaleString()}\n`;
+                      if (usage.cache_creation_input_tokens) markdown += `- Cache Creation: ${usage.cache_creation_input_tokens.toLocaleString()}\n`;
+                      if (usage.cache_read_input_tokens) markdown += `- Cache Read: ${usage.cache_read_input_tokens.toLocaleString()}\n`;
+                      if (usage.output_tokens) markdown += `- Output: ${usage.output_tokens.toLocaleString()}\n`;
+                      markdown += '\n';
+                    }
+                  }
+                  if (lastEntry.permission_denials && lastEntry.permission_denials.length > 0) {
+                    markdown += `**Permission Denials:** ${lastEntry.permission_denials.length}\n\n`;
+                  }
+                }
+                markdown += '\n## 🤖 Reasoning\n\n';
+                // Second pass: process assistant messages in sequence
+                for (const entry of logEntries) {
+                  if (entry.type === 'assistant' && entry.message?.content) {
+                    for (const content of entry.message.content) {
+                      if (content.type === 'text' && content.text) {
+                        // Add reasoning text directly (no header)
+                        const text = content.text.trim();
+                        if (text && text.length > 0) {
+                          markdown += text + '\n\n';
+                        }
+                      } else if (content.type === 'tool_use') {
+                        // Process tool use with its result
+                        const toolResult = toolUsePairs.get(content.id);
+                        const toolMarkdown = formatToolUse(content, toolResult);
+                        if (toolMarkdown) {
+                          markdown += toolMarkdown;
+                        }
+                      }
+                    }
+                  }
+                }
+                return markdown;
+              } catch (error) {
+                return `## Agent Log Summary\n\nError parsing Claude log: ${error.message}\n`;
+              }
+            }
+            function formatToolUse(toolUse, toolResult) {
+              const toolName = toolUse.name;
+              const input = toolUse.input || {};
+              // Skip TodoWrite except the very last one (we'll handle this separately)
+              if (toolName === 'TodoWrite') {
+                return ''; // Skip for now, would need global context to find the last one
+              }
+              // Helper function to determine status icon
+              function getStatusIcon() {
+                if (toolResult) {
+                  return toolResult.is_error === true ? '❌' : '✅';
+                }
+                return '❓'; // Unknown by default
+              }
+              let markdown = '';
+              const statusIcon = getStatusIcon();
+              switch (toolName) {
+                case 'Bash':
+                  const command = input.command || '';
+                  const description = input.description || '';
+                  // Format the command to be single line
+                  const formattedCommand = formatBashCommand(command);
+                  if (description) {
+                    markdown += `${description}:\n\n`;
+                  }
+                  markdown += `${statusIcon} \`${formattedCommand}\`\n\n`;
+                  break;
+                case 'Read':
+                  const filePath = input.file_path || input.path || '';
+                  const relativePath = filePath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, ''); // Remove /home/runner/work/repo/repo/ prefix
+                  markdown += `${statusIcon} Read \`${relativePath}\`\n\n`;
+                  break;
+                case 'Write':
+                case 'Edit':
+                case 'MultiEdit':
+                  const writeFilePath = input.file_path || input.path || '';
+                  const writeRelativePath = writeFilePath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, '');
+                  markdown += `${statusIcon} Write \`${writeRelativePath}\`\n\n`;
+                  break;
+                case 'Grep':
+                case 'Glob':
+                  const query = input.query || input.pattern || '';
+                  markdown += `${statusIcon} Search for \`${truncateString(query, 80)}\`\n\n`;
+                  break;
+                case 'LS':
+                  const lsPath = input.path || '';
+                  const lsRelativePath = lsPath.replace(/^\/[^\/]*\/[^\/]*\/[^\/]*\/[^\/]*\//, '');
+                  markdown += `${statusIcon} LS: ${lsRelativePath || lsPath}\n\n`;
+                  break;
+                default:
+                  // Handle MCP calls and other tools
+                  if (toolName.startsWith('mcp__')) {
+                    const mcpName = formatMcpName(toolName);
+                    const params = formatMcpParameters(input);
+                    markdown += `${statusIcon} ${mcpName}(${params})\n\n`;
+                  } else {
+                    // Generic tool formatting - show the tool name and main parameters
+                    const keys = Object.keys(input);
+                    if (keys.length > 0) {
+                      // Try to find the most important parameter
+                      const mainParam = keys.find(k => ['query', 'command', 'path', 'file_path', 'content'].includes(k)) || keys[0];
+                      const value = String(input[mainParam] || '');
+                      if (value) {
+                        markdown += `${statusIcon} ${toolName}: ${truncateString(value, 100)}\n\n`;
+                      } else {
+                        markdown += `${statusIcon} ${toolName}\n\n`;
+                      }
+                    } else {
+                      markdown += `${statusIcon} ${toolName}\n\n`;
+                    }
+                  }
+              }
+              return markdown;
+            }
+            function formatMcpName(toolName) {
+              // Convert mcp__github__search_issues to github::search_issues
+              if (toolName.startsWith('mcp__')) {
+                const parts = toolName.split('__');
+                if (parts.length >= 3) {
+                  const provider = parts[1]; // github, etc.
+                  const method = parts.slice(2).join('_'); // search_issues, etc.
+                  return `${provider}::${method}`;
+                }
+              }
+              return toolName;
+            }
+            function formatMcpParameters(input) {
+              const keys = Object.keys(input);
+              if (keys.length === 0) return '';
+              const paramStrs = [];
+              for (const key of keys.slice(0, 4)) { // Show up to 4 parameters
+                const value = String(input[key] || '');
+                paramStrs.push(`${key}: ${truncateString(value, 40)}`);
+              }
+              if (keys.length > 4) {
+                paramStrs.push('...');
+              }
+              return paramStrs.join(', ');
+            }
+            function formatBashCommand(command) {
+              if (!command) return '';
+              // Convert multi-line commands to single line by replacing newlines with spaces
+              // and collapsing multiple spaces
+              let formatted = command
+                .replace(/\n/g, ' ')           // Replace newlines with spaces
+                .replace(/\r/g, ' ')           // Replace carriage returns with spaces
+                .replace(/\t/g, ' ')           // Replace tabs with spaces
+                .replace(/\s+/g, ' ')          // Collapse multiple spaces into one
+                .trim();                       // Remove leading/trailing whitespace
+              // Escape backticks to prevent markdown issues
+              formatted = formatted.replace(/`/g, '\\`');
+              // Truncate if too long (keep reasonable length for summary)
+              const maxLength = 80;
+              if (formatted.length > maxLength) {
+                formatted = formatted.substring(0, maxLength) + '...';
+              }
+              return formatted;
+            }
+            function truncateString(str, maxLength) {
+              if (!str) return '';
+              if (str.length <= maxLength) return str;
+              return str.substring(0, maxLength) + '...';
+            }
+            // Export for testing
+            if (typeof module !== 'undefined' && module.exports) {
+              module.exports = { parseClaudeLog, formatToolUse, formatBashCommand, truncateString };
+            }
+            main();
       - name: Upload agent logs
         if: always()
         uses: actions/upload-artifact@v4

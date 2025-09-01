@@ -39,7 +39,20 @@ tools:
       WebSearch:
       # Configure bash build commands here, or in .github/workflows/agentics/daily-perf-improver.config.md
       #Bash: [":*"]
-      Bash: ["gh pr create:*", "git commit:*", "git push:*", "git checkout:*", "git branch:*", "git add:*", "gh auth status", "gh repo view", "gh issue comment:*"]
+      Bash:
+      - "gh pr create:*"
+      - "git commit:*"
+      - "git push:*"
+      - "git checkout:*"
+      - "git branch:*"
+      - "git add:*"
+      - "gh auth status"
+      - "gh repo view"
+      - "gh issue comment:*"
+      - "gh issue list:*"
+      - "gh pr list:*"
+      KillBash:
+      BashOutput:
 
 steps:
   - name: Checkout repository
@@ -69,7 +82,7 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
 1. Performance research (if not done before).
 
-   1a. Check if an open issue with title "${{ github.workflow }}: Research and Plan" exists. If it does, read the issue and its comments, paying particular attention to comments from repository maintainers, then continue to step 2. If not, follow the steps below to create it:
+   1a. Check if an open issue with title "${{ github.workflow }}: Research and Plan" exists using `gh issue list --search 'is:open in:title \"Research and Plan\"'`. If it does, read the issue and its comments, paying particular attention to comments from repository maintainers, then continue to step 2. If the issue doesn't exist, follow the steps below to create it:
 
    1b. Do some deep research into performance matters in this repo.
      - How is performance testing is done in the repo?
@@ -127,7 +140,7 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
    4a. Create a new branch.
    
-   4b. Make the changes to work towards the performance improvement goal you selected. This may involve:
+   4b. Work towards the performance improvement goal you selected. This may involve:
      - Refactoring code
      - Optimizing algorithms
      - Changing data structures
@@ -139,18 +152,13 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
      - Reducing network calls
      - Improving concurrency
      - Using profiling tools to identify bottlenecks
-     - Improving engineering practices
-     - Other techniques to improve performance 
+     - Other techniques to improve performance or performance engineering practices
 
-   4c. Ensure the code still works as expected and that any existing relevant tests pass. 
+     If you do benchmarking then make sure you plan ahead about how to take before/after benchmarking performance figures. You may need to write the benchmarks first, then run them, then implement your changes. Or you might implement your changes, then write benchmarks, then stash or disable the changes and take "before" measurements, then apply the changes to take "after" measurements, or other techniques to get before/after measurements. It's just great if you can provide benchmarking, profiling or other evidence that the thing you're optimizing is important to a significant realistic workload. Run individual benchmarks and comparing results. Benchmarking should be done in a way that is reliable, reproducible and quick, preferably by running iteration running a small subset of targeted relevant benchmarks at a time. Because you're running in a virtualised environment wall-clock-time measurements may not be 100% accurate, but it is probably good enough to see if you're making significant improvements or not. Even better if you can use cycle-accurate timers or similar.
 
-   4d. After making the changes, if appropriate measure their impact on performance.
-   
-     - Get actual performance numbers
-     - If you can't successfully measure the performance impact, then continue but make a note of what you tried.
-     - Run individual benchmarks and comparing results.
-     - Benchmarking should be done in a way that is reliable and reproducible, though beware that because you're running in a virtualised environment wall-clock-time measurements may not be 100% accurate.
-     - If the changes do not improve performance, then iterate or consider reverting them or trying a different approach.
+   4c. Ensure the code still works as expected and that any existing relevant tests pass. Add new tests if appropriate and make sure they pass too.
+
+   4d. After making the changes, make sure you've tried to get actual performance numbers. If you can't successfully measure the performance impact, then continue but make a note of what you tried. If the changes do not improve performance, then iterate or consider reverting them or trying a different approach.
 
    4e. Apply any automatic code formatting used in the repo
    
@@ -181,6 +189,8 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
    - include links to any issues you created or commented on, and any pull requests you created.
    - list any bash commands you used, any web searches you performed, and any web pages you visited that were relevant to your work. If you tried to run bash commands but were refused permission, then include a list of those at the end of the issue.
 
+   Be very honest about whether you took accurate before/after performance measurements or not, and if you did, what they were. If you didn't, explain why not. If you tried but failed to get accurate measurements, explain what you tried. Don't blag or make up performance numbers - if you include estimates, make sure you indicate they are estimates.
+
    5d. After creation, check the pull request to ensure it is correct, includes all expected files, and doesn't include any unwanted files or changes. Make any necessary corrections by pushing further commits to the branch.
 
    5e. Add a very brief comment to the issue from step 1a if it exists, saying you have worked on the particular performance goal and linking to the pull request you created.
@@ -200,8 +210,6 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 @include agentics/shared/tool-refused.md
 
 @include agentics/shared/include-link.md
-
-@include agentics/shared/job-summary.md
 
 @include agentics/shared/xpia.md
 

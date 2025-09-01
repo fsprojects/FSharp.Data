@@ -237,7 +237,11 @@ let internal asyncRead (uriResolver: UriResolver) formatName encodingStr (uri: U
         },
         None
     else
-        let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
+        let path =
+            if uri.IsAbsoluteUri && uri.Scheme = "file" then
+                uri.LocalPath
+            else
+                uri.OriginalString
 
         async {
             let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)

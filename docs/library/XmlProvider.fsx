@@ -151,11 +151,14 @@ Let's consider an example where this can be useful:
 *)
 
 type AmbiguousEntity =
-    XmlProvider<Sample="""
+    XmlProvider<
+        Sample="""
         <Entity Code="000" Length="0"/>
         <Entity Code="123" Length="42"/>
         <Entity Code="4E5" Length="1.83"/>
-        """, SampleIsList=true>
+        """,
+        SampleIsList=true
+     >
 
 let code = (AmbiguousEntity.GetSamples()[1]).Code
 let length = (AmbiguousEntity.GetSamples()[1]).Length
@@ -173,11 +176,15 @@ Now let's enable inline schemas:
 open FSharp.Data.Runtime.StructuralInference
 
 type AmbiguousEntity2 =
-    XmlProvider<Sample="""
+    XmlProvider<
+        Sample="""
         <Entity Code="typeof{string}" Length="typeof{float{metre}}"/>
         <Entity Code="123" Length="42"/>
         <Entity Code="4E5" Length="1.83"/>
-        """, SampleIsList=true, InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides>
+        """,
+        SampleIsList=true,
+        InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides
+     >
 
 let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
 let length2 = (AmbiguousEntity2.GetSamples()[1]).Length
@@ -502,7 +509,8 @@ like in the following example:
 *)
 
 type Person =
-    XmlProvider<Schema="""
+    XmlProvider<
+        Schema="""
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:element name="person">
@@ -513,7 +521,8 @@ type Person =
         </xs:sequence>
       </xs:complexType>
     </xs:element>
-  </xs:schema>""">
+  </xs:schema>"""
+     >
 
 let turing =
     Person.Parse
@@ -550,7 +559,8 @@ In case of multiple root elements:
 *)
 
 type TwoRoots =
-    XmlProvider<Schema="""
+    XmlProvider<
+        Schema="""
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:element name="root1">
@@ -566,7 +576,8 @@ type TwoRoots =
       </xs:complexType>
     </xs:element>
   </xs:schema>
-""">
+"""
+     >
 
 (**
 the provided type has an optional property for each alternative:
@@ -597,7 +608,8 @@ of `bar` elements followed by a single `baz` element.
 *)
 
 type FooSequence =
-    XmlProvider<Schema="""
+    XmlProvider<
+        Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
@@ -608,7 +620,8 @@ type FooSequence =
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-    </xs:schema>""">
+    </xs:schema>"""
+     >
 
 (**
 here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar` and `baz` elements, where the former is an array in order to hold multiple elements:
@@ -631,7 +644,8 @@ printfn "%d" fooSequence.Baz.Year // 1957
 Instead of a sequence we may have a `choice`:
 *)
 type FooChoice =
-    XmlProvider<Schema="""
+    XmlProvider<
+        Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="foo">
@@ -642,7 +656,8 @@ type FooChoice =
             </xs:choice>
           </xs:complexType>
         </xs:element>
-    </xs:schema>""">
+    </xs:schema>"""
+     >
 (**
 although a choice is akin to a union type in F#, the provided type still has
 properties for `bar` and `baz` directly available on the `foo` object; in fact
@@ -680,7 +695,8 @@ is a terse summary mixing substitution groups with abstract recursive definition
 *)
 
 type Prop =
-    XmlProvider<Schema="""
+    XmlProvider<
+        Schema="""
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
       elementFormDefault="qualified" attributeFormDefault="unqualified">
         <xs:element name="Formula" abstract="true"/>
@@ -692,7 +708,8 @@ type Prop =
               </xs:sequence>
           </xs:complexType>
         </xs:element>
-    </xs:schema>""">
+    </xs:schema>"""
+     >
 
 let formula =
     Prop.Parse
