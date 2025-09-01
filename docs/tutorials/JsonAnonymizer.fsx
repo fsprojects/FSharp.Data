@@ -75,7 +75,7 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
     let isType testType typ =
         match typ with
-        | Runtime.StructuralTypes.InferedType.Primitive (typ, _, _, _) -> typ = testType
+        | Runtime.StructuralTypes.InferedType.Primitive(typ, _, _, _) -> typ = testType
         | _ -> false
 
     let rec anonymize json =
@@ -92,8 +92,10 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
             (if typ |> isType typeof<Guid> then
                  Guid.NewGuid().ToString()
-             elif typ |> isType typeof<Runtime.StructuralTypes.Bit0>
-                  || typ |> isType typeof<Runtime.StructuralTypes.Bit1> then
+             elif
+                 typ |> isType typeof<Runtime.StructuralTypes.Bit0>
+                 || typ |> isType typeof<Runtime.StructuralTypes.Bit1>
+             then
                  s
              elif typ |> isType typeof<DateTime> then
                  s
@@ -117,19 +119,14 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
                     (d.ToString())
                     None
 
-            if typ |> isType typeof<Runtime.StructuralTypes.Bit0>
-               || typ |> isType typeof<Runtime.StructuralTypes.Bit1> then
+            if
+                typ |> isType typeof<Runtime.StructuralTypes.Bit0>
+                || typ |> isType typeof<Runtime.StructuralTypes.Bit1>
+            then
                 json
             else
-                d.ToString()
-                |> randomize
-                |> Decimal.Parse
-                |> JsonValue.Number
-        | JsonValue.Float f ->
-            f.ToString()
-            |> randomize
-            |> Double.Parse
-            |> JsonValue.Float
+                d.ToString() |> randomize |> Decimal.Parse |> JsonValue.Number
+        | JsonValue.Float f -> f.ToString() |> randomize |> Double.Parse |> JsonValue.Float
         | JsonValue.Boolean _
         | JsonValue.Null -> json
         | JsonValue.Record props ->
@@ -147,11 +144,7 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
 
     member _.Anonymize json = anonymize json
 
-let json =
-    JsonValue.Load(
-        __SOURCE_DIRECTORY__
-        + "../../data/TwitterStream.json"
-    )
+let json = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/TwitterStream.json")
 
 printfn "%O" json
 
