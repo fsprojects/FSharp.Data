@@ -41,6 +41,7 @@
     <Compile Include="StructuralTypes.fs" />
     <Compile Include="BaseTypesHtmlDocument.fs" />
     <Compile Include="XmlExtensions.fs" />
+    <Compile Include="XmlInference.fs" />
     <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -55,6 +56,7 @@
     <ProjectReference Include="..\..\src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="6.0.1" />
