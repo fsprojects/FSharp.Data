@@ -41,6 +41,7 @@
     <Compile Include="StructuralTypes.fs" />
     <Compile Include="BaseTypesHtmlDocument.fs" />
     <Compile Include="XmlExtensions.fs" />
+    <Compile Include="InferenceEngines.fs" />
     <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
