@@ -19,7 +19,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Http.fs" />
+    <Compile Include="HttpContentTypes.fs" />
     <Compile Include="HttpRequestHeaders.fs" />
+    <Compile Include="HttpEncodings.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="Pluralizer.fs" />
     <Compile Include="IOTests.fs" />
@@ -29,6 +31,7 @@
     <Compile Include="JsonValue.fs" />
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
+    <Compile Include="JsonDocument.fs" />
     <Compile Include="JsonRuntime.fs" />
     <Compile Include="JsonSchema.fs" />
     <Compile Include="CsvReader.fs" />
@@ -42,6 +45,8 @@
     <Compile Include="BaseTypesHtmlDocument.fs" />
     <Compile Include="XmlExtensions.fs" />
     <Compile Include="XmlInference.fs" />
+    <Compile Include="XmlRuntime.fs" />
+    <Compile Include="XmlSchema.fs" />
     <Compile Include="WorldBankRuntime.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

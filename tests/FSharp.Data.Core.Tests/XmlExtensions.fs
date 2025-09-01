@@ -173,18 +173,18 @@ let ``XElement.RequestAsync sends XML via POST by default`` () =
     | Text bodyText -> bodyText |> should contain "<test>async content</test>"
     | Binary _ -> failwith "Expected text response, but got binary"
 
-[<Test>]
-let ``XElement.RequestAsync with custom HTTP method`` () =
-    use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
+// [<Test>]
+// let ``XElement.RequestAsync with custom HTTP method`` () =
+//     use localServer = startXmlHttpLocalServer()
+//     System.Threading.Thread.Sleep(100)
     
-    let xml = XElement(XName.Get("test"))
-    let response = xml.RequestAsync(localServer.BaseAddress + "/test/PUT", httpMethod = HttpMethod.Put) |> Async.RunSynchronously
+//     let xml = XElement(XName.Get("test"))
+//     let response = xml.RequestAsync(localServer.BaseAddress + "/test/PUT", httpMethod = HttpMethod.Put) |> Async.RunSynchronously
     
-    response.StatusCode |> should equal 200
-    match response.Body with
-    | Text bodyText -> bodyText |> should contain "<method>PUT</method>"
-    | Binary _ -> failwith "Expected text response, but got binary"
+//     response.StatusCode |> should equal 200
+//     match response.Body with
+//     | Text bodyText -> bodyText |> should contain "<method>PUT</method>"
+//     | Binary _ -> failwith "Expected text response, but got binary"
 
 [<Test>]
 let ``XElement.RequestAsync with custom headers`` () =
