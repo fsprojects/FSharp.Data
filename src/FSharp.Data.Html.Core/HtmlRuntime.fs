@@ -7,7 +7,9 @@ open FSharp.Data
 open FSharp.Data.HtmlExtensions
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
-
+#if !HIDE_REPRESENTATION
+open FSharp.Data.HtmlActivePatterns
+#endif
 #nowarn "10001"
 
 // --------------------------------------------------------------------------------------
