@@ -58,11 +58,13 @@ type XmlElement =
     static member Create(reader: TextReader) =
         use reader = reader
         // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
-        let xmlReaderSettings = 
+        let xmlReaderSettings =
             new XmlReaderSettings(
                 DtdProcessing = DtdProcessing.Prohibit,
                 XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L) // 1MB limit
+                MaxCharactersFromEntities = 1024L * 1024L
+            ) // 1MB limit
+
         use xmlReader = XmlReader.Create(reader, xmlReaderSettings)
         let element = XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root
         { XElement = element }
@@ -78,21 +80,24 @@ type XmlElement =
         let text = reader.ReadToEnd()
 
         // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
-        let xmlReaderSettings = 
+        let xmlReaderSettings =
             new XmlReaderSettings(
                 DtdProcessing = DtdProcessing.Prohibit,
                 XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L) // 1MB limit
+                MaxCharactersFromEntities = 1024L * 1024L
+            ) // 1MB limit
 
         try
             use stringReader = new StringReader(text)
             use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
+
             XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
             use stringReader = new StringReader("<root>" + text + "</root>")
             use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
+
             XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
