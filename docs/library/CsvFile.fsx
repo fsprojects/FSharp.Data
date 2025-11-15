@@ -101,8 +101,8 @@ for row in msft.Rows |> Seq.truncate 10 do
 
 ## Transforming CSV files
 
-In addition to reading, ``cref:T:FSharp.Data.Runtime.CsvFile`1`` also has support for transforming CSV files. The operations
-available are ``cref:M:FSharp.Data.Runtime.CsvFile`1.Filter``, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. After transforming
+In addition to reading, ``cref:T:FSharp.Data.CsvFile`` also has support for transforming CSV files. The operations
+available are ``cref:M:FSharp.Data.CsvFile.Filter``, `cref:M:FSharp.Data.CsvFile.Take`, `cref:M:FSharp.Data.CsvFile.TakeWhile`, `cref:M:FSharp.Data.CsvFile.Skip`, `cref:M:FSharp.Data.CsvFile.SkipWhile`, and `cref:M:FSharp.Data.CsvFile.Truncate`. After transforming
 you can save the results by using one of the overloads of the `Save` method. You can choose different
 separator and quote characters when saving.
 *)
