@@ -1,7 +1,17 @@
 # Release Notes
 
-## 6.6.0 - Unreleased
+## 6.7.0 - Unreleased
 
+## 6.6.0 - Feb 21 2026
+
+- Fix potential XXE vulnerability in XML parsing by @Thorium in #1596
+- Fix XML provider to use XDocument reader overload instead of ReadToEnd by @Thorium in #1527
+- Optimize HTML parser CharList using StringBuilder (~43% HTML parsing improvement) in #1550
+- Optimize JSON string serialization to use bulk writes in #1562
+- Optimize string allocation in RemoveAdorners for adorner-free strings in #1540
+- Add compile-time opt-in to disable HIDE_REPRESENTATION for HTML types by @smoothdeveloper in #1499
+- Fix links in documentation by @kant2002 in #1597
+- Expand test coverage across CSV, JSON, HTML, XML, and WorldBank modules
 - Convert build.fsx script into a full build project at build/build.fsproj, letting developers use the .NET 6 runtime assemblies to build the project
 
 ## 6.5.0 - Mar 11 2025
