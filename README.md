@@ -52,6 +52,10 @@ We pledge to be overt in our openness, welcoming all people to contribute, and p
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
 
+## Repo Assist
+
+This repository uses [Repo Assist](.github/workflows/repo-assist.md), an AI assistant that helps triage issues, guide contributors, make progress and propose fixes. It may not be active if workflow permissions have expired.
+
 ## Maintainers
 
 Current maintainers are [Don Syme](https://github.com/dsyme) and [Phillip Carter](https://github.com/cartermp)
