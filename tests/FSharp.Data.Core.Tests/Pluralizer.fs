@@ -203,6 +203,21 @@ let ``Roundtrip consistency for common words`` () =
             backToSingular |> should equal word
 
 [<Test>]
+let ``Purchases singularizes correctly - regression test for issue 1508`` () =
+    // Previously "purchases" was incorrectly singularized to "purchasis"
+    // due to the "sis"/"ses" suffix rule matching words ending in "ses"
+    toSingular "purchases" |> should equal "purchase"
+    toPlural "purchase" |> should equal "purchases"
+    // Other "-ase" words should also work correctly
+    toSingular "cases" |> should equal "case"
+    toSingular "phases" |> should equal "phase"
+    toSingular "phrases" |> should equal "phrase"
+    toSingular "vases" |> should equal "vase"
+    // "oases" should still correctly singularize to "oasis" (via special word list)
+    toSingular "oases" |> should equal "oasis"
+    toPlural "oasis" |> should equal "oases"
+
+[<Test>]
 let ``Performance with repeated calls`` () =
     // Test that repeated calls with same input work correctly (testing lazy initialization)
     let word = "house"

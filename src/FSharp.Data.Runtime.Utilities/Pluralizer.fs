@@ -50,6 +50,7 @@ let private tables =
 
                "cis", "ces"
                "us", "uses"
+               "ase", "ases"
                "sis", "ses"
                "xis", "xes"
 
@@ -148,6 +149,7 @@ let private tables =
                "murex", "murecis", ""
                "mythos", "mythos", "mythoi"
                "news", "", ""
+               "oasis", "oases", ""
                "octopus", "octopuses", "octopodes"
                "ovum", "ova", ""
                "ox", "ox", "oxen"
