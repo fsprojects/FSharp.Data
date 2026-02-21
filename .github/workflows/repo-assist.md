@@ -226,10 +226,22 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
    a. Search for an open issue with the exact title `[Repo Assist] Monthly Activity` and the label `repo-assist`.
    b. If one exists for the current month, update it using the MCP safe output tool `update_issue`. If it exists but is for a previous month, close it (using the MCP safe output tool `update_issue` to set state to closed) and create a new one for the current month using the MCP safe output tool `create_issue`.
    c. If none exists, create a new issue using the MCP safe output tool `create_issue`.
-2. **Issue body format**: Update the issue body (using the MCP safe output tool `update_issue`) with a succinct activity log organized by date, similar to a GitHub user's activity feed. Use the following structure:
+2. **Issue body format**: Update the issue body (using the MCP safe output tool `update_issue`) with a succinct activity log organized by date, plus a unified section of suggested actions for the maintainer. Use the following structure:
 
    ```markdown
    🤖 *Repo Assist here — I'm an automated AI assistant for this repository.*
+
+   ## Suggested Actions for Maintainer
+
+   Based on current repository state, consider:
+
+   - ✅ **Close issue** #<number>: <reason> — [View](<link>)
+   - ❌ **Close PR** #<number>: <reason> — [View](<link>)
+   - 🔀 **Merge PR** #<number>: <reason> — [Review](<link>)
+   - 🚀 **Prepare release**: <version> — unreleased changes are ready
+   - 🎯 **Define goal**: <suggestion> — [Related issue](<link>)
+
+   *(If no actions needed, state "No suggested actions at this time.")*
 
    ## Activity for <Month Year>
 
@@ -245,7 +257,9 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
    - 🔗 Linked #<child> as sub-issue of #<parent>
    ```
 
-3. **Data source**: Use your repo memory to reconstruct what you did in the current run and in previous runs during the same month. Each run should append its activity under today's date heading.
+3. **Data source**:
+   - **Activity log**: Use your repo memory to reconstruct what you did in the current run and in previous runs during the same month. Each run should append its activity under today's date heading.
+   - **Suggested actions**: Review open PRs (especially draft PRs you created), stale issues, and unreleased changes. Suggest concrete actions with direct links. Only suggest actions you have high confidence about. Include links to the relevant issue/PR.
 4. **Keep it concise**: One line per action. Use emoji prefixes for quick scanning. Do not include lengthy descriptions.
 5. **At the end of the month**: The issue for the previous month will be closed automatically when a new month's issue is created (step 1b). This keeps the issue tracker clean.
 6. If no actions were taken in the current run (e.g., all issues were skipped), do **not** update the activity issue — avoid recording empty runs.
