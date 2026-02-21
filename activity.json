@@ -1,6 +1,6 @@
 {
   "last_run": "2026-02-21",
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506],
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -12,9 +12,17 @@
     {
       "branch": "fix/pluralizer-ase-suffix-1508",
       "description": "Fix pluralizer: 'purchases' singularized as 'purchasis' bug (#1508) - PR #1600",
-      "status": "open_pr_duplicate",
+      "status": "closed_not_merged",
       "pr_number": 1600,
-      "duplicate_of": 1524,
+      "reason": "Duplicate of PR #1524 which was merged by dsyme on 2026-02-21",
+      "date": "2026-02-21"
+    },
+    {
+      "branch": "repo-assist/fix-docs-broken-video-1454",
+      "description": "Remove broken Channel9 video iframe from docs/index.md (closes #1454)",
+      "status": "open_pr",
+      "pr_number": null,
+      "note": "PR created run 3, number pending workflow completion",
       "date": "2026-02-21"
     }
   ],
@@ -28,13 +36,15 @@
   "notes": [
     "Build environment has network proxy blocking external HTTP (WorldBank API, etc.) - tests requiring network will fail",
     "6.6.0 release prep was merged by dsyme on 2026-02-21",
-    "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure",
-    "Issue #1509 (HtmlNode.ToString whitespace bug) - fix was in PR #1510 merged July 2024, suggested closure",
-    "Issue #1508 (JsonProvider pluralizer bug: 'purchases' -> 'purchasis') - PR #1600 created but duplicates PR #1524 by @bisen2 (same fix, already approved by dsyme pending version bump to 7.0.1)",
-    "PR #1524 (pluralizer fix by @bisen2): approved March 2025 by dsyme, waiting for version bump to 7.0.1 - nudged bisen2",
+    "PR #1524 (pluralizer fix by @bisen2): MERGED by dsyme on 2026-02-21. Closes #1508.",
+    "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
+    "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - fix was in PR #1510 merged July 2024, suggested closure - not yet closed",
     "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
+    "Issue #1454 (broken Channel9 video): Repo Assist created docs fix PR (branch repo-assist/fix-docs-broken-video-1454) removing broken iframe",
+    "HTML parser whitespace bug (#1330, #1509): Spaces between entity refs / inline elements are dropped. In HtmlParser.fs Emit() method, `if normalizedContent = \" \" then Text \"\"` discards standalone space text nodes. Fix: change to `Text \" \"`. Investigate impact before fixing.",
     "dotnet tool restore needed before dotnet paket restore",
-    "PR #1600 is a duplicate of #1524 - should be closed in favor of #1524 once bisen2 adds version bump"
+    "dsyme merged an agentic workflow 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21"
   ]
 }
