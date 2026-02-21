@@ -1,6 +1,0 @@
----
-tools:
-  claude:
-    allowed:
-      Bash: ["*"]
----

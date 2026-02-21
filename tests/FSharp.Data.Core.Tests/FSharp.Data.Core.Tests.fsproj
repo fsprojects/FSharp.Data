@@ -44,8 +44,10 @@
     <Compile Include="HtmlTableCell.fs" />
     <Compile Include="StructuralTypes.fs" />
     <Compile Include="BaseTypesHtmlDocument.fs" />
+    <Compile Include="BaseTypesHtmlGenerics.fs" />
     <Compile Include="HtmlRuntimeTypes.fs" />
     <Compile Include="XmlExtensions.fs" />
+    <Compile Include="XmlInference.fs" />
     <Compile Include="XmlRuntime.fs" />
     <Compile Include="XmlSchema.fs" />
     <Compile Include="WorldBankRuntime.fs" />
@@ -62,6 +64,7 @@
     <ProjectReference Include="..\..\src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="6.0.1" />
