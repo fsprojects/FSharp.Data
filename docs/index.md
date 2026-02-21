@@ -67,10 +67,6 @@ use multiple features together:
  * [Anonymizing JSON](tutorials/JsonAnonymizer.html) - implements a function to anonymize a `JsonValue` from FSharp.Data.
    The tutorial demonstrates pattern matching on `JsonValue`.
 
-Below is a brief practical demonstration of using FSharp.Data:
-
-<div style="padding-left:20px"><iframe src="https://channel9.msdn.com/posts/Understanding-the-World-with-F/player" width="640" height="360" allowFullScreen frameBorder="0"></iframe></div>
-
 ## Reference Documentation
 
 There's also [reference documentation](reference) available. Please note that everything under 
