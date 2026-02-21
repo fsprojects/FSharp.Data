@@ -20,9 +20,9 @@
     {
       "branch": "repo-assist/fix-docs-broken-video-1454",
       "description": "Remove broken Channel9 video iframe from docs/index.md (closes #1454)",
-      "status": "open_pr",
+      "status": "merged",
       "pr_number": 1603,
-      "note": "Draft PR open, awaiting maintainer review",
+      "note": "Merged by dsyme on 2026-02-21",
       "date": "2026-02-21"
     }
   ],
@@ -43,17 +43,19 @@
     "6.6.0 release prep was merged by dsyme on 2026-02-21",
     "PR #1524 (pluralizer fix by @bisen2): MERGED by dsyme on 2026-02-21. Closes #1508.",
     "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
-    "PR #1603 (Repo Assist docs fix #1454): OPEN draft - remove broken Channel9 video iframe",
+    "PR #1603 (Repo Assist docs fix #1454): MERGED by dsyme on 2026-02-21.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
-    "Issue #1509 (HtmlNode.ToString whitespace bug) - fix was in PR #1510 merged July 2024, suggested closure - not yet closed",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - maintainer needs to verify if PR #1510 fully fixed it",
     "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
-    "Issue #1454 (broken Channel9 video): Repo Assist created docs fix PR #1603 removing broken iframe",
+    "Issue #1454 (broken Channel9 video): CLOSED by merge of PR #1603 on 2026-02-21",
     "Issue #1330 (HTML whitespace bug): Root cause identified - in HtmlParser.fs Emit(), normalizedContent=' ' becomes Text '' which is dropped. Fix requires context-aware inline/block detection to avoid breaking tests. Simple one-liner fix breaks existing tests.",
     "Issue #1520 (relative paths): Author self-resolved - EmbeddedResource parameter is the solution. Suggested closure.",
     "Issue #1489 (empty space separator): Contributor nhirschey explained this is a fixed-width format file, not space-separated CSV. Good answer already given.",
-    "Issue #1310 (EmbeddedResource XML): Bug - last comment by sproott points to GetSchema runtime code not handling embedded resource case (lines 717-732 in Helpers.fs). Complex fix needed.",
+    "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs line 599 skips GetSample/GetSchema generation when EmbeddedResource is specified. Users get runtime failures when file is removed. Complex fix needed - need to understand correct expected runtime behavior.",
+    "Issue #1528 (Assembly loading): Community workaround exists - dotnet clean + dotnet nuget locals all --clear + dotnet restore. Not commented on.",
     "dotnet tool restore needed before dotnet paket restore",
-    "dsyme merged an agentic workflow 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21"
+    "dsyme merged agentic workflows 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21",
+    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603 all on 2026-02-21"
   ]
 }
