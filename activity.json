@@ -1,22 +1,25 @@
 {
   "last_run": "2026-02-21",
-  "commented_issues": [1532, 1531],
+  "commented_issues": [1532, 1531, 677, 1509],
   "attempted_prs": [
     {
       "branch": "release/v6.6.0",
       "description": "Prepare release 6.6.0 - updated RELEASE_NOTES.md",
-      "status": "created",
+      "status": "merged",
       "date": "2026-02-21"
     }
   ],
   "monthly_activity_issue": {
     "month": "2026-02",
+    "issue_number": 1599,
     "created": "2026-02-21",
     "title": "[Auto Maintainer Assistant] Monthly Activity 2026-02"
   },
   "dependency_check_last_done": null,
   "notes": [
     "Build environment has network proxy blocking external HTTP (WorldBank API, etc.) - tests requiring network will fail",
-    "6.6.0 release prep PR created - needs manual test run in connected env before merging"
+    "6.6.0 release prep was merged by dsyme on 2026-02-21",
+    "Issue #677 (JSON schema feature request, open since 2014) - noted 6.5.0 shipped the feature, suggested closure",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - noted fix was in PR #1510 merged July 2024, suggested closure"
   ]
 }
