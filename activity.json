@@ -1,6 +1,6 @@
 {
   "last_run": "2026-02-21",
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454],
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -21,8 +21,8 @@
       "branch": "repo-assist/fix-docs-broken-video-1454",
       "description": "Remove broken Channel9 video iframe from docs/index.md (closes #1454)",
       "status": "open_pr",
-      "pr_number": null,
-      "note": "PR created run 3, number pending workflow completion",
+      "pr_number": 1603,
+      "note": "Draft PR open, awaiting maintainer review",
       "date": "2026-02-21"
     }
   ],
@@ -33,17 +33,26 @@
     "title": "[Repo Assist] Monthly Activity 2026-02"
   },
   "dependency_check_last_done": null,
+  "labels_applied": [
+    {"issue": 1454, "label": "bug"},
+    {"issue": 1330, "label": "bug"},
+    {"issue": 1310, "label": "bug"}
+  ],
   "notes": [
     "Build environment has network proxy blocking external HTTP (WorldBank API, etc.) - tests requiring network will fail",
     "6.6.0 release prep was merged by dsyme on 2026-02-21",
     "PR #1524 (pluralizer fix by @bisen2): MERGED by dsyme on 2026-02-21. Closes #1508.",
     "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
+    "PR #1603 (Repo Assist docs fix #1454): OPEN draft - remove broken Channel9 video iframe",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
     "Issue #1509 (HtmlNode.ToString whitespace bug) - fix was in PR #1510 merged July 2024, suggested closure - not yet closed",
     "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
-    "Issue #1454 (broken Channel9 video): Repo Assist created docs fix PR (branch repo-assist/fix-docs-broken-video-1454) removing broken iframe",
-    "HTML parser whitespace bug (#1330, #1509): Spaces between entity refs / inline elements are dropped. In HtmlParser.fs Emit() method, `if normalizedContent = \" \" then Text \"\"` discards standalone space text nodes. Fix: change to `Text \" \"`. Investigate impact before fixing.",
+    "Issue #1454 (broken Channel9 video): Repo Assist created docs fix PR #1603 removing broken iframe",
+    "Issue #1330 (HTML whitespace bug): Root cause identified - in HtmlParser.fs Emit(), normalizedContent=' ' becomes Text '' which is dropped. Fix requires context-aware inline/block detection to avoid breaking tests. Simple one-liner fix breaks existing tests.",
+    "Issue #1520 (relative paths): Author self-resolved - EmbeddedResource parameter is the solution. Suggested closure.",
+    "Issue #1489 (empty space separator): Contributor nhirschey explained this is a fixed-width format file, not space-separated CSV. Good answer already given.",
+    "Issue #1310 (EmbeddedResource XML): Bug - last comment by sproott points to GetSchema runtime code not handling embedded resource case (lines 717-732 in Helpers.fs). Complex fix needed.",
     "dotnet tool restore needed before dotnet paket restore",
     "dsyme merged an agentic workflow 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21"
   ]
