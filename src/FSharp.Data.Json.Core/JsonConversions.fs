@@ -47,6 +47,9 @@ type JsonConversions =
     static member AsDecimal cultureInfo =
         function
         | JsonValue.Number n -> Some n
+        | JsonValue.Float f when not (Double.IsInfinity f) && not (Double.IsNaN f) ->
+            try Some(decimal f)
+            with :? OverflowException -> None
         | JsonValue.String s -> TextConversions.AsDecimal cultureInfo s
         | _ -> None
 
