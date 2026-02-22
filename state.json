@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T20:33:49Z",
-  "workflow_run_id": "22284794050",
-  "tasks_done_this_run": ["task2", "task1", "task5", "task11"],
+  "last_run": "2026-02-22T20:51:34Z",
+  "workflow_run_id": "22285070687",
+  "tasks_done_this_run": ["task1", "task7", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -57,7 +57,8 @@
     1223, 1259, 1356, 1230, 1391, 1349, 1321, 1490, 1461, 834, 1326,
     1170, 1240, 1213, 1305, 1294, 1362, 1418, 1405, 1453, 1489,
     1249, 1251, 1256, 1261, 1300, 1322, 1383, 1194, 1419, 1452, 1437,
-    1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241
+    1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241,
+    1336, 1325
   ],
   "commented_prs": [1613, 1614, 1619, 1621],
   "ideas_submitted": [],
@@ -73,7 +74,7 @@
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 (PR #1605 merged fixed it)",
     "issue_1330": "HTML whitespace-stripping bug - complex to fix, needs context-aware inline/block detection",
-    "issue_1310": "FIXED in PR #1619 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. Assembly.Load fix applied 2026-02-22T19:47. CI pending. Test failure was from old Array.find code, new Assembly.Load code not yet CI-tested.",
+    "issue_1310": "FIXED in PR #1619 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. Assembly.Load fix applied 2026-02-22T19:47. CI pending.",
     "issue_1439": "FIXED in PR #1625 branch repo-assist/fix-issue-1439-inferrows-multiline-csv-9645f782b479e0ac. Pass None as maxNumberOfRows so raw text is never truncated by line count.",
     "issue_1417": "IMPLEMENTED in PR #1621. StrictBooleans=true: 0/1->int, yes/no->string, true/false->bool. TypeProviderInstantiation.fs already updated. PR #1622 is redundant (Copilot SWE sub-PR).",
     "issue_1419": "FIXED in PR #1626. Added VisitingGroups HashSet to ParsingContext, cycle detected in parseParticle for GroupRef case. Test with recursive content model schema passes. Branch: repo-assist/fix-issue-1419-xsd-cycle-guard",
@@ -84,11 +85,13 @@
     "issue_1303": "Commented 2026-02-22: Enhancement request, not currently supported. Related to #1432. Workaround: use JsonValue.[] accessor.",
     "issue_1431": "Commented 2026-02-22 (run 2): CsvProvider row update workarounds explained. Row.With() copy method would need TP changes in CsvProvider.fs.",
     "issue_1366": "Commented 2026-02-22: PR #1365 (merged April 2021) fixed the web URI cache expiry bug. Suggested closing.",
-    "issue_1241": "Commented 2026-02-22 (run 3): JsonProvider lenient by design - missing fields return zero values. Suggested Option<T> or JsonValue alternatives.",
+    "issue_1241": "Commented 2026-02-22 (run 2): JsonProvider lenient by design - missing fields return zero values. Suggested Option<T> or JsonValue alternatives.",
+    "issue_1336": "Commented 2026-02-22 (run 3): Design-time resolution root cause for FS0039 Row error. __SOURCE_DIRECTORY__ workaround. Labelled: documentation, question.",
+    "issue_1325": "Commented 2026-02-22 (run 3): AppendQueryToUrl still internal. Provided UriBuilder workaround. Labelled: enhancement, good first issue.",
     "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 merged by dsyme (from separate Copilot workflow).",
     "pr_1618_merged": "PR #1618 (Microsoft.Build security update) merged by dsyme on main branch.",
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 created 2026-02-22 for 7.0.0.",
-    "pr_1619_status": "PR #1619 has Assembly.Load fix (commit f9687ff). CI pending for latest commit. Previous CI failures were from old Array.find code.",
+    "pr_1619_status": "PR #1619 has Assembly.Load fix (commit f9687ff). CI pending for latest commit.",
     "pr_1620_note": "PR #1620 merged by dsyme into PR #1619 branch on 2026-02-22T19:33. Added test for GetSchema with EmbeddedResource.",
     "pr_1621_review": "TypeProviderInstantiation.fs was already updated in PR #1621 (StrictBooleans added). Replied to dsyme review. Copilot sub-PR #1622 is redundant.",
     "pr_1622_note": "PR #1622 is a WIP sub-PR from Copilot SWE agent targeting PR #1621 branch. REDUNDANT - TypeProviderInstantiation.fs was already updated in PR #1621.",
@@ -96,6 +99,6 @@
     "pr_1626_note": "PR #1626 (XSD cycle guard) created 2026-02-22 (run 3). Adds VisitingGroups tracking to parseParticle.",
     "recently_closed_by_dsyme": "Issues closed by dsyme on 2026-02-22: #1532, #1528, #1509, #1506, #1501, #1249, #1261; on 2026-02-21: #677.",
     "issue_1624": "Workflow failure issue #1624 created by github-actions bot. Reports 'Code Push Failed: create_pull_request: Failed to apply patch' on branch repo-assist/deps-update-2026-02-22. This was a previous failed run - PR #1614 already exists so the failure was a duplicate attempt.",
-    "xsd_cycle_guard_fix": "Fix in PR #1626: added VisitingGroups HashSet<XmlQualifiedName> to ParsingContext, guard in parseParticle for GroupRef case. Test added in InferenceTests.fs with recursive group schema. All 50 InferenceTests pass."
+    "xsd_cycle_guard_fix": "Fix in PR #1626: added VisitingGroups HashSet<XmlQualifiedName> to ParsingContext, guard in parseParticle for GroupRef case. Test added in InferenceTests.fs with recursive group schema."
   }
 }
