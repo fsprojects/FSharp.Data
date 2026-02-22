@@ -71,8 +71,16 @@ type TextRuntime =
         |> Option.bind (TextConversions.AsDateTime(TextRuntime.GetCulture cultureStr))
 
     static member ConvertDateTimeOffset(cultureStr, text) =
+        let culture = TextRuntime.GetCulture cultureStr
+
         text
-        |> Option.bind (TextConversions.AsDateTimeOffset(TextRuntime.GetCulture cultureStr))
+        |> Option.bind (fun s ->
+            match TextConversions.AsDateTimeOffset culture s with
+            | Some dto -> Some dto
+            | None ->
+                // Fall back for xs:dateTime values without timezone (DateTimeKind.Unspecified).
+                // AsDateTime converts Unspecified to Local, so DateTimeOffset(dt) uses the local offset.
+                TextConversions.AsDateTime culture s |> Option.map DateTimeOffset)
 
     static member ConvertTimeSpan(cultureStr, text) =
         text
