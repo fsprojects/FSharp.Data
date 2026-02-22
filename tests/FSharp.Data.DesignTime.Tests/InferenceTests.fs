@@ -360,6 +360,20 @@ let ``Inference schema override by parameter``() =
   actual |> should equal expected
 
 [<Test>]
+let ``Column name with parentheses is parsed correctly in schema`` () =
+  // Regression test for https://github.com/fsprojects/FSharp.Data/issues/946
+  // A column name like "Na(  )me" must not be split at the first '(' when the
+  // schema type annotation "(int)" appears at the end.
+  let source = CsvFile.Parse("Na(  )me,other\n1,2")
+  let actual =
+    inferType source Int32.MaxValue [||] culture "Na(  )me (int),other (string)" false false
+    ||> CsvInference.getFields false
+    |> List.map (fun field -> field.Name, field.Value.RuntimeType)
+
+  let expected = [ "Na(  )me", typeof<int>; "other", typeof<string> ]
+  actual |> should equal expected
+
+[<Test>]
 let ``Doesn't infer 12-002 as a date``() =
   // a previous version inferred a IntOrStringOrDateTime
   let source = JsonValue.Parse """[ "12-002", "001", "2012-selfservice" ]"""
