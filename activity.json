@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-23",
-  "backlog_cursor": 18,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461],
+  "last_run": "2026-02-22",
+  "backlog_cursor": 40,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461, 1170, 1240],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -65,6 +65,7 @@
       "branch": "repo-assist/feature-dateonly-timeonly-1461",
       "description": "Add DateOnly/TimeOnly inference support: multi-target netstandard2.0;net8.0, automatic DateOnly inference, TimeOnly via explicit annotation (closes #1461)",
       "status": "open",
+      "pr_number": 1609,
       "date": "2026-02-23",
       "note": "Draft PR submitted 2026-02-23. All 248 provider tests pass, 2843 core tests pass."
     }
@@ -91,7 +92,9 @@
     {"issue": 1490, "label": "documentation"},
     {"issue": 1490, "label": "good first issue"},
     {"issue": 1326, "label": "bug"},
-    {"issue": 1452, "label": "enhancement"}
+    {"issue": 1452, "label": "enhancement"},
+    {"issue": 1170, "label": "enhancement"},
+    {"issue": 1240, "label": "bug"}
   ],
   "tasks_last_run": {
     "task1_triage": "2026-02-22",
@@ -104,13 +107,13 @@
     "task8_release_prep": "2026-02-21",
     "task9_welcome": null,
     "task10_forward": "2026-02-23",
-    "task11_monthly": "2026-02-23"
+    "task11_monthly": "2026-02-22"
   },
   "notes": [
     "Build environment has network proxy blocking external HTTP - tests requiring network will fail",
     "PR #1608 (Repo Assist JSON decimal fix #1230): MERGED by dsyme on 2026-02-22",
     "PR #1603-1608 all merged by dsyme on 2026-02-21/22",
-    "Issue #1461 (DateOnly/TimeOnly): Draft PR submitted 2026-02-23. Multi-targeted to netstandard2.0;net8.0. DateOnly auto-inferred; TimeOnly via explicit annotation only (TimeSpan ambiguity).",
+    "Issue #1461 (DateOnly/TimeOnly): Draft PR #1609 submitted 2026-02-23. Multi-targeted to netstandard2.0;net8.0. DateOnly auto-inferred; TimeOnly via explicit annotation only (TimeSpan ambiguity).",
     "DateOnly.TryParse gotcha: accepts datetime strings, ignoring time component. AsDateOnly checks for non-zero TimeOfDay.",
     "TimeOnly.TryParse gotcha: accepts datetime strings, returning just the time. AsTimeOnly checks that DateTime.TryParse gives today's date.",
     "TimeOnly NOT auto-inferred: '00:30:00' is ambiguous between TimeOnly and TimeSpan. Explicit 'timeonly?' annotation still works.",
@@ -121,6 +124,10 @@
     "Issue #1439 (CsvProvider InferRows): Truncates by text lines not CSV rows - complex fix",
     "Issue #1330 (HTML whitespace): Context-aware inline/block detection needed - complex fix",
     "dotnet tool restore needed before dotnet paket restore",
-    "dsyme is very active maintainer - merges PRs quickly"
+    "dsyme is very active maintainer - merges PRs quickly",
+    "Issue #1240: Empty string '' in JSON inferred as Null (StructuralInference.fs:539). By design but JSON semantics differ from CSV. Commented with explanation and workarounds.",
+    "Issue #1170: Time-of-day inference - PR #1609 addresses this with TimeOnly explicit annotation.",
+    "dsyme commented on monthly activity #1599: Issue #1509 NOT fixed by PR #1510 (user confirmed). Do not suggest closing #1509.",
+    "Issue #1509: HtmlNode.ToString pre-whitespace bug - PR #1605 created by Repo Assist and merged, but user says original issue (#1509) is still not fully resolved."
   ]
 }
