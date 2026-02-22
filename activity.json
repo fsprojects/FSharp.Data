@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 1489,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391],
+  "backlog_cursor": 1490,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -62,9 +62,9 @@
       "branch": "repo-assist/fix-json-decimal-float-1230",
       "description": "Fix JsonConversions.AsDecimal: handle JsonValue.Float so exponential-notation numbers can be returned as decimal (closes #1230)",
       "status": "open",
-      "pr_number": null,
+      "pr_number": 1608,
       "date": "2026-02-22",
-      "note": "Created in run 11. PR number TBD (submitted via safeoutputs)."
+      "note": "PR #1608 - pending CI"
     }
   ],
   "monthly_activity_issue": {
@@ -80,8 +80,30 @@
     {"issue": 1310, "label": "bug"},
     {"issue": 1439, "label": "bug"},
     {"issue": 1437, "label": "bug"},
-    {"issue": 1436, "label": "enhancement"}
+    {"issue": 1436, "label": "enhancement"},
+    {"issue": 1349, "label": "bug"},
+    {"issue": 1432, "label": "enhancement"},
+    {"issue": 1465, "label": "enhancement"},
+    {"issue": 1321, "label": "documentation"},
+    {"issue": 1321, "label": "good first issue"},
+    {"issue": 1490, "label": "documentation"},
+    {"issue": 1490, "label": "good first issue"},
+    {"issue": 1326, "label": "bug"},
+    {"issue": 1452, "label": "enhancement"}
   ],
+  "tasks_last_run": {
+    "task1_triage": "2026-02-22",
+    "task2_fix_issues": "2026-02-22",
+    "task3_improvements": "2026-02-22",
+    "task4_deps": null,
+    "task5_maintain_prs": "2026-02-22",
+    "task6_stale_nudges": "2026-02-21",
+    "task7_labels": "2026-02-22",
+    "task8_release_prep": "2026-02-21",
+    "task9_welcome": null,
+    "task10_forward": null,
+    "task11_monthly": "2026-02-22"
+  },
   "notes": [
     "Build environment has network proxy blocking external HTTP (WorldBank API, etc.) - tests requiring network will fail",
     "6.6.0 release prep was merged by dsyme on 2026-02-21",
@@ -92,6 +114,7 @@
     "PR #1605 (Repo Assist HTML pre whitespace fix #1509): MERGED by dsyme on 2026-02-22.",
     "PR #1606 (Repo Assist JSON float serialization fix #1356): MERGED by dsyme on 2026-02-22.",
     "PR #1607 (Repo Assist docs fix #1073): OPEN - pending CI.",
+    "PR #1608 (Repo Assist JSON decimal float fix #1230): OPEN - pending CI.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
     "Issue #1509 (HtmlNode.ToString whitespace bug) - FIXED by PR #1605 merged 2026-02-22",
     "Issue #1223 (same whitespace bug as #1509) - addressed by PR #1605 merge",
@@ -114,9 +137,17 @@
     "Issue #1437 (xs:dateTime DateTimeKind.Unspecified): Bug in AsDateTimeOffset. Complex due to inference impact. Labelled as bug.",
     "Issue #1436 (trimmable): Feature request for AOT/trim support. Labelled as enhancement.",
     "Issue #1478 (JsonProvider future direction): Active community discussion (17 comments). No action needed.",
-    "Issue #1230 (JsonProvider exponential decimal): FIXED - JsonConversions.AsDecimal now handles JsonValue.Float. PR created in run 11.",
+    "Issue #1230 (JsonProvider exponential decimal): FIXED - JsonConversions.AsDecimal now handles JsonValue.Float. PR #1608 open.",
     "Issue #1391 (CsvProvider lazy sequence exhaustion): Workaround is .Cache() - commented in run 11.",
     "Issues triaged in run 11 (1151-1489 range): #1151/#1152 (FAKE5 stale), #1188 (CssSelect known bug), #1191 (embedded resource community resolved), #1213 (nested arrays unresolved), #1305 (float via HTTP encoding?), #1340 (nuget resolved by maintainer), #1362 (header capitaliz design), #1405 (HTML 'Edit' text - dsyme's own issue), #1417 (0/1 bool feature), #1418 (yes/no roundtrip by design), #1419 (XSD stack overflow), #1453 (encoding - PR in progress), #1461 (DateOnly compat issue), #1488 (XmlProvider name/type complex), #1489 (fixed-width format clarified)",
-    "Run 11 (2026-02-22): Fixed #1230 (JsonConversions decimal float). Commented on #1230 and #1391. Backlog cursor advanced to #1489."
+    "Run 11 (2026-02-22): Fixed #1230 (JsonConversions decimal float). Commented on #1230 and #1391. Backlog cursor advanced to #1489.",
+    "Issue #1349 (HTTP non-ASCII): Root cause is ISO-8859-1 default encoding when server doesn't specify charset. Workaround: responseEncodingOverride='utf-8'. Labelled bug.",
+    "Issue #1321 (SetupTesting.fsx docs): File exists at src/SetupTesting.fsx. Generates #r reference scripts for FSI development. Labelled documentation+good first issue.",
+    "Issue #1490 (docs GIFs): Text docs already use #r nuget syntax. GIFs in docs/images/ still show old .dll reference style. Labelled documentation+good first issue.",
+    "Issue #1432 (XmlProvider renaming): By design but dsyme agreed an option would be OK. Labelled enhancement.",
+    "Issue #1465 (JsonProvider writable): Feature request - erased type providers cannot have mutable properties. Labelled enhancement.",
+    "Issue #1326 (upload >2GB): Likely AllowWriteStreamBuffering=false needed. Labelled bug.",
+    "Issue #1452 (XSD Choice as Options): Design limitation but could be improved. Labelled enhancement.",
+    "Run 12 (2026-02-22): Labelled 7 issues, commented on 3 issues, updated monthly activity issue #1599."
   ]
 }
