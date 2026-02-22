@@ -40,10 +40,10 @@ group Fake
     nuget Fake.DotNet.MsBuild          6.1.3
     nuget Fake.Tools.Git               6.1.3
     nuget Fake.DotNet.Paket            6.1.3
-    nuget Microsoft.Build              17.11.4
-    nuget Microsoft.Build.Framework    17.11.4
-    nuget Microsoft.Build.Tasks.Core   17.11.4
-    nuget Microsoft.Build.Utilities.Core   17.11.4
+    nuget Microsoft.Build              17.14.28
+    nuget Microsoft.Build.Framework    17.14.28
+    nuget Microsoft.Build.Tasks.Core   17.14.28
+    nuget Microsoft.Build.Utilities.Core   17.14.28
 
 group Test
     frameworks: net8.0
