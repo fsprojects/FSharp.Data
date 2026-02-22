@@ -51,7 +51,7 @@ let [<Literal>] csvWithGermanDate = """Preisregelung_ID;Messgebiet_Nr;gueltig_se
 
 [<Test>]
 let ``Inference of german dates`` () =
-  let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE">.GetSample()
+  let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE", PreferDateOnly = true>.GetSample()
   let rows = csv.Rows |> Seq.toArray
 
   let row = rows.[1]
@@ -67,7 +67,7 @@ Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 
 [<Test>]
 let ``Inference of numbers with empty values`` () =
-  let csv = CsvProvider<csvWithEmptyValues>.GetSample()
+  let csv = CsvProvider<csvWithEmptyValues, PreferDateOnly = true>.GetSample()
   let rows = csv.Rows |> Seq.toArray
 
   let row = rows.[0]
@@ -101,7 +101,7 @@ let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate,OffsetOption (dat
 
 [<Test>]
 let ``Can infer DateTime and DateTimeOffset types correctly`` () =
-  let csv = CsvProvider<csvData, ",", InferRows = 0>.GetSample()
+  let csv = CsvProvider<csvData, ",", InferRows = 0, PreferDateOnly = true>.GetSample()
   let firstRow = csv.Rows |> Seq.head
   let secondRow = csv.Rows |> Seq.item 1
 
@@ -153,7 +153,7 @@ let ``Does not treat invariant culture number such as 3.14 as a date in cultures
   targetCulture.DateTimeFormat.DateSeparator |> should equal "."
   targetCulture.DateTimeFormat.TimeSeparator |> should equal ":" // See https://github.com/fsprojects/FSharp.Data/issues/767
   targetCulture.NumberFormat.NumberDecimalSeparator |> should equal ","
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture=norwayCultureName>.GetSample()
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture=norwayCultureName, PreferDateOnly = true>.GetSample()
   let row = csv.Rows |> Seq.head
   (row.Dato, row.USD) |> should equal (DateOnly(2013, 2, 7), "5.4970")
 

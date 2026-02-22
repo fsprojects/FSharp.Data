@@ -261,7 +261,7 @@ let ``Nulls, Missing, and "" should make the type optional``() =
 
 [<Test>]
 let ``Heterogeneous types with Nulls, Missing, and "" should return None on all choices``() =
-    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}},{"b":"00:30:00"}]""">.GetSamples()
+    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}},{"b":"00:30:00"}]""", PreferDateOnly = true>.GetSamples()
     j.[0].A.Boolean  |> should equal None
     j.[0].A.Number   |> should equal None
     j.[0].A.Array    |> should equal None
@@ -635,7 +635,7 @@ let ``Can parse time span in different culture``() =
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
-    let objs = JsonProvider<"""[{"a": "01/02/2000"}, {"a" : "3"}]""">.GetSamples()
+    let objs = JsonProvider<"""[{"a": "01/02/2000"}, {"a" : "3"}]""", PreferDateOnly = true>.GetSamples()
     objs.[0].A.DateOnly |> should equal (Some (DateOnly(2000,01,02)))
     objs.[0].A.Number |> should equal None
     objs.[1].A.DateOnly |> should equal None
@@ -643,7 +643,7 @@ let ``Parsing of values wrapped in quotes should work on heterogenous values``()
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on arrays``() =
-    let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
+    let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""", PreferDateOnly = true>.GetSample()
     objs.DateOnlies |> should equal [| DateOnly(2000,01,02); DateOnly(2001,02,02) |]
     objs.Numbers |> should equal [| 3; 4 |]
 

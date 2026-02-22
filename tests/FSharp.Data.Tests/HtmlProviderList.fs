@@ -73,7 +73,7 @@ let ``Simple List infers date type correctly ``() =
                             <li>03/03/2013</li>
                         </ul>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().Lists.List1
+                </html>""", PreferOptionals=true, PreferDateOnly=true>.GetSample().Lists.List1
     list.Values |> should equal [|DateOnly(2013,1,1);DateOnly(2013,2,2);DateOnly(2013,3,3)|]
 
 [<Test>]
@@ -144,7 +144,7 @@ let ``Handles simple definition list``() =
                           <dd></dd>
                         </dl>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
+                </html>""", PreferOptionals=true, PreferDateOnly=true>.GetSample().DefinitionLists.DefinitionList1
     list.Count.Values |> should equal [|1;2|]
     list.Dates.Values |> should equal [|DateOnly(2014,1,1); DateOnly(2014, 2,2)|]
     list.Decimals.Values |> should equal [|1.23M; 2.23M|]

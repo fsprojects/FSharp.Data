@@ -50,6 +50,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let inferTypesFromValues = args.[7] :?> bool
         let schema = args.[8] :?> string
         let inferenceMode = args.[9] :?> InferenceMode
+        let preferDateOnly = args.[10] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -77,7 +78,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                     let t =
                         schemaSet |> XsdParsing.getElements |> List.ofSeq |> XsdInference.inferElements
 #if NET6_0_OR_GREATER
-                    if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                    if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
                         t
                     else
                         StructuralInference.downgradeNet6Types t
@@ -132,7 +133,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                             globalInference
                         |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
 #if NET6_0_OR_GREATER
-                    if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                    if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
                         t
                     else
                         StructuralInference.downgradeNet6Types t
@@ -193,7 +194,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               "InferenceMode",
               typeof<InferenceMode>,
               parameterDefaultValue = InferenceMode.BackwardCompatible
-          ) ]
+          )
+          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -216,7 +218,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasHints -> Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&lt;type&gt; or typeof{type} or typeof&lt;type&lt;measure&gt;&gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>datetimeoffset</c>, <c>timespan</c>, <c>guid</c> and <c>string</c>.
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
               Note inline schemas are not used from Xsd documents.
-           </param>"""
+           </param>
+           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText

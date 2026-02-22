@@ -122,9 +122,9 @@ process it dynamically as described in [the documentation for `JsonValue`](JsonV
 ### Inferring date types
 
 String values in JSON that look like dates are inferred as `DateTime` or `DateTimeOffset`.
-On .NET 6 and later, strings that represent a date without a time component (e.g. `"2023-01-15"`)
-are inferred as `DateOnly`. Full datetime strings (e.g. `"2023-01-15T10:30:00"`) continue to be
-inferred as `DateTime`.
+On .NET 6 and later, when you set `PreferDateOnly = true`, strings that represent a date without a time component (e.g. `"2023-01-15"`)
+are inferred as `DateOnly`, and time-only strings are inferred as `TimeOnly`. By default (`PreferDateOnly = false`),
+all dates are inferred as `DateTime` for backward compatibility.
 
 ### Inferring record types
 
