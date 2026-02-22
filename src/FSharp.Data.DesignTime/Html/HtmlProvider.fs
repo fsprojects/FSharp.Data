@@ -62,9 +62,15 @@ type public HtmlProvider(cfg: TypeProviderConfig) as this =
                       PreferOptionals = preferOptionals
                       InferenceMode = inferenceMode }
 
+#if NET6_0_OR_GREATER
+                let supportsNet6Types = ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly
+#else
+                let supportsNet6Types = false
+#endif
+
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr)
+                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) supportsNet6Types
 
             use _holder = IO.logTime "TypeGeneration" sample
 

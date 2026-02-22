@@ -150,6 +150,17 @@ module internal ProviderHelpers =
             member x.Inverse(denominator) : Type =
                 ProvidedMeasureBuilder.Inverse(denominator) }
 
+#if NET6_0_OR_GREATER
+    /// Returns true when the target runtime assembly is a .NET 6+ build and therefore
+    /// supports System.DateOnly / System.TimeOnly in generated types.
+    let runtimeSupportsNet6Types (runtimeAssemblyPath: string) =
+        // The assembly path contains the TFM, e.g. "…/net8.0/FSharp.Data.dll".
+        // Anything matching "/net<N>." where N ≥ 6 is a net6+ target.
+        let path = runtimeAssemblyPath.Replace('\\', '/').ToLowerInvariant()
+        let m = System.Text.RegularExpressions.Regex.Match(path, @"/net(\d+)\.")
+        m.Success && (int m.Groups.[1].Value) >= 6
+#endif
+
     let asyncMap (resultType: Type) (valueAsync: Expr<Async<'T>>) (body: Expr<'T> -> Expr) =
         let (?) = QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>

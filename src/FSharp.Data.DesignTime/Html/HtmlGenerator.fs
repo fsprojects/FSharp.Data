@@ -37,10 +37,11 @@ module internal HtmlGenerator =
     let private createTableType
         getTableTypeName
         (inferenceParameters, missingValuesStr, cultureStr)
+        supportsNet6Types
         (table: HtmlTable)
         =
 
-        let columns =
+        let rawColumns =
             match table.InferedProperties with
             | Some inferedProperties -> inferedProperties
             | None ->
@@ -51,6 +52,14 @@ module internal HtmlGenerator =
                          table.Rows.[1..]
                      else
                          table.Rows)
+
+        let columns =
+#if NET6_0_OR_GREATER
+            if supportsNet6Types then rawColumns
+            else rawColumns |> List.map StructuralInference.downgradeNet6PrimitiveProperty
+#else
+            rawColumns
+#endif
 
         let fields =
             columns
@@ -128,9 +137,17 @@ module internal HtmlGenerator =
 
         create, tableType
 
-    let private createListType getListTypeName (inferenceParameters, missingValuesStr, cultureStr) (list: HtmlList) =
+    let private createListType getListTypeName (inferenceParameters, missingValuesStr, cultureStr) supportsNet6Types (list: HtmlList) =
 
-        let columns = HtmlInference.inferListType inferenceParameters list.Values
+        let rawColumns = HtmlInference.inferListType inferenceParameters list.Values
+
+        let columns =
+#if NET6_0_OR_GREATER
+            if supportsNet6Types then rawColumns
+            else StructuralInference.downgradeNet6Types rawColumns
+#else
+            rawColumns
+#endif
 
         let listItemType, conv =
             match columns with
@@ -185,6 +202,7 @@ module internal HtmlGenerator =
     let private createDefinitionListType
         getDefinitionListTypeName
         (inferenceParameters, missingValuesStr, cultureStr)
+        supportsNet6Types
         (definitionList: HtmlDefinitionList)
         =
 
@@ -192,7 +210,15 @@ module internal HtmlGenerator =
 
         let createListType index (list: HtmlList) =
 
-            let columns = HtmlInference.inferListType inferenceParameters list.Values
+            let rawColumns = HtmlInference.inferListType inferenceParameters list.Values
+
+            let columns =
+#if NET6_0_OR_GREATER
+                if supportsNet6Types then rawColumns
+                else StructuralInference.downgradeNet6Types rawColumns
+#else
+                rawColumns
+#endif
 
             let listItemType, conv =
                 match columns with
@@ -264,7 +290,7 @@ module internal HtmlGenerator =
 
         definitionListType
 
-    let generateTypes asm ns typeName parameters htmlObjects =
+    let generateTypes asm ns typeName parameters supportsNet6Types htmlObjects =
 
         let htmlType =
             ProvidedTypeDefinition(
@@ -303,7 +329,7 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                 let containerType = getOrCreateContainer "Tables"
-                let create, tableType = createTableType getTypeName parameters table
+                let create, tableType = createTableType getTypeName parameters supportsNet6Types table
                 htmlType.AddMember tableType
 
                 containerType.AddMember
@@ -315,7 +341,7 @@ module internal HtmlGenerator =
 
             | List list ->
                 let containerType = getOrCreateContainer "Lists"
-                let create, tableType = createListType getTypeName parameters list
+                let create, tableType = createListType getTypeName parameters supportsNet6Types list
                 htmlType.AddMember tableType
 
                 containerType.AddMember
@@ -326,7 +352,7 @@ module internal HtmlGenerator =
                 )
             | DefinitionList definitionList ->
                 let containerType = getOrCreateContainer "DefinitionLists"
-                let tableType = createDefinitionListType getTypeName parameters definitionList
+                let tableType = createDefinitionListType getTypeName parameters supportsNet6Types definitionList
                 htmlType.AddMember tableType
 
                 containerType.AddMember
