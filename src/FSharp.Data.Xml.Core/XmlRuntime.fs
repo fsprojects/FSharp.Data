@@ -227,6 +227,10 @@ type XmlRuntime =
                             v.ToString("O", cultureInfo)
                     | :? DateTimeOffset as v -> v.ToString("O", cultureInfo)
                     | :? TimeSpan as v -> v.ToString("g", cultureInfo)
+#if NET6_0_OR_GREATER
+                    | :? DateOnly as v -> v.ToString("yyyy-MM-dd")
+                    | :? TimeOnly as v -> v.ToString("HH:mm:ss", cultureInfo)
+#endif
                     | :? int as v -> strWithCulture v
                     | :? int64 as v -> strWithCulture v
                     | :? float as v -> strWithCulture v
@@ -249,6 +253,10 @@ type XmlRuntime =
             | :? option<DateTime> as v -> optionToArray serialize v
             | :? option<DateTimeOffset> as v -> optionToArray serialize v
             | :? option<TimeSpan> as v -> optionToArray serialize v
+#if NET6_0_OR_GREATER
+            | :? option<DateOnly> as v -> optionToArray serialize v
+            | :? option<TimeOnly> as v -> optionToArray serialize v
+#endif
             | :? option<int> as v -> optionToArray serialize v
             | :? option<int64> as v -> optionToArray serialize v
             | :? option<float> as v -> optionToArray serialize v
