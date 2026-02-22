@@ -2,15 +2,10 @@
 
 ## 7.0.0 - Unreleased
 
-### New Features
-
 - Add opt-in DateOnly/TimeOnly inference support for .NET 6+ via `PreferDateOnly` parameter (closes #1461)
 - Add `PreferDateOnly` parameter to JsonProvider, XmlProvider, CsvProvider, and HtmlProvider (defaults to false for backward compatibility)
 - Add DateOnly/TimeOnly serialization support to XmlRuntime for record creation
 - Update documentation for DateOnly/TimeOnly inference feature
-
-### Bug Fixes
-
 - Fix singularization of words ending in `ases` — e.g. `databases` now correctly singularizes to `database` not `databasis` (closes #1508) — **breaking**: existing code using `*asis` type names for `*ases` words will need updating
 - Fix `#r "nuget: FSharp.Data"` — register `CodePagesEncodingProvider` on .NET 6+ so code-page encodings (e.g. Windows-1252) work at design time (closes #1453)
 - Fix `JsonConversions.AsDecimal` to handle `JsonValue.Float` — exponential notation like `1.5e3` now converts correctly to `decimal` (closes #1230)
