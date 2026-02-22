@@ -1312,3 +1312,7 @@ let ``Inline schemas as overrides replace value-based inference when present`` (
     sample[1].Value.GetType() |> should equal (typeof<int option>)
     // (Note the types in the inline schemas are automatically transformed to options as needed
     // when another node does not define any value for the given property)
+
+// Used by FSharp.Data.Reference.Tests to verify that GetSchema works with EmbeddedResource
+type XmlSchemaWithEmbeddedResource =
+    XmlProvider<Schema = "Data/po.xsd", EmbeddedResource = "FSharp.Data.Tests, FSharp.Data.Tests.Data.po.xsd">
