@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-02-22T19:25:00Z",
-  "workflow_run_id": "22283683031",
+  "last_run": "2026-02-22T19:35:50Z",
+  "workflow_run_id": "22283842943",
   "tasks_done_this_run": ["task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
@@ -57,7 +57,7 @@
     1249, 1251, 1256, 1261, 1300, 1310, 1322, 1383, 1194, 1419, 1452, 1437,
     1488, 1465, 1436, 1340, 1417
   ],
-  "commented_prs": [1613, 1614, 1619],
+  "commented_prs": [1613, 1614, 1619, 1621],
   "ideas_submitted": [],
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
@@ -84,7 +84,7 @@
     "issue_1488": "XmlProvider emits per-element types not per-XSD-type. Fix: XsdInference.fs needs to group elements by type= attribute and emit single F# type per complexType. Breaking change. Commented 2026-02-22.",
     "issue_1465": "JsonProvider writable properties: erased TPs make this hard. Workaround via JsonValue.Properties mutation exists. Commented 2026-02-22 with immutable-copy alternative.",
     "issue_1432": "XmlProvider renames elements to be F#-idiomatic. dsyme endorsed adding option to preserve names. Added help wanted label 2026-02-22.",
-    "issue_1417": "IMPLEMENTED in PR #1621. StrictBooleans=true: 0/1->int, yes/no->string, true/false->bool. PR created 2026-02-22. Tests: 251/251 pass.",
+    "issue_1417": "IMPLEMENTED in PR #1621. StrictBooleans=true: 0/1->int, yes/no->string, true/false->bool. PR created 2026-02-22. Tests: 251/251 pass. dsyme left review requesting TypeProviderInstantiation.fs fix - BUT the fix is already in the PR (StrictBooleans = false added). Replied to review clarifying this. Copilot SWE created WIP sub-PR #1622 targeting PR #1621 branch (may be redundant).",
     "issue_1436": "Trimmability for Blazor WASM. Commented 2026-02-22 explaining DynamicallyAccessedMembers annotation requirement and path forward.",
     "issue_1340": "Commented 2026-02-22: F# 6.0+ includes fix for #r nuget design-time resolution; Load uses runtime cwd by design; use Path.Combine(__SOURCE_DIRECTORY__, ...) for runtime paths.",
     "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 created by a separate Copilot workflow (copilot/update-microsoft-build-packages), not from Repo Assist. It addresses #1615.",
@@ -92,8 +92,10 @@
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 created 2026-02-22 for 7.0.0.",
     "pr_1619_ci_failure": "PR #1619 Windows CI fails due to 'Don't throw exceptions on http error' test - outbound network blocked on Windows runner. All other tests pass. Infrastructure failure, not code issue. Commented 2026-02-22.",
     "pr_1620_note": "PR #1620 is a test-only follow-up to PR #1619 created by Copilot SWE agent. Targets PR #1619's branch. Tests GetSchema with EmbeddedResource.",
+    "pr_1621_review": "dsyme left review comment on PR #1621 at CsvInference.fs line 127 asking to fix TypeProviderInstantiation.fs. But the fix was ALREADY in the PR (StrictBooleans = false added). Replied to review on 2026-02-22T19:35:50Z clarifying this.",
+    "pr_1622_note": "PR #1622 is a WIP sub-PR from Copilot SWE agent targeting PR #1621 branch. May be redundant since TypeProviderInstantiation.fs was already updated in PR #1621. Created 2026-02-22T19:33:14Z.",
     "pr_windows_ci": "PRs #1613 and #1614 had Windows CI failures initially (Kestrel socket 10013 on port binding). Later runs passed. PR #1619 has Windows CI failure (HTTP network test blocked). PR #1621 pending.",
-    "strict_booleans_impl": "StrictBooleans feature impl: post-process in CsvInference.inferCellType - Bit0/Bit1->int, bool from non-true/false->string. Positional param between inferenceMode and cultureInfo in inferColumnTypes. Static param at index 17 in CsvProvider. TypeProviderInstantiation.fs also updated.",
+    "strict_booleans_impl": "StrictBooleans feature impl: post-process in CsvInference.inferCellType - Bit0/Bit1->int, bool from non-true/false->string. Positional param between inferenceMode and cultureInfo in inferColumnTypes. Static param at index 17 in CsvProvider. TypeProviderInstantiation.fs also updated with StrictBooleans=false default.",
     "recently_closed_by_dsyme": "Issues closed by dsyme on 2026-02-22: #1532, #1528, #1509, #1506, #1501, #1249, #1261; on 2026-02-21: #677. Likely prompted by Repo Assist comments.",
     "pr_1617_merged": "PR #1617 (DateTimeOffset fix) merged by dsyme on 2026-02-22T19:11:34Z. Commit: c0d22d1e",
     "issue_backlog": "Triaged all issues >=#1194 as of 2026-02-22. Older issues (#18-#1193) mostly feature requests from 2012-2022, not yet triaged by Repo Assist."
