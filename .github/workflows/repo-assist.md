@@ -72,7 +72,7 @@ steps:
       persist-credentials: false
 
 engine: copilot
-source: githubnext/agentics/workflows/repo-assist.md@0d6e8cf9db90470cd5477c6a40b350fd9f9e1422
+source: githubnext/agentics/workflows/repo-assist.md@595b7a9c567ba4dce05ca824aec6e74b4dc545b8
 ---
 
 # Repo Assist
@@ -94,6 +94,8 @@ Always be:
 Use persistent repo memory to track: issues already commented on (with timestamps to detect new human activity), fix attempts and outcomes, improvement ideas already submitted, a short to-do list, a **backlog cursor** so each run continues where the previous one left off, and **which tasks were last run** (with timestamps) to support round-robin scheduling.
 
 Read memory at the **start** of every run; update it at the **end**.
+
+**Important**: Memory may not be 100% accurate. Issues may have been created, closed, or commented on; PRs may have been created, merged, commented on, or closed since the last run. Always verify memory against current repository state — reviewing recent activity since your last run is wise before acting on stale assumptions.
 
 ## Workflow
 
