@@ -837,7 +837,7 @@ type ServiceResponse = JsonProvider<"""[
 """, SampleIsList = true>
 
 type FirstPayload = JsonProvider<"""{ "x" : 0.500, "y" : 0.000 }""">
-type SecondPayload = JsonProvider<"""{"user": "alice", "role": "admin", "registeredSince": "2021-11-01"}""">
+type SecondPayload = JsonProvider<"""{ "user": "alice", "role": "admin", "registeredSince": "2021-11-01" }""", PreferDateOnly = true>
 
 [<Test>]
 let ``Can re-load JsonValue`` () =
