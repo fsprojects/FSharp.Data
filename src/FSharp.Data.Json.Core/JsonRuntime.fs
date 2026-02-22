@@ -62,6 +62,16 @@ type JsonRuntime =
         json
         |> Option.bind (JsonConversions.AsTimeSpan(TextRuntime.GetCulture cultureStr))
 
+#if NET6_0_OR_GREATER
+    static member ConvertDateOnly(cultureStr, json) =
+        json
+        |> Option.bind (JsonConversions.AsDateOnly(TextRuntime.GetCulture cultureStr))
+
+    static member ConvertTimeOnly(cultureStr, json) =
+        json
+        |> Option.bind (JsonConversions.AsTimeOnly(TextRuntime.GetCulture cultureStr))
+#endif
+
     static member ConvertGuid(json) =
         json |> Option.bind JsonConversions.AsGuid
 
@@ -229,6 +239,10 @@ type JsonRuntime =
             fun json -> (JsonConversions.AsDateTimeOffset cultureInfo json).IsSome
         | InferedTypeTag.TimeSpan -> JsonConversions.AsTimeSpan(TextRuntime.GetCulture cultureStr) >> Option.isSome
         | InferedTypeTag.Guid -> JsonConversions.AsGuid >> Option.isSome
+#if NET6_0_OR_GREATER
+        | InferedTypeTag.DateOnly -> JsonConversions.AsDateOnly(TextRuntime.GetCulture cultureStr) >> Option.isSome
+        | InferedTypeTag.TimeOnly -> JsonConversions.AsTimeOnly(TextRuntime.GetCulture cultureStr) >> Option.isSome
+#endif
         | InferedTypeTag.Collection ->
             function
             | JsonValue.Array _ -> true

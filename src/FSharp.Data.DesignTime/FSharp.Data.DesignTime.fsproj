@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <DefineConstants>IS_DESIGNTIME;NO_GENERATIVE;$(DefineConstants)</DefineConstants>
     <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:44</OtherFlags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>

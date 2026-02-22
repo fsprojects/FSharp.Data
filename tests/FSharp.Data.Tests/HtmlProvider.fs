@@ -56,7 +56,7 @@ type MarketDepth = HtmlProvider<"Data/MarketDepth.htm">
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
     let table = MarketDepth().Tables.Table1
-    table.Rows.[0].``Settlement Day`` |> should equal (DateTime(2014, 1, 14, 0, 0,0))
+    table.Rows.[0].``Settlement Day`` |> should equal (DateOnly(2014, 1, 14))
     table.Rows.[0].Period |> should equal 1
 
 [<Test>]
@@ -369,6 +369,6 @@ let ``Can infer DateTime and DateTimeOffset types correctly`` () =
                     </table>
             </html>""">.GetSample()
     let table = html.Tables.Table1
-    table.Rows.[0].DateOnly.GetType() |> should equal typeof<DateTime>
+    table.Rows.[0].DateOnly.GetType() |> should equal typeof<DateOnly>
     table.Rows.[0].MixedDate.GetType() |> should equal typeof<DateTime>
     table.Rows.[0].DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>

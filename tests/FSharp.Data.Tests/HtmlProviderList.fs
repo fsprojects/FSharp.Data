@@ -74,7 +74,7 @@ let ``Simple List infers date type correctly ``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal [|DateTime(2013,1,1);DateTime(2013,2,2);DateTime(2013,3,3)|]
+    list.Values |> should equal [|DateOnly(2013,1,1);DateOnly(2013,2,2);DateOnly(2013,3,3)|]
 
 [<Test>]
 let ``Simple List infers hetergenous list as string type correctly ``() =
@@ -146,7 +146,7 @@ let ``Handles simple definition list``() =
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
     list.Count.Values |> should equal [|1;2|]
-    list.Dates.Values |> should equal [|DateTime(2014,1,1); DateTime(2014, 2,2)|]
+    list.Dates.Values |> should equal [|DateOnly(2014,1,1); DateOnly(2014, 2,2)|]
     list.Decimals.Values |> should equal [|1.23M; 2.23M|]
     list.Missing.Values |> should equal [|Some "Foobar"; None|]
 

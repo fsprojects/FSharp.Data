@@ -78,6 +78,16 @@ type TextRuntime =
         text
         |> Option.bind (TextConversions.AsTimeSpan(TextRuntime.GetCulture cultureStr))
 
+#if NET6_0_OR_GREATER
+    static member ConvertDateOnly(cultureStr, text) =
+        text
+        |> Option.bind (TextConversions.AsDateOnly(TextRuntime.GetCulture cultureStr))
+
+    static member ConvertTimeOnly(cultureStr, text) =
+        text
+        |> Option.bind (TextConversions.AsTimeOnly(TextRuntime.GetCulture cultureStr))
+#endif
+
     static member ConvertGuid(text) =
         text |> Option.bind TextConversions.AsGuid
 
@@ -135,6 +145,18 @@ type TextRuntime =
         match value with
         | Some value -> value.ToString("g", TextRuntime.GetCulture cultureStr)
         | None -> ""
+
+#if NET6_0_OR_GREATER
+    static member ConvertDateOnlyBack(cultureStr, value: DateOnly option) =
+        match value with
+        | Some value -> value.ToString("O", TextRuntime.GetCulture cultureStr)
+        | None -> ""
+
+    static member ConvertTimeOnlyBack(cultureStr, value: TimeOnly option) =
+        match value with
+        | Some value -> value.ToString("O", TextRuntime.GetCulture cultureStr)
+        | None -> ""
+#endif
 
     static member ConvertGuidBack(value: Guid option) =
         match value with

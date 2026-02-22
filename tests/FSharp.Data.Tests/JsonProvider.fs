@@ -265,7 +265,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[0].A.Boolean  |> should equal None
     j.[0].A.Number   |> should equal None
     j.[0].A.Array    |> should equal None
-    j.[0].B.DateTime |> should equal None
+    j.[0].B.DateOnly |> should equal None
     j.[0].B.TimeSpan |> should equal None
     j.[0].B.Number   |> should equal None
     j.[0].B.Array    |> should equal None
@@ -276,7 +276,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[1].A.Boolean  |> should equal None
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
-    j.[1].B.DateTime |> should equal (Some (DateTime(DateTime.Today.Year,3,4)))
+    j.[1].B.DateOnly |> should equal (Some (DateOnly(DateTime.Today.Year,3,4)))
     j.[1].B.TimeSpan |> should equal None
     j.[1].B.Number   |> should equal (Some 3.4m)
     j.[1].B.Array    |> should equal None
@@ -287,7 +287,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[2].A.Boolean  |> should equal (Some false)
     j.[2].A.Number   |> should equal None
     j.[2].A.Array    |> should equal None
-    j.[2].B.DateTime |> should equal (Some (DateTime(2002,10,10)))
+    j.[2].B.DateOnly |> should equal (Some (DateOnly(2002,10,10)))
     j.[2].B.TimeSpan |> should equal None
     j.[2].B.Number   |> should equal None
     j.[2].B.Array    |> should equal None
@@ -298,7 +298,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[3].A.Boolean  |> should equal None
     j.[3].A.Number   |> should equal None
     j.[3].A.Array    |> should equal (Some (Array.zeroCreate<IJsonDocument> 0))
-    j.[3].B.DateTime |> should equal None
+    j.[3].B.DateOnly |> should equal None
     j.[3].B.TimeSpan |> should equal None
     j.[3].B.Number   |> should equal None
     j.[3].B.Array    |> should equal (Some [|1|])
@@ -636,15 +636,15 @@ let ``Can parse time span in different culture``() =
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
     let objs = JsonProvider<"""[{"a": "01/02/2000"}, {"a" : "3"}]""">.GetSamples()
-    objs.[0].A.DateTime |> should equal (Some (DateTime(2000,01,02)))
+    objs.[0].A.DateOnly |> should equal (Some (DateOnly(2000,01,02)))
     objs.[0].A.Number |> should equal None
-    objs.[1].A.DateTime |> should equal None
+    objs.[1].A.DateOnly |> should equal None
     objs.[1].A.Number |> should equal (Some 3)
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on arrays``() =
     let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
-    objs.DateTimes |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
+    objs.DateOnlies |> should equal [| DateOnly(2000,01,02); DateOnly(2001,02,02) |]
     objs.Numbers |> should equal [| 3; 4 |]
 
 [<Literal>]
@@ -855,7 +855,7 @@ let ``Can load different nested payloads`` () =
   payload1.Y |> should equal 12345
   payload2.User |> should equal "alice"
   payload2.Role |> should equal "admin"
-  payload2.RegisteredSince |> should equal (DateTime(2021, 11, 1))
+  payload2.RegisteredSince |> should equal (DateOnly(2021, 11, 1))
 
 
 [<Test>]

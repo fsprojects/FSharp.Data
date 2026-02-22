@@ -32,7 +32,14 @@ let private nameToTypeForCsv =
         "datetimeoffset option", (typeof<DateTimeOffset>, TypeWrapper.Option)
         "timespan option", (typeof<TimeSpan>, TypeWrapper.Option)
         "guid option", (typeof<Guid>, TypeWrapper.Option)
-        "string option", (typeof<string>, TypeWrapper.Option) ]
+        "string option", (typeof<string>, TypeWrapper.Option)
+#if NET6_0_OR_GREATER
+        "dateonly?", (typeof<DateOnly>, TypeWrapper.Nullable)
+        "timeonly?", (typeof<TimeOnly>, TypeWrapper.Nullable)
+        "dateonly option", (typeof<DateOnly>, TypeWrapper.Option)
+        "timeonly option", (typeof<TimeOnly>, TypeWrapper.Option)
+#endif
+        ]
     |> dict
 
 let private nameAndTypeRegex =

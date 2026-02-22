@@ -82,6 +82,9 @@ let private primitiveTypes =
       typeof<bool>
       typeof<Bit> ]
     @ numericTypes
+#if NET6_0_OR_GREATER
+    @ [ typeof<DateOnly>; typeof<TimeOnly> ]
+#endif
 
 /// Checks whether a type supports unit of measure
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
@@ -110,6 +113,12 @@ let typeTag inferredType =
             InferedTypeTag.TimeSpan
         elif typ = typeof<Guid> then
             InferedTypeTag.Guid
+#if NET6_0_OR_GREATER
+        elif typ = typeof<DateOnly> then
+            InferedTypeTag.DateOnly
+        elif typ = typeof<TimeOnly> then
+            InferedTypeTag.TimeOnly
+#endif
         else
             failwith "typeTag: Unknown primitive type"
     | InferedType.Json _ -> InferedTypeTag.Json
@@ -138,7 +147,16 @@ let private conversionTable =
         typeof<int>
         typeof<int64>
         typeof<decimal> ]
-      typeof<DateTime>, [ typeof<DateTimeOffset> ] ]
+      typeof<DateTime>,
+      [ typeof<DateTimeOffset>
+#if NET6_0_OR_GREATER
+        typeof<DateOnly>
+#endif
+        ]
+#if NET6_0_OR_GREATER
+      typeof<TimeSpan>, [ typeof<TimeOnly> ]
+#endif
+      ]
 
 let private subtypePrimitives typ1 typ2 =
     Debug.Assert(List.exists ((=) typ1) primitiveTypes)
@@ -425,7 +443,12 @@ let nameToType =
       "datetimeoffset", (typeof<DateTimeOffset>, TypeWrapper.None)
       "timespan", (typeof<TimeSpan>, TypeWrapper.None)
       "guid", (typeof<Guid>, TypeWrapper.None)
-      "string", (typeof<String>, TypeWrapper.None) ]
+      "string", (typeof<String>, TypeWrapper.None)
+#if NET6_0_OR_GREATER
+      "dateonly", (typeof<DateOnly>, TypeWrapper.None)
+      "timeonly", (typeof<TimeOnly>, TypeWrapper.None)
+#endif
+      ]
     |> dict
 
 // type<unit} or type{unit> is valid while it shouldn't, but well...
@@ -545,6 +568,10 @@ let inferPrimitiveType
         | Parse TextConversions.AsTimeSpan _ -> makePrimitive typeof<TimeSpan>
         | Parse TextConversions.AsDateTimeOffset dateTimeOffset when not (isFakeDate dateTimeOffset.UtcDateTime value) ->
             makePrimitive typeof<DateTimeOffset>
+#if NET6_0_OR_GREATER
+        | Parse TextConversions.AsDateOnly dateOnly when not (isFakeDate (dateOnly.ToDateTime(TimeOnly.MinValue)) value) ->
+            makePrimitive typeof<DateOnly>
+#endif
         | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> makePrimitive typeof<DateTime>
         | Parse TextConversions.AsDecimal _ -> makePrimitive typeof<decimal>
         | Parse (TextConversions.AsFloat [||] false) _ -> makePrimitive typeof<float>

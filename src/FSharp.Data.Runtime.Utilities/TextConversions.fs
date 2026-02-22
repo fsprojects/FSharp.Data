@@ -41,7 +41,7 @@ module private Helpers =
     let dateTimeStyles =
         DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
-    let ParseISO8601FormattedDateTime text cultureInfo =
+    let ParseISO8601FormattedDateTime (text: string) cultureInfo =
         match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
         | true, d -> d |> ValueSome
         | false, _ -> ValueNone
@@ -174,7 +174,7 @@ type TextConversions private () =
             let min = (hourMin % 100) |> float |> TimeSpan.FromMinutes
             hr.Add min
 
-        let offset str =
+        let offset (str: string) =
             match Int32.TryParse str with
             | true, v -> getTimeSpanFromHourMin v |> ValueSome
             | false, _ -> ValueNone
@@ -207,6 +207,32 @@ type TextConversions private () =
         match TimeSpan.TryParse(text, cultureInfo) with
         | true, t -> Some t
         | _ -> None
+
+#if NET6_0_OR_GREATER
+    static member AsDateOnly (cultureInfo: CultureInfo) (text: string) =
+        let mutable d = DateOnly.MinValue
+
+        if DateOnly.TryParse(text.Trim(), cultureInfo, Globalization.DateTimeStyles.AllowWhiteSpaces, &d) then
+            // Reject strings that also parse as DateTime with a non-zero time component,
+            // e.g. "2022-06-12T01:02:03" should be DateTime, not DateOnly.
+            match DateTime.TryParse(text.Trim(), cultureInfo, Globalization.DateTimeStyles.AllowWhiteSpaces) with
+            | true, dt when dt.TimeOfDay <> TimeSpan.Zero -> None
+            | _ -> Some d
+        else
+            None
+
+    static member AsTimeOnly (cultureInfo: CultureInfo) (text: string) =
+        let mutable t = TimeOnly.MinValue
+
+        if TimeOnly.TryParse(text.Trim(), cultureInfo, Globalization.DateTimeStyles.AllowWhiteSpaces, &t) then
+            // Reject strings that also parse as DateTime with a specific real date
+            // (not today's date used as fill-in), e.g. "2016-10-05T04:05:03" is DateTime, not TimeOnly.
+            match DateTime.TryParse(text.Trim(), cultureInfo, Globalization.DateTimeStyles.AllowWhiteSpaces) with
+            | true, dt when dt.Date <> DateTime.Today -> None
+            | _ -> Some t
+        else
+            None
+#endif
 
     static member AsGuid(text: string) = Guid.TryParse(text.Trim()) |> asOption
 
