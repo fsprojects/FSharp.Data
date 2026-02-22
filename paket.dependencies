@@ -20,26 +20,26 @@ group Fake
     source https://api.nuget.org/v3/index.json
     storage: none
 
-    nuget Fake.Testing.Common          6.1.3
-    nuget Fake.Net.Http                6.1.3
-    nuget Fake.IO.FileSystem           6.1.3
-    nuget Fake.Core.CommandLineParsing 6.1.3
-    nuget Fake.Core.Environment        6.1.3
-    nuget Fake.Core.FakeVar            6.1.3
-    nuget Fake.Core.SemVer             6.1.3
-    nuget Fake.Core.String             6.1.3
-    nuget Fake.Core.Context            6.1.3
-    nuget Fake.Core.Trace              6.1.3
-    nuget Fake.Core.Tasks              6.1.3
-    nuget Fake.Core.Target             6.1.3
-    nuget Fake.Core.ReleaseNotes       6.1.3
-    nuget Fake.DotNet.AssemblyInfoFile 6.1.3
-    nuget Fake.DotNet.Cli              6.1.3
-    nuget Fake.DotNet.Testing.NUnit    6.1.3
-    nuget Fake.DotNet.NuGet            6.1.3
-    nuget Fake.DotNet.MsBuild          6.1.3
-    nuget Fake.Tools.Git               6.1.3
-    nuget Fake.DotNet.Paket            6.1.3
+    nuget Fake.Testing.Common          6.1.4
+    nuget Fake.Net.Http                6.1.4
+    nuget Fake.IO.FileSystem           6.1.4
+    nuget Fake.Core.CommandLineParsing 6.1.4
+    nuget Fake.Core.Environment        6.1.4
+    nuget Fake.Core.FakeVar            6.1.4
+    nuget Fake.Core.SemVer             6.1.4
+    nuget Fake.Core.String             6.1.4
+    nuget Fake.Core.Context            6.1.4
+    nuget Fake.Core.Trace              6.1.4
+    nuget Fake.Core.Tasks              6.1.4
+    nuget Fake.Core.Target             6.1.4
+    nuget Fake.Core.ReleaseNotes       6.1.4
+    nuget Fake.DotNet.AssemblyInfoFile 6.1.4
+    nuget Fake.DotNet.Cli              6.1.4
+    nuget Fake.DotNet.Testing.NUnit    6.1.4
+    nuget Fake.DotNet.NuGet            6.1.4
+    nuget Fake.DotNet.MsBuild          6.1.4
+    nuget Fake.Tools.Git               6.1.4
+    nuget Fake.DotNet.Paket            6.1.4
     nuget Microsoft.Build              17.11.4
     nuget Microsoft.Build.Framework    17.11.4
     nuget Microsoft.Build.Tasks.Core   17.11.4
@@ -51,10 +51,10 @@ group Test
 
     nuget FSharp.Core 6.0.1
     nuget Microsoft.NET.Test.Sdk
-    nuget NUnit 3.13.1
+    nuget NUnit 3.13.3
     nuget NUnit3TestAdapter
-    nuget FsUnit  4.0.4
-    nuget FsCheck 2.15.1
+    nuget FsUnit  4.2.0
+    nuget FsCheck 2.16.6
     nuget GitHubActionsTestLogger
 
 group Benchmarks
