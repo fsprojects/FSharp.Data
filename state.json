@@ -1,12 +1,12 @@
 {
-  "last_run": "2026-02-22T17:31:36Z",
-  "workflow_run_id": "22281784867",
-  "tasks_done_this_run": ["task1", "task2", "task11"],
+  "last_run": "2026-02-22T17:43:45Z",
+  "workflow_run_id": "22282076272",
+  "tasks_done_this_run": ["task4", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
     "task3": "2026-02-23",
-    "task4": null,
+    "task4": "2026-02-22",
     "task5": "2026-02-22",
     "task6": "2026-02-22",
     "task7": "2026-02-22",
@@ -21,7 +21,7 @@
   "monthly_activity_month": "2026-02",
   "fix_attempts": {
     "1453": {"status": "merged", "pr": 1612},
-    "1383": {"status": "PR created", "branch": "repo-assist/fix-css-pseudo-class-error-1383", "date": "2026-02-22"},
+    "1383": {"status": "PR created", "pr": 1613, "branch": "repo-assist/fix-issue-1383-css-pseudo-class", "date": "2026-02-22"},
     "1608": {"status": "merged", "pr": 1608},
     "1606": {"status": "merged", "pr": 1606},
     "1607": {"status": "merged", "pr": 1607},
@@ -29,6 +29,13 @@
     "1604": {"status": "merged", "pr": 1604},
     "1603": {"status": "merged", "pr": 1603},
     "1609": {"status": "merged", "pr": 1609}
+  },
+  "deps_update_attempts": {
+    "2026-02-22": {
+      "branch": "repo-assist/deps-update-2026-02-22",
+      "changes": ["FAKE 6.1.3->6.1.4", "NUnit 3.13.1->3.13.3", "FsUnit 4.0.4->4.2.0", "FsCheck 2.15.1->2.16.6"],
+      "skipped": "Microsoft.Build 17.11.4 (has known CVEs GHSA-w3q9-fxm7-j8fq, GHSA-h4j7-5rxr-p4wc) - needs compatibility check with FAKE"
+    }
   },
   "commented_issues": [
     1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1501, 1528, 946,
@@ -52,6 +59,7 @@
     "issue_1256": "CSV Load(Stream) ignores encoding by design; workaround is TextReader overload",
     "issue_1261": "Fixed by PR #1262 merged 2019; confirmed current parseValue handles all root value types; commented suggesting close",
     "issue_1322": "By design: missing array field uses empty array not Option. Workaround: use 'data: null' in sample to get Option<Datum[]>",
-    "issue_1383": "CSS pseudo-class error fix PR created - throw NotSupportedException instead of generic Exception"
+    "issue_1383": "CSS pseudo-class error fix PR #1613 created - throw NotSupportedException instead of generic Exception",
+    "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. 17.14.x is latest 17.x but targets .NETFramework not net8.0 on NuGet - needs compatibility check."
   }
 }
