@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T16:59:48Z",
-  "workflow_run_id": "22281364571",
-  "tasks_done_this_run": ["task7", "task1", "task11"],
+  "last_run": "2026-02-22T17:22:09Z",
+  "workflow_run_id": "22281727488",
+  "tasks_done_this_run": ["task1", "task7", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -15,8 +15,8 @@
     "task10": "2026-02-22",
     "task11": "2026-02-22"
   },
-  "issue_backlog_cursor": "Y3Vyc29yOnYyOpK0MjAxOS0wNS0wMVQwMDo0MzozN1rOGisgFg==",
-  "label_backlog_cursor": "Y3Vyc29yOnYyOpK0MjAxOS0wNS0wMVQwMDo0MzozN1rOGisgFg==",
+  "issue_backlog_cursor": "Y3Vyc29yOnYyOpK0MjAyMC0wNi0yM1QwODoyOTo1NVrOJl0ogQ==",
+  "label_backlog_cursor": "Y3Vyc29yOnYyOpK0MjAyMC0wNi0yM1QwODoyOTo1NVrOJl0ogQ==",
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
   "fix_attempts": {
@@ -33,7 +33,7 @@
     1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1501, 1528, 946,
     1223, 1259, 1356, 1230, 1391, 1349, 1321, 1490, 1461, 834, 1326,
     1170, 1240, 1213, 1305, 1294, 1194, 1362, 1418, 1405, 1453, 1489,
-    1249, 1251, 1256
+    1249, 1251, 1256, 1261, 1300, 1310
   ],
   "ideas_submitted": [],
   "stale_pr_nudges": [],
@@ -44,10 +44,11 @@
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 despite submitter saying not fixed. Check if re-opened.",
     "issue_1330": "HTML whitespace-stripping bug - complex to fix, needs context-aware inline/block detection",
-    "issue_1310": "EmbeddedResource ignored for XmlProvider - parseResult.IsResource gate in Helpers.fs",
+    "issue_1310": "EmbeddedResource XSD bug: Schema_ branch in Helpers.fs doesn't check IsResource; GetSchema always uses file path. Wrong resource name silently falls back to file path.",
     "issue_1439": "InferRows truncates text lines not CSV rows - workaround: InferRows=0",
     "issue_1249": "Fixed in 3.0.1, confirmed by submitter, commented suggesting close",
     "issue_1251": "HTTP default encoding is ISO-8859-1 per RFC; workaround is responseEncodingOverride='utf-8'",
-    "issue_1256": "CSV Load(Stream) ignores encoding by design; workaround is TextReader overload"
+    "issue_1256": "CSV Load(Stream) ignores encoding by design; workaround is TextReader overload",
+    "issue_1261": "Fixed by PR #1262 merged 2019; confirmed current parseValue handles all root value types; commented suggesting close"
   }
 }
