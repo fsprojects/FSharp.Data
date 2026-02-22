@@ -114,7 +114,7 @@ type HtmlNode =
 
             fun name -> Set.contains name set
 
-        let rec serialize (sb: StringBuilder) indentation canAddNewLine html =
+        let rec serialize (sb: StringBuilder) indentation canAddNewLine insidePre html =
             let append (str: string) = sb.Append str |> ignore
 
             let appendEndTag name =
@@ -135,8 +135,9 @@ type HtmlNode =
                         | _ -> false)
 
                 let isPreTag = name = "pre"
+                let nowInsidePre = insidePre || isPreTag
 
-                if canAddNewLine && not (onlyText || isPreTag) then
+                if canAddNewLine && not insidePre && not (onlyText || isPreTag) then
                     newLine 0
 
                 append "<"
@@ -157,16 +158,16 @@ type HtmlNode =
                 else
                     append ">"
 
-                    if not (onlyText || isPreTag) then
+                    if not insidePre && not (onlyText || isPreTag) then
                         newLine 2
 
                     let mutable canAddNewLine = false
 
                     for element in elements do
-                        serialize sb (indentation + 2) canAddNewLine element
+                        serialize sb (indentation + 2) canAddNewLine nowInsidePre element
                         canAddNewLine <- true
 
-                    if not (onlyText || isPreTag) then
+                    if not insidePre && not (onlyText || isPreTag) then
                         newLine 0
 
                     appendEndTag name
@@ -181,7 +182,7 @@ type HtmlNode =
                 append "]]>"
 
         let sb = StringBuilder()
-        serialize sb 0 false x |> ignore
+        serialize sb 0 false false x |> ignore
         sb.ToString()
 
     /// <exclude />

@@ -870,6 +870,18 @@ let ``Maintain whitespace inside pre tag through round-trip``() =
     result |> should equal expected
 
 [<Test>]
+let ``Maintain whitespace in deeply nested elements inside pre through round-trip``() =
+    // Regression test for https://github.com/fsprojects/FSharp.Data/issues/1509
+    // Syntax highlighters (e.g. shiki) emit <pre><code><span class="line"><span>...</span></span></code></pre>
+    // Without the insidePre fix, the nested multi-element spans would have newlines inserted between them.
+    let html = """<pre><code><span class="line"><span style="color:red">let</span> <span style="color:blue">x</span> <span style="color:green">=</span> <span style="color:black">1</span></span></code></pre>"""
+
+    let result = HtmlDocument.Parse(html).ToString()
+
+    let expected = html
+    result |> should equal expected
+
+[<Test>]
 let ``Can parse national rail mobile site correctly``() =
     HtmlDocument.Load "UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
