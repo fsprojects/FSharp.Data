@@ -68,7 +68,7 @@ steps:
       persist-credentials: false
 
 engine: copilot
-source: githubnext/agentics/workflows/repo-assist.md@4cb6855f0b3c0a719d7d5c3af44d1646450e63e9
+source: githubnext/agentics/workflows/repo-assist.md@b0296681ad309e6455276244363810b1e7d98335
 ---
 
 # Repo Assist
@@ -316,6 +316,7 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
    a. Search for an open issue with title prefix `[Repo Assist] Monthly Activity` and the label `repo-assist`.
    b. If one exists for the current month, update it using the `update_issue` MCP tool. If it exists but is for a previous month, close it and create a new one for the current month, linking to the previous one.
    c. If none exists, create a new issue.
+   d. **Read any comments from maintainers** on the activity issue. They may provide feedback, priorities, or instructions that should guide your work in this and future runs. Note any instructions in your memory.
 2. **Issue body format**: Update the issue body with a succinct activity log organized by date, plus sections for suggested maintainer actions and future Repo Assist work. Use the following structure:
 
    ```markdown
@@ -337,11 +338,11 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
 
    Based on current repository state, consider these **pending** actions (excludes items already actioned):
 
-   - 👀 **Review PR** #<number>: <summary> — [Review](<link>)
-   - 🔀 **Merge PR** #<number>: <reason> — [Review](<link>)
-   - ✅ **Close issue** #<number>: <reason> — [View](<link>)
-   - ❌ **Close PR** #<number>: <reason> — [View](<link>)
-   - 🎯 **Define goal**: <suggestion> — [Related issue](<link>)
+   * [ ] **Review PR** #<number>: <summary> — [Review](<link>)
+   * [ ] **Merge PR** #<number>: <reason> — [Review](<link>)
+   * [ ] **Close issue** #<number>: <reason> — [View](<link>)
+   * [ ] **Close PR** #<number>: <reason> — [View](<link>)
+   * [ ] **Define goal**: <suggestion> — [Related issue](<link>)
 
    *(If no actions needed, state "No suggested actions at this time.")*
 
@@ -349,14 +350,14 @@ Maintain a single open issue titled `[Repo Assist] Monthly Activity {YYYY}-{MM}`
 
    {List future work for Repo Assist}
 
-   *(If nothing pending, skip this section.")*
+   *(If nothing pending, skip this section.)*
    ```
 
 3. **Data source**:
    - **Activity log**: Use your repo memory to reconstruct what you did in the current run and in previous runs during the same month. Each run should append its activity under today's date heading.
    - **Suggested actions for maintainer**: Review open PRs (especially draft PRs you created), stale issues, and unreleased changes. **Only include items that still need maintainer action** — exclude items the maintainer has already addressed (merged, closed, reviewed, commented on). Suggest concrete actions with direct links. Only suggest actions you have high confidence about.
    - **Future work for Repo Assist**: Include items where a maintainer has commented or requested changes and Repo Assist should take the next action. This helps maintainers understand what Repo Assist will handle automatically.
-4. **Keep it concise**: One line per action. Use emoji prefixes for quick scanning. Do not include lengthy descriptions.
+4. **Keep it concise**: One line per action. Do not include lengthy descriptions.
 5. **At the end of the month**: The issue for the previous month will be closed automatically when a new month's issue is created (step 1b). This keeps the issue tracker clean.
 6. If no actions were taken in the current run (e.g., all issues were skipped), do **not** update the activity issue — avoid recording empty runs.
 
