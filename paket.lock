@@ -8,12 +8,12 @@ NUGET
       Microsoft.NETCore.Platforms (>= 2.2.4) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Targets (>= 2.0) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
       NETStandard.Library (>= 2.0.3) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
-    Microsoft.NETCore.DotNetAppHost (6.0.8) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
-    Microsoft.NETCore.DotNetHostPolicy (6.0.8) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
-      Microsoft.NETCore.DotNetHostResolver (>= 6.0.8)
-    Microsoft.NETCore.DotNetHostResolver (6.0.8) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
-      Microsoft.NETCore.DotNetAppHost (>= 6.0.8)
-    Microsoft.NETCore.Platforms (6.0.5) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
+    Microsoft.NETCore.DotNetAppHost (10.0.3) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
+    Microsoft.NETCore.DotNetHostPolicy (8.0.24) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
+      Microsoft.NETCore.DotNetHostResolver (>= 8.0.24)
+    Microsoft.NETCore.DotNetHostResolver (8.0.24) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
+      Microsoft.NETCore.DotNetAppHost (>= 8.0.24)
+    Microsoft.NETCore.Platforms (7.0.4) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
     Microsoft.NETCore.Targets (5.0) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
     Microsoft.SourceLink.Common (1.0) - copy_local: true
     Microsoft.SourceLink.GitHub (1.0) - copy_local: true
@@ -31,8 +31,8 @@ GROUP Benchmarks
 RESTRICTION: == net8.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    BenchmarkDotNet (0.15.2)
-      BenchmarkDotNet.Annotations (>= 0.15.2)
+    BenchmarkDotNet (0.15.8)
+      BenchmarkDotNet.Annotations (>= 0.15.8)
       CommandLineParser (>= 2.9.1)
       Gee.External.Capstone (>= 2.3)
       Iced (>= 1.21)
@@ -40,28 +40,28 @@ NUGET
       Microsoft.Diagnostics.Runtime (>= 3.1.512801)
       Microsoft.Diagnostics.Tracing.TraceEvent (>= 3.1.21)
       Microsoft.DotNet.PlatformAbstractions (>= 3.1.6)
-      Perfolizer (0.5.3)
+      Perfolizer (0.6.1)
       System.Management (>= 9.0.5)
-    BenchmarkDotNet.Annotations (0.15.2)
+    BenchmarkDotNet.Annotations (0.15.8)
     CommandLineParser (2.9.1)
     FSharp.Core (6.0.1)
     Gee.External.Capstone (2.3)
     Iced (1.21)
     Microsoft.CodeAnalysis.Analyzers (4.14)
-    Microsoft.CodeAnalysis.Common (4.14)
+    Microsoft.CodeAnalysis.Common (5.0)
       Microsoft.CodeAnalysis.Analyzers (>= 3.11)
       System.Collections.Immutable (>= 9.0)
       System.Reflection.Metadata (>= 9.0)
-    Microsoft.CodeAnalysis.CSharp (4.14)
+    Microsoft.CodeAnalysis.CSharp (5.0)
       Microsoft.CodeAnalysis.Analyzers (>= 3.11)
-      Microsoft.CodeAnalysis.Common (4.14)
+      Microsoft.CodeAnalysis.Common (5.0)
       System.Collections.Immutable (>= 9.0)
       System.Reflection.Metadata (>= 9.0)
-    Microsoft.Diagnostics.NETCore.Client (0.2.621003)
-      Microsoft.Extensions.Logging.Abstractions (>= 6.0.4)
+    Microsoft.Diagnostics.NETCore.Client (0.2.661903)
+      Microsoft.Extensions.Logging.Abstractions (>= 8.0.3)
     Microsoft.Diagnostics.Runtime (3.1.512801)
       Microsoft.Diagnostics.NETCore.Client (>= 0.2.410101)
-    Microsoft.Diagnostics.Tracing.TraceEvent (3.1.24)
+    Microsoft.Diagnostics.Tracing.TraceEvent (3.1.30)
       Microsoft.Diagnostics.NETCore.Client (>= 0.2.510501)
       Microsoft.Win32.Registry (>= 5.0)
       System.Collections.Immutable (>= 9.0.8)
@@ -70,30 +70,32 @@ NUGET
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2)
       System.Text.Json (>= 9.0.8)
     Microsoft.DotNet.PlatformAbstractions (3.1.6)
-    Microsoft.Extensions.DependencyInjection.Abstractions (9.0.8)
-    Microsoft.Extensions.Logging.Abstractions (9.0.8)
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 9.0.8)
-      System.Diagnostics.DiagnosticSource (>= 9.0.8)
+    Microsoft.Extensions.DependencyInjection.Abstractions (10.0.3)
+    Microsoft.Extensions.Logging.Abstractions (10.0.3)
+      Microsoft.Extensions.DependencyInjection.Abstractions (>= 10.0.3)
+      System.Diagnostics.DiagnosticSource (>= 10.0.3)
     Microsoft.Win32.Registry (5.0)
       System.Security.AccessControl (>= 5.0)
       System.Security.Principal.Windows (>= 5.0)
-    Perfolizer (0.5.3)
-    System.CodeDom (9.0.8)
-    System.Collections.Immutable (9.0.8)
-    System.Diagnostics.DiagnosticSource (9.0.8)
-    System.IO.Pipelines (9.0.8)
-    System.Management (9.0.8)
-      System.CodeDom (>= 9.0.8)
-    System.Reflection.Metadata (9.0.8)
-      System.Collections.Immutable (>= 9.0.8)
+    Perfolizer (0.6.1)
+      Pragmastat (>= 3.2.4)
+    Pragmastat (10.0.6)
+    System.CodeDom (10.0.3)
+    System.Collections.Immutable (10.0.3)
+    System.Diagnostics.DiagnosticSource (10.0.3)
+    System.IO.Pipelines (10.0.3)
+    System.Management (10.0.3)
+      System.CodeDom (>= 10.0.3)
+    System.Reflection.Metadata (10.0.3)
+      System.Collections.Immutable (>= 10.0.3)
     System.Reflection.TypeExtensions (4.7)
     System.Runtime.CompilerServices.Unsafe (6.1.2)
     System.Security.AccessControl (6.0.1)
     System.Security.Principal.Windows (5.0)
-    System.Text.Encodings.Web (9.0.8)
-    System.Text.Json (9.0.8)
-      System.IO.Pipelines (>= 9.0.8)
-      System.Text.Encodings.Web (>= 9.0.8)
+    System.Text.Encodings.Web (10.0.3)
+    System.Text.Json (10.0.3)
+      System.IO.Pipelines (>= 10.0.3)
+      System.Text.Encodings.Web (>= 10.0.3)
 
 GROUP Fake
 STORAGE: NONE
@@ -229,66 +231,85 @@ NUGET
     FSharp.Core (10.0.103) - restriction: >= netstandard2.0
     Microsoft.Bcl.AsyncInterfaces (10.0.3) - restriction: >= net472
       System.Threading.Tasks.Extensions (>= 4.6.3) - restriction: || (>= net462) (&& (>= netstandard2.0) (< netstandard2.1))
-    Microsoft.Bcl.Cryptography (10.0.3) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
+    Microsoft.Bcl.Cryptography (10.0.3) - restriction: || (&& (>= net462) (>= net9.0)) (&& (< net472) (>= netstandard2.0)) (>= net8.0)
       System.Formats.Asn1 (>= 10.0.3) - restriction: || (>= net462) (&& (>= net8.0) (< net9.0)) (&& (< net8.0) (>= netstandard2.1)) (&& (>= netstandard2.0) (< netstandard2.1))
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (>= netstandard2.0) (< netstandard2.1))
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.1)) (&& (>= netstandard2.0) (< netstandard2.1))
     Microsoft.Bcl.HashCode (6.0) - restriction: || (&& (>= net462) (>= netstandard2.0)) (&& (< net8.0) (>= netstandard2.0))
-    Microsoft.Build (17.11.4)
-      Microsoft.Build.Framework (>= 17.11.4) - restriction: || (>= net472) (>= net8.0)
-      Microsoft.IO.Redist (>= 6.0) - restriction: >= net472
-      Microsoft.NET.StringTools (>= 17.11.4) - restriction: || (>= net472) (>= net8.0)
-      System.Collections.Immutable (>= 8.0) - restriction: || (>= net472) (>= net8.0)
-      System.Configuration.ConfigurationManager (>= 8.0) - restriction: || (>= net472) (>= net8.0)
-      System.Memory (>= 4.5.5) - restriction: >= net472
-      System.Reflection.Metadata (>= 8.0) - restriction: || (>= net472) (>= net8.0)
-      System.Reflection.MetadataLoadContext (>= 8.0) - restriction: || (>= net472) (>= net8.0)
-      System.Runtime.CompilerServices.Unsafe (>= 6.0) - restriction: >= net472
+    Microsoft.Build (17.14.28)
+      Microsoft.Build.Framework (>= 17.14.28) - restriction: || (>= net472) (>= net9.0)
+      Microsoft.IO.Redist (>= 6.1) - restriction: >= net472
+      Microsoft.NET.StringTools (>= 17.14.28) - restriction: || (>= net472) (>= net9.0)
+      System.Collections.Immutable (>= 9.0) - restriction: >= net472
+      System.Configuration.ConfigurationManager (>= 9.0) - restriction: || (>= net472) (>= net9.0)
+      System.Diagnostics.DiagnosticSource (>= 9.0) - restriction: >= net472
+      System.Diagnostics.EventLog (>= 9.0) - restriction: >= net9.0
+      System.Memory (>= 4.6) - restriction: >= net472
+      System.Reflection.Metadata (>= 9.0) - restriction: >= net472
+      System.Reflection.MetadataLoadContext (>= 9.0) - restriction: || (>= net472) (>= net9.0)
+      System.Runtime.CompilerServices.Unsafe (>= 6.1) - restriction: >= net472
+      System.Security.Cryptography.ProtectedData (>= 9.0) - restriction: >= net9.0
       System.Security.Principal.Windows (>= 5.0) - restriction: >= net472
-      System.Text.Json (>= 8.0.3) - restriction: >= net472
-      System.Threading.Tasks.Dataflow (>= 8.0) - restriction: >= net472
-    Microsoft.Build.Framework (17.11.4)
-      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Memory (>= 4.5.5) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Runtime.CompilerServices.Unsafe (>= 6.0) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-    Microsoft.Build.Tasks.Core (17.11.4)
-      Microsoft.Build.Framework (>= 17.11.4) - restriction: >= netstandard2.0
-      Microsoft.Build.Utilities.Core (>= 17.11.4) - restriction: >= netstandard2.0
-      Microsoft.IO.Redist (>= 6.0) - restriction: >= net472
-      Microsoft.NET.StringTools (>= 17.11.4) - restriction: >= netstandard2.0
-      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.CodeDom (>= 8.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
-      System.Collections.Immutable (>= 8.0) - restriction: >= netstandard2.0
-      System.Configuration.ConfigurationManager (>= 8.0) - restriction: >= netstandard2.0
-      System.Memory (>= 4.5.5) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-      System.Reflection.Metadata (>= 8.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Resources.Extensions (>= 8.0) - restriction: >= netstandard2.0
-      System.Runtime.CompilerServices.Unsafe (>= 6.0) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-      System.Security.Cryptography.Pkcs (>= 8.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
-      System.Security.Cryptography.Xml (>= 8.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
-      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Text.Encoding.CodePages (>= 7.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Threading.Tasks.Dataflow (>= 8.0) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-    Microsoft.Build.Utilities.Core (17.11.4)
-      Microsoft.Build.Framework (>= 17.11.4) - restriction: >= netstandard2.0
-      Microsoft.IO.Redist (>= 6.0) - restriction: >= net472
-      Microsoft.NET.StringTools (>= 17.11.4) - restriction: >= netstandard2.0
-      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Collections.Immutable (>= 8.0) - restriction: >= netstandard2.0
-      System.Configuration.ConfigurationManager (>= 8.0) - restriction: >= netstandard2.0
-      System.Memory (>= 4.5.5) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-      System.Runtime.CompilerServices.Unsafe (>= 6.0) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
-      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
-      System.Text.Encoding.CodePages (>= 7.0) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
+      System.Text.Json (>= 9.0) - restriction: >= net472
+      System.Threading.Tasks.Dataflow (>= 9.0) - restriction: >= net472
+      System.Threading.Tasks.Extensions (>= 4.6) - restriction: >= net472
+    Microsoft.Build.Framework (17.14.28)
+      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Diagnostics.DiagnosticSource (>= 9.0) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Memory (>= 4.6) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Runtime.CompilerServices.Unsafe (>= 6.1) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Text.Json (>= 9.0) - restriction: >= net472
+      System.Threading.Tasks.Extensions (>= 4.6) - restriction: >= net472
+    Microsoft.Build.Tasks.Core (17.14.28)
+      Microsoft.Build.Framework (>= 17.14.28) - restriction: >= netstandard2.0
+      Microsoft.Build.Utilities.Core (>= 17.14.28) - restriction: >= netstandard2.0
+      Microsoft.IO.Redist (>= 6.1) - restriction: >= net472
+      Microsoft.NET.StringTools (>= 17.14.28) - restriction: >= netstandard2.0
+      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.CodeDom (>= 9.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
+      System.Collections.Immutable (>= 9.0) - restriction: >= netstandard2.0
+      System.Configuration.ConfigurationManager (>= 9.0) - restriction: >= netstandard2.0
+      System.Diagnostics.DiagnosticSource (>= 9.0) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Diagnostics.EventLog (>= 9.0) - restriction: >= net9.0
+      System.Formats.Asn1 (>= 9.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Formats.Nrbf (>= 9.0) - restriction: >= netstandard2.0
+      System.Memory (>= 4.6) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Reflection.Metadata (>= 9.0) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Resources.Extensions (>= 9.0) - restriction: >= netstandard2.0
+      System.Runtime.CompilerServices.Unsafe (>= 6.1) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Security.Cryptography.Pkcs (>= 9.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
+      System.Security.Cryptography.ProtectedData (>= 9.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
+      System.Security.Cryptography.Xml (>= 9.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
+      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Text.Encoding.CodePages (>= 9.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Text.Json (>= 9.0) - restriction: >= net472
+      System.Threading.Tasks.Dataflow (>= 9.0) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Threading.Tasks.Extensions (>= 4.6) - restriction: >= net472
+    Microsoft.Build.Utilities.Core (17.14.28)
+      Microsoft.Build.Framework (>= 17.14.28) - restriction: >= netstandard2.0
+      Microsoft.IO.Redist (>= 6.1) - restriction: >= net472
+      Microsoft.NET.StringTools (>= 17.14.28) - restriction: >= netstandard2.0
+      Microsoft.Win32.Registry (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Collections.Immutable (>= 9.0) - restriction: >= netstandard2.0
+      System.Configuration.ConfigurationManager (>= 9.0) - restriction: >= netstandard2.0
+      System.Diagnostics.DiagnosticSource (>= 9.0) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Diagnostics.EventLog (>= 9.0) - restriction: >= net9.0
+      System.Memory (>= 4.6) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Runtime.CompilerServices.Unsafe (>= 6.1) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
+      System.Security.Cryptography.ProtectedData (>= 9.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
+      System.Security.Principal.Windows (>= 5.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Text.Encoding.CodePages (>= 9.0) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
+      System.Text.Json (>= 9.0) - restriction: >= net472
+      System.Threading.Tasks.Extensions (>= 4.6) - restriction: >= net472
     Microsoft.IO.Redist (6.1.3) - restriction: >= net472
       System.Buffers (>= 4.6.1) - restriction: >= net472
       System.Memory (>= 4.6.3) - restriction: >= net472
     Microsoft.NET.StringTools (18.3.3) - restriction: >= netstandard2.0
       System.Memory (>= 4.6) - restriction: >= netstandard2.0
       System.Runtime.CompilerServices.Unsafe (>= 6.1) - restriction: >= netstandard2.0
-    Microsoft.NETCore.Platforms (7.0.4) - restriction: || (&& (< monoandroid) (>= net8.0) (< netcoreapp2.1) (< netstandard2.1) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< netstandard2.1) (< xamarintvos) (< xamarinwatchos))
-    Microsoft.Win32.Registry (5.0) - restriction: || (&& (< net45) (>= netstandard2.0)) (&& (< net472) (< net8.0) (>= netstandard2.0))
+    Microsoft.NETCore.Platforms (7.0.4) - restriction: || (&& (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< netstandard2.1) (< xamarintvos) (< xamarinwatchos)) (&& (>= net9.0) (< netcoreapp2.1) (< netstandard2.1))
+    Microsoft.Win32.Registry (5.0) - restriction: || (&& (< net45) (>= netstandard2.0)) (&& (< net472) (< net9.0) (>= netstandard2.0))
       System.Buffers (>= 4.5.1) - restriction: || (&& (>= monoandroid) (< netstandard1.3)) (>= monotouch) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (>= xamarinios) (>= xamarinmac) (>= xamarintvos) (>= xamarinwatchos)
       System.Memory (>= 4.5.4) - restriction: || (&& (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (>= uap10.1)
       System.Security.AccessControl (>= 5.0) - restriction: || (&& (>= monoandroid) (< netstandard1.3)) (&& (< monoandroid) (>= netcoreapp2.0)) (>= monotouch) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (>= net461) (>= netcoreapp2.1) (>= uap10.1) (>= xamarinios) (>= xamarinmac) (>= xamarintvos) (>= xamarinwatchos)
@@ -318,17 +339,21 @@ NUGET
       NuGet.Packaging (>= 7.3) - restriction: || (>= net472) (>= net8.0)
       System.Text.Json (>= 8.0.5) - restriction: >= net472
     NuGet.Versioning (7.3) - restriction: || (>= net472) (>= net8.0)
-    System.Buffers (4.6.1) - restriction: || (&& (>= monoandroid) (< netstandard1.3) (>= netstandard2.0)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (&& (>= net462) (>= netstandard2.0)) (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (>= net472) (&& (>= net8.0) (< netstandard2.1)) (&& (< net8.0) (>= netstandard2.0) (>= xamarintvos)) (&& (< net8.0) (>= netstandard2.0) (>= xamarinwatchos)) (&& (< net8.0) (>= xamarinios)) (&& (< net8.0) (>= xamarinmac)) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
-    System.CodeDom (10.0.3) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
+    System.Buffers (4.6.1) - restriction: || (&& (>= monoandroid) (< netstandard1.3) (>= netstandard2.0)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (&& (>= net462) (>= netstandard2.0)) (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (>= net472) (&& (>= net9.0) (< netstandard2.1)) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1)) (&& (>= netstandard2.0) (>= xamarintvos)) (&& (>= netstandard2.0) (>= xamarinwatchos)) (>= xamarinios) (>= xamarinmac)
+    System.CodeDom (10.0.3) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
     System.Collections.Immutable (10.0.3) - restriction: >= netstandard2.0
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
     System.Configuration.ConfigurationManager (10.0.3) - restriction: >= netstandard2.0
       System.Diagnostics.EventLog (>= 10.0.3) - restriction: >= net8.0
       System.Security.Cryptography.ProtectedData (>= 10.0.3) - restriction: || (&& (< net462) (>= netstandard2.0)) (>= net8.0)
-    System.Diagnostics.EventLog (10.0.3) - restriction: >= net8.0
-    System.Formats.Asn1 (10.0.3) - restriction: || (&& (>= net462) (>= net8.0)) (&& (< net462) (>= netstandard2.0)) (&& (< net472) (>= netstandard2.0)) (&& (>= net8.0) (< net9.0)) (&& (>= net8.0) (< xamarintvos) (< xamarinwatchos)) (&& (>= netcoreapp3.0) (< xamarintvos) (< xamarinwatchos)) (>= netstandard2.1)
+    System.Diagnostics.DiagnosticSource (10.0.3) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
+      System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
+    System.Diagnostics.EventLog (10.0.3) - restriction: || (&& (>= net472) (>= net8.0)) (>= net9.0)
+    System.Formats.Asn1 (10.0.3) - restriction: || (&& (>= net462) (>= net9.0)) (&& (< net462) (>= netstandard2.0)) (&& (< net472) (>= netstandard2.0)) (&& (< net8.0) (>= net9.0)) (&& (>= netcoreapp3.0) (< xamarintvos) (< xamarinwatchos)) (>= netstandard2.1)
+      System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
+      System.ValueTuple (>= 4.6.1) - restriction: >= net462
     System.Formats.Nrbf (10.0.3) - restriction: >= netstandard2.0
       Microsoft.Bcl.HashCode (>= 6.0) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Reflection.Metadata (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
@@ -337,26 +362,26 @@ NUGET
       System.Buffers (>= 4.6.1) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Threading.Tasks.Extensions (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
-    System.Memory (4.6.3) - restriction: || (&& (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (>= net462) (>= net8.0)) (&& (>= net8.0) (< netstandard2.1)) (>= netstandard2.0)
+    System.Memory (4.6.3) - restriction: || (&& (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (>= net462) (>= net9.0)) (&& (< net8.0) (>= net9.0)) (&& (>= net9.0) (< netstandard2.1)) (>= netstandard2.0)
       System.Buffers (>= 4.6.1) - restriction: || (>= net462) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
       System.Numerics.Vectors (>= 4.6.1) - restriction: || (>= net462) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
-    System.Numerics.Vectors (4.6.1) - restriction: || (&& (>= net462) (>= netstandard2.0)) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
+    System.Numerics.Vectors (4.6.1) - restriction: || (&& (>= net462) (>= netstandard2.0)) (>= net472) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
     System.Reactive (6.1) - restriction: >= netstandard2.0
       System.Threading.Tasks.Extensions (>= 4.5.4) - restriction: || (>= net472) (&& (< net6.0) (>= netstandard2.0)) (>= uap10.1)
     System.Reflection.Metadata (10.0.3) - restriction: >= netstandard2.0
       System.Collections.Immutable (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
-    System.Reflection.MetadataLoadContext (10.0.3) - restriction: || (>= net472) (>= net8.0)
+    System.Reflection.MetadataLoadContext (10.0.3) - restriction: || (>= net472) (>= net9.0)
       System.Collections.Immutable (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Reflection.Metadata (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
     System.Resources.Extensions (10.0.3) - restriction: >= netstandard2.0
       System.Formats.Nrbf (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
-    System.Runtime.CompilerServices.Unsafe (6.1.2) - restriction: >= netstandard2.0
-    System.Security.AccessControl (6.0.1) - restriction: || (&& (>= monoandroid) (< netstandard1.3) (>= netstandard2.0)) (&& (< monoandroid) (< net8.0) (>= netcoreapp2.0)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (&& (>= net461) (< net472) (>= netstandard2.0)) (&& (< net462) (< net8.0) (>= netstandard2.0)) (&& (< net8.0) (>= netcoreapp2.1)) (&& (< net8.0) (>= netstandard2.0) (>= xamarintvos)) (&& (< net8.0) (>= netstandard2.0) (>= xamarinwatchos)) (&& (< net8.0) (>= xamarinios)) (&& (< net8.0) (>= xamarinmac)) (&& (>= netstandard2.0) (>= uap10.1))
+    System.Runtime.CompilerServices.Unsafe (6.1.2) - restriction: || (&& (< net8.0) (>= net9.0)) (&& (< net8.0) (>= netstandard2.1)) (&& (>= net9.0) (< netstandard2.1)) (>= netstandard2.0)
+    System.Security.AccessControl (6.0.1) - restriction: || (&& (>= monoandroid) (< netstandard1.3) (>= netstandard2.0)) (&& (< monoandroid) (< net9.0) (>= netcoreapp2.0)) (&& (>= monotouch) (>= netstandard2.0)) (&& (< net46) (< netcoreapp2.0) (>= netstandard2.0)) (&& (>= net461) (< net472) (>= netstandard2.0)) (&& (< net462) (< net8.0) (>= netstandard2.0)) (&& (< net8.0) (>= net9.0)) (&& (< net9.0) (>= netcoreapp2.1)) (&& (>= netstandard2.0) (>= uap10.1)) (&& (>= netstandard2.0) (>= xamarintvos)) (&& (>= netstandard2.0) (>= xamarinwatchos)) (>= xamarinios) (>= xamarinmac)
       System.Security.Principal.Windows (>= 5.0) - restriction: || (>= net461) (&& (< net6.0) (>= netstandard2.0))
-    System.Security.Cryptography.Cng (5.0) - restriction: || (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (&& (>= net8.0) (< netstandard2.1)) (&& (< net8.0) (>= netstandard2.1))
+    System.Security.Cryptography.Cng (5.0) - restriction: || (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (&& (< net8.0) (>= net9.0)) (&& (< net8.0) (>= netstandard2.1)) (&& (>= net9.0) (< netstandard2.1))
       Microsoft.NETCore.Platforms (>= 5.0) - restriction: && (< monoandroid) (>= netcoreapp2.0) (< netcoreapp2.1) (< netstandard2.1) (< xamarintvos) (< xamarinwatchos)
       System.Formats.Asn1 (>= 5.0) - restriction: && (>= netcoreapp3.0) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
     System.Security.Cryptography.Pkcs (10.0.3) - restriction: || (&& (< net462) (>= netstandard2.0)) (&& (< net472) (>= netstandard2.0)) (>= net8.0)
@@ -366,14 +391,15 @@ NUGET
       System.Memory (>= 4.6.3) - restriction: && (< net462) (>= netstandard2.0) (< netstandard2.1)
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (&& (< net8.0) (>= netstandard2.1))
       System.Security.Cryptography.Cng (>= 5.0) - restriction: || (&& (< net462) (>= netstandard2.0) (< netstandard2.1)) (&& (< net8.0) (>= netstandard2.1))
-    System.Security.Cryptography.ProtectedData (10.0.3) - restriction: || (&& (< net462) (>= net472)) (>= net8.0)
-    System.Security.Cryptography.Xml (10.0.3) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net8.0)
+    System.Security.Cryptography.ProtectedData (10.0.3) - restriction: || (&& (< net462) (>= net472)) (&& (< net472) (>= netstandard2.0)) (>= net8.0)
+      System.Memory (>= 4.6.3) - restriction: && (< net462) (< net8.0) (>= netstandard2.0)
+    System.Security.Cryptography.Xml (10.0.3) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net9.0)
       Microsoft.Bcl.Cryptography (>= 10.0.3) - restriction: || (>= net462) (&& (>= net8.0) (< net9.0)) (&& (< net8.0) (>= netstandard2.0))
       System.Memory (>= 4.6.3) - restriction: && (< net462) (< net8.0) (>= netstandard2.0)
       System.Security.AccessControl (>= 6.0) - restriction: && (< net462) (< net8.0) (>= netstandard2.0)
       System.Security.Cryptography.Pkcs (>= 10.0.3) - restriction: || (&& (< net462) (>= netstandard2.0)) (>= net8.0)
-    System.Security.Principal.Windows (5.0) - restriction: || (&& (>= net461) (< net462) (>= netstandard2.0)) (&& (< net462) (< net6.0) (>= netstandard2.0)) (>= net472) (&& (< net8.0) (>= netstandard2.0))
-    System.Text.Encoding.CodePages (10.0.3) - restriction: && (< net472) (< net8.0) (>= netstandard2.0)
+    System.Security.Principal.Windows (5.0) - restriction: || (&& (>= net461) (< net462) (>= netstandard2.0)) (&& (>= net461) (>= net9.0)) (&& (< net462) (< net6.0) (>= netstandard2.0)) (>= net472) (&& (< net6.0) (>= net9.0)) (&& (< net9.0) (>= netstandard2.0))
+    System.Text.Encoding.CodePages (10.0.3) - restriction: && (< net472) (< net9.0) (>= netstandard2.0)
       System.Memory (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.ValueTuple (>= 4.6.1) - restriction: >= net462
@@ -390,7 +416,7 @@ NUGET
       System.Text.Encodings.Web (>= 10.0.3) - restriction: || (>= net462) (>= netstandard2.0)
       System.Threading.Tasks.Extensions (>= 4.6.3) - restriction: || (>= net462) (&& (< net8.0) (>= netstandard2.0))
       System.ValueTuple (>= 4.6.1) - restriction: >= net462
-    System.Threading.Tasks.Dataflow (10.0.3) - restriction: || (>= net472) (&& (< net8.0) (>= netstandard2.0))
+    System.Threading.Tasks.Dataflow (10.0.3) - restriction: || (>= net472) (&& (< net9.0) (>= netstandard2.0))
     System.Threading.Tasks.Extensions (4.6.3) - restriction: || (>= net472) (&& (< net6.0) (>= netstandard2.0)) (&& (>= netstandard2.0) (>= uap10.1))
       System.Runtime.CompilerServices.Unsafe (>= 6.1.2) - restriction: || (>= net462) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
     System.ValueTuple (4.6.2) - restriction: || (&& (>= net462) (>= netstandard2.0)) (>= net472)

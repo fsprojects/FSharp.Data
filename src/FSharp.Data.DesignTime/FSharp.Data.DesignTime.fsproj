@@ -44,5 +44,5 @@
     <ProjectReference Include="../FSharp.Data.WorldBank.Core/FSharp.Data.WorldBank.Core.fsproj" />
     <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
-  <Import Project="../../.paket/Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
