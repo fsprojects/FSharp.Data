@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="JsonProvider.fs" />
+    <Compile Include="XmlProvider.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
