@@ -1,6 +1,7 @@
 {
   "last_run": "2026-02-21",
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330],
+  "backlog_cursor": 1528,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -24,6 +25,20 @@
       "pr_number": 1603,
       "note": "Merged by dsyme on 2026-02-21",
       "date": "2026-02-21"
+    },
+    {
+      "branch": "repo-assist/fix-csv-schema-paren-946",
+      "description": "Fix CSV schema parsing: column names containing parentheses corrupt type annotation (closes #946)",
+      "status": "open",
+      "date": "2026-02-21",
+      "note": "Removes RegexOptions.RightToLeft from nameAndTypeRegex in CsvInference.fs. All 49 inference tests pass."
+    },
+    {
+      "branch": "repo-assist/fix-html-pre-whitespace-1509",
+      "description": "Fix HtmlNode.ToString: preserve whitespace in elements nested inside <pre> (closes #1509)",
+      "status": "open",
+      "date": "2026-02-21",
+      "note": "Propagates insidePre context through serialize recursion in HtmlNode.fs. All 72 HTML parser tests pass."
     }
   ],
   "monthly_activity_issue": {
@@ -45,17 +60,28 @@
     "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
     "PR #1603 (Repo Assist docs fix #1454): MERGED by dsyme on 2026-02-21.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
-    "Issue #1509 (HtmlNode.ToString whitespace bug) - maintainer needs to verify if PR #1510 fully fixed it",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - dsyme confirmed STILL open in 6.6.0; @njlr provided repro (shiki code blocks); root cause: insidePre not propagated to children in HtmlNode.fs serialize. Fix PR created.",
     "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
     "Issue #1454 (broken Channel9 video): CLOSED by merge of PR #1603 on 2026-02-21",
     "Issue #1330 (HTML whitespace bug): Root cause identified - in HtmlParser.fs Emit(), normalizedContent=' ' becomes Text '' which is dropped. Fix requires context-aware inline/block detection to avoid breaking tests. Simple one-liner fix breaks existing tests.",
-    "Issue #1520 (relative paths): Author self-resolved - EmbeddedResource parameter is the solution. Suggested closure.",
+    "Issue #1520 (relative paths): @Thorium (maintainer member) self-resolved - EmbeddedResource parameter is the solution. Suggested closure.",
     "Issue #1489 (empty space separator): Contributor nhirschey explained this is a fixed-width format file, not space-separated CSV. Good answer already given.",
-    "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs line 599 skips GetSample/GetSchema generation when EmbeddedResource is specified. Users get runtime failures when file is removed. Complex fix needed - need to understand correct expected runtime behavior.",
-    "Issue #1528 (Assembly loading): Community workaround exists - dotnet clean + dotnet nuget locals all --clear + dotnet restore. Not commented on.",
+    "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs line 599 skips GetSample/GetSchema generation when EmbeddedResource is specified. @sproott (April 2024) identified exact code location. Complex fix needed.",
+    "Issue #1528 (Assembly loading): Community workaround confirmed - dotnet clean + dotnet nuget locals all --clear + dotnet restore. Commented with workaround.",
+    "Issue #1501 (Memory limitations XmlProvider): XmlProvider uses XDocument full DOM - fundamental limitation. Commented with explanation and suggested System.Xml.XmlReader for streaming.",
+    "Issue #946 (CSV schema parentheses): RightToLeft regex flag in CsvInference.fs causes incorrect split on first '(' in column name when name contains parens. Fix: remove RightToLeft from nameAndTypeRegex. Draft PR created.",
+    "Issue #438 (JsonGenerator efficiency): Very old issue (2014) by @ovatsus - performance optimization in generated code for JSON Heterogeneous types. No comments. Skip.",
+    "Issue #818 (XmlProvider captures current directory): Old issue (2015), workaround already in issue. Skip.",
+    "Issue #1031 (JsonProvider error from another project): Old bug (2017), no comments. Type provider looks in wrong project directory - EmbeddedResource parameter might help.",
+    "Issue #1488 (XSD name vs type attribute): Design decision by @giacomociti explained - using element names. Workaround via XElement constructor shared. Resolved by conversation.",
+    "Issue #1490 (update docs pictures): The .fsx files already use conditional #r nuget refs via (*** condition: fsx ***) blocks. The issue may be about actual screenshot images.",
+    "Issue #1478 (A way forward with JsonProvider): 17-comment design discussion. Nothing to add without deep involvement.",
+    "Issue #1130 (Descendants and CssSelect): Root cause identified by @serhiiz (2018) - HTML parser can't distinguish / (division) from / (start of regex) in script tags. Complex JS lexer fix needed.",
     "dotnet tool restore needed before dotnet paket restore",
     "dsyme merged agentic workflows 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21",
-    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603 all on 2026-02-21"
+    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603 all on 2026-02-21",
+    "IMPORTANT: dsyme noted in monthly activity issue comment that #1509 was NOT fixed by PR #1510 as Repo Assist previously claimed - issue is still open in 6.6.0",
+    "Backlog cursor at #1528 - next run should start from issues after #1528 when sorted by creation date ascending"
   ]
 }
