@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T19:45:30Z",
-  "workflow_run_id": "22283997822",
-  "tasks_done_this_run": ["task5", "task11"],
+  "last_run": "2026-02-22T19:53:34Z",
+  "workflow_run_id": "22284125611",
+  "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -15,7 +15,7 @@
     "task10": "2026-02-22",
     "task11": "2026-02-22"
   },
-  "issue_backlog_cursor": null,
+  "issue_backlog_cursor": 1307,
   "label_backlog_cursor": null,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
@@ -54,8 +54,8 @@
     1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1501, 1528, 946,
     1223, 1259, 1356, 1230, 1391, 1349, 1321, 1490, 1461, 834, 1326,
     1170, 1240, 1213, 1305, 1294, 1362, 1418, 1405, 1453, 1489,
-    1249, 1251, 1256, 1261, 1300, 1310, 1322, 1383, 1194, 1419, 1452, 1437,
-    1488, 1465, 1436, 1340, 1417
+    1249, 1251, 1256, 1261, 1300, 1322, 1383, 1194, 1419, 1452, 1437,
+    1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303
   ],
   "commented_prs": [1613, 1614, 1619, 1621],
   "ideas_submitted": [],
@@ -69,7 +69,7 @@
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 (PR #1605 merged fixed it)",
     "issue_1330": "HTML whitespace-stripping bug - complex to fix, needs context-aware inline/block detection",
-    "issue_1310": "FIXED in PR #1619 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. dsyme endorsed fix on 2026-02-22. PR #1620 (Copilot test) merged into PR #1619 branch. Assembly.Load fix pushed to PR #1619 branch on 2026-02-22T19:45 (supersedes Copilot sub-PR #1623). CI failure on Windows is infrastructure (network blocked).",
+    "issue_1310": "FIXED in PR #1619 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. Assembly.Load fix applied 2026-02-22T19:47. CI pending.",
     "issue_1439": "InferRows truncates text lines not CSV rows - workaround: InferRows=0",
     "issue_1249": "CLOSED by dsyme 2026-02-22 (fixed in 3.0.1)",
     "issue_1251": "HTTP default encoding is ISO-8859-1 per RFC; workaround is responseEncodingOverride='utf-8'",
@@ -87,19 +87,22 @@
     "issue_1417": "IMPLEMENTED in PR #1621. StrictBooleans=true: 0/1->int, yes/no->string, true/false->bool. PR created 2026-02-22. TypeProviderInstantiation.fs already updated in PR. Copilot SWE sub-PR #1622 is redundant.",
     "issue_1436": "Trimmability for Blazor WASM. Commented 2026-02-22 explaining DynamicallyAccessedMembers annotation requirement and path forward.",
     "issue_1340": "Commented 2026-02-22: F# 6.0+ includes fix for #r nuget design-time resolution; Load uses runtime cwd by design; use Path.Combine(__SOURCE_DIRECTORY__, ...) for runtime paths.",
+    "issue_1283": "Commented 2026-02-22: TP static params must be compile-time constants. Workarounds: (1) use const schema, load data at runtime from config; (2) multiple providers + runtime if/else; (3) XDocument for fully dynamic.",
+    "issue_1302": "Commented 2026-02-22: TP composability not natively supported. Suggested manual fallback pattern.",
+    "issue_1303": "Commented 2026-02-22: Enhancement request, not currently supported. Related to #1432. Workaround: use JsonValue.[] accessor.",
     "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 created by a separate Copilot workflow (copilot/update-microsoft-build-packages), not from Repo Assist. It addresses #1615.",
     "pr_1618_note": "PR #1618 is from a SEPARATE Copilot workflow (copilot/update-microsoft-build-packages), not from Repo Assist. It addresses #1615.",
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 created 2026-02-22 for 7.0.0.",
-    "pr_1619_ci_failure": "PR #1619 Windows CI fails due to 'Don't throw exceptions on http error' test - outbound network blocked on Windows runner. All other tests pass. Infrastructure failure, not code issue. Assembly.Load fix pushed 2026-02-22T19:45.",
+    "pr_1619_ci_failure": "PR #1619 had Linux CI failure (GetSchema EmbeddedResource test). Assembly.Load fix pushed 2026-02-22T19:47. CI now pending.",
     "pr_1620_note": "PR #1620 merged by dsyme into PR #1619 branch on 2026-02-22T19:33. Added test for GetSchema with EmbeddedResource.",
     "pr_1621_review": "TypeProviderInstantiation.fs was already updated in PR #1621 (StrictBooleans added). Replied to dsyme review. Copilot sub-PR #1622 is redundant.",
     "pr_1622_note": "PR #1622 is a WIP sub-PR from Copilot SWE agent targeting PR #1621 branch. REDUNDANT - TypeProviderInstantiation.fs was already updated in PR #1621.",
-    "pr_1623_note": "PR #1623 (Assembly.Load fix) is SUPERSEDED - fix was pushed directly to PR #1619 branch on 2026-02-22T19:45.",
-    "pr_windows_ci": "PRs #1614 Windows CI passing. PR #1619 has Windows CI failure (HTTP network test blocked). PR #1621 pending CI.",
+    "pr_1623_note": "PR #1623 (Assembly.Load fix) is SUPERSEDED - fix was pushed directly to PR #1619 branch on 2026-02-22T19:47.",
+    "pr_windows_ci": "PR #1614 Windows CI passing. PR #1619 had Linux CI failure (EmbeddedResource test), Assembly.Load fix applied. PR #1621 pending CI.",
     "strict_booleans_impl": "StrictBooleans feature impl: post-process in CsvInference.inferCellType - Bit0/Bit1->int, bool from non-true/false->string. Positional param between inferenceMode and cultureInfo in inferColumnTypes. Static param at index 17 in CsvProvider. TypeProviderInstantiation.fs also updated with StrictBooleans=false default.",
     "recently_closed_by_dsyme": "Issues closed by dsyme on 2026-02-22: #1532, #1528, #1509, #1506, #1501, #1249, #1261; on 2026-02-21: #677. Likely prompted by Repo Assist comments.",
     "pr_1617_merged": "PR #1617 (DateTimeOffset fix) merged by dsyme on 2026-02-22T19:11:34Z.",
     "pr_1613_merged": "PR #1613 (CSS pseudo-class NotSupportedException) merged by dsyme on 2026-02-22T19:30:59Z.",
-    "issue_backlog": "Triaged all issues >=#1194 as of 2026-02-22. Older issues (#18-#1193) mostly feature requests from 2012-2022, not yet triaged by Repo Assist."
+    "issue_backlog": "Triaged issues up to #1307 as of 2026-02-22 (second run). Older issues (#18-#1268) mostly feature requests from 2012-2019, not yet triaged by Repo Assist. Next: #1298 (armv7), #1274 (CsvProvider single column), #1269 (HtmlProvider cookie error)."
   }
 }
