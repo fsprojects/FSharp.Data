@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 18,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356],
+  "backlog_cursor": 1073,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -37,18 +37,26 @@
     {
       "branch": "repo-assist/fix-html-pre-whitespace-1509",
       "description": "Fix HtmlNode.ToString: preserve whitespace in elements nested inside <pre> (closes #1509, also addresses #1223)",
-      "status": "open",
+      "status": "merged",
       "pr_number": 1605,
       "date": "2026-02-22",
-      "note": "Adds insidePre parameter to serialize function in HtmlNode.fs. All 2227 Core Tests pass including new regression test."
+      "note": "Merged by dsyme on 2026-02-22"
     },
     {
       "branch": "repo-assist/fix-json-float-serialization-1356",
       "description": "Fix JsonValue.Float serialization: append '.0' for whole-number floats (closes #1356)",
-      "status": "open",
+      "status": "merged",
       "pr_number": 1606,
       "date": "2026-02-22",
-      "note": "Float(100.0) now outputs '100.0' not '100'. Uses 'R' format + appends '.0' if no decimal point. All 2841 Core Tests pass (3 new regression tests)."
+      "note": "Merged by dsyme on 2026-02-22 at 01:42"
+    },
+    {
+      "branch": "repo-assist/fix-docs-jsonprovider-twitter-1073",
+      "description": "Fix JsonProvider docs: clarify why Tweet fields are optional due to mixed sample types (closes #1073)",
+      "status": "open",
+      "pr_number": null,
+      "date": "2026-02-22",
+      "note": "Created in run 10. Documentation-only change. PR number TBD."
     }
   ],
   "monthly_activity_issue": {
@@ -73,34 +81,30 @@
     "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
     "PR #1603 (Repo Assist docs fix #1454): MERGED by dsyme on 2026-02-21.",
     "PR #1604 (Repo Assist CSV schema fix #946): MERGED by dsyme on 2026-02-22.",
+    "PR #1605 (Repo Assist HTML pre whitespace fix #1509): MERGED by dsyme on 2026-02-22.",
+    "PR #1606 (Repo Assist JSON float serialization fix #1356): MERGED by dsyme on 2026-02-22.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
-    "Issue #1509 (HtmlNode.ToString whitespace bug) - dsyme confirmed STILL open in 6.6.0; @njlr provided repro (shiki code blocks); root cause: insidePre not propagated to children in HtmlNode.fs serialize. Fix PR #1605 created on 2026-02-22.",
-    "Issue #1223 (same whitespace bug as #1509, older issue) - commented 2026-02-22, linked to PR #1605",
-    "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - FIXED by PR #1605 merged 2026-02-22",
+    "Issue #1223 (same whitespace bug as #1509) - addressed by PR #1605 merge",
+    "Issue #1356 (JsonValue.Float serialization) - FIXED by PR #1606 merged 2026-02-22",
+    "Issue #946 (CSV schema parentheses): FIXED by PR #1604 (merged by dsyme 2026-02-22)",
+    "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
     "Issue #1454 (broken Channel9 video): CLOSED by merge of PR #1603 on 2026-02-21",
-    "Issue #1330 (HTML whitespace bug): Root cause identified - in HtmlParser.fs Emit(), normalizedContent=' ' becomes Text '' which is dropped. Fix requires context-aware inline/block detection to avoid breaking tests. Simple one-liner fix breaks existing tests.",
-    "Issue #1520 (relative paths): @Thorium (maintainer member) self-resolved - EmbeddedResource parameter is the solution. Suggested closure.",
-    "Issue #1489 (empty space separator): Contributor nhirschey explained this is a fixed-width format file, not space-separated CSV. Good answer already given.",
-    "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs line 599 skips GetSample/GetSchema generation when EmbeddedResource is specified. @sproott (April 2024) identified exact code location. Complex fix needed.",
-    "Issue #1528 (Assembly loading): Community workaround confirmed - dotnet clean + dotnet nuget locals all --clear + dotnet restore. Commented with workaround.",
-    "Issue #1501 (Memory limitations XmlProvider): XmlProvider uses XDocument full DOM - fundamental limitation. Commented with explanation and suggested System.Xml.XmlReader for streaming.",
-    "Issue #946 (CSV schema parentheses): FIXED by PR #1604 (merged by dsyme 2026-02-22). Remove RightToLeft from nameAndTypeRegex in CsvInference.fs.",
-    "Issue #1259 (NaN/Infinity in JSON): Fixed in current code - NaN/Infinity now write 'null' (line 88 JsonValue.fs). Commented on issue noting the fix on 2026-02-22.",
-    "Issue #1167 (HTML zero-length table name crash): ALREADY FIXED in current NameUtils.fs - 'if name.Length = 0 then name <- \"Unnamed\"' is present at line 110.",
-    "Issue #1212 (HtmlDocument CssSelect fails without html element): User confirmed fixed in v4.0.0 - can be closed.",
-    "Issue #1383 (CSS pseudo-classes like :nth-child not supported): Known limitation listed in docs. No fix ready.",
+    "Issue #1330 (HTML whitespace bug): Root cause identified but fix complex (context-aware inline/block detection needed)",
+    "Issue #1439 (CsvProvider InferRows truncation): Bug confirmed - truncates by text lines not CSV rows in Helpers.fs. Commented 2026-02-22 with workaround (InferRows=0).",
+    "Issue #1073 (JsonProvider docs ambiguity): Docs PR created 2026-02-22 - corrects misleading explanation about optional fields",
+    "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs skips GetSample/GetSchema generation. Complex fix needed.",
+    "Issue #1528 (Assembly loading): Community workaround confirmed - dotnet clean + dotnet nuget locals all --clear + dotnet restore",
+    "Issue #1501 (Memory limitations XmlProvider): XmlProvider uses XDocument full DOM - fundamental limitation.",
+    "Issue #1259 (NaN/Infinity in JSON): Fixed in current code - NaN/Infinity now write 'null'.",
+    "Issue #1383 (CSS pseudo-classes like :nth-child not supported): Known limitation listed in docs.",
     "dotnet tool restore needed before dotnet paket restore",
-    "dsyme merged agentic workflows 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21",
-    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603, #1604 all on 2026-02-21/22",
-    "IMPORTANT: dsyme noted in monthly activity issue comment that #1509 was NOT fixed by PR #1510 as Repo Assist previously claimed - issue is still open in 6.6.0. Fix PR #1605 created on 2026-02-22.",
+    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603, #1604, #1605, #1606 all on 2026-02-21/22",
     "Issue #1439 (CsvProvider InferRows truncation): Bug confirmed - truncates by text lines not CSV rows in Helpers.fs readText() loop. Multi-line quoted fields fail. Complex to fix (need quote-char-aware line counting). Labelled as bug.",
-    "Issue #1437 (xs:dateTime DateTimeKind.Unspecified): Bug in AsDateTimeOffset. @giacomociti suggests using XElement as workaround. Complex due to inference impact. Labelled as bug.",
+    "Issue #1437 (xs:dateTime DateTimeKind.Unspecified): Bug in AsDateTimeOffset. Complex due to inference impact. Labelled as bug.",
     "Issue #1436 (trimmable): Feature request for AOT/trim support. Labelled as enhancement.",
-    "Issue #1356 (JsonValue.Float serialization): Bug confirmed - Float(100.0).ToString() returns '100' not '100.0'. Root cause: w.Write(number) uses float.ToString() which drops trailing zero. Fix PR #1606 created on 2026-02-22: uses 'R' format and appends '.0' if no decimal/exponent. All 2841 Core Tests pass.",
-    "Issue #1488 (XmlProvider XSD types named by element not type): Design decision by @giacomociti. Workaround: use XElement constructor to convert between generated types. Issue author acknowledged workaround.",
-    "Issue #1478 (JsonProvider future direction): Active community discussion (17 comments). No action needed - this is a strategic discussion for maintainers.",
-    "Issue #1490 (update docs to use nuget reference): Already handled - docs .fsx files use '(*** condition: prepare ***)' to hide .dll refs and '(*** condition: fsx ***)' to show nuget refs. Not a bug.",
-    "Run 9 (2026-02-22): PR #1604 merged, triaged #1478/#1488/#1490, confirmed #1356 still a bug, created PR #1606 for #1356 fix. Backlog cursor still at #18 (nearly full sweep done)."
+    "Issue #1478 (JsonProvider future direction): Active community discussion (17 comments). No action needed.",
+    "Run 10 (2026-02-22): PR #1605 and #1606 both merged by dsyme! Created docs PR for #1073. Commented on #1439. Backlog cursor advanced to #1073. Old issues (#18-#1072) largely triaged - mostly old feature requests with maintainer discussion."
   ]
 }
