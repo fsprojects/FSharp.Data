@@ -25,7 +25,8 @@ type internal CsvProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string
+      PreferDateOnly : bool }
 
 type internal XmlProviderArgs =
     { Sample : string
@@ -37,7 +38,8 @@ type internal XmlProviderArgs =
       EmbeddedResource : string 
       InferTypesFromValues : bool
       Schema : string
-      InferenceMode: InferenceMode }
+      InferenceMode: InferenceMode
+      PreferDateOnly : bool }
 
 type internal JsonProviderArgs =
     { Sample : string
@@ -50,7 +52,8 @@ type internal JsonProviderArgs =
       InferTypesFromValues : bool
       PreferDictionaries : bool
       InferenceMode: InferenceMode
-      Schema: string }
+      Schema: string
+      PreferDateOnly : bool }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -60,7 +63,8 @@ type internal HtmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string
+      PreferDateOnly : bool }
 
 type internal WorldBankProviderArgs =
     { Sources : string
@@ -93,7 +97,8 @@ type internal TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder
-                   box x.EmbeddedResource |]
+                   box x.EmbeddedResource
+                   box x.PreferDateOnly |]
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -105,7 +110,8 @@ type internal TypeProviderInstantiation =
                    box x.EmbeddedResource
                    box x.InferTypesFromValues
                    box x.Schema
-                   box x.InferenceMode |] 
+                   box x.InferenceMode
+                   box x.PreferDateOnly |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -118,7 +124,8 @@ type internal TypeProviderInstantiation =
                    box x.InferTypesFromValues
                    box x.PreferDictionaries
                    box x.InferenceMode
-                   box x.Schema |]
+                   box x.Schema
+                   box x.PreferDateOnly |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -128,7 +135,8 @@ type internal TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder
-                   box x.EmbeddedResource |]
+                   box x.EmbeddedResource
+                   box x.PreferDateOnly |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -223,7 +231,8 @@ type internal TypeProviderInstantiation =
                   Encoding = args.[9]
                   CacheRows = false
                   ResolutionFolder = ""
-                  EmbeddedResource = "" }
+                  EmbeddedResource = ""
+                  PreferDateOnly = false }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
@@ -234,7 +243,8 @@ type internal TypeProviderInstantiation =
                   EmbeddedResource = "" 
                   InferTypesFromValues = args.[5] |> bool.Parse
                   Schema = args.[6]
-                  InferenceMode = args.[7] |> InferenceMode.Parse }
+                  InferenceMode = args.[7] |> InferenceMode.Parse
+                  PreferDateOnly = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty
             if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then
@@ -248,7 +258,8 @@ type internal TypeProviderInstantiation =
                        InferTypesFromValues = args.[5] |> bool.Parse
                        PreferDictionaries = args.[6] |> bool.Parse
                        InferenceMode = args.[7] |> InferenceMode.Parse
-                       Schema = if args.Length > 8 then args.[8] else "" }
+                       Schema = if args.Length > 8 then args.[8] else ""
+                       PreferDateOnly = false }
             else
                 // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
                 Json { Sample = args.[1]
@@ -261,7 +272,8 @@ type internal TypeProviderInstantiation =
                        InferTypesFromValues = true
                        PreferDictionaries = false
                        InferenceMode = InferenceMode.Parse "BackwardCompatible"
-                       Schema = if args.Length > 8 then args.[8] else "" }
+                       Schema = if args.Length > 8 then args.[8] else ""
+                       PreferDateOnly = false }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
@@ -270,7 +282,8 @@ type internal TypeProviderInstantiation =
                    Culture = args.[4]
                    Encoding = ""
                    ResolutionFolder = ""
-                   EmbeddedResource = "" }
+                   EmbeddedResource = ""
+                   PreferDateOnly = false }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
