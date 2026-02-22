@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T21:00:01Z",
-  "workflow_run_id": "22285206383",
-  "tasks_done_this_run": ["task1", "task11"],
+  "last_run": "2026-02-22T21:52:40Z",
+  "workflow_run_id": "22286092292",
+  "tasks_done_this_run": ["task1", "task7", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -15,7 +15,7 @@
     "task10": "2026-02-22",
     "task11": "2026-02-22"
   },
-  "issue_backlog_cursor": 1441,
+  "issue_backlog_cursor": 1478,
   "label_backlog_cursor": null,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
@@ -58,7 +58,7 @@
     1170, 1240, 1213, 1305, 1294, 1362, 1418, 1405, 1453, 1489,
     1249, 1251, 1256, 1261, 1300, 1322, 1383, 1194, 1419, 1452, 1437,
     1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241,
-    1336, 1325, 1109, 1245, 1115
+    1336, 1325, 1109, 1245, 1115, 1432
   ],
   "commented_prs": [1613, 1614, 1619, 1621],
   "ideas_submitted": [],
@@ -69,7 +69,8 @@
     "dsyme endorsed fixing issue #1310 (EmbeddedResource + Schema/GetSchema bug) on 2026-02-22",
     "dsyme endorsed StrictBooleans parameter for CsvProvider in issue #1417 (2024-03-11)",
     "dsyme endorsed implementing cycle guard for XSD group refs in issue #1419 (2026-02-22)",
-    "dsyme endorsed fixing InferRows multiline CSV bug in issue #1439 (2026-02-22)"
+    "dsyme endorsed fixing InferRows multiline CSV bug in issue #1439 (2026-02-22)",
+    "dsyme endorsed UseOriginalNames/NamingConvention parameter for XmlProvider in issue #1432 (2022-03-28)"
   ],
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 (PR #1605 merged fixed it)",
@@ -91,6 +92,7 @@
     "issue_1109": "Commented 2026-02-22 (run 4): Pointed to PR #1621 (StrictBooleans=true) which prevents 0/1 from being inferred as boolean. Labelled: type-new-feature, up-for-grabs, good first issue.",
     "issue_1245": "Commented 2026-02-22 (run 4): No built-in way to omit null fields. Provided JsonValue.Record workaround for conditional field inclusion.",
     "issue_1115": "Commented 2026-02-22 (run 4): XmlProvider doesn't preserve XML comments in round-trip through Root(...) constructors. Suggested System.Xml.Linq.XDocument for comment-preserving manipulation.",
+    "issue_1432": "Commented 2026-02-22 (run 5): Outlined NamingConvention/UseOriginalNames parameter implementation. Points to NameUtils.fs (nicePascalName/niceCamelName). dsyme endorsed. Labelled: good first issue.",
     "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 merged by dsyme (from separate Copilot workflow).",
     "pr_1618_merged": "PR #1618 (Microsoft.Build security update) merged by dsyme on main branch.",
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 created 2026-02-22 for 7.0.0.",
@@ -101,8 +103,10 @@
     "pr_1623_note": "PR #1623 (Assembly.Load fix) is SUPERSEDED - fix was pushed directly to PR #1619 branch on 2026-02-22T19:47.",
     "pr_1626_note": "PR #1626 (XSD cycle guard) created 2026-02-22 (run 3). Adds VisitingGroups tracking to parseParticle.",
     "recently_closed_by_dsyme": "Issues closed by dsyme on 2026-02-22: #1532, #1528, #1509, #1506, #1501, #1249, #1261; on 2026-02-21: #677.",
-    "issue_1624": "Workflow failure issue #1624 created by github-actions bot. Reports 'Code Push Failed: create_pull_request: Failed to apply patch' on branch repo-assist/deps-update-2026-02-22. This was a previous failed run - PR #1614 already exists so the failure was a duplicate attempt.",
+    "issue_1624": "Workflow failure issue #1624 created by github-actions bot. Reports 'Code Push Failed: create_pull_request: Failed to apply patch' on branch repo-assist/deps-update-2026-02-22-22f87c2bfdc6ec83. This was a previous failed run - PR #1614 already exists so the failure was a duplicate attempt.",
     "xsd_cycle_guard_fix": "Fix in PR #1626: added VisitingGroups HashSet<XmlQualifiedName> to ParsingContext, guard in parseParticle for GroupRef case. Test added in InferenceTests.fs with recursive group schema.",
-    "enhancement_omitnullfields": "Issue #1245 asks for OmitNullFields option for JsonProvider. No implementation yet. Workaround: use JsonValue.Record to manually build JSON without null fields."
+    "enhancement_omitnullfields": "Issue #1245 asks for OmitNullFields option for JsonProvider. No implementation yet. Workaround: use JsonValue.Record to manually build JSON without null fields.",
+    "nameutils_normalization": "Name normalization in NameUtils.fs: nicePascalName/niceCamelName used in XmlGenerator.fs, JsonGenerator.fs, CsvGenerator.fs. A UseOriginalNames/NamingConvention parameter would need threading through these generators. dsyme endorsed in issue #1432.",
+    "issue_1478_status": "mlaily started JsonProvider2 prototype on a branch (using System.Text.Json / JsonNode API). Multiple contributors discussing but prototype not merged. Last active Nov 2023."
   }
 }
