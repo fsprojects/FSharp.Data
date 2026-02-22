@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 100,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461, 1170, 1240, 1213, 1305],
+  "backlog_cursor": 130,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461, 1170, 1240, 1213, 1305, 1294, 1194],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -67,7 +67,7 @@
       "status": "open",
       "pr_number": 1609,
       "date": "2026-02-23",
-      "note": "Design-time test failure identified by dsyme (System.DateOnly not found in target assembly). Copilot working on fix in sub-PR #1611."
+      "note": "Sub-PR #1610 (docs) and sub-PR #1611 (design-time fix: downgrade for netstandard2.0) both merged by dsyme into PR branch. PR ready for final review."
     }
   ],
   "monthly_activity_issue": {
@@ -120,7 +120,7 @@
     "Build environment has network proxy blocking external HTTP - tests requiring network will fail",
     "PR #1608 (Repo Assist JSON decimal fix #1230): MERGED by dsyme on 2026-02-22",
     "PR #1603-1608 all merged by dsyme on 2026-02-21/22",
-    "Issue #1461 (DateOnly/TimeOnly): Draft PR #1609 submitted. Design-time test failure: System.DateOnly not found in target assembly. dsyme asked Copilot to fix; sub-PR #1611 in progress.",
+    "Issue #1461 (DateOnly/TimeOnly): PR #1609 open. Sub-PRs #1610 (docs) and #1611 (design-time netstandard2.0 fix) merged into #1609 branch by dsyme. PR ready for final review.",
     "DateOnly.TryParse gotcha: accepts datetime strings, ignoring time component. AsDateOnly checks for non-zero TimeOfDay.",
     "TimeOnly NOT auto-inferred: '00:30:00' is ambiguous between TimeOnly and TimeSpan. Explicit 'timeonly?' annotation still works.",
     "Multi-targeting causes OOM with parallel builds; use -maxcpucount:1",
@@ -136,6 +136,10 @@
     "Issue #1213 (JSON nested arrays): Reporter says IntOrString[][] inferred as IntOrString[] in v3.3.3. Code appears correct now; needs verification with current version.",
     "Issue #1305 (CSV float -7e-04 via HTTP): Likely HTTP encoding mismatch. Commented with workaround.",
     "Issue #1315 (EmbeddedResource docs): Good first issue - needs documentation paragraph and example.",
-    "Issue #1191 (JsonProvider EmbeddedResource in library): Complex type provider bug, 18+ comments, no resolution."
+    "Issue #1191 (JsonProvider EmbeddedResource in library): Complex type provider bug, 18+ comments, no resolution.",
+    "Issue #1294 (HtmlNode siblings): No NextSibling API. Workaround: use DescendantsWithPath to get parent, then Elements() to navigate siblings. Commented 2026-02-22.",
+    "Issue #1194 (CsvFile slow streams): StreamReader wraps slow stream. Workaround: read into string first or use TextReader overload. Possibly a .NET 2.1 runtime issue. Commented 2026-02-22.",
+    "Backlog cursor at issues around #1315 (end of page 3 oldest-first). Next run should continue from page 4 (issues after #1315, around 2020-05-28).",
+    "Issues page 4 cursor: Y3Vyc29yOnYyOpK0MjAyMC0wNS0yOFQxOToxNTo1MVrOJVtrKw=="
   ]
 }
