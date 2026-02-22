@@ -741,9 +741,8 @@ module internal ProviderHelpers =
                           let resName = parts.[1].Trim()
 
                           <@
-                              let loadedAsm =
-                                  System.AppDomain.CurrentDomain.GetAssemblies()
-                                  |> Array.find (fun a -> a.GetName().Name = asmName)
+                              // Assembly.Load handles assemblies not yet in AppDomain
+                              let loadedAsm = System.Reflection.Assembly.Load(asmName)
 
                               // Do not use 'use' here — the reader lifetime is managed by
                               // parseSchemaFromTextReader (XmlReader with CloseInput=true)
