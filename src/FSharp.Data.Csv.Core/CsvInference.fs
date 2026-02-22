@@ -36,7 +36,10 @@ let private nameToTypeForCsv =
     |> dict
 
 let private nameAndTypeRegex =
-    lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled ||| RegexOptions.RightToLeft)
+    // Note: do NOT use RightToLeft here — it causes incorrect splits when the column name
+    // itself contains parentheses (e.g. "Na(  )me (type)" would give name="Na", type="  )me (type").
+    // Without RightToLeft, greedy backtracking correctly matches the *last* "(type)" group.
+    lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", RegexOptions.Compiled)
 
 let private overrideByNameRegex =
     lazy
