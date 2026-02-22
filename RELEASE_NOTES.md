@@ -1,6 +1,11 @@
 # Release Notes
 
-## 6.7.0 - Unreleased
+## 7.0.0 - Unreleased
+
+- Add opt-in DateOnly/TimeOnly inference support for .NET 6+ via `PreferDateOnly` parameter (closes #1461)
+- Add `PreferDateOnly` parameter to JsonProvider, XmlProvider, CsvProvider, and HtmlProvider (defaults to false for backward compatibility)
+- Add DateOnly/TimeOnly serialization support to XmlRuntime for record creation
+- Update documentation for DateOnly/TimeOnly inference feature
 
 ## 6.6.0 - Feb 21 2026
 
