@@ -673,3 +673,18 @@ let ``Can infer from a multiline schema`` () =
     csv.NumberOfColumns |> should equal 16
     firstRow.OrderCreated |> should equal "2022-01-01 10:00:00"
     firstRow.FioFull |> should equal "John Smith"
+
+// Regression test for issue #1439: InferRows must count CSV rows, not text lines.
+// A multiline quoted field occupies 2 text lines but is only 1 data row.
+// With InferRows=2, both data rows should be accessible (the first spans 2 lines).
+type MultilineFieldsCsv = CsvProvider<"Data/MultilineFields.csv", InferRows=2>
+
+[<Test>]
+let ``InferRows counts CSV rows not text lines for multiline quoted fields`` () =
+    let csv = MultilineFieldsCsv.GetSample()
+    let rows = csv.Rows |> Seq.toArray
+    rows.Length |> should equal 2
+    rows.[0].F1 |> should equal "multi-\nline field"
+    rows.[0].F2 |> should equal 2
+    rows.[1].F1 |> should equal "normal"
+    rows.[1].F2 |> should equal 3
