@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 1490,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490],
+  "backlog_cursor": 18,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -53,10 +53,10 @@
     {
       "branch": "repo-assist/fix-docs-jsonprovider-twitter-1073",
       "description": "Fix JsonProvider docs: clarify why Tweet fields are optional due to mixed sample types (closes #1073)",
-      "status": "open",
+      "status": "merged",
       "pr_number": 1607,
       "date": "2026-02-22",
-      "note": "PR #1607 - pending CI"
+      "note": "Merged by dsyme on 2026-02-22 09:20"
     },
     {
       "branch": "repo-assist/fix-json-decimal-float-1230",
@@ -64,7 +64,7 @@
       "status": "open",
       "pr_number": 1608,
       "date": "2026-02-22",
-      "note": "PR #1608 - pending CI"
+      "note": "PR #1608 - CI pending as of 2026-02-22 run 13"
     }
   ],
   "monthly_activity_issue": {
@@ -113,8 +113,8 @@
     "PR #1604 (Repo Assist CSV schema fix #946): MERGED by dsyme on 2026-02-22.",
     "PR #1605 (Repo Assist HTML pre whitespace fix #1509): MERGED by dsyme on 2026-02-22.",
     "PR #1606 (Repo Assist JSON float serialization fix #1356): MERGED by dsyme on 2026-02-22.",
-    "PR #1607 (Repo Assist docs fix #1073): OPEN - pending CI.",
-    "PR #1608 (Repo Assist JSON decimal float fix #1230): OPEN - pending CI.",
+    "PR #1607 (Repo Assist docs fix #1073): MERGED by dsyme on 2026-02-22 09:20.",
+    "PR #1608 (Repo Assist JSON decimal float fix #1230): OPEN - CI pending as of run 13.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
     "Issue #1509 (HtmlNode.ToString whitespace bug) - FIXED by PR #1605 merged 2026-02-22",
     "Issue #1223 (same whitespace bug as #1509) - addressed by PR #1605 merge",
@@ -125,29 +125,28 @@
     "Issue #1454 (broken Channel9 video): CLOSED by merge of PR #1603 on 2026-02-21",
     "Issue #1330 (HTML whitespace bug): Root cause identified but fix complex (context-aware inline/block detection needed)",
     "Issue #1439 (CsvProvider InferRows truncation): Bug confirmed - truncates by text lines not CSV rows in Helpers.fs. Commented 2026-02-22 with workaround (InferRows=0).",
-    "Issue #1073 (JsonProvider docs ambiguity): Docs PR #1607 created 2026-02-22 - corrects misleading explanation about optional fields",
+    "Issue #1073 (JsonProvider docs ambiguity): Docs PR #1607 merged 2026-02-22",
     "Issue #1310 (EmbeddedResource XML): Bug - 'if not parseResult.IsResource then' gate in Helpers.fs skips GetSample/GetSchema generation. Complex fix needed.",
     "Issue #1528 (Assembly loading): Community workaround confirmed - dotnet clean + dotnet nuget locals all --clear + dotnet restore",
     "Issue #1501 (Memory limitations XmlProvider): XmlProvider uses XDocument full DOM - fundamental limitation.",
     "Issue #1259 (NaN/Infinity in JSON): Fixed in current code - NaN/Infinity now write 'null'.",
     "Issue #1383 (CSS pseudo-classes like :nth-child not supported): Known limitation listed in docs.",
     "dotnet tool restore needed before dotnet paket restore",
-    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603, #1604, #1605, #1606 all on 2026-02-21/22",
+    "dsyme is very active - merged PRs #1524, #1602, #1601, #1603, #1604, #1605, #1606, #1607 all on 2026-02-21/22",
     "Issue #1439 (CsvProvider InferRows truncation): Bug confirmed - truncates by text lines not CSV rows in Helpers.fs readText() loop. Multi-line quoted fields fail. Complex to fix (need quote-char-aware line counting). Labelled as bug.",
     "Issue #1437 (xs:dateTime DateTimeKind.Unspecified): Bug in AsDateTimeOffset. Complex due to inference impact. Labelled as bug.",
     "Issue #1436 (trimmable): Feature request for AOT/trim support. Labelled as enhancement.",
     "Issue #1478 (JsonProvider future direction): Active community discussion (17 comments). No action needed.",
     "Issue #1230 (JsonProvider exponential decimal): FIXED - JsonConversions.AsDecimal now handles JsonValue.Float. PR #1608 open.",
     "Issue #1391 (CsvProvider lazy sequence exhaustion): Workaround is .Cache() - commented in run 11.",
-    "Issues triaged in run 11 (1151-1489 range): #1151/#1152 (FAKE5 stale), #1188 (CssSelect known bug), #1191 (embedded resource community resolved), #1213 (nested arrays unresolved), #1305 (float via HTTP encoding?), #1340 (nuget resolved by maintainer), #1362 (header capitaliz design), #1405 (HTML 'Edit' text - dsyme's own issue), #1417 (0/1 bool feature), #1418 (yes/no roundtrip by design), #1419 (XSD stack overflow), #1453 (encoding - PR in progress), #1461 (DateOnly compat issue), #1488 (XmlProvider name/type complex), #1489 (fixed-width format clarified)",
-    "Run 11 (2026-02-22): Fixed #1230 (JsonConversions decimal float). Commented on #1230 and #1391. Backlog cursor advanced to #1489.",
     "Issue #1349 (HTTP non-ASCII): Root cause is ISO-8859-1 default encoding when server doesn't specify charset. Workaround: responseEncodingOverride='utf-8'. Labelled bug.",
     "Issue #1321 (SetupTesting.fsx docs): File exists at src/SetupTesting.fsx. Generates #r reference scripts for FSI development. Labelled documentation+good first issue.",
     "Issue #1490 (docs GIFs): Text docs already use #r nuget syntax. GIFs in docs/images/ still show old .dll reference style. Labelled documentation+good first issue.",
     "Issue #1432 (XmlProvider renaming): By design but dsyme agreed an option would be OK. Labelled enhancement.",
     "Issue #1465 (JsonProvider writable): Feature request - erased type providers cannot have mutable properties. Labelled enhancement.",
-    "Issue #1326 (upload >2GB): Likely AllowWriteStreamBuffering=false needed. Labelled bug.",
+    "Issue #1326 (upload >2GB): AllowWriteStreamBuffering=true buffers everything in memory. Workaround: customizeHttpRequest to set AllowWriteStreamBuffering=false. Commented run 13.",
     "Issue #1452 (XSD Choice as Options): Design limitation but could be improved. Labelled enhancement.",
-    "Run 12 (2026-02-22): Labelled 7 issues, commented on 3 issues, updated monthly activity issue #1599."
+    "Issue #834 (IndexOutOfRangeException for Expires cookie): Appears fixed in current CookieHandling code. Commented run 13 requesting user verification before closing.",
+    "Run 13 (2026-02-22): Commented on #834 (cookie bug likely fixed) and #1326 (large upload workaround). Updated monthly activity issue. Backlog cursor reset to #18."
   ]
 }
