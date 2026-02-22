@@ -293,6 +293,20 @@ let ``Serializes special float value as null`` v =
     let json = JsonValue.Float v
     json.ToString(JsonSaveOptions.DisableFormatting) |> should equal "null"
 
+[<Test>]
+let ``Float value 100.0 serializes with decimal point`` () =
+    // Regression test for https://github.com/fsprojects/FSharp.Data/issues/1356
+    // JsonValue.Float(100.0) should serialize as "100.0", not "100"
+    JsonValue.Float(100.0).ToString(JsonSaveOptions.DisableFormatting) |> should equal "100.0"
+
+[<Test>]
+let ``Float value with fractional part serializes correctly`` () =
+    JsonValue.Float(100.5).ToString(JsonSaveOptions.DisableFormatting) |> should equal "100.5"
+
+[<Test>]
+let ``Float value in scientific notation serializes correctly`` () =
+    JsonValue.Float(1e20).ToString(JsonSaveOptions.DisableFormatting) |> should equal "1E+20"
+
 let normalize (str:string) =
   str.Replace("\r\n", "\n")
      .Replace("\r", "\n")

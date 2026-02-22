@@ -86,7 +86,13 @@ type JsonValue =
             | Boolean b -> w.Write(if b then "true" else "false")
             | Number number -> w.Write number
             | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
-            | Float number -> w.Write number
+            | Float number ->
+                let s = number.ToString("R", CultureInfo.InvariantCulture)
+                w.Write s
+                // Ensure the output looks like a float (has a decimal point or exponent),
+                // so that round-tripping through JSON preserves the Float type.
+                if s.IndexOfAny([| '.'; 'E'; 'e' |]) = -1 then
+                    w.Write ".0"
             | String s ->
                 w.Write "\""
                 JsonValue.JsonStringEncodeTo w s
