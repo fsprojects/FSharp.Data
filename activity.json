@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 1439,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946],
+  "backlog_cursor": 18,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -36,8 +36,9 @@
     },
     {
       "branch": "repo-assist/fix-html-pre-whitespace-1509",
-      "description": "Fix HtmlNode.ToString: preserve whitespace in elements nested inside <pre> (closes #1509)",
+      "description": "Fix HtmlNode.ToString: preserve whitespace in elements nested inside <pre> (closes #1509, also addresses #1223)",
       "status": "open",
+      "pr_number": 1605,
       "date": "2026-02-22",
       "note": "Adds insidePre parameter to serialize function in HtmlNode.fs. All 2227 Core Tests pass including new regression test."
     }
@@ -64,7 +65,8 @@
     "PR #1600 (Repo Assist pluralizer duplicate): CLOSED (not merged) on 2026-02-21.",
     "PR #1603 (Repo Assist docs fix #1454): MERGED by dsyme on 2026-02-21.",
     "Issue #677 (JSON schema feature request) - shipped in 6.5.0, suggested closure - not yet closed by maintainer",
-    "Issue #1509 (HtmlNode.ToString whitespace bug) - dsyme confirmed STILL open in 6.6.0; @njlr provided repro (shiki code blocks); root cause: insidePre not propagated to children in HtmlNode.fs serialize. Fix PR created on 2026-02-22.",
+    "Issue #1509 (HtmlNode.ToString whitespace bug) - dsyme confirmed STILL open in 6.6.0; @njlr provided repro (shiki code blocks); root cause: insidePre not propagated to children in HtmlNode.fs serialize. Fix PR #1605 created on 2026-02-22.",
+    "Issue #1223 (same whitespace bug as #1509, older issue) - commented 2026-02-22, linked to PR #1605",
     "Issue #1002 (WebException status code): workaround is Http.Request with silentHttpErrors=true - returns HttpResponse.StatusCode",
     "Issue #1506 (FS3033 XSD ambiguity): limitation of .NET XSD validator, workaround is sample XML file",
     "Issue #1454 (broken Channel9 video): CLOSED by merge of PR #1603 on 2026-02-21",
@@ -75,21 +77,17 @@
     "Issue #1528 (Assembly loading): Community workaround confirmed - dotnet clean + dotnet nuget locals all --clear + dotnet restore. Commented with workaround.",
     "Issue #1501 (Memory limitations XmlProvider): XmlProvider uses XDocument full DOM - fundamental limitation. Commented with explanation and suggested System.Xml.XmlReader for streaming.",
     "Issue #946 (CSV schema parentheses): RightToLeft regex flag in CsvInference.fs causes incorrect split on first '(' in column name when name contains parens. Fix: remove RightToLeft from nameAndTypeRegex. Draft PR #1604 created.",
-    "Issue #438 (JsonGenerator efficiency): Very old issue (2014) by @ovatsus - performance optimization in generated code for JSON Heterogeneous types. No comments. Skip.",
-    "Issue #818 (XmlProvider captures current directory): Old issue (2015), workaround already in issue. Skip.",
-    "Issue #1031 (JsonProvider error from another project): Old bug (2017), no comments. Type provider looks in wrong project directory - EmbeddedResource parameter might help.",
-    "Issue #1488 (XSD name vs type attribute): Design decision by @giacomociti explained - using element names. Workaround via XElement constructor shared. Resolved by conversation.",
-    "Issue #1490 (update docs pictures): The .fsx files already use conditional #r nuget refs via (*** condition: fsx ***) blocks. The issue may be about actual screenshot images.",
-    "Issue #1478 (A way forward with JsonProvider): 17-comment design discussion. Nothing to add without deep involvement.",
-    "Issue #1130 (Descendants and CssSelect): Root cause identified by @serhiiz (2018) - HTML parser can't distinguish / (division) from / (start of regex) in script tags. Complex JS lexer fix needed.",
+    "Issue #1259 (NaN/Infinity in JSON): Fixed in current code - NaN/Infinity now write 'null' (line 88 JsonValue.fs). Commented on issue noting the fix on 2026-02-22.",
+    "Issue #1167 (HTML zero-length table name crash): ALREADY FIXED in current NameUtils.fs - 'if name.Length = 0 then name <- \"Unnamed\"' is present at line 110.",
+    "Issue #1212 (HtmlDocument CssSelect fails without html element): User confirmed fixed in v4.0.0 - can be closed.",
+    "Issue #1383 (CSS pseudo-classes like :nth-child not supported): Known limitation listed in docs. No fix ready.",
     "dotnet tool restore needed before dotnet paket restore",
     "dsyme merged agentic workflows 'repo-assist' (PR #1602) and 'ci-coach' (PR #1601) on 2026-02-21",
     "dsyme is very active - merged PRs #1524, #1602, #1601, #1603 all on 2026-02-21",
-    "IMPORTANT: dsyme noted in monthly activity issue comment that #1509 was NOT fixed by PR #1510 as Repo Assist previously claimed - issue is still open in 6.6.0. Fix PR created on 2026-02-22.",
+    "IMPORTANT: dsyme noted in monthly activity issue comment that #1509 was NOT fixed by PR #1510 as Repo Assist previously claimed - issue is still open in 6.6.0. Fix PR #1605 created on 2026-02-22.",
     "Issue #1439 (CsvProvider InferRows truncation): Bug confirmed - truncates by text lines not CSV rows in Helpers.fs readText() loop. Multi-line quoted fields fail. Complex to fix (need quote-char-aware line counting). Labelled as bug.",
     "Issue #1437 (xs:dateTime DateTimeKind.Unspecified): Bug in AsDateTimeOffset. @giacomociti suggests using XElement as workaround. Complex due to inference impact. Labelled as bug.",
     "Issue #1436 (trimmable): Feature request for AOT/trim support. Labelled as enhancement.",
-    "Issues reviewed but no comment added: #1465 (JsonProvider writable - author self-answered with workaround), #1461 (DateOnly/TimeOnly - feature request), #1453 (CsvProvider encoding - @dsyme already commented), #1452 (Xsd Choice - design limitation, no comments), #1432 (XmlProvider name normalization - design complaint, 1 comment), #1431 (CsvProvider transform ergonomics - feature request), #1425 (CE Builder for Json - feature request)",
-    "Backlog cursor at #1439 - next run should continue from issues before this (older issues) or newer ones as appropriate"
+    "Run 8 (2026-02-22): Reviewed ~80 older open issues (#18-#1425 range). Two comments posted: #1223 (linked to PR #1605) and #1259 (NaN fix noted). Backlog cursor reset to #18 since full sweep nearly complete - next run should start from oldest issues."
   ]
 }
