@@ -24,6 +24,7 @@ network:
   allowed:
   - defaults
   - dotnet
+  - api.worldbank.org
 
 safe-outputs:
   add-comment:
