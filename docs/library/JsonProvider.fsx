@@ -119,6 +119,13 @@ type-safe access to the values, but not in the original order (if order matters,
 you can use the `mixed.JsonValue` property to get the underlying `JsonValue` and
 process it dynamically as described in [the documentation for `JsonValue`](JsonValue.html).
 
+### Inferring date types
+
+String values in JSON that look like dates are inferred as `DateTime` or `DateTimeOffset`.
+On .NET 6 and later, when you set `PreferDateOnly = true`, strings that represent a date without a time component (e.g. `"2023-01-15"`)
+are inferred as `DateOnly`, and time-only strings are inferred as `TimeOnly`. By default (`PreferDateOnly = false`),
+all dates are inferred as `DateTime` for backward compatibility.
+
 ### Inferring record types
 
 Now let's look at a sample JSON document that contains a list of records. The

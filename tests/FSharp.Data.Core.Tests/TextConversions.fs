@@ -209,6 +209,33 @@ let ``TimeSpan conversions``() =
   TextConversions.AsTimeSpan culture "invalid:00:00" |> should equal None
   TextConversions.AsTimeSpan culture "" |> should equal None
 
+#if NET6_0_OR_GREATER
+[<Test>]
+let ``DateOnly conversions`` () =
+  let culture = CultureInfo.InvariantCulture
+
+  TextConversions.AsDateOnly culture "2023-01-15" |> should equal (Some (DateOnly(2023, 1, 15)))
+  TextConversions.AsDateOnly culture "2000-12-31" |> should equal (Some (DateOnly(2000, 12, 31)))
+
+  // A datetime string should NOT match (DateOnly can't parse time components)
+  TextConversions.AsDateOnly culture "2023-01-15T10:30:00" |> should equal None
+  TextConversions.AsDateOnly culture "invalid" |> should equal None
+  TextConversions.AsDateOnly culture "" |> should equal None
+
+[<Test>]
+let ``TimeOnly conversions`` () =
+  let culture = CultureInfo.InvariantCulture
+
+  TextConversions.AsTimeOnly culture "10:30:45" |> should equal (Some (TimeOnly(10, 30, 45)))
+  TextConversions.AsTimeOnly culture "00:00:00" |> should equal (Some TimeOnly.MinValue)
+  TextConversions.AsTimeOnly culture "23:59:59" |> should equal (Some (TimeOnly(23, 59, 59)))
+
+  // A date string should NOT match
+  TextConversions.AsTimeOnly culture "2023-01-15" |> should equal None
+  TextConversions.AsTimeOnly culture "invalid" |> should equal None
+  TextConversions.AsTimeOnly culture "" |> should equal None
+#endif
+
 [<Test>]
 let ``Guid conversions``() = 
   let validGuid = Guid.NewGuid()

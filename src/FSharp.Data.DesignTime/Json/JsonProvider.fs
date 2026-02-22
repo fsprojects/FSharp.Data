@@ -57,6 +57,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let preferDictionaries = args.[8] :?> bool
         let inferenceMode = args.[9] :?> InferenceMode
         let schema = args.[10] :?> string
+        let preferDateOnly = args.[11] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -76,28 +77,37 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
             let inferedType =
                 use _holder = IO.logTime "Inference" (if schema <> "" then schema else sample)
 
-                if schema <> "" then
-                    // Use the JSON Schema for type inference
-                    use _holder = IO.logTime "SchemaInference" schema
+                let rawInfered =
+                    if schema <> "" then
+                        // Use the JSON Schema for type inference
+                        use _holder = IO.logTime "SchemaInference" schema
 
-                    let schemaValue = JsonValue.Parse(value)
-                    let jsonSchema = JsonSchema.parseSchema schemaValue
-                    JsonSchema.schemaToInferedType unitsOfMeasureProvider jsonSchema
+                        let schemaValue = JsonValue.Parse(value)
+                        let jsonSchema = JsonSchema.parseSchema schemaValue
+                        JsonSchema.schemaToInferedType unitsOfMeasureProvider jsonSchema
+                    else
+                        // Use sample-based inference
+                        let samples =
+                            use _holder = IO.logTime "Parsing" sample
+
+                            if sampleIsList then
+                                JsonDocument.CreateList(new StringReader(value))
+                                |> Array.map (fun doc -> doc.JsonValue)
+                            else
+                                [| JsonValue.Parse(value) |]
+
+                        samples
+                        |> Array.map (fun sampleJson ->
+                            JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
+                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+#if NET6_0_OR_GREATER
+                if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                    rawInfered
                 else
-                    // Use sample-based inference
-                    let samples =
-                        use _holder = IO.logTime "Parsing" sample
-
-                        if sampleIsList then
-                            JsonDocument.CreateList(new StringReader(value))
-                            |> Array.map (fun doc -> doc.JsonValue)
-                        else
-                            [| JsonValue.Parse(value) |]
-
-                    samples
-                    |> Array.map (fun sampleJson ->
-                        JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
-                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                    StructuralInference.downgradeNet6Types rawInfered
+#else
+                rawInfered
+#endif
 
             use _holder = IO.logTime "TypeGeneration" (if schema <> "" then schema else sample)
 
@@ -153,7 +163,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               typeof<InferenceMode>,
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
-          ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "") ]
+          ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
+          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -176,7 +187,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasHints -> Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&lt;type&gt; or typeof{type} or typeof&lt;type&lt;measure&gt;&gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are <c>int</c>, <c>int64</c>, <c>bool</c>, <c>float</c>, <c>decimal</c>, <c>date</c>, <c>datetimeoffset</c>, <c>timespan</c>, <c>guid</c> and <c>string</c>.
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
            </param>
-           <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>"""
+           <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>
+           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

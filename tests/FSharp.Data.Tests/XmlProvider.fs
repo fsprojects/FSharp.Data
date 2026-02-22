@@ -1140,7 +1140,7 @@ let SimpleTypesXsd = """
     </xs:schema>"""
 
 
-type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd>
+type SimpleTypes = XmlProvider<Schema = SimpleTypesXsd, PreferDateOnly = true>
 
 
 open System.Xml.Schema
@@ -1161,7 +1161,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = 0,
         long = 0L,
-        date = System.DateTime.Today,
+        date = System.DateOnly.FromDateTime(System.DateTime.Today),
         dateTime = System.DateTimeOffset.Now,
         boolean = false,
         decimal = 0M,
@@ -1171,7 +1171,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MinValue,
         long = System.Int64.MinValue,
-        date = System.DateTime.MinValue.Date,
+        date = System.DateOnly.MinValue,
         dateTime = System.DateTimeOffset.MinValue,
         boolean = false,
         decimal = System.Decimal.MinValue,
@@ -1181,7 +1181,7 @@ let ``simple types are formatted properly``() =
       SimpleTypes.A(
         int = System.Int32.MaxValue,
         long = System.Int64.MaxValue,
-        date = System.DateTime.MaxValue.Date,
+        date = System.DateOnly.MaxValue,
         dateTime = System.DateTimeOffset.MaxValue,
         boolean = true,
         decimal = System.Decimal.MaxValue,
@@ -1194,7 +1194,7 @@ let ``simple types are formatted properly``() =
     isValid maxValues.XElement |> should equal true
 
 [<Test>]
-let ``time is omitted when zero``() =
+let ``date is formatted properly``() =
     let schema = SimpleTypes.GetSchema()
     let simpleValues date =
       SimpleTypes.A(
@@ -1207,18 +1207,11 @@ let ``time is omitted when zero``() =
         double = System.Double.NaN)
 
     let isValidWithMsg = isValid schema true
-    // Don't display the error message each time when we expect to see it:
-    let isValidWithoutMsg = isValid schema false
 
-    let validXml = System.DateTime(2018, 8, 29) |> simpleValues
+    let validXml = System.DateOnly(2018, 8, 29) |> simpleValues
     isValidWithMsg validXml.XElement |> should equal true
     validXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29"
-
-    let invalidXml = System.DateTime(2018, 8, 29, 5, 30, 56) |> simpleValues
-    isValidWithoutMsg invalidXml.XElement |> should equal false
-    invalidXml.XElement.Attribute(XName.Get "date").Value
-    |> should equal "2018-08-29T05:30:56.0000000"
 
 type TimeSpanXML = XmlProvider<"Data/TimeSpans.xml">
 

@@ -34,6 +34,12 @@ let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<JsonValu
         <@@ JsonRuntime.ConvertDateTime(cultureStr, %value) @@>
     elif typ = typeof<TimeSpan> then
         <@@ JsonRuntime.ConvertTimeSpan(cultureStr, %value) @@>
+#if NET6_0_OR_GREATER
+    elif typ = typeof<DateOnly> then
+        <@@ JsonRuntime.ConvertDateOnly(cultureStr, %value) @@>
+    elif typ = typeof<TimeOnly> then
+        <@@ JsonRuntime.ConvertTimeOnly(cultureStr, %value) @@>
+#endif
     elif typ = typeof<Guid> then
         <@@ JsonRuntime.ConvertGuid(%value) @@>
     else

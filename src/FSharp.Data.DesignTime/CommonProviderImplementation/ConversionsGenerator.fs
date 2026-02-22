@@ -32,6 +32,12 @@ let getConversionQuotation missingValuesStr cultureStr typ (value: Expr<string o
         <@@ TextRuntime.ConvertDateTimeOffset(cultureStr, %value) @@>
     elif typ = typeof<TimeSpan> then
         <@@ TextRuntime.ConvertTimeSpan(cultureStr, %value) @@>
+#if NET6_0_OR_GREATER
+    elif typ = typeof<DateOnly> then
+        <@@ TextRuntime.ConvertDateOnly(cultureStr, %value) @@>
+    elif typ = typeof<TimeOnly> then
+        <@@ TextRuntime.ConvertTimeOnly(cultureStr, %value) @@>
+#endif
     elif typ = typeof<Guid> then
         <@@ TextRuntime.ConvertGuid(%value) @@>
     else
@@ -58,6 +64,12 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
         <@ TextRuntime.ConvertDateTimeOffsetBack(cultureStr, %%value) @>
     elif typ = typeof<TimeSpan> then
         <@ TextRuntime.ConvertTimeSpanBack(cultureStr, %%value) @>
+#if NET6_0_OR_GREATER
+    elif typ = typeof<DateOnly> then
+        <@ TextRuntime.ConvertDateOnlyBack(cultureStr, %%value) @>
+    elif typ = typeof<TimeOnly> then
+        <@ TextRuntime.ConvertTimeOnlyBack(cultureStr, %%value) @>
+#endif
     else
         failwith "getBackConversionQuotation: Unsupported primitive type"
 

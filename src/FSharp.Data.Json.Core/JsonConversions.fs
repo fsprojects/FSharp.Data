@@ -85,6 +85,18 @@ type JsonConversions =
         | JsonValue.String s -> TextConversions.AsTimeSpan cultureInfo s
         | _ -> None
 
+#if NET6_0_OR_GREATER
+    static member AsDateOnly cultureInfo =
+        function
+        | JsonValue.String s -> TextConversions.AsDateOnly cultureInfo s
+        | _ -> None
+
+    static member AsTimeOnly cultureInfo =
+        function
+        | JsonValue.String s -> TextConversions.AsTimeOnly cultureInfo s
+        | _ -> None
+#endif
+
     static member AsGuid =
         function
         | JsonValue.String s -> TextConversions.AsGuid s

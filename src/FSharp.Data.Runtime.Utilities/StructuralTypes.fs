@@ -45,6 +45,10 @@ type InferedTypeTag =
     | TimeSpan
     | DateTimeOffset
     | Guid
+#if NET6_0_OR_GREATER
+    | DateOnly
+    | TimeOnly
+#endif
     // Collections and sum types
     | Collection
     | Heterogeneous
@@ -160,6 +164,10 @@ type internal InferedTypeTag with
         | Record None -> "Record"
         | Record(Some name) -> NameUtils.nicePascalName name
         | Json -> "Json"
+#if NET6_0_OR_GREATER
+        | DateOnly -> "DateOnly"
+        | TimeOnly -> "TimeOnly"
+#endif
 
     /// Converts tag to string code that can be passed to generated code
     member x.Code =
@@ -182,6 +190,10 @@ type internal InferedTypeTag with
         | "Guid" -> Guid
         | "Array" -> Collection
         | "Choice" -> Heterogeneous
+#if NET6_0_OR_GREATER
+        | "DateOnly" -> DateOnly
+        | "TimeOnly" -> TimeOnly
+#endif
         | "Null" -> failwith "Null nodes should be skipped"
         | _ -> failwith "Invalid InferredTypeTag code"
 

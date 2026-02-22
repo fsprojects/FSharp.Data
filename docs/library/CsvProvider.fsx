@@ -89,7 +89,9 @@ The following sample calls the `Load` method with an URL that points to a live C
 let msft = Stocks.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Look at the most recent row. Note the 'Date' property
-// is of type 'DateTime' and 'Open' has a type 'decimal'
+// is of type 'DateTime' by default. Set PreferDateOnly = true
+// to use 'DateOnly' on .NET 6+
+// and 'Open' has a type 'decimal'
 let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
@@ -107,8 +109,9 @@ collection of rows. We iterate over the rows using a `for` loop. As you can see 
 to the columns in the CSV file.
 
 As you can see, the type provider also infers types of individual rows. The `Date`
-property is inferred to be a `DateTime` (because the values in the sample file can all
-be parsed as dates) while HLOC prices are inferred as `decimal`.
+property is inferred as `DateTime` by default. When you set `PreferDateOnly = true`
+on .NET 6 and later, date-only strings (without a time component) are inferred as `DateOnly`.
+HLOC prices are inferred as `decimal`.
 
 ## Using units of measure
 
@@ -269,8 +272,12 @@ it by specifying the `InferRows` static parameter of `CsvProvider`. If you speci
 Columns with only `0`, `1`, `Yes`, `No`, `True`, or `False` will be set to `bool`. Columns with numerical values
 will be set to either `int`, `int64`, `decimal`, or `float`, in that order of preference.
 
-If a value is missing in any row, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
-(for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
+On .NET 6 and later, when you set `PreferDateOnly = true`, columns whose values are all date-only strings (without a time component, e.g. `2023-01-15`)
+are inferred as `DateOnly`. Time-only strings are inferred as `TimeOnly`. If a column mixes `DateOnly` and `DateTime` values, it is unified to `DateTime`.
+By default (`PreferDateOnly = false`), all date values are inferred as `DateTime` for backward compatibility.
+
+If a value is missing in any row, by default the CSV type provider will infer a nullable (for `int`, `int64`, and `DateOnly`) or an optional
+(for `bool`, `DateTime`, `DateTimeOffset`, and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
 so by default, we won't generate a `string option`. If you prefer to use optionals in all cases, you can set the static parameter
 `PreferOptionals` to `true`. In that case, you'll never get an empty string or a `Double.NaN` and will always get a `None` instead.
@@ -303,6 +310,12 @@ specify the units of measure. This will override both `AssumeMissingValues` and 
 * `guid`
 * `guid?`
 * `guid option`
+* `dateonly` (.NET 6+ only)
+* `dateonly?` (.NET 6+ only)
+* `dateonly option` (.NET 6+ only)
+* `timeonly` (.NET 6+ only)
+* `timeonly?` (.NET 6+ only)
+* `timeonly option` (.NET 6+ only)
 * `string`
 * `string option`.
 
@@ -372,6 +385,23 @@ for row in titanic2.Rows |> Seq.truncate 10 do
 (**
 
 You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,PClass->Passenger Class=string"`
+
+### DateOnly and TimeOnly (on .NET 6+)
+
+On .NET 6 and later, when you set `PreferDateOnly = true`, date-only strings are inferred as `DateOnly`
+and time-only strings as `TimeOnly`. For example, a column like `EventDate` containing values such as
+`2023-06-01` will be given the type `DateOnly`. By default (`PreferDateOnly = false`), dates are
+inferred as `DateTime` for backward compatibility.
+
+You can also explicitly request a `DateOnly` or `TimeOnly` column using schema annotations:
+
+    [lang=text]
+    EventDate (dateonly),Duration (timeonly?)
+    2023-06-01,08:30:00
+    2023-06-02,
+
+In the example above, `EventDate` is explicitly annotated as `dateonly` and `Duration` is explicitly
+annotated as `timeonly?` (a nullable `TimeOnly`).
 
 ## Transforming CSV files
 

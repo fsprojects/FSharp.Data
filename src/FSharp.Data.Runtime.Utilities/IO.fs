@@ -133,7 +133,7 @@ let internal logTime (_: string) (_: string) = dummyDisposable
 
 #endif
 
-type private FileWatcher(path) =
+type private FileWatcher(path: string) =
 
     let subscriptions = Dictionary<string, unit -> unit>()
 

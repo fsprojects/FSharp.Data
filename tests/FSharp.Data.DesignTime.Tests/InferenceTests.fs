@@ -202,7 +202,11 @@ let ``Inference of multiple nulls works``() =
 let ``Inference of DateTime``() =
   let source = CsvFile.Parse("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
+#if NET6_0_OR_GREATER
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateOnly>, None, false, false) }
+#else
   let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
+#endif
   let propInt = { Name = "int"; Type = InferedType.Primitive(typeof<int>, None, false, false) }
   let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false, false) }
   let expected = toRecord [ propDate ; propInt ; propFloat ]
@@ -212,7 +216,11 @@ let ``Inference of DateTime``() =
 let ``Inference of DateTime with timestamp``() =
   let source = CsvFile.Parse("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
+#if NET6_0_OR_GREATER
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateOnly>, None, false, false) }
+#else
   let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
+#endif
   let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
   let expected = toRecord [ propDate ; propTimestamp ]
   actual |> should equal expected
@@ -221,7 +229,11 @@ let ``Inference of DateTime with timestamp``() =
 let ``Inference of DateTime with timestamp non default separator``() =
   let source = CsvFile.Parse("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00", ";")
   let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
+#if NET6_0_OR_GREATER
+  let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateOnly>, None, false, false) }
+#else
   let propDate = { Name = "date"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
+#endif
   let propTimestamp = { Name = "timestamp"; Type = InferedType.Primitive(typeof<DateTime>, None, false, false) }
   let expected = toRecord [ propDate ; propTimestamp ]
   actual |> should equal expected
@@ -249,7 +261,11 @@ let ``Inference of numbers with empty values``() =
   let propInt =    { Name = "int";    Type = InferedType.Primitive(typeof<Bit1>, None, true, false) }
   let propFloat5 = { Name = "float5"; Type = InferedType.Primitive(typeof<float>, None, false, false) }
   let propFloat6 = { Name = "float6"; Type = InferedType.Primitive(typeof<decimal>, None, true, false) }
+#if NET6_0_OR_GREATER
+  let propDate =   { Name = "date";   Type = InferedType.Primitive(typeof<DateOnly>, None, true, false) }
+#else
   let propDate =   { Name = "date";   Type = InferedType.Primitive(typeof<DateTime>, None, true, false) }
+#endif
   let propBool =   { Name = "bool";   Type = InferedType.Primitive(typeof<bool>, None, true, false) }
   let propInt64 =  { Name = "int64";  Type = InferedType.Primitive(typeof<int64>, None, true, false) }
   let expected = toRecord [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ]
@@ -265,7 +281,11 @@ let ``Inference of numbers with empty values``() =
   let propInt =    field "int"    TypeWrapper.Nullable typeof<Bit1>
   let propFloat5 = field "float5" TypeWrapper.None     typeof<float>
   let propFloat6 = field "float6" TypeWrapper.None     typeof<float>
+#if NET6_0_OR_GREATER
+  let propDate =   field "date"   TypeWrapper.Option   typeof<DateOnly>
+#else
   let propDate =   field "date"   TypeWrapper.Option   typeof<DateTime>
+#endif
   let propBool =   field "bool"   TypeWrapper.Option   typeof<bool>
   let propInt64 =  field "int64"  TypeWrapper.Nullable typeof<int64>
   let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ]
@@ -303,7 +323,11 @@ let ``Infers units of measure correctly``() =
 
     let propString =  "String(metre)"      , typeof<string>  , "string"
     let propFloat =   "Float"              , typeof<float>   , "float<meter>"
+#if NET6_0_OR_GREATER
+    let propDate =    "Date (second)"      , typeof<DateOnly>, "DateOnly"
+#else
     let propDate =    "Date (second)"      , typeof<DateTime>, "date"
+#endif
     let propInt =     "Int"                , typeof<int>     , "int<second>"
     let propDecimal = "Decimal"            , typeof<decimal> , "decimal<watt>"
     let propBool =    "Bool(N)"            , typeof<bool>    , "bool"

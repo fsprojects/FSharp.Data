@@ -214,7 +214,11 @@ module internal XsdInference =
         function
         | XmlTypeCode.Int -> typeof<int>
         | XmlTypeCode.Long -> typeof<int64>
+#if NET6_0_OR_GREATER
+        | XmlTypeCode.Date -> typeof<System.DateOnly>
+#else
         | XmlTypeCode.Date -> typeof<System.DateTime>
+#endif
         | XmlTypeCode.DateTime -> typeof<System.DateTimeOffset>
         | XmlTypeCode.Boolean -> typeof<bool>
         | XmlTypeCode.Decimal -> typeof<decimal>

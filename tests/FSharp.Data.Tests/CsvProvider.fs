@@ -51,13 +51,13 @@ let [<Literal>] csvWithGermanDate = """Preisregelung_ID;Messgebiet_Nr;gueltig_se
 
 [<Test>]
 let ``Inference of german dates`` () =
-  let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE">.GetSample()
+  let csv = CsvProvider<csvWithGermanDate, ";", InferRows = 0, Culture = "de-DE", PreferDateOnly = true>.GetSample()
   let rows = csv.Rows |> Seq.toArray
 
   let row = rows.[1]
 
-  let d1:DateTime = row.Gueltig_seit
-  d1 |> should equal (DateTime(2006,02,01))
+  let d1:DateOnly = row.Gueltig_seit
+  d1 |> should equal (DateOnly(2006,02,01))
 
 let [<Literal>] csvWithEmptyValues = """
 Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
@@ -67,7 +67,7 @@ Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 
 [<Test>]
 let ``Inference of numbers with empty values`` () =
-  let csv = CsvProvider<csvWithEmptyValues>.GetSample()
+  let csv = CsvProvider<csvWithEmptyValues, PreferDateOnly = true>.GetSample()
   let rows = csv.Rows |> Seq.toArray
 
   let row = rows.[0]
@@ -79,19 +79,19 @@ let ``Inference of numbers with empty values`` () =
   let _i:Nullable<int> = row.Int
   let _f5:float = row.Float5
   let _f6:float = row.Float6
-  let _d:option<DateTime> = row.Date
+  let _d:option<DateOnly> = row.Date
 
-  let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, (None: DateTime option)
+  let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, (None: DateOnly option)
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
   let row = rows.[1]
-  let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Some(new DateTime(2010, 01,10))
+  let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Some(DateOnly(2010, 01,10))
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
   let row = rows.[2]
-  let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, (None: DateTime option)
+  let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, (None: DateOnly option)
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
@@ -101,11 +101,11 @@ let [<Literal>] csvData = """DateOnly,DateWithOffset,MixedDate,OffsetOption (dat
 
 [<Test>]
 let ``Can infer DateTime and DateTimeOffset types correctly`` () =
-  let csv = CsvProvider<csvData, ",", InferRows = 0>.GetSample()
+  let csv = CsvProvider<csvData, ",", InferRows = 0, PreferDateOnly = true>.GetSample()
   let firstRow = csv.Rows |> Seq.head
   let secondRow = csv.Rows |> Seq.item 1
 
-  firstRow.DateOnly.GetType() |> should equal typeof<DateTime>
+  firstRow.DateOnly.GetType() |> should equal typeof<DateOnly>
   firstRow.DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
   firstRow.MixedDate.GetType() |> should equal typeof<DateTime>
   firstRow.OffsetOption.GetType() |> should equal typeof<DateTimeOffset Option>
@@ -153,9 +153,9 @@ let ``Does not treat invariant culture number such as 3.14 as a date in cultures
   targetCulture.DateTimeFormat.DateSeparator |> should equal "."
   targetCulture.DateTimeFormat.TimeSeparator |> should equal ":" // See https://github.com/fsprojects/FSharp.Data/issues/767
   targetCulture.NumberFormat.NumberDecimalSeparator |> should equal ","
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture=norwayCultureName>.GetSample()
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture=norwayCultureName, PreferDateOnly = true>.GetSample()
   let row = csv.Rows |> Seq.head
-  (row.Dato, row.USD) |> should equal (DateTime(2013, 2, 7), "5.4970")
+  (row.Dato, row.USD) |> should equal (DateOnly(2013, 2, 7), "5.4970")
 
 [<Test>]
 let ``Empty lines are skipped and don't make everything optional`` () =
