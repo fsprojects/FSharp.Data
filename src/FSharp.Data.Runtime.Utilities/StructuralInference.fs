@@ -645,7 +645,10 @@ let internal downgradeNet6Types (inferedType: InferedType) : InferedType =
         System.Collections.Generic.HashSet<InferedType>(
             { new System.Collections.Generic.IEqualityComparer<InferedType> with
                 member _.Equals(x, y) = obj.ReferenceEquals(x, y)
-                member _.GetHashCode(x) = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(x) })
+
+                member _.GetHashCode(x) =
+                    System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(x) }
+        )
 
     let rec convert infType =
         if not (visited.Add(infType)) then
@@ -660,13 +663,22 @@ let internal downgradeNet6Types (inferedType: InferedType) : InferedType =
                 | InferedType.Collection(order, types) ->
                     InferedType.Collection(
                         order |> List.map downgradeTag,
-                        types |> Map.toSeq |> Seq.map (fun (k, (m, t)) -> downgradeTag k, (m, convert t)) |> Map.ofSeq)
+                        types
+                        |> Map.toSeq
+                        |> Seq.map (fun (k, (m, t)) -> downgradeTag k, (m, convert t))
+                        |> Map.ofSeq
+                    )
                 | InferedType.Heterogeneous(types, containsOptional) ->
                     InferedType.Heterogeneous(
-                        types |> Map.toSeq |> Seq.map (fun (k, t) -> downgradeTag k, convert t) |> Map.ofSeq,
-                        containsOptional)
+                        types
+                        |> Map.toSeq
+                        |> Seq.map (fun (k, t) -> downgradeTag k, convert t)
+                        |> Map.ofSeq,
+                        containsOptional
+                    )
                 | InferedType.Json(innerType, optional) -> InferedType.Json(convert innerType, optional)
                 | _ -> infType
+
             result
 
     convert inferedType
@@ -677,9 +689,17 @@ let internal downgradeNet6PrimitiveProperty (field: StructuralTypes.PrimitiveInf
     let v = field.Value
 
     if v.InferedType = typeof<DateOnly> then
-        { field with Value = { v with InferedType = typeof<DateTime>; RuntimeType = typeof<DateTime> } }
+        { field with
+            Value =
+                { v with
+                    InferedType = typeof<DateTime>
+                    RuntimeType = typeof<DateTime> } }
     elif v.InferedType = typeof<TimeOnly> then
-        { field with Value = { v with InferedType = typeof<TimeSpan>; RuntimeType = typeof<TimeSpan> } }
+        { field with
+            Value =
+                { v with
+                    InferedType = typeof<TimeSpan>
+                    RuntimeType = typeof<TimeSpan> } }
     else
         field
 #endif

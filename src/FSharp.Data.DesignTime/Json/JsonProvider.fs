@@ -100,8 +100,10 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
                             JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
                         |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
 #if NET6_0_OR_GREATER
-                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then rawInfered
-                else StructuralInference.downgradeNet6Types rawInfered
+                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                    rawInfered
+                else
+                    StructuralInference.downgradeNet6Types rawInfered
 #else
                 rawInfered
 #endif

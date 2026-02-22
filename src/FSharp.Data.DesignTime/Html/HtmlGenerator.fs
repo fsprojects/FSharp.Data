@@ -55,8 +55,10 @@ module internal HtmlGenerator =
 
         let columns =
 #if NET6_0_OR_GREATER
-            if supportsNet6Types then rawColumns
-            else rawColumns |> List.map StructuralInference.downgradeNet6PrimitiveProperty
+            if supportsNet6Types then
+                rawColumns
+            else
+                rawColumns |> List.map StructuralInference.downgradeNet6PrimitiveProperty
 #else
             rawColumns
 #endif
@@ -137,14 +139,21 @@ module internal HtmlGenerator =
 
         create, tableType
 
-    let private createListType getListTypeName (inferenceParameters, missingValuesStr, cultureStr) supportsNet6Types (list: HtmlList) =
+    let private createListType
+        getListTypeName
+        (inferenceParameters, missingValuesStr, cultureStr)
+        supportsNet6Types
+        (list: HtmlList)
+        =
 
         let rawColumns = HtmlInference.inferListType inferenceParameters list.Values
 
         let columns =
 #if NET6_0_OR_GREATER
-            if supportsNet6Types then rawColumns
-            else StructuralInference.downgradeNet6Types rawColumns
+            if supportsNet6Types then
+                rawColumns
+            else
+                StructuralInference.downgradeNet6Types rawColumns
 #else
             rawColumns
 #endif
@@ -214,8 +223,10 @@ module internal HtmlGenerator =
 
             let columns =
 #if NET6_0_OR_GREATER
-                if supportsNet6Types then rawColumns
-                else StructuralInference.downgradeNet6Types rawColumns
+                if supportsNet6Types then
+                    rawColumns
+                else
+                    StructuralInference.downgradeNet6Types rawColumns
 #else
                 rawColumns
 #endif
@@ -329,7 +340,10 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                 let containerType = getOrCreateContainer "Tables"
-                let create, tableType = createTableType getTypeName parameters supportsNet6Types table
+
+                let create, tableType =
+                    createTableType getTypeName parameters supportsNet6Types table
+
                 htmlType.AddMember tableType
 
                 containerType.AddMember
@@ -352,7 +366,10 @@ module internal HtmlGenerator =
                 )
             | DefinitionList definitionList ->
                 let containerType = getOrCreateContainer "DefinitionLists"
-                let tableType = createDefinitionListType getTypeName parameters supportsNet6Types definitionList
+
+                let tableType =
+                    createDefinitionListType getTypeName parameters supportsNet6Types definitionList
+
                 htmlType.AddMember tableType
 
                 containerType.AddMember

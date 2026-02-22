@@ -70,7 +70,12 @@ type public HtmlProvider(cfg: TypeProviderConfig) as this =
 
                 doc
                 |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) supportsNet6Types
+                |> HtmlGenerator.generateTypes
+                    asm
+                    ns
+                    typeName
+                    (inferenceParameters, missingValuesStr, cultureStr)
+                    supportsNet6Types
 
             use _holder = IO.logTime "TypeGeneration" sample
 

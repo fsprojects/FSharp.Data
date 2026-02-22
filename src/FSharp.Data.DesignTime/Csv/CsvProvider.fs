@@ -115,8 +115,10 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                         unitsOfMeasureProvider
                     )
 #if NET6_0_OR_GREATER
-                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then fields
-                else fields |> List.map StructuralInference.downgradeNet6PrimitiveProperty
+                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                    fields
+                else
+                    fields |> List.map StructuralInference.downgradeNet6PrimitiveProperty
 #else
                 fields
 #endif
