@@ -124,6 +124,7 @@ let internal inferCellType
     preferOptionals
     missingValues
     inferenceMode
+    strictBooleans
     cultureInfo
     unit
     (value: string)
@@ -138,7 +139,32 @@ let internal inferCellType
     elif String.IsNullOrWhiteSpace value then
         InferedType.Null
     else
-        StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
+        let inferedType =
+            StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
+
+        if strictBooleans then
+            // With StrictBooleans=true, only "true"/"false" trigger bool inference.
+            // 0/1 are treated as integers, and "yes"/"no" as strings.
+            match inferedType with
+            | InferedType.Primitive(typ, unt, optional, overrides) ->
+                if typ = typeof<Bit0> || typ = typeof<Bit1> then
+                    // 0 and 1 become plain integers
+                    InferedType.Primitive(typeof<int>, unt, optional, overrides)
+                elif typ = typeof<bool> then
+                    let trimmed = value.Trim()
+
+                    if
+                        String.Compare(trimmed, "true", StringComparison.OrdinalIgnoreCase) = 0
+                        || String.Compare(trimmed, "false", StringComparison.OrdinalIgnoreCase) = 0
+                    then
+                        inferedType // "true"/"false" remain bool
+                    else
+                        InferedType.Primitive(typeof<string>, None, optional, overrides) // "yes"/"no" become string
+                else
+                    inferedType
+            | _ -> inferedType
+        else
+            inferedType
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
@@ -278,6 +304,7 @@ let internal inferType
     inferRows
     missingValues
     inferenceMode
+    strictBooleans
     cultureInfo
     assumeMissingValues
     preferOptionals
@@ -330,6 +357,7 @@ let internal inferType
                                     preferOptionals
                                     missingValues
                                     inferenceMode
+                                    strictBooleans
                                     cultureInfo
                                     unit
                                     value
@@ -427,6 +455,7 @@ let internal inferColumnTypes
     inferRows
     missingValues
     inferenceMode
+    strictBooleans
     cultureInfo
     assumeMissingValues
     preferOptionals
@@ -439,6 +468,7 @@ let internal inferColumnTypes
         inferRows
         missingValues
         inferenceMode
+        strictBooleans
         cultureInfo
         assumeMissingValues
         preferOptionals
@@ -466,7 +496,8 @@ type CsvFile with
             schema,
             assumeMissingValues,
             preferOptionals,
-            unitsOfMeasureProvider
+            unitsOfMeasureProvider,
+            ?strictBooleans
         ) =
 
         let headerNamesAndUnits, schema =
@@ -479,6 +510,7 @@ type CsvFile with
             inferRows
             missingValues
             inferenceMode
+            (defaultArg strictBooleans false)
             cultureInfo
             assumeMissingValues
             preferOptionals

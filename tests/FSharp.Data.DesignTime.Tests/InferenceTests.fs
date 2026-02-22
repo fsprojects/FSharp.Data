@@ -24,7 +24,7 @@ let internal unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
 let internal inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
     let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema unitsOfMeasureProvider
-    inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues inferenceMode cultureInfo assumeMissingValues preferOptionals unitsOfMeasureProvider
+    inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues inferenceMode false cultureInfo assumeMissingValues preferOptionals unitsOfMeasureProvider
 
 let internal toRecord fields = InferedType.Record(None, fields, false)
 
