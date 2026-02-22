@@ -178,6 +178,16 @@ module internal HtmlCssSelectors =
                 | StartsWith ":enabled" t -> tokenize' (Enabled(getOffset t + 1) :: acc) t
                 | StartsWith ":file" t -> tokenize' (File(getOffset t + 1) :: acc) t
                 | StartsWith ":submit" t -> tokenize' (Submit(getOffset t + 1) :: acc) t
+                | ':' :: t ->
+                    let s, _ = readString "" t
+
+                    raise (
+                        NotSupportedException(
+                            sprintf
+                                "CSS pseudo-class or pseudo-element ':%s' is not supported. See https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html for the list of supported selectors."
+                                s
+                        )
+                    )
 
                 | '>' :: t ->
                     let seqtoken = acc |> List.toSeq |> Seq.skip (1) |> Seq.toList
