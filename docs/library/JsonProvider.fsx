@@ -369,9 +369,12 @@ printfn "%s (retweeted %d times)\n:%s" tweet.User.Value.Name tweet.RetweetCount.
 
 (**
 After creating the `Tweet` type, we parse a single sample tweet and print some details about the
-tweet. As you can see, the `tweet.User` property has been inferred as optional (meaning that a
-tweet might not have an author?) so we unsafely get the value using the `Value` property.
-The `RetweetCount` and `Text` properties may be also missing, so we also access them unsafely.
+tweet. As you can see, the `tweet.User` property has been inferred as optional, and so are
+`RetweetCount` and `Text`. The reason is that `TwitterStream.json` contains not only tweet objects
+but also other event types (such as `delete` events) with a completely different schema. When the
+type provider merges multiple heterogeneous sample objects, any field that does not appear in all
+samples is inferred as optional. We unsafely get the values using the `Value` property since we
+know our input is a tweet.
 
 ## Getting and creating GitHub issues
 
