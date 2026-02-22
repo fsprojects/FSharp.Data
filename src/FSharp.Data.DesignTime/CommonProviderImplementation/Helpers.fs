@@ -725,34 +725,59 @@ module internal ProviderHelpers =
 
                           yield m :> _
 
-                  | Schema _ ->
-                      let getSchemaCode _ =
-                          if parseResult.IsUri then
-                              <@
-                                  Async.RunSynchronously(
-                                      asyncReadTextAtRuntimeWithDesignTimeRules
-                                          defaultResolutionFolder
-                                          resolutionFolder
-                                          formatName
-                                          encodingStr
-                                          valueToBeParsedOrItsUri
-                                  )
-                              @>
-                          else
-                              <@ new StringReader(valueToBeParsedOrItsUri) :> TextReader @>
+                  | Schema _ -> () // GetSchema is generated below, outside this block
+
+
+              // GetSchema is generated for Schema sources regardless of EmbeddedResource,
+              // so that deployed assemblies can validate XML against the schema at runtime.
+              match source with
+              | Schema _ ->
+                  let getSchemaCode _ =
+                      if parseResult.IsResource then
+                          // EmbeddedResource was specified and the resource was found at design time.
+                          // At runtime, read the schema from the embedded resource in the user's assembly.
+                          let parts = resource.Split(',')
+                          let asmName = parts.[0].Trim()
+                          let resName = parts.[1].Trim()
+
+                          <@
+                              let loadedAsm =
+                                  System.AppDomain.CurrentDomain.GetAssemblies()
+                                  |> Array.find (fun a -> a.GetName().Name = asmName)
+
+                              // Do not use 'use' here — the reader lifetime is managed by
+                              // parseSchemaFromTextReader (XmlReader with CloseInput=true)
+                              let stream = loadedAsm.GetManifestResourceStream(resName)
+                              new System.IO.StreamReader(stream) :> TextReader
+                          @>
+                          |> spec.CreateFromTextReaderForSampleList // hack: this will actually parse the schema
+                      elif parseResult.IsUri then
+                          <@
+                              Async.RunSynchronously(
+                                  asyncReadTextAtRuntimeWithDesignTimeRules
+                                      defaultResolutionFolder
+                                      resolutionFolder
+                                      formatName
+                                      encodingStr
+                                      valueToBeParsedOrItsUri
+                              )
+                          @>
+                          |> spec.CreateFromTextReaderForSampleList // hack: this will actually parse the schema
+                      else
+                          <@ new StringReader(valueToBeParsedOrItsUri) :> TextReader @>
                           |> spec.CreateFromTextReaderForSampleList // hack: this will actually parse the schema
 
-                      // Generate static GetSchema method
-                      yield
-                          ProvidedMethod(
-                              "GetSchema",
-                              [],
-                              typeof<System.Xml.Schema.XmlSchemaSet>,
-                              isStatic = true,
-                              invokeCode = getSchemaCode
-                          )
-                          :> _
-
+                  // Generate static GetSchema method
+                  yield
+                      ProvidedMethod(
+                          "GetSchema",
+                          [],
+                          typeof<System.Xml.Schema.XmlSchemaSet>,
+                          isStatic = true,
+                          invokeCode = getSchemaCode
+                      )
+                      :> _
+              | _ -> ()
 
               ]
             |> spec.GeneratedType.AddMembers
