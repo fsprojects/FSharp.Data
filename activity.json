@@ -1,7 +1,7 @@
 {
   "last_run": "2026-02-22",
-  "backlog_cursor": 130,
-  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461, 1170, 1240, 1213, 1305, 1294, 1194],
+  "backlog_cursor": 160,
+  "commented_issues": [1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1330, 1501, 1528, 946, 1223, 1259, 1356, 1439, 1073, 1230, 1391, 1349, 1321, 1490, 834, 1326, 1461, 1170, 1240, 1213, 1305, 1294, 1194, 1362, 1418, 1405],
   "nudged_prs": [1524],
   "attempted_prs": [
     {
@@ -101,7 +101,32 @@
     {"issue": 1315, "label": "documentation"},
     {"issue": 1315, "label": "help wanted"},
     {"issue": 1315, "label": "good first issue"},
-    {"issue": 1191, "label": "bug"}
+    {"issue": 1191, "label": "bug"},
+    {"issue": 1362, "label": "bug"},
+    {"issue": 1362, "label": "breaking change"},
+    {"issue": 1418, "label": "bug"},
+    {"issue": 1405, "label": "bug"},
+    {"issue": 1405, "label": "good first issue"},
+    {"issue": 1317, "label": "enhancement"},
+    {"issue": 1319, "label": "enhancement"},
+    {"issue": 1322, "label": "question"},
+    {"issue": 1325, "label": "enhancement"},
+    {"issue": 1333, "label": "needs investigation"},
+    {"issue": 1336, "label": "needs investigation"},
+    {"issue": 1340, "label": "bug"},
+    {"issue": 1340, "label": "help wanted"},
+    {"issue": 1338, "label": "enhancement"},
+    {"issue": 1343, "label": "enhancement"},
+    {"issue": 1358, "label": "documentation"},
+    {"issue": 1358, "label": "good first issue"},
+    {"issue": 1363, "label": "enhancement"},
+    {"issue": 1366, "label": "question"},
+    {"issue": 1382, "label": "question"},
+    {"issue": 1385, "label": "question"},
+    {"issue": 1417, "label": "enhancement"},
+    {"issue": 1419, "label": "needs investigation"},
+    {"issue": 1425, "label": "enhancement"},
+    {"issue": 1431, "label": "enhancement"}
   ],
   "tasks_last_run": {
     "task1_triage": "2026-02-22",
@@ -139,7 +164,9 @@
     "Issue #1191 (JsonProvider EmbeddedResource in library): Complex type provider bug, 18+ comments, no resolution.",
     "Issue #1294 (HtmlNode siblings): No NextSibling API. Workaround: use DescendantsWithPath to get parent, then Elements() to navigate siblings. Commented 2026-02-22.",
     "Issue #1194 (CsvFile slow streams): StreamReader wraps slow stream. Workaround: read into string first or use TextReader overload. Possibly a .NET 2.1 runtime issue. Commented 2026-02-22.",
-    "Backlog cursor at issues around #1315 (end of page 3 oldest-first). Next run should continue from page 4 (issues after #1315, around 2020-05-28).",
-    "Issues page 4 cursor: Y3Vyc29yOnYyOpK0MjAyMC0wNS0yOFQxOToxNTo1MVrOJVtrKw=="
+    "Issue #1362 (CsvProvider capitalization): Bug confirmed. Root cause: capitalizeFirstLetter for property, niceCamelName for ctor param. Fix is breaking change (camelCase ctor param names would become PascalCase). Commented 2026-02-22.",
+    "Issue #1418 (bool yes/no roundtrip): By design. InferTypesFromValues=false workaround. Commented 2026-02-22.",
+    "Issue #1405 (HTML table title with [edit]): Bug - heading innerText includes anchor text. Targeted fix: strip [edit]-style anchors from heading before using as title. Labelled good first issue. Commented 2026-02-22.",
+    "Issues page 5 cursor: Y3Vyc29yOnYyOpK0MjAyMi0wNS0wNVQxNDozODo0M1rOSR7wTg=="
   ]
 }
