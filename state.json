@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T18:39:33Z",
-  "workflow_run_id": "22282964765",
-  "tasks_done_this_run": ["task2", "task5", "task11"],
+  "last_run": "2026-02-22T18:53:02Z",
+  "workflow_run_id": "22283177591",
+  "tasks_done_this_run": ["task1", "task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -21,9 +21,9 @@
   "monthly_activity_month": "2026-02",
   "fix_attempts": {
     "1453": {"status": "merged", "pr": 1612},
-    "1383": {"status": "PR created", "pr": 1613, "branch": "repo-assist/fix-issue-1383-css-pseudo-class", "date": "2026-02-22"},
+    "1383": {"status": "PR created", "pr": 1613, "branch": "repo-assist/fix-css-pseudo-class-error-1383", "date": "2026-02-22"},
     "1437": {"status": "PR created", "pr": 1617, "branch": "repo-assist/fix-issue-1437-datetime-offset-unspecified-timezone", "date": "2026-02-22"},
-    "1310": {"status": "PR created", "pr": 1618, "branch": "repo-assist/fix-issue-1310-xsd-embedded-resource", "date": "2026-02-22"},
+    "1310": {"status": "PR created", "pr": 1619, "branch": "repo-assist/fix-issue-1310-xsd-embedded-resource", "date": "2026-02-22"},
     "1608": {"status": "merged", "pr": 1608},
     "1606": {"status": "merged", "pr": 1606},
     "1607": {"status": "merged", "pr": 1607},
@@ -54,7 +54,7 @@
     1223, 1259, 1356, 1230, 1391, 1349, 1321, 1490, 1461, 834, 1326,
     1170, 1240, 1213, 1305, 1294, 1362, 1418, 1405, 1453, 1489,
     1249, 1251, 1256, 1261, 1300, 1310, 1322, 1383, 1194, 1419, 1452, 1437,
-    1488, 1465
+    1488, 1465, 1436
   ],
   "ideas_submitted": [],
   "stale_pr_nudges": [],
@@ -64,14 +64,15 @@
     "dsyme endorsed fixing issue #1310 (EmbeddedResource + Schema/GetSchema bug) on 2026-02-22"
   ],
   "notes": {
-    "issue_1509": "Closed by dsyme on 2026-02-22 despite submitter saying not fixed. Check if re-opened.",
+    "issue_1509": "Closed by dsyme on 2026-02-22 (PR #1605 merged fixed it)",
     "issue_1330": "HTML whitespace-stripping bug - complex to fix, needs context-aware inline/block detection",
-    "issue_1310": "FIXED in PR #1618 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. dsyme endorsed fix on 2026-02-22.",
+    "issue_1310": "FIXED in PR #1619 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. dsyme endorsed fix on 2026-02-22.",
     "issue_1439": "InferRows truncates text lines not CSV rows - workaround: InferRows=0",
-    "issue_1249": "Fixed in 3.0.1, confirmed by submitter, commented suggesting close",
+    "issue_1249": "CLOSED by dsyme 2026-02-22 (fixed in 3.0.1)",
     "issue_1251": "HTTP default encoding is ISO-8859-1 per RFC; workaround is responseEncodingOverride='utf-8'",
     "issue_1256": "CSV Load(Stream) ignores encoding by design; workaround is TextReader overload",
-    "issue_1261": "Fixed by PR #1262 merged 2019; confirmed current parseValue handles all root value types; commented suggesting close",
+    "issue_1261": "CLOSED by dsyme 2026-02-22 (JsonValue.Parse handles all root JSON types)",
+    "issue_677": "CLOSED by dsyme 2026-02-21 (JSON Schema shipped in 6.5.0)",
     "issue_1322": "By design: missing array field uses empty array not Option. Workaround: use 'data: null' in sample to get Option<Datum[]>",
     "issue_1383": "CSS pseudo-class error fix PR #1613 created - throw NotSupportedException instead of generic Exception",
     "issue_1419": "Stack overflow on circular XSD group references. Root cause: XsdInference.fs line 186 - XmlSchemaGroupRef handling has no cycle guard. Fix: track visited group names/refs. Commented 2026-02-22.",
@@ -81,8 +82,11 @@
     "issue_1465": "JsonProvider writable properties: erased TPs make this hard. Workaround via JsonValue.Properties mutation exists. Commented 2026-02-22 with immutable-copy alternative.",
     "issue_1432": "XmlProvider renames elements to be F#-idiomatic. dsyme endorsed adding option to preserve names. Added help wanted label 2026-02-22.",
     "issue_1417": "CsvProvider treats 0/1 as bool. dsyme endorsed StrictBooleans static parameter (2024-03-11). Good candidate for implementation.",
-    "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. 17.14.x is latest 17.x but targets .NETFramework not net8.0 on NuGet - needs compatibility check.",
+    "issue_1436": "Trimmability for Blazor WASM. Commented 2026-02-22 explaining DynamicallyAccessedMembers annotation requirement and path forward.",
+    "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 created by a separate Copilot workflow to update them.",
+    "pr_1618_note": "PR #1618 is from a SEPARATE Copilot workflow (copilot/update-microsoft-build-packages), not from Repo Assist. It addresses #1615.",
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 created 2026-02-22 for 7.0.0.",
-    "issue_backlog": "All open issues triaged as of 2026-02-22. Reset cursor to null - start fresh next run."
+    "issue_backlog": "All open issues triaged as of 2026-02-22. Reset cursor to null - start fresh next run.",
+    "recently_closed_by_dsyme": "Issues closed by dsyme on 2026-02-22: #1532, #1528, #1509, #1506, #1501, #1249, #1261; on 2026-02-21: #677. Likely prompted by Repo Assist comments."
   }
 }
