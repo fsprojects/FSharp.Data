@@ -250,6 +250,11 @@ let internal asyncRead (uriResolver: UriResolver) formatName encodingStr (uri: U
                 if encodingStr = "" then
                     Encoding.UTF8
                 else
+#if NET6_0_OR_GREATER
+                    // Register CodePagesEncodingProvider so that code-page encodings
+                    // (e.g. windows-1250 / cp1250) are available on .NET 6+.
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)
+#endif
                     HttpEncodings.getEncoding encodingStr
 
             return new StreamReader(file, encoding) :> TextReader
