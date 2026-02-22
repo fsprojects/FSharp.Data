@@ -934,3 +934,35 @@ let ``abstract elements can be recursive``() =
     getInferedTypes formulaXsd [| sample1; sample2 |]
     |> ignore
 
+[<Test>]
+let ``circular group references do not cause a stack overflow``() =
+
+    // Schema with a group that (indirectly) creates a recursive content model:
+    // RecursiveGroup contains element "children" whose anonymous type references RecursiveGroup.
+    // Without a GroupRef cycle guard, this can cause unbounded recursion in parseParticle
+    // on .NET runtimes where the compiled XmlSchema object graph contains shared group particle references.
+    let xsd =
+        """
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   elementFormDefault="qualified">
+            <xs:group name="RecursiveGroup">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0"/>
+                    <xs:element name="children" minOccurs="0">
+                        <xs:complexType>
+                            <xs:group ref="RecursiveGroup" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:group>
+            <xs:element name="Root">
+                <xs:complexType>
+                    <xs:group ref="RecursiveGroup"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        """
+
+    // Must complete without StackOverflowException
+    getInferedTypeFromSchema xsd |> ignore
+
