@@ -103,16 +103,23 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
             let inferredFields =
                 use _holder = IO.logTime "Inference" sample
 
-                sampleCsv.InferColumnTypes(
-                    inferRows,
-                    TextRuntime.GetMissingValues missingValuesStr,
-                    inferenceMode,
-                    TextRuntime.GetCulture cultureStr,
-                    schema,
-                    assumeMissingValues,
-                    preferOptionals,
-                    unitsOfMeasureProvider
-                )
+                let fields =
+                    sampleCsv.InferColumnTypes(
+                        inferRows,
+                        TextRuntime.GetMissingValues missingValuesStr,
+                        inferenceMode,
+                        TextRuntime.GetCulture cultureStr,
+                        schema,
+                        assumeMissingValues,
+                        preferOptionals,
+                        unitsOfMeasureProvider
+                    )
+#if NET6_0_OR_GREATER
+                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then fields
+                else fields |> List.map StructuralInference.downgradeNet6PrimitiveProperty
+#else
+                fields
+#endif
 
             use _holder = IO.logTime "TypeGeneration" sample
 

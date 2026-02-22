@@ -76,28 +76,35 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
             let inferedType =
                 use _holder = IO.logTime "Inference" (if schema <> "" then schema else sample)
 
-                if schema <> "" then
-                    // Use the JSON Schema for type inference
-                    use _holder = IO.logTime "SchemaInference" schema
+                let rawInfered =
+                    if schema <> "" then
+                        // Use the JSON Schema for type inference
+                        use _holder = IO.logTime "SchemaInference" schema
 
-                    let schemaValue = JsonValue.Parse(value)
-                    let jsonSchema = JsonSchema.parseSchema schemaValue
-                    JsonSchema.schemaToInferedType unitsOfMeasureProvider jsonSchema
-                else
-                    // Use sample-based inference
-                    let samples =
-                        use _holder = IO.logTime "Parsing" sample
+                        let schemaValue = JsonValue.Parse(value)
+                        let jsonSchema = JsonSchema.parseSchema schemaValue
+                        JsonSchema.schemaToInferedType unitsOfMeasureProvider jsonSchema
+                    else
+                        // Use sample-based inference
+                        let samples =
+                            use _holder = IO.logTime "Parsing" sample
 
-                        if sampleIsList then
-                            JsonDocument.CreateList(new StringReader(value))
-                            |> Array.map (fun doc -> doc.JsonValue)
-                        else
-                            [| JsonValue.Parse(value) |]
+                            if sampleIsList then
+                                JsonDocument.CreateList(new StringReader(value))
+                                |> Array.map (fun doc -> doc.JsonValue)
+                            else
+                                [| JsonValue.Parse(value) |]
 
-                    samples
-                    |> Array.map (fun sampleJson ->
-                        JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
-                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                        samples
+                        |> Array.map (fun sampleJson ->
+                            JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
+                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+#if NET6_0_OR_GREATER
+                if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then rawInfered
+                else StructuralInference.downgradeNet6Types rawInfered
+#else
+                rawInfered
+#endif
 
             use _holder = IO.logTime "TypeGeneration" (if schema <> "" then schema else sample)
 

@@ -623,3 +623,63 @@ let inferPrimitiveType
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
     inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo value unit
+
+#if NET6_0_OR_GREATER
+/// Replaces DateOnly → DateTime and TimeOnly → TimeSpan throughout an InferedType tree.
+/// Used in design-time code when the target framework does not support these .NET 6+ types.
+let internal downgradeNet6Types (inferedType: InferedType) : InferedType =
+    let downgradeTag tag =
+        match tag with
+        | InferedTypeTag.DateOnly -> InferedTypeTag.DateTime
+        | InferedTypeTag.TimeOnly -> InferedTypeTag.TimeSpan
+        | _ -> tag
+
+    let downgradeType (typ: Type) =
+        if typ = typeof<DateOnly> then typeof<DateTime>
+        elif typ = typeof<TimeOnly> then typeof<TimeSpan>
+        else typ
+
+    // Use reference-equality-based visited set to handle cyclic InferedType graphs
+    // (e.g. recursive XML schemas). When a cycle is detected we return the original node.
+    let visited =
+        System.Collections.Generic.HashSet<InferedType>(
+            { new System.Collections.Generic.IEqualityComparer<InferedType> with
+                member _.Equals(x, y) = obj.ReferenceEquals(x, y)
+                member _.GetHashCode(x) = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(x) })
+
+    let rec convert infType =
+        if not (visited.Add(infType)) then
+            infType // cycle detected – return original to avoid infinite recursion
+        else
+            let result =
+                match infType with
+                | InferedType.Primitive(typ, unit, optional, overrideOnMerge) ->
+                    InferedType.Primitive(downgradeType typ, unit, optional, overrideOnMerge)
+                | InferedType.Record(name, props, optional) ->
+                    InferedType.Record(name, props |> List.map (fun p -> { p with Type = convert p.Type }), optional)
+                | InferedType.Collection(order, types) ->
+                    InferedType.Collection(
+                        order |> List.map downgradeTag,
+                        types |> Map.toSeq |> Seq.map (fun (k, (m, t)) -> downgradeTag k, (m, convert t)) |> Map.ofSeq)
+                | InferedType.Heterogeneous(types, containsOptional) ->
+                    InferedType.Heterogeneous(
+                        types |> Map.toSeq |> Seq.map (fun (k, t) -> downgradeTag k, convert t) |> Map.ofSeq,
+                        containsOptional)
+                | InferedType.Json(innerType, optional) -> InferedType.Json(convert innerType, optional)
+                | _ -> infType
+            result
+
+    convert inferedType
+
+/// Replaces DateOnly → DateTime and TimeOnly → TimeSpan in a PrimitiveInferedProperty.
+/// Used in design-time code when the target framework does not support these .NET 6+ types.
+let internal downgradeNet6PrimitiveProperty (field: StructuralTypes.PrimitiveInferedProperty) =
+    let v = field.Value
+
+    if v.InferedType = typeof<DateOnly> then
+        { field with Value = { v with InferedType = typeof<DateTime>; RuntimeType = typeof<DateTime> } }
+    elif v.InferedType = typeof<TimeOnly> then
+        { field with Value = { v with InferedType = typeof<TimeSpan>; RuntimeType = typeof<TimeSpan> } }
+    else
+        field
+#endif

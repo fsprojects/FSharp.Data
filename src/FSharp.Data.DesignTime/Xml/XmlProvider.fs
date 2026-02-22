@@ -74,7 +74,13 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 let inferedType =
                     use _holder = IO.logTime "Inference" sample
 
-                    schemaSet |> XsdParsing.getElements |> List.ofSeq |> XsdInference.inferElements
+                    let t = schemaSet |> XsdParsing.getElements |> List.ofSeq |> XsdInference.inferElements
+#if NET6_0_OR_GREATER
+                    if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then t
+                    else StructuralInference.downgradeNet6Types t
+#else
+                    t
+#endif
 
                 use _holder = IO.logTime "TypeGeneration" sample
 
@@ -113,14 +119,21 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                 let inferedType =
                     use _holder = IO.logTime "Inference" sample
 
-                    samples
-                    |> XmlInference.inferType
-                        unitsOfMeasureProvider
-                        inferenceMode
-                        (TextRuntime.GetCulture cultureStr)
-                        false
-                        globalInference
-                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                    let t =
+                        samples
+                        |> XmlInference.inferType
+                            unitsOfMeasureProvider
+                            inferenceMode
+                            (TextRuntime.GetCulture cultureStr)
+                            false
+                            globalInference
+                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+#if NET6_0_OR_GREATER
+                    if ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then t
+                    else StructuralInference.downgradeNet6Types t
+#else
+                    t
+#endif
 
                 use _holder = IO.logTime "TypeGeneration" sample
 
