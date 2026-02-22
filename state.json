@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-22T18:31:22Z",
-  "workflow_run_id": "22282836140",
-  "tasks_done_this_run": ["task1", "task7", "task11"],
+  "last_run": "2026-02-22T18:39:33Z",
+  "workflow_run_id": "22282964765",
+  "tasks_done_this_run": ["task2", "task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-22",
     "task2": "2026-02-22",
@@ -23,6 +23,7 @@
     "1453": {"status": "merged", "pr": 1612},
     "1383": {"status": "PR created", "pr": 1613, "branch": "repo-assist/fix-issue-1383-css-pseudo-class", "date": "2026-02-22"},
     "1437": {"status": "PR created", "pr": 1617, "branch": "repo-assist/fix-issue-1437-datetime-offset-unspecified-timezone", "date": "2026-02-22"},
+    "1310": {"status": "PR created", "pr": 1618, "branch": "repo-assist/fix-issue-1310-xsd-embedded-resource", "date": "2026-02-22"},
     "1608": {"status": "merged", "pr": 1608},
     "1606": {"status": "merged", "pr": 1606},
     "1607": {"status": "merged", "pr": 1607},
@@ -59,12 +60,13 @@
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
   "maintainer_instructions": [
-    "Issue #1509 submitter says the fix in PR #1510 does NOT resolve the issue (from dsyme comment 2026-02-21)"
+    "Issue #1509 submitter says the fix in PR #1510 does NOT resolve the issue (from dsyme comment 2026-02-21)",
+    "dsyme endorsed fixing issue #1310 (EmbeddedResource + Schema/GetSchema bug) on 2026-02-22"
   ],
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 despite submitter saying not fixed. Check if re-opened.",
     "issue_1330": "HTML whitespace-stripping bug - complex to fix, needs context-aware inline/block detection",
-    "issue_1310": "EmbeddedResource XSD bug: Schema_ branch in Helpers.fs doesn't check IsResource; GetSchema always uses file path. Wrong resource name silently falls back to file path.",
+    "issue_1310": "FIXED in PR #1618 - GetSchema now reads from embedded resource at runtime when EmbeddedResource is specified. dsyme endorsed fix on 2026-02-22.",
     "issue_1439": "InferRows truncates text lines not CSV rows - workaround: InferRows=0",
     "issue_1249": "Fixed in 3.0.1, confirmed by submitter, commented suggesting close",
     "issue_1251": "HTTP default encoding is ISO-8859-1 per RFC; workaround is responseEncodingOverride='utf-8'",
