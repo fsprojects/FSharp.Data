@@ -17,12 +17,44 @@ let [<Literal>] simpleCsv = """
 
 type SimpleCsv = CsvProvider<simpleCsv>
 
+let [<Literal>] csvWithBitValues = """
+  Flag,Status,Score
+  0,yes,42
+  1,no,7
+  1,yes,3 """
+
+// With StrictBooleans=true, 0/1 infer as int and yes/no infer as string
+type StrictBoolCsv = CsvProvider<csvWithBitValues, StrictBooleans=true>
+// Without StrictBooleans, 0/1 infer as bool and yes/no infer as bool (default)
+type NonStrictBoolCsv = CsvProvider<csvWithBitValues>
+
 [<Test>]
 let ``Bool column correctly inferred and accessed`` () =
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:bool = first.Column1
   actual |> should be True
+
+[<Test>]
+let ``StrictBooleans: 0 and 1 are inferred as int not bool`` () =
+  let csv = StrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let flagAsInt: int = first.Flag  // Should compile: Flag is int, not bool
+  flagAsInt |> should equal 0
+
+[<Test>]
+let ``StrictBooleans: yes and no are inferred as string not bool`` () =
+  let csv = StrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let statusAsString: string = first.Status  // Should compile: Status is string, not bool
+  statusAsString |> should equal "yes"
+
+[<Test>]
+let ``Without StrictBooleans: 0 and 1 are inferred as bool by default`` () =
+  let csv = NonStrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let flagAsBool: bool = first.Flag  // Should compile: Flag is bool
+  flagAsBool |> should be False
 
 [<Test>]
 let ``Decimal column correctly inferred and accessed`` () =
