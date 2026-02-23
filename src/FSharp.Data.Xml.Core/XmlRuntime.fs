@@ -55,15 +55,34 @@ type XmlElement =
                                10001,
                                IsHidden = true,
                                IsError = false)>]
-    static member Create(reader: TextReader) =
+    static member Create(reader: TextReader) = XmlElement.Create(reader, "Prohibit")
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    static member CreateList(reader: TextReader) =
+        XmlElement.CreateList(reader, "Prohibit")
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    static member Create(reader: TextReader, dtdProcessing: string) =
         use reader = reader
-        // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
+
+        let dtd =
+            match dtdProcessing with
+            | "Ignore" -> DtdProcessing.Ignore
+            | "Parse" -> DtdProcessing.Parse
+            | _ -> DtdProcessing.Prohibit
+
         let xmlReaderSettings =
-            new XmlReaderSettings(
-                DtdProcessing = DtdProcessing.Prohibit,
-                XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L
-            ) // 1MB limit
+            new XmlReaderSettings(DtdProcessing = dtd, XmlResolver = null, MaxCharactersFromEntities = 1024L * 1024L)
 
         use xmlReader = XmlReader.Create(reader, xmlReaderSettings)
         let element = XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root
@@ -75,17 +94,18 @@ type XmlElement =
                                10001,
                                IsHidden = true,
                                IsError = false)>]
-    static member CreateList(reader: TextReader) =
+    static member CreateList(reader: TextReader, dtdProcessing: string) =
         use reader = reader
         let text = reader.ReadToEnd()
 
-        // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
+        let dtd =
+            match dtdProcessing with
+            | "Ignore" -> DtdProcessing.Ignore
+            | "Parse" -> DtdProcessing.Parse
+            | _ -> DtdProcessing.Prohibit
+
         let xmlReaderSettings =
-            new XmlReaderSettings(
-                DtdProcessing = DtdProcessing.Prohibit,
-                XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L
-            ) // 1MB limit
+            new XmlReaderSettings(DtdProcessing = dtd, XmlResolver = null, MaxCharactersFromEntities = 1024L * 1024L)
 
         try
             use stringReader = new StringReader(text)

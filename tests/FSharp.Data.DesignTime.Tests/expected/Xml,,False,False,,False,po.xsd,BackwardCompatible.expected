@@ -1,22 +1,22 @@
 class XmlProvider : obj
     static member AsyncLoad: uri:string -> XmlProvider+PurchaseOrder async
-    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t, "Prohibit"))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri), f)
 
     static member GetSchema: () -> System.Xml.Schema.XmlSchemaSet
     (XmlSchema.parseSchemaFromTextReader "" FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XSD" "" "po.xsd")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+PurchaseOrder
-    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader), "Prohibit")
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+PurchaseOrder
-    XmlElement.Create(reader)
+    XmlElement.Create(reader, "Prohibit")
 
     static member Load: uri:string -> XmlProvider+PurchaseOrder
-    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)))
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XSD" "" uri)), "Prohibit")
 
     static member Parse: text:string -> XmlProvider+PurchaseOrder
-    XmlElement.Create(((new StringReader(text)) :> TextReader))
+    XmlElement.Create(((new StringReader(text)) :> TextReader), "Prohibit")
 
 
 class XmlProvider+PurchaseOrder : FDR.BaseTypes.XmlElement

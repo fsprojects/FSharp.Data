@@ -51,6 +51,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let schema = args.[8] :?> string
         let inferenceMode = args.[9] :?> InferenceMode
         let preferDateOnly = args.[10] :?> bool
+        let dtdProcessing = args.[11] :?> string
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -101,7 +102,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
 
                 { GeneratedType = tpType
                   RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> result.Converter <@@ XmlElement.Create(%reader) @@>
+                  CreateFromTextReader =
+                    fun reader -> result.Converter <@@ XmlElement.Create(%reader, dtdProcessing) @@>
                   CreateListFromTextReader = None
                   CreateFromTextReaderForSampleList =
                     fun reader -> // hack: this will actually parse the schema
@@ -115,10 +117,10 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                     use _holder = IO.logTime "Parsing" sample
 
                     if sampleIsList then
-                        XmlElement.CreateList(new StringReader(value))
+                        XmlElement.CreateList(new StringReader(value), dtdProcessing)
                         |> Array.map (fun doc -> doc.XElement)
                     else
-                        [| XDocument.Parse(value).Root |]
+                        [| XmlElement.Create(new StringReader(value), dtdProcessing).XElement |]
 
                 let inferedType =
                     use _holder = IO.logTime "Inference" sample
@@ -156,10 +158,11 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
 
                 { GeneratedType = tpType
                   RepresentationType = result.ConvertedType
-                  CreateFromTextReader = fun reader -> result.Converter <@@ XmlElement.Create(%reader) @@>
+                  CreateFromTextReader =
+                    fun reader -> result.Converter <@@ XmlElement.Create(%reader, dtdProcessing) @@>
                   CreateListFromTextReader = None
                   CreateFromTextReaderForSampleList =
-                    fun reader -> result.Converter <@@ XmlElement.CreateList(%reader) @@>
+                    fun reader -> result.Converter <@@ XmlElement.CreateList(%reader, dtdProcessing) @@>
                   CreateFromValue = None }
 
         let source =
@@ -195,7 +198,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               typeof<InferenceMode>,
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
-          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("DtdProcessing", typeof<string>, parameterDefaultValue = "Prohibit") ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -219,7 +223,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
               Note inline schemas are not used from Xsd documents.
            </param>
-           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>"""
+           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
+           <param name='DtdProcessing'>Controls how DTD declarations in the XML are handled. Accepted values: "Prohibit" (default, throws on any DTD), "Ignore" (silently skips DTD processing, safe for most cases), "Parse" (enables full DTD processing including entity expansion, use with caution).</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText
