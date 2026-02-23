@@ -17,12 +17,44 @@ let [<Literal>] simpleCsv = """
 
 type SimpleCsv = CsvProvider<simpleCsv>
 
+let [<Literal>] csvWithBitValues = """
+  Flag,Status,Score
+  0,yes,42
+  1,no,7
+  1,yes,3 """
+
+// With StrictBooleans=true, 0/1 infer as int and yes/no infer as string
+type StrictBoolCsv = CsvProvider<csvWithBitValues, StrictBooleans=true>
+// Without StrictBooleans, 0/1 infer as bool and yes/no infer as bool (default)
+type NonStrictBoolCsv = CsvProvider<csvWithBitValues>
+
 [<Test>]
 let ``Bool column correctly inferred and accessed`` () =
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:bool = first.Column1
   actual |> should be True
+
+[<Test>]
+let ``StrictBooleans: 0 and 1 are inferred as int not bool`` () =
+  let csv = StrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let flagAsInt: int = first.Flag  // Should compile: Flag is int, not bool
+  flagAsInt |> should equal 0
+
+[<Test>]
+let ``StrictBooleans: yes and no are inferred as string not bool`` () =
+  let csv = StrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let statusAsString: string = first.Status  // Should compile: Status is string, not bool
+  statusAsString |> should equal "yes"
+
+[<Test>]
+let ``Without StrictBooleans: 0 and 1 are inferred as bool by default`` () =
+  let csv = NonStrictBoolCsv.GetSample()
+  let first = csv.Rows |> Seq.head
+  let flagAsBool: bool = first.Flag  // Should compile: Flag is bool
+  flagAsBool |> should be False
 
 [<Test>]
 let ``Decimal column correctly inferred and accessed`` () =
@@ -673,3 +705,18 @@ let ``Can infer from a multiline schema`` () =
     csv.NumberOfColumns |> should equal 16
     firstRow.OrderCreated |> should equal "2022-01-01 10:00:00"
     firstRow.FioFull |> should equal "John Smith"
+
+// Regression test for issue #1439: InferRows must count CSV rows, not text lines.
+// A multiline quoted field occupies 2 text lines but is only 1 data row.
+// With InferRows=2, both data rows should be accessible (the first spans 2 lines).
+type MultilineFieldsCsv = CsvProvider<"Data/MultilineFields.csv", InferRows=2>
+
+[<Test>]
+let ``InferRows counts CSV rows not text lines for multiline quoted fields`` () =
+    let csv = MultilineFieldsCsv.GetSample()
+    let rows = csv.Rows |> Seq.toArray
+    rows.Length |> should equal 2
+    rows.[0].F1 |> should equal "multi-\nline field"
+    rows.[0].F2 |> should equal 2
+    rows.[1].F1 |> should equal "normal"
+    rows.[1].F2 |> should equal 3
