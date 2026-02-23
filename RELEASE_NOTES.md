@@ -12,6 +12,13 @@
 - Fix `JsonValue.Float` serialization — whole-number floats like `Float(100.0)` now serialize as `100.0` instead of `100`, preserving JSON float semantics (closes #1356)
 - Fix `HtmlNode.ToString` — whitespace inside elements nested in `<pre>` is now preserved correctly (closes #1509, #1223)
 - Fix CSV schema parsing — column names containing parentheses no longer corrupt type annotations (closes #946)
+- Fix CSS selector parsing — unrecognized pseudo-classes now throw `NotSupportedException` instead of silently returning wrong results (closes #1383)
+- Fix `ConvertDateTimeOffset` — timezone-less `xs:dateTime` values now fall back to `AsDateTime` correctly (closes #1437)
+- Fix `XmlProvider` with `EmbeddedResource` — `GetSchema` now correctly resolves embedded XSD schemas (closes #1310)
+- Fix `CsvProvider.InferRows` — row count now reflects actual CSV rows; multiline quoted fields no longer cause under-counting (closes #1439)
+- Fix XSD group reference cycle guard — recursive group references no longer cause a `StackOverflowException` (closes #1419)
+- Add `StrictBooleans` static parameter to `CsvProvider` to opt in to strict `true`/`false`-only boolean parsing (#1621)
+- Bump `Microsoft.Build.*` from 17.11.4 to 17.14.28 (security patch) (#1618)
 
 ## 6.6.0 - Feb 21 2026
 
