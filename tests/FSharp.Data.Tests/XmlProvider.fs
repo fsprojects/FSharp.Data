@@ -1213,6 +1213,14 @@ let ``date is formatted properly``() =
     validXml.XElement.Attribute(XName.Get "date").Value
     |> should equal "2018-08-29"
 
+[<Test>]
+let ``xs:dateTime without timezone parses as DateTimeOffset (issue 1437)``() =
+    // xs:dateTime values without timezone offset (DateTimeKind.Unspecified) should
+    // still parse successfully as DateTimeOffset, treated as local time.
+    let xml = """<A int="0" long="0" date="2022-01-01" dateTime="2022-04-28T10:09:17" boolean="false" decimal="0" double="0" />"""
+    let a = SimpleTypes.Parse(xml)
+    a.DateTime.DateTime |> should equal (System.DateTime(2022, 4, 28, 10, 9, 17))
+
 type TimeSpanXML = XmlProvider<"Data/TimeSpans.xml">
 
 [<Test>]
@@ -1312,3 +1320,7 @@ let ``Inline schemas as overrides replace value-based inference when present`` (
     sample[1].Value.GetType() |> should equal (typeof<int option>)
     // (Note the types in the inline schemas are automatically transformed to options as needed
     // when another node does not define any value for the given property)
+
+// Used by FSharp.Data.Reference.Tests to verify that GetSchema works with EmbeddedResource
+type XmlSchemaWithEmbeddedResource =
+    XmlProvider<Schema = "Data/po.xsd", EmbeddedResource = "FSharp.Data.Tests, FSharp.Data.Tests.Data.po.xsd">

@@ -104,9 +104,12 @@ module XsdParsing =
         let elements =
             System.Collections.Generic.Dictionary<XmlSchemaElement, XsdModel.XsdElement>()
 
+        let visitingGroups = System.Collections.Generic.HashSet<XmlQualifiedName>()
+
         member x.GetElement name = getElm name
         member x.GetSubstitutions elm = getSubst elm
         member x.Elements = elements
+        member x.VisitingGroups = visitingGroups
 
 
     open XsdModel
@@ -183,7 +186,17 @@ module XsdParsing =
         match par with
         | :? XmlSchemaAny -> Any occurs
         | :? XmlSchemaGroupBase as grp -> parseParticles grp
-        | :? XmlSchemaGroupRef as grpRef -> parseParticle ctx grpRef.Particle
+        | :? XmlSchemaGroupRef as grpRef ->
+            // Guard against circular group references (e.g. group A → group B → group A).
+            // XSD allows groups to reference each other transitively; without a cycle guard
+            // this causes unbounded recursion and a StackOverflowException.
+            if ctx.VisitingGroups.Contains grpRef.RefName then
+                Empty // break the cycle
+            else
+                ctx.VisitingGroups.Add grpRef.RefName |> ignore
+                let result = parseParticle ctx grpRef.Particle
+                ctx.VisitingGroups.Remove grpRef.RefName |> ignore
+                result
         | :? XmlSchemaElement as elm ->
             let e =
                 if elm.RefName.IsEmpty then
