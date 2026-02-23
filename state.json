@@ -1,10 +1,10 @@
 {
-  "last_run": "2026-02-23T00:30:55Z",
-  "workflow_run_id": "22288750021",
-  "tasks_done_this_run": ["task7", "task1", "task9", "task11"],
+  "last_run": "2026-02-23T01:06:59Z",
+  "workflow_run_id": "22289394156",
+  "tasks_done_this_run": ["task2", "task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-23",
-    "task2": "2026-02-22",
+    "task2": "2026-02-23",
     "task3": "2026-02-22",
     "task4": "2026-02-22",
     "task5": "2026-02-23",
@@ -35,7 +35,8 @@
     "1603": {"status": "merged", "pr": 1603},
     "1609": {"status": "merged", "pr": 1609},
     "1613": {"status": "merged", "pr": 1613},
-    "1614": {"status": "merged", "pr": 1614}
+    "1614": {"status": "merged", "pr": 1614},
+    "1221": {"status": "pr_open", "branch": "repo-assist/fix-issue-1221-float-exponential-inference", "date": "2026-02-23", "description": "JsonValue.Float always infers as float (not int/int64) - PR created via safeoutputs"}
   },
   "deps_update_attempts": {
     "2026-02-22": {
@@ -97,7 +98,7 @@
     "issue_1115": "Commented 2026-02-22 (run 4): XmlProvider doesn't preserve XML comments in round-trip through Root(...) constructors. Suggested System.Xml.Linq.XDocument for comment-preserving manipulation.",
     "issue_1432": "Commented 2026-02-22 (run 5): Outlined NamingConvention/UseOriginalNames parameter implementation. Points to NameUtils.fs (nicePascalName/niceCamelName). dsyme endorsed. Labelled: good first issue.",
     "issue_1358": "Commented 2026-02-23: CsvProvider intro GIF uses deprecated Yahoo Finance API. Suggested FRED (Federal Reserve) data as replacement. Pointed to docs/library/CsvProvider.md.",
-    "issue_1221": "Commented 2026-02-23: Confirmed JsonValue.Float inference-as-int bug still present. Root cause: isIntegerFloat check in JsonInference.fs lines 52-63. Fix options: (1) never infer Float as int, (2) track exponent in AST.",
+    "issue_1221": "FIXED in PR (pending) branch repo-assist/fix-issue-1221-float-exponential-inference. Removed integer-promotion for JsonValue.Float in JsonInference.fs lines 52-63. JsonValue.Float is only produced for exponential-notation numbers (NumberStyles.Currency excludes AllowExponent), so always infer as float. All 253 FSharp.Data.Tests pass. 18 pre-existing infra failures in DesignTime tests unchanged.",
     "microsoft_build_vulns": "Microsoft.Build 17.11.4 has CVEs GHSA-w3q9-fxm7-j8fq and GHSA-h4j7-5rxr-p4wc. PR #1618 merged by dsyme (from separate Copilot workflow).",
     "pr_1618_merged": "PR #1618 (Microsoft.Build security update) merged by dsyme on main branch.",
     "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 6.4.0-6.6.0 and 7.0.0 Unreleased. Release prep PR #1616 open - includes all 10 bug fixes from Feb 2026.",
@@ -105,7 +106,6 @@
     "nameutils_normalization": "Name normalization in NameUtils.fs: nicePascalName/niceCamelName used in XmlGenerator.fs, JsonGenerator.fs, CsvGenerator.fs. A UseOriginalNames/NamingConvention parameter would need threading through these generators. dsyme endorsed in issue #1432.",
     "issue_1478_status": "mlaily started JsonProvider2 prototype on a branch (using System.Text.Json / JsonNode API). Multiple contributors discussing but prototype not merged. Last active Nov 2023.",
     "issue_1488_status": "XmlProvider generates types by element name (design decision). Workaround: use XElement constructor to cross-convert between same-structured types. giacomociti confirmed workaround in comments.",
-    "open_prs_repo_assist": "Only PR #1616 is currently open from Repo Assist. All others merged by dsyme.",
-    "issue_1221_status": "JsonValue.Float values that are whole numbers (e.g. 0.1e1=1.0) get inferred as int. Bug confirmed in JsonInference.fs lines 52-63. Fix: remove integer inference for JsonValue.Float."
+    "open_prs_repo_assist": "PR #1616 (release prep) and new PR for #1221 (JsonValue.Float inference) are open from Repo Assist."
   }
 }
