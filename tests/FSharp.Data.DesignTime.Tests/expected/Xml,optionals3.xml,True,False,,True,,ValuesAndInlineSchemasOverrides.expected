@@ -1,26 +1,26 @@
 class XmlProvider : obj
     static member AsyncGetSamples: () -> XmlProvider+XmlProvider+Rss[] async
-    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t, "Prohibit"))
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t, "Ignore"))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "optionals3.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Rss async
-    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t, "Prohibit"))
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t, "Ignore"))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri), f)
 
     static member GetSamples: () -> XmlProvider+XmlProvider+Rss[]
-    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "optionals3.xml")), "Prohibit")
+    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "XML" "" "optionals3.xml")), "Ignore")
 
     static member Load: stream:System.IO.Stream -> XmlProvider+Rss
-    XmlElement.Create(((new StreamReader(stream)) :> TextReader), "Prohibit")
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader), "Ignore")
 
     static member Load: reader:System.IO.TextReader -> XmlProvider+Rss
-    XmlElement.Create(reader, "Prohibit")
+    XmlElement.Create(reader, "Ignore")
 
     static member Load: uri:string -> XmlProvider+Rss
-    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)), "Prohibit")
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "XML" "" uri)), "Ignore")
 
     static member Parse: text:string -> XmlProvider+Rss
-    XmlElement.Create(((new StringReader(text)) :> TextReader), "Prohibit")
+    XmlElement.Create(((new StringReader(text)) :> TextReader), "Ignore")
 
 
 class XmlProvider+Rss : FDR.BaseTypes.XmlElement

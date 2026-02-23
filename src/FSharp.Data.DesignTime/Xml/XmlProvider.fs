@@ -199,7 +199,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("DtdProcessing", typeof<string>, parameterDefaultValue = "Prohibit") ]
+          ProvidedStaticParameter("DtdProcessing", typeof<string>, parameterDefaultValue = "Ignore") ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -224,7 +224,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               Note inline schemas are not used from Xsd documents.
            </param>
            <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
-           <param name='DtdProcessing'>Controls how DTD declarations in the XML are handled. Accepted values: "Prohibit" (default, throws on any DTD), "Ignore" (silently skips DTD processing, safe for most cases), "Parse" (enables full DTD processing including entity expansion, use with caution).</param>"""
+           <param name='DtdProcessing'>Controls how DTD declarations in the XML are handled. Accepted values: "Ignore" (default, silently skips DTD processing, safe for most cases), "Prohibit" (throws on any DTD declaration), "Parse" (enables full DTD processing including entity expansion, use with caution).</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText
