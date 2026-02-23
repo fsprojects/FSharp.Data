@@ -6,6 +6,7 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
+open System.Xml
 open System.Xml.Linq
 
 #nowarn "10001"
@@ -56,7 +57,12 @@ type XmlElement =
                                IsError = false)>]
     static member Create(reader: TextReader) =
         use reader = reader
-        let element = XDocument.Load(reader, LoadOptions.PreserveWhitespace).Root
+
+        let settings =
+            XmlReaderSettings(DtdProcessing = DtdProcessing.Parse)
+
+        use xmlReader = XmlReader.Create(reader, settings)
+        let element = XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root
         { XElement = element }
 
     /// <exclude />
@@ -69,12 +75,21 @@ type XmlElement =
         use reader = reader
         let text = reader.ReadToEnd()
 
+        let settings =
+            XmlReaderSettings(DtdProcessing = DtdProcessing.Parse)
+
         try
-            XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
+            use stringReader = new StringReader(text)
+            use xmlReader = XmlReader.Create(stringReader, settings)
+
+            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
+            use stringReader = new StringReader("<root>" + text + "</root>")
+            use xmlReader = XmlReader.Create(stringReader, settings)
+
+            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 
