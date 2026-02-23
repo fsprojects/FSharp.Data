@@ -29,10 +29,12 @@ type internal XmlGenerationContext =
       UniqueNiceName: string -> string
       UnifyGlobally: bool
       XmlTypeCache: Dictionary<InferedType, XmlGenerationResult>
-      JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition> }
+      JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition>
+      UseOriginalNames: bool }
 
-    static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally) =
-        let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
+    static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally, useOriginalNames) =
+        let niceName = if useOriginalNames then id else NameUtils.nicePascalName
+        let uniqueNiceName = NameUtils.uniqueGenerator niceName
         uniqueNiceName "XElement" |> ignore
 
         { CultureStr = cultureStr
@@ -42,7 +44,8 @@ type internal XmlGenerationContext =
           UniqueNiceName = uniqueNiceName
           UnifyGlobally = unifyGlobally
           XmlTypeCache = Dictionary()
-          JsonTypeCache = Dictionary() }
+          JsonTypeCache = Dictionary()
+          UseOriginalNames = useOriginalNames }
 
     member x.ConvertValue prop =
         let typ, _, conv, _ = ConversionsGenerator.convertStringValue "" x.CultureStr prop
@@ -220,7 +223,14 @@ module internal XmlTypeBuilder =
             ctx.ProvidedType.AddMember objectTy
 
             // to nameclash property names
-            let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
+            let nicePropertyName =
+                if ctx.UseOriginalNames then
+                    id
+                else
+                    NameUtils.nicePascalName
+
+            let niceCamelName = if ctx.UseOriginalNames then id else NameUtils.niceCamelName
+            let makeUnique = NameUtils.uniqueGenerator nicePropertyName
             makeUnique "XElement" |> ignore
 
             // For each case, add property of optional type
@@ -245,7 +255,7 @@ module internal XmlTypeBuilder =
                             ""
                         else
                             nameWithNS),
-                       ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)) ]
+                       ProvidedParameter(niceCamelName name, result.ConvertedType)) ]
 
             let properties, parameters = List.unzip members
             objectTy.AddMembers properties
@@ -304,7 +314,14 @@ module internal XmlTypeBuilder =
             let attrs, content = props |> List.partition (fun prop -> prop.Name <> "")
 
             // to nameclash property names
-            let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
+            let nicePropertyName =
+                if ctx.UseOriginalNames then
+                    id
+                else
+                    NameUtils.nicePascalName
+
+            let niceCamelName = if ctx.UseOriginalNames then id else NameUtils.niceCamelName
+            let makeUnique = NameUtils.uniqueGenerator nicePropertyName
             makeUnique "XElement" |> ignore
 
             // Generate properties for all XML attributes
@@ -322,7 +339,7 @@ module internal XmlTypeBuilder =
                               getterCode =
                                   fun (Singleton xml) -> conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @>
                           ),
-                          ProvidedParameter(NameUtils.niceCamelName name, typ)
+                          ProvidedParameter(niceCamelName name, typ)
 
                       let createPrimitiveMember typ unit (optional: bool) =
                           let typ, conv =
@@ -417,7 +434,7 @@ module internal XmlTypeBuilder =
                               let name = makeUnique name
 
                               ProvidedProperty(name, typ, getterCode = (fun (Singleton xml) -> conv xml)),
-                              ProvidedParameter(NameUtils.niceCamelName name, nonOptionalType) ]
+                              ProvidedParameter(niceCamelName name, nonOptionalType) ]
 
                     // For every possible child element, generate a getter property
                     let childResults =
@@ -469,7 +486,7 @@ module internal XmlTypeBuilder =
                                               fun (Singleton xml) ->
                                                   result.Converter <@@ XmlRuntime.GetChild(%%xml, nameWithNS) @@>
                                       ),
-                                      ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
+                                      ProvidedParameter(niceCamelName name, result.ConvertedType)
 
                                   // For options and arrays, we need to generate call to ConvertArray or ConvertOption
                                   // (because the child may be represented as primitive type - so we cannot just
@@ -504,7 +521,7 @@ module internal XmlTypeBuilder =
                                                       (result.ConvertedType)
                                                       (xml, nameWithNS, convFunc)
                                       ),
-                                      ProvidedParameter(NameUtils.niceCamelName name, typ)
+                                      ProvidedParameter(niceCamelName name, typ)
 
                                   | InferedMultiplicity.OptionalSingle ->
                                       let convFunc = ReflectionHelpers.makeDelegate result.Converter typeof<XmlElement>
@@ -523,7 +540,7 @@ module internal XmlTypeBuilder =
                                                           (result.ConvertedType.GenericTypeArguments.[0])
                                                           (xml, nameWithNS, convFunc)
                                           ),
-                                          ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
+                                          ProvidedParameter(niceCamelName name, result.ConvertedType)
                                       else
                                           let typ = ctx.MakeOptionType result.ConvertedType
 
@@ -539,7 +556,7 @@ module internal XmlTypeBuilder =
                                                           (result.ConvertedType)
                                                           (xml, nameWithNS, convFunc)
                                           ),
-                                          ProvidedParameter(NameUtils.niceCamelName name, typ)
+                                          ProvidedParameter(niceCamelName name, typ)
 
                               | _ ->
                                   failwithf "generateXmlType: Child elements should be named record types, got %A" child ]
