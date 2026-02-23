@@ -1,6 +1,10 @@
 # Release Notes
 
-## 7.0.0 - Unreleased
+## 7.0.1
+
+- Revert "fix potential XXE vulnerability in XML parsing by @Thorium in #1596"
+
+## 7.0.0
 
 - Add opt-in DateOnly/TimeOnly inference support for .NET 6+ via `PreferDateOnly` parameter (closes #1461)
 - Add `PreferDateOnly` parameter to JsonProvider, XmlProvider, CsvProvider, and HtmlProvider (defaults to false for backward compatibility)
