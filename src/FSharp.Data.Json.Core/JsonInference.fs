@@ -16,9 +16,7 @@ open FSharp.Data.Runtime.StructuralInference
 /// here we just need to infer types of primitive JSON values.
 let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo parentName json =
     let inline inRangeDecimal lo hi (v: decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
-    let inline inRangeFloat lo hi (v: float) : bool = (v >= float lo) && (v <= float hi)
     let inline isIntegerDecimal (v: decimal) : bool = Math.Round v = v
-    let inline isIntegerFloat (v: float) : bool = Math.Round v = v
 
     let shouldInferNonStringFromValue =
         match inferenceMode with
@@ -49,18 +47,10 @@ let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo pare
         ->
         InferedType.Primitive(typeof<int64>, None, false, false)
     | JsonValue.Number _ -> InferedType.Primitive(typeof<decimal>, None, false, false)
-    | JsonValue.Float f when
-        shouldInferNonStringFromValue
-        && inRangeFloat Int32.MinValue Int32.MaxValue f
-        && isIntegerFloat f
-        ->
-        InferedType.Primitive(typeof<int>, None, false, false)
-    | JsonValue.Float f when
-        shouldInferNonStringFromValue
-        && inRangeFloat Int64.MinValue Int64.MaxValue f
-        && isIntegerFloat f
-        ->
-        InferedType.Primitive(typeof<int64>, None, false, false)
+    // JsonValue.Float is produced when the JSON number uses exponential notation (e.g. 0.1e1, 2.34E5)
+    // because TextConversions.AsDecimal uses NumberStyles.Currency which excludes AllowExponent.
+    // Such values are always inferred as float regardless of whether the value happens to be a whole
+    // number, so that e.g. [0.1e1, 0.2e1] is inferred as float[] not int[]. See issue #1221.
     | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false, false)
     // More interesting types
     | JsonValue.Array ar ->

@@ -816,17 +816,18 @@ let ``ParseList return result list`` () =
   let prov = NumericFields.ParseList(""" [{"a":123}, {"a":987}] """)
   prov |> Array.map (fun v -> v.A) |> Array.sort |> should equal [|123M; 987M|]
 
-// Regression test for https://github.com/fsprojects/FSharp.Data/issues/1230
+// Regression test for https://github.com/fsprojects/FSharp.Data/issues/1230 / #1221
 // When a JSON array sample mixes decimal and exponential-notation numbers, the inferred
-// type is decimal (because the exponential value is stored as JsonValue.Float and inferred
-// as integer, which is then unified with decimal).  At runtime, any exponential-notation
-// number in the actual JSON must also be convertible to decimal.
+// type is float. Exponential-notation numbers (e.g. 2.34567E5) are stored as JsonValue.Float
+// (because TextConversions.AsDecimal uses NumberStyles.Currency which excludes AllowExponent)
+// and are always inferred as float, not promoted to int/int64 as in earlier versions.
+// This means [1, 2.34567E5, 3.14] is inferred as float[].
 type ExponentialDecimalProvider = JsonProvider<"""{"mydata": [1, 2.34567E5, 3.14]}""">
 
 [<Test>]
-let ``Decimal inferred from mixed-notation array can parse exponential notation at runtime`` () =
+let ``Mixed-notation array with exponential numbers is inferred as float`` () =
     let result = ExponentialDecimalProvider.Parse("""{"mydata": [2, 3.45678E5, 9.01]}""")
-    result.Mydata |> should equal [| 2M; 345678M; 9.01M |]
+    result.Mydata |> should equal [| 2.0; 345678.0; 9.01 |]
 
 
 type ServiceResponse = JsonProvider<"""[

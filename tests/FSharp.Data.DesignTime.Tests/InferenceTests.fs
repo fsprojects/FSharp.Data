@@ -89,6 +89,18 @@ let ``Finds common subtype of numeric types (float)``() =
   let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
   actual |> should equal expected
 
+// Regression test for https://github.com/fsprojects/FSharp.Data/issues/1221
+// Exponential-notation JSON numbers (parsed as JsonValue.Float) should always infer as float,
+// not be promoted to int/int64 when the value happens to be a whole number.
+[<Test>]
+let ``Exponential-notation numbers infer as float not int (issue 1221)``() =
+  // 0.1e1 = 1.0, 0.2e1 = 2.0 — these are stored as JsonValue.Float because
+  // TextConversions.AsDecimal (NumberStyles.Currency) does not allow exponent notation
+  let source = JsonValue.Parse """[ 0.1e1, 0.2e1, 1e3 ]"""
+  let expected = SimpleCollection(InferedType.Primitive(typeof<float>, None, false, false))
+  let actual = JsonInference.inferType unitsOfMeasureProvider inferenceMode culture "" source
+  actual |> should equal expected
+
 [<Test>]
 let ``Infers heterogeneous type of InferedType.Primitives and records``() =
   let source = JsonValue.Parse """[ {"a":0}, 1,2 ]"""
