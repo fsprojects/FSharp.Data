@@ -202,10 +202,12 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable"
               CreateFromValue = None }
 
-        let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
-
         // On the CsvProvider the schema might be partial and we will still infer from the sample
-        // So we handle it in a custom way
+        // So we handle it in a custom way.
+        // Note: we pass None for maxNumberOfRows so that the raw text is never truncated by
+        // line count. Truncating by line is incorrect for CSV because a single data row can span
+        // multiple text lines when fields are quoted (see issue #1439). Row limiting during
+        // inference is handled correctly by InferColumnTypes via its own inferRows parameter.
         generateType
             "CSV"
             (if sample <> "" then Sample sample else Schema schema)
@@ -216,7 +218,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
             resolutionFolder
             resource
             typeName
-            maxNumberOfRows
+            None
 
     // Add static parameter that specifies the API we want to get (compile-time)
     let parameters =
