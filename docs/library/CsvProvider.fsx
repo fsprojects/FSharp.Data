@@ -475,9 +475,21 @@ transformed the dataset to be smaller.
 *)
 
 (**
+## Using CSV provider in a library
+
+When using `CsvProvider` in a library that others will reference, the sample file must be
+embedded in the compiled assembly. See the step-by-step guide in
+[Using JSON provider in a library](JsonProvider.html#jsonlib) — the same `EmbeddedResource`
+parameter and naming convention applies to `CsvProvider`.
+
+In brief, for a file `data/sample.csv` in a library `MyLib`:
+1. Mark the file as `<EmbeddedResource>` in the `.fsproj`
+2. Use `EmbeddedResource="MyLib, MyLib.data.sample.csv"` in the type provider declaration
+
 ## Related articles
 
- * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
+ * [Using JSON provider in a library](JsonProvider.html#jsonlib) — includes step-by-step
+   `EmbeddedResource` guide that applies to all type providers
  * [CSV Parser](CsvFile.html) - provides more information about
    working with CSV documents dynamically.
  * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
