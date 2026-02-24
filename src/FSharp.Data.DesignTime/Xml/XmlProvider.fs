@@ -51,6 +51,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let schema = args.[8] :?> string
         let inferenceMode = args.[9] :?> InferenceMode
         let preferDateOnly = args.[10] :?> bool
+        let useOriginalNames = args.[11] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -94,7 +95,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         inferenceMode,
                         cultureStr,
                         tpType,
-                        globalInference || schema <> ""
+                        globalInference || schema <> "",
+                        useOriginalNames
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -149,7 +151,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         inferenceMode,
                         cultureStr,
                         tpType,
-                        globalInference || schema <> ""
+                        globalInference || schema <> "",
+                        useOriginalNames
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -195,7 +198,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               typeof<InferenceMode>,
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
-          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -219,7 +223,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
               Note inline schemas are not used from Xsd documents.
            </param>
-           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>"""
+           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
+           <param name='UseOriginalNames'>When true, XML element and attribute names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText

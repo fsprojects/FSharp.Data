@@ -27,7 +27,7 @@ module internal CsvTypeBuilder =
             ProvidedParameter: ProvidedParameter
         }
 
-    let generateTypes asm ns typeName (missingValuesStr, cultureStr) inferredFields =
+    let generateTypes asm ns typeName (missingValuesStr, cultureStr) useOriginalNames inferredFields =
 
         let fields =
             inferredFields
@@ -35,7 +35,11 @@ module internal CsvTypeBuilder =
                 let typ, typWithoutMeasure, conv, convBack =
                     ConversionsGenerator.convertStringValue missingValuesStr cultureStr field
 
-                let propertyName = NameUtils.capitalizeFirstLetter field.Name
+                let propertyName =
+                    if useOriginalNames then
+                        field.Name
+                    else
+                        NameUtils.capitalizeFirstLetter field.Name
 
                 let prop =
                     ProvidedProperty(
@@ -58,11 +62,17 @@ module internal CsvTypeBuilder =
                         | _ -> Expr.TupleGet(rowVarExpr, index)
                     )
 
+                let paramName =
+                    if useOriginalNames then
+                        field.Name
+                    else
+                        NameUtils.niceCamelName propertyName
+
                 { TypeForTuple = typWithoutMeasure
                   ProvidedProperty = prop
                   Convert = convert
                   ConvertBack = convertBack
-                  ProvidedParameter = ProvidedParameter(NameUtils.niceCamelName propertyName, typ) })
+                  ProvidedParameter = ProvidedParameter(paramName, typ) })
 
         // The erased row type will be a tuple of all the field types (without the units of measure).  If there is a single column then it is just the column type.
         let rowErasedType =

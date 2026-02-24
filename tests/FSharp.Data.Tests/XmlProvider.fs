@@ -1324,3 +1324,19 @@ let ``Inline schemas as overrides replace value-based inference when present`` (
 // Used by FSharp.Data.Reference.Tests to verify that GetSchema works with EmbeddedResource
 type XmlSchemaWithEmbeddedResource =
     XmlProvider<Schema = "Data/po.xsd", EmbeddedResource = "FSharp.Data.Tests, FSharp.Data.Tests.Data.po.xsd">
+
+[<Literal>]
+let xmlWithUnderscoreAttr = "<root fault_code='hello' />"
+
+type XmlUseOriginalNames = XmlProvider<xmlWithUnderscoreAttr, UseOriginalNames = true>
+type XmlNormalizedNames = XmlProvider<xmlWithUnderscoreAttr>
+
+[<Test>]
+let ``XmlProvider UseOriginalNames=true preserves attribute names as-is`` () =
+    let root = XmlUseOriginalNames.Parse("<root fault_code='world' />")
+    root.fault_code |> should equal "world"
+
+[<Test>]
+let ``XmlProvider default normalizes attribute names to PascalCase`` () =
+    let root = XmlNormalizedNames.Parse("<root fault_code='world' />")
+    root.FaultCode |> should equal "world"

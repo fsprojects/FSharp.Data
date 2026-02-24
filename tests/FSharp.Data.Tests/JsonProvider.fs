@@ -950,3 +950,21 @@ let ``Inline schemas as overrides replace value-based inference when present`` (
     sample[1].Obj.Value.X.GetType() |> should equal (typeof<int>)
     // (Note the types in the inline schemas are automatically transformed to options as needed
     // when another node does not define any value for the given property)
+
+[<Literal>]
+let jsonWithUnderscoreProps = """{"first_name": "John", "last_name": "Doe"}"""
+
+type JsonUseOriginalNames = JsonProvider<jsonWithUnderscoreProps, UseOriginalNames = true>
+type JsonNormalizedNames = JsonProvider<jsonWithUnderscoreProps>
+
+[<Test>]
+let ``JsonProvider UseOriginalNames=true preserves property names as-is`` () =
+    let doc = JsonUseOriginalNames.Parse("""{"first_name": "Jane", "last_name": "Smith"}""")
+    doc.first_name |> should equal "Jane"
+    doc.last_name |> should equal "Smith"
+
+[<Test>]
+let ``JsonProvider default normalizes property names to PascalCase`` () =
+    let doc = JsonNormalizedNames.Parse("""{"first_name": "Jane", "last_name": "Smith"}""")
+    doc.FirstName |> should equal "Jane"
+    doc.LastName |> should equal "Smith"
