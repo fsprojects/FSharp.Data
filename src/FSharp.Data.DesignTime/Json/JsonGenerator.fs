@@ -620,7 +620,7 @@ module JsonTypeBuilder =
 
                               let name = makeUnique prop.Name
 
-                              prop.Name,
+                              (prop.Name, name),
                               [ ProvidedProperty(name, convertedType, getterCode = getter) ],
                               ProvidedParameter(
                                   (if ctx.UseOriginalNames then
@@ -630,7 +630,8 @@ module JsonTypeBuilder =
                                   replaceJDocWithJValue ctx convertedType
                               ) ]
 
-                    let names, properties, parameters = List.unzip3 members
+                    let namePairs, properties, parameters = List.unzip3 members
+                    let names = namePairs |> List.map fst
                     let properties = properties |> List.concat
                     objectTy.AddMembers properties
 
@@ -649,6 +650,34 @@ module JsonTypeBuilder =
 
                         let ctor = ProvidedConstructor(parameters, invokeCode = ctorCode)
                         objectTy.AddMember ctor
+
+                        // Add With* methods: WithPropName(newValue) returns a new record with one field updated
+                        for i, (rawName, displayName) in List.indexed namePairs do
+                            let param = parameters.[i]
+                            let cultureStr = ctx.CultureStr
+
+                            let withMethod =
+                                ProvidedMethod(
+                                    "With" + displayName,
+                                    [ ProvidedParameter(param.Name, param.ParameterType) ],
+                                    objectTy,
+                                    invokeCode =
+                                        fun args ->
+                                            let jDoc = args.[0]
+                                            let newVal = args.[1]
+                                            let newValObj = Expr.Coerce(newVal, typeof<obj>)
+
+                                            <@@
+                                                JsonRuntime.WithRecordProperty(
+                                                    (%%jDoc: IJsonDocument),
+                                                    rawName,
+                                                    %%newValObj,
+                                                    cultureStr
+                                                )
+                                            @@>
+                                )
+
+                            objectTy.AddMember withMethod
 
                     ()
 

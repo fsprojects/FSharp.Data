@@ -351,6 +351,31 @@ type JsonRuntime =
 
         JsonDocument.Create(json, "")
 
+    // Returns a new JSON record document with one property replaced (or added if absent).
+    // Used by generated With* methods.
+    static member WithRecordProperty(doc: IJsonDocument, name: string, value: obj, cultureStr: string) =
+        let cultureInfo = TextRuntime.GetCulture cultureStr
+        let newPropValue = JsonRuntime.ToJsonValue cultureInfo value
+        let existingProps = JsonRuntime.GetRecordProperties(doc)
+        let mutable found = false
+
+        let updatedProps =
+            existingProps
+            |> Array.map (fun (k, v) ->
+                if k = name then
+                    found <- true
+                    k, newPropValue
+                else
+                    k, v)
+
+        let finalProps =
+            if found then
+                updatedProps
+            else
+                Array.append updatedProps [| name, newPropValue |]
+
+        JsonDocument.Create(JsonValue.Record finalProps, "")
+
     // Creates a JsonValue.Record from key*value seq and wraps it in a json document
     static member CreateRecordFromDictionary<'Key, 'Value when 'Key: equality>
         (keyValuePairs: ('Key * 'Value) seq, cultureStr, mappingKeyBack: Func<'Key, string>)
