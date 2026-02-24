@@ -59,4 +59,16 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lastName")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithAge: age:int -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "age", (age :> obj), "")
+
+    member WithFirstName: firstName:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "firstName", (firstName :> obj), "")
+
+    member WithIsCool: isCool:bool -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "isCool", (isCool :> obj), "")
+
+    member WithLastName: lastName:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "lastName", (lastName :> obj), "")
+
 

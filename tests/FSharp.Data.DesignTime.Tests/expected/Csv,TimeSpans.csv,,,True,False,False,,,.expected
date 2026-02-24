@@ -214,4 +214,39 @@ class CsvProvider+Row : System.TimeSpan * System.TimeSpan * System.TimeSpan * st
     member TimespanOneTickLessThanMinValue: string with get
     (let _,_,_,_,t5 = this in t5)
 
+    member WithNegativeWithDayWithFraction: negativeWithDayWithFraction:System.TimeSpan -> CsvProvider+Row
+    (let t1,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_ = this in t2),
+    negativeWithDayWithFraction,
+    (let _,_,_,t4,_ = this in t4),
+    (let _,_,_,_,t5 = this in t5)
+
+    member WithPositiveWithDayWithFraction: positiveWithDayWithFraction:System.TimeSpan -> CsvProvider+Row
+    positiveWithDayWithFraction,
+    (let _,t2,_,_,_ = this in t2),
+    (let _,_,t3,_,_ = this in t3),
+    (let _,_,_,t4,_ = this in t4),
+    (let _,_,_,_,t5 = this in t5)
+
+    member WithPositiveWithoutDayWithoutFraction: positiveWithoutDayWithoutFraction:System.TimeSpan -> CsvProvider+Row
+    (let t1,_,_,_,_ = this in t1),
+    positiveWithoutDayWithoutFraction,
+    (let _,_,t3,_,_ = this in t3),
+    (let _,_,_,t4,_ = this in t4),
+    (let _,_,_,_,t5 = this in t5)
+
+    member WithTimespanOneTickGreaterThanMaxValue: timespanOneTickGreaterThanMaxValue:string -> CsvProvider+Row
+    (let t1,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_ = this in t2),
+    (let _,_,t3,_,_ = this in t3),
+    timespanOneTickGreaterThanMaxValue,
+    (let _,_,_,_,t5 = this in t5)
+
+    member WithTimespanOneTickLessThanMinValue: timespanOneTickLessThanMinValue:string -> CsvProvider+Row
+    (let t1,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_ = this in t2),
+    (let _,_,t3,_,_ = this in t3),
+    (let _,_,_,t4,_ = this in t4),
+    timespanOneTickLessThanMinValue
+
 

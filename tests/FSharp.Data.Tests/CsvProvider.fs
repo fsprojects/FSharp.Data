@@ -737,3 +737,32 @@ let ``CsvProvider default capitalizes first letter of column names`` () =
     let row = CsvCapitalizedNames.GetSample().Rows |> Seq.head
     row.Lower_col |> should equal 1
     row.Another_col |> should equal "hello"
+
+// Tests for With* methods on CsvProvider Row types (issue #1431)
+let [<Literal>] csvForWithMethods = "Name,Age,Score\nAlice,30,9.5\nBob,25,8.0"
+type CsvWithMethods = CsvProvider<csvForWithMethods>
+
+[<Test>]
+let ``CsvProvider Row.WithName returns new row with updated Name`` () =
+    let csv = CsvWithMethods.GetSample()
+    let row = csv.Rows |> Seq.head
+    let updated = row.WithName("Charlie")
+    updated.Name |> should equal "Charlie"
+    updated.Age |> should equal 30
+    updated.Score |> should equal 9.5
+
+[<Test>]
+let ``CsvProvider Row.WithAge returns new row with updated Age`` () =
+    let csv = CsvWithMethods.GetSample()
+    let row = csv.Rows |> Seq.head
+    let updated = row.WithAge(99)
+    updated.Name |> should equal "Alice"
+    updated.Age |> should equal 99
+    updated.Score |> should equal 9.5
+
+[<Test>]
+let ``CsvProvider Row With* methods do not mutate the original row`` () =
+    let csv = CsvWithMethods.GetSample()
+    let row = csv.Rows |> Seq.head
+    let _ = row.WithName("Charlie")
+    row.Name |> should equal "Alice"

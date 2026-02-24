@@ -45,6 +45,12 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Rec2: JsonProvider+Rec2 with get
     JsonRuntime.GetPropertyPacked(this, "rec2")
 
+    member WithRec: rec:JsonProvider+Rec -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "rec", (rec :> obj), "")
+
+    member WithRec2: rec2:JsonProvider+Rec2 -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "rec2", (rec2 :> obj), "")
+
 
 class JsonProvider+Rec : FDR.BaseTypes.IJsonDocument
     new : items:bool * int seq -> JsonProvider+Rec
@@ -121,5 +127,8 @@ class JsonProvider+Rec2Value : FDR.BaseTypes.IJsonDocument
     member A: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "a")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithA: a:int -> JsonProvider+Rec2Value
+    JsonRuntime.WithRecordProperty(this, "a", (a :> obj), "")
 
 

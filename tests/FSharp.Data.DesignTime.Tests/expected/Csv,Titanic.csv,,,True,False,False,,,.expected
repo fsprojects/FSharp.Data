@@ -438,4 +438,172 @@ class CsvProvider+Row : int * bool * int * string * string * float * int * int *
     member Ticket: string with get
     (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9)
 
+    member WithAge: age:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    age,
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithCabin: cabin:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    cabin,
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithEmbarked: embarked:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    embarked
+
+    member WithFare: fare:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    fare,
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithName: name:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    name,
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithParch: parch:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    parch,
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithPassengerId: passengerId:int -> CsvProvider+Row
+    passengerId,
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithPclass: pclass:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    pclass,
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithSex: sex:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    sex,
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithSibSp: sibSp:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    sibSp,
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithSurvived: survived:bool -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    survived,
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithTicket: ticket:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    ticket,
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
 

@@ -246,4 +246,52 @@ class CsvProvider+Row : float * float * decimal * int * int * int
     member Wind: decimal with get
     (let _,_,t3,_,_,_ = this in t3)
 
+    member WithDay: day:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    day
+
+    member WithMonth: month:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    month,
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithOzone: ozone:float -> CsvProvider+Row
+    ozone,
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithSolar.R: solarR:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    solarR,
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithTemp: temp:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    temp,
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithWind: wind:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    wind,
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
 

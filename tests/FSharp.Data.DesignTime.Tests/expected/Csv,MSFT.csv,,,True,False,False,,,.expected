@@ -278,4 +278,67 @@ class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal 
     member Volume: int with get
     (let _,_,_,_,_,t6,_ = this in t6)
 
+    member ``WithAdj Close``: adjClose:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_ = this in t6),
+    adjClose
+
+    member WithClose: close:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_ = this in t4),
+    close,
+    (let _,_,_,_,_,t6,_ = this in t6),
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member WithDate: date:System.DateTime -> CsvProvider+Row
+    date,
+    (let _,t2,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_ = this in t6),
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member WithHigh: high:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_ = this in t2),
+    high,
+    (let _,_,_,t4,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_ = this in t6),
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member WithLow: low:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_ = this in t3),
+    low,
+    (let _,_,_,_,t5,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_ = this in t6),
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member WithOpen: open:decimal -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    open,
+    (let _,_,t3,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_ = this in t6),
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member WithVolume: volume:int -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_ = this in t5),
+    volume,
+    (let _,_,_,_,_,_,t7 = this in t7)
+
 

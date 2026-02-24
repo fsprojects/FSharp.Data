@@ -77,6 +77,21 @@ class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
     member Value: decimal option with get
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "value"))
 
+    member WithCountry: country:JsonProvider+Indicator -> JsonProvider+Record
+    JsonRuntime.WithRecordProperty(this, "country", (country :> obj), "")
+
+    member WithDate: date:int -> JsonProvider+Record
+    JsonRuntime.WithRecordProperty(this, "date", (date :> obj), "")
+
+    member WithDecimal: decimal:int -> JsonProvider+Record
+    JsonRuntime.WithRecordProperty(this, "decimal", (decimal :> obj), "")
+
+    member WithIndicator: indicator:JsonProvider+Indicator -> JsonProvider+Record
+    JsonRuntime.WithRecordProperty(this, "indicator", (indicator :> obj), "")
+
+    member WithValue: value:decimal option -> JsonProvider+Record
+    JsonRuntime.WithRecordProperty(this, "value", (value :> obj), "")
+
 
 class JsonProvider+Record2 : FDR.BaseTypes.IJsonDocument
     new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
@@ -108,6 +123,18 @@ class JsonProvider+Record2 : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "total")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
+    member WithPage: page:int -> JsonProvider+Record2
+    JsonRuntime.WithRecordProperty(this, "page", (page :> obj), "")
+
+    member WithPages: pages:int -> JsonProvider+Record2
+    JsonRuntime.WithRecordProperty(this, "pages", (pages :> obj), "")
+
+    member WithPerPage: perPage:int -> JsonProvider+Record2
+    JsonRuntime.WithRecordProperty(this, "per_page", (perPage :> obj), "")
+
+    member WithTotal: total:int -> JsonProvider+Record2
+    JsonRuntime.WithRecordProperty(this, "total", (total :> obj), "")
+
 
 class JsonProvider+Indicator : FDR.BaseTypes.IJsonDocument
     new : id:string -> value:string -> JsonProvider+Indicator
@@ -126,5 +153,11 @@ class JsonProvider+Indicator : FDR.BaseTypes.IJsonDocument
     member Value: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "value")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithId: id:string -> JsonProvider+Indicator
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithValue: value:string -> JsonProvider+Indicator
+    JsonRuntime.WithRecordProperty(this, "value", (value :> obj), "")
 
 

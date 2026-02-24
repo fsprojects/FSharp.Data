@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Authors: JsonProvider+JsonProvider+Author[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
+    member WithAuthors: authors:JsonProvider+JsonProvider+Author[] -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "authors", (authors :> obj), "")
+
 
 class JsonProvider+Author : FDR.BaseTypes.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
@@ -57,5 +60,11 @@ class JsonProvider+Author : FDR.BaseTypes.IJsonDocument
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithAge: age:int option -> JsonProvider+Author
+    JsonRuntime.WithRecordProperty(this, "age", (age :> obj), "")
+
+    member WithName: name:string -> JsonProvider+Author
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
 
 

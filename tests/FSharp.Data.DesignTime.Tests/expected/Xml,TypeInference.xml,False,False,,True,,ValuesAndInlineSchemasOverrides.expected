@@ -74,4 +74,7 @@ class XmlProvider+JsonLike : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "a")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
+    member WithA: a:int -> XmlProvider+JsonLike
+    JsonRuntime.WithRecordProperty(this, "a", (a :> obj), "")
+
 

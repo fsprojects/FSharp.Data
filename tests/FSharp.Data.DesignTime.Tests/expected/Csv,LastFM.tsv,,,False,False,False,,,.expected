@@ -232,4 +232,52 @@ class CsvProvider+Row : string * System.DateTimeOffset * System.Guid option * st
     member Column6: string with get
     (let _,_,_,_,_,t6 = this in t6)
 
+    member WithColumn1: column1:string -> CsvProvider+Row
+    column1,
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithColumn2: column2:System.DateTimeOffset -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    column2,
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithColumn3: column3:System.Guid option -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    column3,
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithColumn4: column4:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    column4,
+    (let _,_,_,_,t5,_ = this in t5),
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithColumn5: column5:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    column5,
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member WithColumn6: column6:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_ = this in t4),
+    (let _,_,_,_,t5,_ = this in t5),
+    column6
+
 
