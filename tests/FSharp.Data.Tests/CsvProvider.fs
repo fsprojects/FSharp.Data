@@ -720,3 +720,20 @@ let ``InferRows counts CSV rows not text lines for multiline quoted fields`` () 
     rows.[0].F2 |> should equal 2
     rows.[1].F1 |> should equal "normal"
     rows.[1].F2 |> should equal 3
+
+let [<Literal>] csvWithLowerCaseHeaders = "lower_col,another_col\n1,hello\n2,world"
+
+type CsvUseOriginalNames = CsvProvider<csvWithLowerCaseHeaders, UseOriginalNames = true>
+type CsvCapitalizedNames = CsvProvider<csvWithLowerCaseHeaders>
+
+[<Test>]
+let ``CsvProvider UseOriginalNames=true preserves column names as-is`` () =
+    let row = CsvUseOriginalNames.GetSample().Rows |> Seq.head
+    row.lower_col |> should equal 1
+    row.another_col |> should equal "hello"
+
+[<Test>]
+let ``CsvProvider default capitalizes first letter of column names`` () =
+    let row = CsvCapitalizedNames.GetSample().Rows |> Seq.head
+    row.Lower_col |> should equal 1
+    row.Another_col |> should equal "hello"
