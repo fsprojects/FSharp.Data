@@ -1,19 +1,19 @@
 {
-  "last_run": "2026-02-23T13:48:32Z",
-  "workflow_run_id": "22308801438",
-  "tasks_done_this_run": ["task5", "task10", "task11"],
+  "last_run": "2026-02-24T03:44:28Z",
+  "workflow_run_id": "22335631344",
+  "tasks_done_this_run": ["task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-23",
     "task2": "2026-02-23",
     "task3": "2026-02-23",
     "task4": "2026-02-22",
-    "task5": "2026-02-23",
+    "task5": "2026-02-24",
     "task6": "2026-02-23",
     "task7": "2026-02-23",
     "task8": "2026-02-22",
     "task9": "2026-02-23",
     "task10": "2026-02-23",
-    "task11": "2026-02-23"
+    "task11": "2026-02-24"
   },
   "issue_backlog_cursor": 1392,
   "label_backlog_cursor": 1194,
@@ -39,15 +39,14 @@
     "1221": {"status": "closed_rejected", "pr": 1628, "date": "2026-02-23", "description": "dsyme closed - too invasive. Issue also closed by dsyme."},
     "1432": {"status": "pr_open", "pr": 1629, "branch": "repo-assist/fix-issue-1432-xml-use-original-names-42eda4f9851807b6", "date": "2026-02-23", "description": "UseOriginalNames parameter for XmlProvider"},
     "1330": {"status": "pr_open", "pr": 1630, "branch": "repo-assist/fix-issue-1330-html-whitespace", "date": "2026-02-23", "description": "HTML whitespace between inline elements fix"},
-    "1632": {"status": "pr_open", "pr": 1635, "branch": "repo-assist/fix-issue-1632-dtd-processing-parameter", "date": "2026-02-23", "description": "DtdProcessing static parameter for XmlProvider - Prohibit/Ignore/Parse"}
+    "1632": {"status": "pr_open", "pr": 1635, "branch": "repo-assist/fix-issue-1632-dtd-processing-parameter-b6794c39a31ef477", "date": "2026-02-24", "description": "DtdProcessing static parameter for XmlProvider - default Parse (rebased onto main after #1633 revert)"}
   },
   "deps_update_attempts": {
     "2026-02-22": {
       "branch": "repo-assist/deps-update-2026-02-22-22f87c2bfdc6ec83",
       "pr": 1614,
       "status": "merged",
-      "changes": ["FAKE 6.1.3->6.1.4", "NUnit 3.13.1->3.13.3", "FsUnit 4.0.4->4.2.0", "FsCheck 2.15.1->2.16.6"],
-      "skipped": "Microsoft.Build 17.11.4 (has known CVEs GHSA-w3q9-fxm7-j8fq, GHSA-h4j7-5rxr-p4wc) - needs compatibility check with FAKE"
+      "changes": ["FAKE 6.1.3->6.1.4", "NUnit 3.13.1->3.13.3", "FsUnit 4.0.4->4.2.0", "FsCheck 2.15.1->2.16.6"]
     }
   },
   "release_prep_attempts": {
@@ -55,8 +54,8 @@
       "date": "2026-02-22",
       "branch": "repo-assist/release-7.0.0-prep-ab9c6619e55856eb",
       "pr": 1616,
-      "status": "PR open - updated 2026-02-23",
-      "description": "Updated 7.0.0 section with all 10 bug fixes. Awaiting maintainer review."
+      "status": "PR open - updated 2026-02-24 - merged main, now has 7.0.1 revert + comprehensive 7.0.0 list",
+      "description": "Updated 7.0.0+7.0.1 sections. dsyme released 7.0.0 and 7.0.1 himself; PR adds comprehensive changelog."
     }
   },
   "commented_issues": [
@@ -69,7 +68,7 @@
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632
   ],
-  "commented_prs": [1613, 1614, 1619, 1621],
+  "commented_prs": [1613, 1614, 1619, 1621, 1635],
   "ideas_submitted": [],
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
@@ -79,7 +78,9 @@
     "dsyme endorsed StrictBooleans parameter for CsvProvider in issue #1417 (2024-03-11)",
     "dsyme endorsed implementing cycle guard for XSD group refs in issue #1419 (2026-02-22)",
     "dsyme endorsed fixing InferRows multiline CSV bug in issue #1439 (2026-02-22)",
-    "dsyme endorsed UseOriginalNames/NamingConvention parameter for XmlProvider in issue #1432 (2022-03-28)"
+    "dsyme endorsed UseOriginalNames/NamingConvention parameter for XmlProvider in issue #1432 (2022-03-28)",
+    "dsyme instructed: make DtdProcessing opt-out (not opt-in) on PR #1635 - done 2026-02-23",
+    "dsyme instructed: make DtdProcessing default Parse on PR #1635 (matches .NET default) - done 2026-02-24"
   ],
   "notes": {
     "issue_1509": "Closed by dsyme on 2026-02-22 (PR #1605 merged fixed it)",
@@ -88,15 +89,15 @@
     "issue_1417": "IMPLEMENTED in PR #1621 - merged by dsyme 2026-02-22",
     "issue_1419": "FIXED in PR #1626 - merged by dsyme 2026-02-23",
     "issue_1221": "PR #1628 closed by dsyme - too invasive. Issue #1221 also closed by dsyme.",
-    "issue_1632": "DTD exception after v6.7.0. PR #1635 (Repo Assist) adds DtdProcessing param. PR #1633 (dsyme) reverts XXE fix entirely. Maintainer to decide.",
+    "issue_1632": "DTD exception after v6.7.0. PR #1633 (dsyme) reverted XXE fix - merged. PR #1635 (Repo Assist) adds DtdProcessing param with default Parse.",
     "issue_1634": "Created by Repo Assist proposing DtdProcessing param. Implemented in PR #1635.",
-    "pr_1635_status": "Draft PR open. Adds DtdProcessing='Prohibit'/'Ignore'/'Parse' static param. All 253 FSharp.Data.Tests pass. 18 pre-existing infra failures unchanged.",
+    "pr_1635_status": "Draft PR open. Updated 2026-02-24: rebased onto main after #1633 merged, default changed to Parse. All 253+468 tests pass.",
     "pr_1629_status": "Draft PR open. UseOriginalNames param for XmlProvider (implements #1432). Tests pass.",
     "pr_1630_status": "Draft PR open. HTML whitespace fix for inline elements (closes #1330).",
     "pr_1631_status": "Draft PR open. EmbeddedResource documentation improvement (addresses #1315).",
-    "pr_1616_status": "PR open. Release prep 7.0.0. Needs update after new PRs merge.",
-    "pr_1633_status": "PR by dsyme. Reverts XXE fix from #1596. Competing with PR #1635.",
-    "release_status": "Last GitHub release 6.3.0 (Sep 2023). RELEASE_NOTES.md has 7.0.0 Unreleased. Release prep PR #1616 open.",
+    "pr_1616_status": "PR open. Release prep. Updated 2026-02-24: merged main, has 7.0.1 + comprehensive 7.0.0 bug fix list.",
+    "pr_1633_status": "MERGED by dsyme 2026-02-23. Reverts XXE fix from #1596.",
+    "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. 7.0.1 reverts XXE fix. PR #1616 adds comprehensive changelog.",
     "nameutils_normalization": "Name normalization in NameUtils.fs: nicePascalName/niceCamelName. UseOriginalNames in PR #1629.",
     "httpclient_migration_status": "Issue #1392: Dual HttpClient/WebRequest implementation feasible. Commented 2026-02-23.",
     "open_prs_repo_assist": "PR #1616 (release prep), #1629 (UseOriginalNames XmlProvider), #1630 (HTML whitespace), #1631 (EmbeddedResource docs), #1635 (DtdProcessing XmlProvider)"
