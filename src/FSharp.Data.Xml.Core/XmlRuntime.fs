@@ -6,7 +6,6 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
-open System.Xml
 open System.Xml.Linq
 
 #nowarn "10001"
@@ -108,17 +107,11 @@ type XmlElement =
             new XmlReaderSettings(DtdProcessing = dtd, XmlResolver = null, MaxCharactersFromEntities = 1024L * 1024L)
 
         try
-            use stringReader = new StringReader(text)
-            use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
-
-            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
+            XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            use stringReader = new StringReader("<root>" + text + "</root>")
-            use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
-
-            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
+            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 
