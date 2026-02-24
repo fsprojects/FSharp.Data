@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-24T19:29:29Z",
-  "workflow_run_id": "22366642346",
-  "tasks_done_this_run": ["task1", "task5", "task11"],
+  "last_run": "2026-02-24T19:43:52Z",
+  "workflow_run_id": "22366931792",
+  "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-24",
     "task2": "2026-02-23",
@@ -67,7 +67,8 @@
     1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241,
     1336, 1325, 1109, 1245, 1115, 1432, 1439, 1233, 1358, 1221,
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
-    1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385
+    1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
+    1265, 1298
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635],
   "ideas_submitted": [],
@@ -102,6 +103,8 @@
     "issue_1385": "COMMENTED 2026-02-24: question from 2021 about .NET 6 preview build; noted project now uses .NET 8.",
     "issue_1432": "FIXED in PR #1629 (UseOriginalNames for XmlProvider+CsvProvider+JsonProvider) - merged by dsyme 2026-02-24",
     "issue_1330": "FIXED in PR #1630 (HTML whitespace between inline elements) - merged by dsyme 2026-02-24",
+    "issue_1265": "COMMENTED 2026-02-24: explained no AsyncLoad(TextReader) exists; suggested ReadToEndAsync() workaround; noted contributions welcome",
+    "issue_1298": "COMMENTED 2026-02-24: asked for error details on ARMv7 issue; noted FSharp.Data targets netstandard2.0/net8.0 so runtime should work on ARM",
     "pr_1635_status": "Draft PR open. Latest commit fixes merge conflict residue (args.[12] for UseOriginalNames, syntax fixes). CI running.",
     "pr_1629_status": "MERGED by dsyme 2026-02-24. UseOriginalNames param for XmlProvider+CsvProvider+JsonProvider (implements #1432).",
     "pr_1630_status": "MERGED by dsyme 2026-02-24. HTML whitespace fix for inline elements (closes #1330).",
@@ -115,6 +118,7 @@
     "httpclient_migration_status": "Issue #1392: Dual HttpClient/WebRequest implementation feasible. Commented 2026-02-23.",
     "open_prs_repo_assist": "PR #1635 (DtdProcessing XmlProvider) - only open Repo Assist PR",
     "pr_1635_merge_conflict_fix": "2026-02-24: Both dtdProcessing and useOriginalNames used args.[11]. Fixed: dtdProcessing=args.[11], useOriginalNames=args.[12]. Also fixed stray ']' in static params list and duplicate '\"\"\"' in helpText.",
-    "backlog_cursor_status": "Cursor at 1490 means most open issues have been processed. Need to reset to beginning to catch older uncommented issues. Uncommented open issues include: #1191, #1207, #1218, #1220, #1236, #1237, #1238, #1246, #1257, #1265, #1298, #1319."
+    "backlog_cursor_status": "Cursor at 1490 means most open issues have been processed. Uncommented older issues include: #1191, #1207, #1218, #1220, #1236, #1237, #1238, #1246, #1257, #1265(done), #1298(done), #1319.",
+    "async_textreader_api": "No AsyncLoad(TextReader) exists in FSharp.Data. Underlying parsers use sync ReadLine()/Read(). Workaround: ReadToEndAsync() then Parse(text). See issue #1265."
   }
 }
