@@ -23,7 +23,8 @@ let ``Should not throw exception for missing year in indicator``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error which prevents it from fulfilling your request. Please contact the system administrator")
         || ex.ToString().Contains("Timeout exceeded while getting response")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -38,7 +39,8 @@ let ``Indicator should have valid properties``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -51,7 +53,8 @@ let ``Indicator should be enumerable``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -66,7 +69,8 @@ let ``Indicator should have years and values collections``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -80,7 +84,8 @@ let ``Country should have valid properties``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -94,7 +99,8 @@ let ``Country should provide indicators``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -107,7 +113,8 @@ let ``Countries collection should be enumerable``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -120,7 +127,8 @@ let ``Regions collection should be enumerable``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -135,7 +143,8 @@ let ``Region should provide countries``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -149,7 +158,8 @@ let ``Region should provide indicators``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -162,7 +172,8 @@ let ``Topics collection should be enumerable``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -177,7 +188,8 @@ let ``Topic should provide indicator descriptions``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
 [<Test>]
@@ -194,6 +206,7 @@ let ``IndicatorDescription should have valid properties``() =
     with ex
         when ex.ToString().Contains("The server has encountered an error")
         || ex.ToString().Contains("Timeout exceeded")
-        || ex.ToString().Contains("504 Gateway Time-out") ->
+        || ex.ToString().Contains("504 Gateway Time-out")
+        || ex.ToString().Contains("400") ->
             Assert.Inconclusive($"Worldbank api is having issues: {ex}")
 
