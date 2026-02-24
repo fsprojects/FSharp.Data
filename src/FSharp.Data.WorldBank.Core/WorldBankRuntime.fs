@@ -247,8 +247,7 @@ module Implementation =
         /// At runtime, download the data
         member internal __.GetDataAsync(countryOrRegionCode, indicatorCode) =
             async {
-                let! data =
-                    getData [ "countries"; countryOrRegionCode; "indicators"; indicatorCode ] [ "date", "" ] "date"
+                let! data = getData [ "countries"; countryOrRegionCode; "indicators"; indicatorCode ] [] "date"
 
                 return
                     seq {
