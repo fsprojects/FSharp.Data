@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-02-24T20:20:50Z",
+  "last_updated": "2026-02-24T21:00:00Z",
   "monthly_activity_issue": 1599,
   "issue_triage_cursor": 1238,
   "open_repo_assist_prs": [
@@ -11,10 +11,17 @@
       "status": "open"
     },
     {
-      "number": null,
+      "number": 1638,
       "title": "Add OmitNullFields static parameter to JsonProvider",
       "branch": "repo-assist/fix-issue-1245-omit-null-fields",
       "closes": [1245],
+      "status": "open"
+    },
+    {
+      "number": null,
+      "title": "Add With* methods to CsvProvider Row and JsonProvider record types",
+      "branch": "repo-assist/fix-issue-1431-with-methods",
+      "closes": [1431],
       "status": "created_this_run"
     }
   ],
@@ -22,20 +29,22 @@
     18, 37, 52, 110, 267, 334, 347, 419, 438, 439, 453, 503, 592, 610, 611, 633, 647, 649, 709, 742, 745, 759, 801,
     1031, 1159, 1170, 1187, 1188, 1191, 1194, 1203, 1218, 1220, 1236, 1237, 1241, 1245, 1246, 1251, 1256, 1257,
     1260, 1265, 1269, 1271, 1274, 1276, 1298, 1300, 1302, 1303, 1307, 1315, 1317, 1338, 1341, 1343, 1358, 1363,
-    1382, 1385, 1392, 1425, 1432, 1478, 1599, 1632
+    1382, 1385, 1392, 1425, 1431, 1432, 1478, 1599, 1632
   ],
   "fix_attempts": [
     { "issue": 1221, "pr": 1628, "outcome": "closed_by_maintainer_too_invasive" },
     { "issue": 1632, "pr": 1635, "outcome": "open" },
-    { "issue": 1245, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/fix-issue-1245-omit-null-fields" }
+    { "issue": 1245, "pr": 1638, "outcome": "open", "branch": "repo-assist/fix-issue-1245-omit-null-fields" },
+    { "issue": 1431, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/fix-issue-1431-with-methods" }
   ],
   "tasks_last_run": {
     "task1_issue_triage": "2026-02-24T20:20:50Z",
-    "task2_fix_issues": "2026-02-24T20:20:50Z",
+    "task2_fix_issues": "2026-02-24T21:00:00Z",
     "task5_maintain_prs": "2026-02-24T19:29:00Z",
-    "task11_monthly_summary": "2026-02-24T20:20:50Z"
+    "task11_monthly_summary": "2026-02-24T21:00:00Z"
   },
   "future_work": [
+    "Add With* methods to XmlProvider (scoped out of PR for #1431 due to complex structure)",
     "Add PreferOptionals/AllowEmptyValues to XmlProvider (wait for PR #1635 to merge)",
     "Investigate #1392 HttpClient migration",
     "Continue triaging issues from #1238 onwards"
