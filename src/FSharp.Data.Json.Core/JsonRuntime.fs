@@ -375,6 +375,7 @@ type JsonRuntime =
                 Array.append updatedProps [| name, newPropValue |]
 
         JsonDocument.Create(JsonValue.Record finalProps, "")
+
     // Creates a JsonValue.Record, omitting null fields, and wraps it in a json document
     static member CreateRecordOmitNulls(properties, cultureStr) =
         let cultureInfo = TextRuntime.GetCulture cultureStr
