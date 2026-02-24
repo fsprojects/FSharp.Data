@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-02-24T19:43:52Z",
-  "workflow_run_id": "22366931792",
+  "last_run": "2026-02-24T19:55:08Z",
+  "workflow_run_id": "22367544761",
   "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-24",
@@ -15,7 +15,7 @@
     "task10": "2026-02-23",
     "task11": "2026-02-24"
   },
-  "issue_backlog_cursor": 1490,
+  "issue_backlog_cursor": 1188,
   "label_backlog_cursor": 1632,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
@@ -23,7 +23,7 @@
     "1453": {"status": "merged", "pr": 1612},
     "1383": {"status": "merged", "pr": 1613, "branch": "repo-assist/fix-css-pseudo-class-error-1383", "date": "2026-02-22", "description": "CSS pseudo-class NotSupportedException - merged by dsyme 2026-02-22"},
     "1437": {"status": "merged", "pr": 1617, "date": "2026-02-22", "description": "xs:dateTime without timezone parses correctly as DateTimeOffset"},
-    "1310": {"status": "merged", "pr": 1619, "date": "2026-02-22", "description": "GetSchema now reads from embedded resource at runtime - merged by dsyme 2026-02-23"},
+    "1310": {"status": "merged", "pr": 1619, "date": "2026-02-23", "description": "GetSchema now reads from embedded resource at runtime - merged by dsyme 2026-02-23"},
     "1417": {"status": "merged", "pr": 1621, "date": "2026-02-22", "description": "StrictBooleans static parameter for CsvProvider - merged by dsyme 2026-02-22"},
     "1419": {"status": "merged", "pr": 1626, "date": "2026-02-22", "description": "XSD group ref cycle guard - merged by dsyme 2026-02-23"},
     "1439": {"status": "merged", "pr": 1625, "date": "2026-02-22", "description": "InferRows counts CSV rows not text lines - merged by dsyme 2026-02-23"},
@@ -68,7 +68,7 @@
     1336, 1325, 1109, 1245, 1115, 1432, 1439, 1233, 1358, 1221,
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
-    1265, 1298
+    1265, 1298, 1031, 1188, 649
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635],
   "ideas_submitted": [],
@@ -105,7 +105,7 @@
     "issue_1330": "FIXED in PR #1630 (HTML whitespace between inline elements) - merged by dsyme 2026-02-24",
     "issue_1265": "COMMENTED 2026-02-24: explained no AsyncLoad(TextReader) exists; suggested ReadToEndAsync() workaround; noted contributions welcome",
     "issue_1298": "COMMENTED 2026-02-24: asked for error details on ARMv7 issue; noted FSharp.Data targets netstandard2.0/net8.0 so runtime should work on ARM",
-    "pr_1635_status": "Draft PR open. Latest commit fixes merge conflict residue (args.[12] for UseOriginalNames, syntax fixes). CI running.",
+    "pr_1635_status": "Draft PR open. Latest commit fixes merge conflict residue (args.[12] for DtdProcessing). CI status: pending (0 checks - may not have CI configured for this branch).",
     "pr_1629_status": "MERGED by dsyme 2026-02-24. UseOriginalNames param for XmlProvider+CsvProvider+JsonProvider (implements #1432).",
     "pr_1630_status": "MERGED by dsyme 2026-02-24. HTML whitespace fix for inline elements (closes #1330).",
     "pr_1631_status": "MERGED by dsyme 2026-02-24. EmbeddedResource documentation improvement.",
@@ -117,8 +117,11 @@
     "nameutils_normalization": "Name normalization in NameUtils.fs: nicePascalName/niceCamelName. UseOriginalNames in PR #1629 bypasses this for XmlProvider, CsvProvider, and JsonProvider.",
     "httpclient_migration_status": "Issue #1392: Dual HttpClient/WebRequest implementation feasible. Commented 2026-02-23.",
     "open_prs_repo_assist": "PR #1635 (DtdProcessing XmlProvider) - only open Repo Assist PR",
-    "pr_1635_merge_conflict_fix": "2026-02-24: Both dtdProcessing and useOriginalNames used args.[11]. Fixed: dtdProcessing=args.[11], useOriginalNames=args.[12]. Also fixed stray ']' in static params list and duplicate '\"\"\"' in helpText.",
-    "backlog_cursor_status": "Cursor at 1490 means most open issues have been processed. Uncommented older issues include: #1191, #1207, #1218, #1220, #1236, #1237, #1238, #1246, #1257, #1265(done), #1298(done), #1319.",
+    "css_multiclass_selectors": "Multi-class CSS selectors (e.g. div.items.catalog-items) work correctly in current version. Issue #1188 (Amazon) likely due to JavaScript-rendered content. Commented 2026-02-24.",
+    "issue_1031": "COMMENTED 2026-02-24: explained type provider cross-project resolution limitation; suggested EmbeddedResource workaround.",
+    "issue_649": "COMMENTED 2026-02-24: PreferOptionals for XmlProvider is feasible - allowEmptyValues param exists in XmlInference.fs; hardcoded to false currently. Could add after PR #1635 merges.",
+    "prefer_optionals_feasibility": "PreferOptionals for XmlProvider: in XmlProvider.fs, XmlInference.inferType called with allowEmptyValues=false (hardcoded). To add PreferOptionals: add param at args.[12] (after DtdProcessing merges, would be args.[13]), thread through inferType and subtypeInfered. Similar change needed for JsonProvider.",
+    "backlog_cursor_status": "Commented on all issues >= #1031. Remaining unprocessed old issues include #18-#838 range (feature requests mostly). For triage, check which have 0 comments from Repo Assist.",
     "async_textreader_api": "No AsyncLoad(TextReader) exists in FSharp.Data. Underlying parsers use sync ReadLine()/Read(). Workaround: ReadToEndAsync() then Parse(text). See issue #1265."
   }
 }
