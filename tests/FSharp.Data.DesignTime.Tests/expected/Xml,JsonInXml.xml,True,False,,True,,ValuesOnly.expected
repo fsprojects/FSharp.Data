@@ -88,6 +88,12 @@ class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithResults: results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
+    JsonRuntime.WithRecordProperty(this, "results", (results :> obj), "")
+
+    member WithSomethingSchema: somethingSchema:string -> XmlProvider+BlahDataSomethingFoo
+    JsonRuntime.WithRecordProperty(this, "Something.Schema", (somethingSchema :> obj), "")
+
 
 class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
     new : number:int -> XmlProvider+BlahDataSomethingFoo2
@@ -129,6 +135,12 @@ class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithResults: results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
+    JsonRuntime.WithRecordProperty(this, "results", (results :> obj), "")
+
+    member WithSomethingSchema: somethingSchema:string -> XmlProvider+BlahDataSomethingFoo3
+    JsonRuntime.WithRecordProperty(this, "Something.Schema", (somethingSchema :> obj), "")
+
 
 class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
     new : size:int -> value:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo4
@@ -167,6 +179,12 @@ class XmlProvider+X : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Val")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithT: t:int -> XmlProvider+X
+    JsonRuntime.WithRecordProperty(this, "T", (t :> obj), "")
+
+    member WithVal: val:string -> XmlProvider+X
+    JsonRuntime.WithRecordProperty(this, "Val", (val :> obj), "")
+
 
 class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> query:string option -> XmlProvider+Results
@@ -184,6 +202,12 @@ class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
     member SomethingSchema: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithQuery: query:string option -> XmlProvider+Results
+    JsonRuntime.WithRecordProperty(this, "Query", (query :> obj), "")
+
+    member WithSomethingSchema: somethingSchema:string -> XmlProvider+Results
+    JsonRuntime.WithRecordProperty(this, "Something.Schema", (somethingSchema :> obj), "")
 
 
 class XmlProvider+Results2 : FDR.BaseTypes.IJsonDocument
@@ -203,5 +227,11 @@ class XmlProvider+Results2 : FDR.BaseTypes.IJsonDocument
     member SomethingSchema: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithQuery: query:string -> XmlProvider+Results2
+    JsonRuntime.WithRecordProperty(this, "Query", (query :> obj), "")
+
+    member WithSomethingSchema: somethingSchema:string -> XmlProvider+Results2
+    JsonRuntime.WithRecordProperty(this, "Something.Schema", (somethingSchema :> obj), "")
 
 

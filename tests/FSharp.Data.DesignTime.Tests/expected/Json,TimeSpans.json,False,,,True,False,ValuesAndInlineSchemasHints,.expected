@@ -65,4 +65,19 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "timespanOneTickLessThanMinValue")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithNegativeWithDayWithFraction: negativeWithDayWithFraction:System.TimeSpan -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "negativeWithDayWithFraction", (negativeWithDayWithFraction :> obj), "")
+
+    member WithPositiveWithDayWithFraction: positiveWithDayWithFraction:System.TimeSpan -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "positiveWithDayWithFraction", (positiveWithDayWithFraction :> obj), "")
+
+    member WithPositiveWithoutDayWithoutFraction: positiveWithoutDayWithoutFraction:System.TimeSpan -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "positiveWithoutDayWithoutFraction", (positiveWithoutDayWithoutFraction :> obj), "")
+
+    member WithTimespanOneTickGreaterThanMaxValue: timespanOneTickGreaterThanMaxValue:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "timespanOneTickGreaterThanMaxValue", (timespanOneTickGreaterThanMaxValue :> obj), "")
+
+    member WithTimespanOneTickLessThanMinValue: timespanOneTickLessThanMinValue:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "timespanOneTickLessThanMinValue", (timespanOneTickLessThanMinValue :> obj), "")
+
 

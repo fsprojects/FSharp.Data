@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Mappings: JsonProvider+Mappings with get
     JsonRuntime.GetPropertyPacked(this, "Mappings")
 
+    member WithMappings: mappings:JsonProvider+Mappings -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "Mappings", (mappings :> obj), "")
+
 
 class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
     new : items:int * JsonProvider+JsonProvider+MappingsValue[] seq -> JsonProvider+Mappings
@@ -95,5 +98,14 @@ class JsonProvider+MappingsValue : FDR.BaseTypes.IJsonDocument
     member GroupId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "GroupId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithCanDelete: canDelete:bool -> JsonProvider+MappingsValue
+    JsonRuntime.WithRecordProperty(this, "CanDelete", (canDelete :> obj), "")
+
+    member WithErrorMessage: errorMessage:string option -> JsonProvider+MappingsValue
+    JsonRuntime.WithRecordProperty(this, "ErrorMessage", (errorMessage :> obj), "")
+
+    member WithGroupId: groupId:int -> JsonProvider+MappingsValue
+    JsonRuntime.WithRecordProperty(this, "GroupId", (groupId :> obj), "")
 
 

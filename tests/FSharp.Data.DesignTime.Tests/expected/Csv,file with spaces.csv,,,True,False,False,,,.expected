@@ -118,4 +118,12 @@ class CsvProvider+Row : int * decimal
     member Time: decimal<second> with get
     (let _,t2 = this in t2)
 
+    member WithDistance: distance:int<metre> -> CsvProvider+Row
+    distance,
+    (let _,t2 = this in t2)
+
+    member WithTime: time:decimal<second> -> CsvProvider+Row
+    (let t1,_ = this in t1),
+    time
+
 

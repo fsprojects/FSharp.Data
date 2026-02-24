@@ -435,6 +435,174 @@ class CsvProvider+Row : int * string * string * float * float * float * float * 
     member Stumped: float with get
     (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8)
 
+    member WithBat1: bat1:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    bat1,
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithBat2: bat2:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    bat2,
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithCaught: caught:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    caught,
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithColumn9: column9:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    column9,
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithConceded: conceded:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    conceded,
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithGame: game:int -> CsvProvider+Row
+    game,
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithGround: ground:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    ground,
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithOpposition: opposition:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    opposition,
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithRuns: runs:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    runs,
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithStartDate: startDate:System.DateTime -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    startDate
+
+    member WithStumped: stumped:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    stumped,
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member WithWkts: wkts:float -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4),
+    wkts,
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11),
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
     member Wkts: float with get
     (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5)
 

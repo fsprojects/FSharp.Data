@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Mappings: JsonProvider+Mappings with get
     JsonRuntime.GetPropertyPacked(this, "Mappings")
 
+    member WithMappings: mappings:JsonProvider+Mappings -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "Mappings", (mappings :> obj), "")
+
 
 class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
     new : 123:JsonProvider+JsonProvider+123[] -> 456:JsonProvider+JsonProvider+123[] -> 789:JsonProvider+JsonProvider+789[] -> JsonProvider+Mappings
@@ -62,6 +65,15 @@ class JsonProvider+Mappings : FDR.BaseTypes.IJsonDocument
     member 789: JsonProvider+JsonProvider+789[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "789"), new Func<_,_>(id)))
 
+    member With123: 123:JsonProvider+JsonProvider+123[] -> JsonProvider+Mappings
+    JsonRuntime.WithRecordProperty(this, "123", (123 :> obj), "")
+
+    member With456: 456:JsonProvider+JsonProvider+123[] -> JsonProvider+Mappings
+    JsonRuntime.WithRecordProperty(this, "456", (456 :> obj), "")
+
+    member With789: 789:JsonProvider+JsonProvider+789[] -> JsonProvider+Mappings
+    JsonRuntime.WithRecordProperty(this, "789", (789 :> obj), "")
+
 
 class JsonProvider+123 : FDR.BaseTypes.IJsonDocument
     new : groupId:int -> canDelete:bool -> JsonProvider+123
@@ -80,6 +92,12 @@ class JsonProvider+123 : FDR.BaseTypes.IJsonDocument
     member GroupId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "GroupId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithCanDelete: canDelete:bool -> JsonProvider+123
+    JsonRuntime.WithRecordProperty(this, "CanDelete", (canDelete :> obj), "")
+
+    member WithGroupId: groupId:int -> JsonProvider+123
+    JsonRuntime.WithRecordProperty(this, "GroupId", (groupId :> obj), "")
 
 
 class JsonProvider+789 : FDR.BaseTypes.IJsonDocument
@@ -104,5 +122,14 @@ class JsonProvider+789 : FDR.BaseTypes.IJsonDocument
     member GroupId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "GroupId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithCanDelete: canDelete:bool -> JsonProvider+789
+    JsonRuntime.WithRecordProperty(this, "CanDelete", (canDelete :> obj), "")
+
+    member WithErrorMessage: errorMessage:string option -> JsonProvider+789
+    JsonRuntime.WithRecordProperty(this, "ErrorMessage", (errorMessage :> obj), "")
+
+    member WithGroupId: groupId:int -> JsonProvider+789
+    JsonRuntime.WithRecordProperty(this, "GroupId", (groupId :> obj), "")
 
 

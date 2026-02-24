@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Ab: JsonProvider+Ab with get
     JsonRuntime.GetPropertyPacked(this, "ab")
 
+    member WithAb: ab:JsonProvider+Ab -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "ab", (ab :> obj), "")
+
 
 class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
     new : persons:JsonProvider+JsonProvider+Person[] -> JsonProvider+Ab
@@ -51,6 +54,9 @@ class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
 
     member Persons: JsonProvider+JsonProvider+Person[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
+
+    member WithPersons: persons:JsonProvider+JsonProvider+Person[] -> JsonProvider+Ab
+    JsonRuntime.WithRecordProperty(this, "persons", (persons :> obj), "")
 
 
 class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
@@ -73,6 +79,15 @@ class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
 
     member Phones: FDR.BaseTypes.IJsonDocument[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
+
+    member WithContacts: contacts:JsonProvider+JsonProvider+Contact[] -> JsonProvider+Person
+    JsonRuntime.WithRecordProperty(this, "contacts", (contacts :> obj), "")
+
+    member WithEmails: emails:JsonValue[] -> JsonProvider+Person
+    JsonRuntime.WithRecordProperty(this, "emails", (emails :> obj), "")
+
+    member WithPhones: phones:JsonValue[] -> JsonProvider+Person
+    JsonRuntime.WithRecordProperty(this, "phones", (phones :> obj), "")
 
 
 class JsonProvider+Contact : FDR.BaseTypes.IJsonDocument
@@ -100,5 +115,17 @@ class JsonProvider+Contact : FDR.BaseTypes.IJsonDocument
 
     member Phones: FDR.BaseTypes.IJsonDocument[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
+
+    member WithEmailCapability: emailCapability:int[] -> JsonProvider+Contact
+    JsonRuntime.WithRecordProperty(this, "emailCapability", (emailCapability :> obj), "")
+
+    member WithEmailImEnabled: emailImEnabled:bool[] -> JsonProvider+Contact
+    JsonRuntime.WithRecordProperty(this, "emailIMEnabled", (emailImEnabled :> obj), "")
+
+    member WithEmails: emails:string[] -> JsonProvider+Contact
+    JsonRuntime.WithRecordProperty(this, "emails", (emails :> obj), "")
+
+    member WithPhones: phones:JsonValue[] -> JsonProvider+Contact
+    JsonRuntime.WithRecordProperty(this, "phones", (phones :> obj), "")
 
 

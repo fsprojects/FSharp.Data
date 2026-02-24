@@ -58,6 +58,18 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lastName")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithAddress: address:JsonProvider+Address -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "address", (address :> obj), "")
+
+    member WithAge: age:int -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "age", (age :> obj), "")
+
+    member WithFirstName: firstName:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "firstName", (firstName :> obj), "")
+
+    member WithLastName: lastName:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "lastName", (lastName :> obj), "")
+
 
 class JsonProvider+Address : FDR.BaseTypes.IJsonDocument
     new : streetAddress:string -> city:string -> state:string -> postalCode:int -> JsonProvider+Address
@@ -88,5 +100,17 @@ class JsonProvider+Address : FDR.BaseTypes.IJsonDocument
     member StreetAddress: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "streetAddress")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithCity: city:string -> JsonProvider+Address
+    JsonRuntime.WithRecordProperty(this, "city", (city :> obj), "")
+
+    member WithPostalCode: postalCode:int -> JsonProvider+Address
+    JsonRuntime.WithRecordProperty(this, "postalCode", (postalCode :> obj), "")
+
+    member WithState: state:string -> JsonProvider+Address
+    JsonRuntime.WithRecordProperty(this, "state", (state :> obj), "")
+
+    member WithStreetAddress: streetAddress:string -> JsonProvider+Address
+    JsonRuntime.WithRecordProperty(this, "streetAddress", (streetAddress :> obj), "")
 
 
