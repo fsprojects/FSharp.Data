@@ -462,8 +462,26 @@ access the sample JSON. This works fine when the sample is specified inline, but
 the sample is specified as a local file (unless you distribute the samples with your library).
 
 For this reason, the JSON provider lets you specify samples as embedded resources using the
-static parameter `EmbeddedResource` (don't forget then to [include the file](https://docs.microsoft.com/en-us/visualstudio/ide/build-actions) as EmbeddedResource in the
-project file). If you are building a library `MyLib.dll`, you can write:
+static parameter `EmbeddedResource`. When this parameter is set, the type provider at design time
+reads the sample from the local path, but at runtime (when the library is loaded by a consumer)
+it reads the sample from the embedded resource in the compiled assembly.
+
+### Step-by-step guide
+
+**Step 1**: Mark your sample file as an embedded resource in the `.fsproj` file:
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Include="data/worldbank.json" />
+</ItemGroup>
+```
+
+**Step 2**: Use the `EmbeddedResource` static parameter. The value must be
+`"AssemblyName, AssemblyName.dotted.path.to.file.json"` where:
+- `AssemblyName` is the name of your library assembly (without `.dll`)
+- The file path uses **dots** (not slashes) as separators, prefixed with `AssemblyName`
+
+So for a file `data/worldbank.json` in a library `MyLib`, the value is:
 
 *)
 type WB =
@@ -479,6 +497,14 @@ When a user of your library references `MyLib.dll` later, the JSON Type Provider
 to load `MyLib.dll` and locate the sample `worldbank.json` as a resource of the library. When
 this succeeds, it does not attempt to find the local file and so your library can be used
 without providing a local copy of the sample JSON files.
+
+> **Common pitfall**: If you get a cryptic error where the type provider interprets the file path
+> as the CSV/JSON content itself (resulting in a single-column type named after the path), you
+> have likely forgotten to add the `EmbeddedResource` parameter, or the assembly name or resource
+> path in the parameter value is incorrect.
+>
+> To verify the embedded resource name, you can inspect the compiled `.dll` using a tool such as
+> `ildasm`, `dotnet-ildasm`, or ILSpy and look at the `.mresource` entries.
 
 ## Related articles
 
