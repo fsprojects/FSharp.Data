@@ -994,7 +994,9 @@ let ``JsonProvider With* methods do not mutate the original record`` () =
     let doc = JsonWithMethods.Parse("""{"name": "Alice", "age": 30, "active": true}""")
     let _ = doc.WithName("Bob")
     doc.Name |> should equal "Alice"
+
 type JsonOmitNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true, OmitNullFields = true>
+
 type JsonIncludeNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true>
 
 [<Test>]
