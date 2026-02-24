@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-24T04:52:18Z",
-  "workflow_run_id": "22337121259",
-  "tasks_done_this_run": ["task1", "task11"],
+  "last_run": "2026-02-24T05:03:19Z",
+  "workflow_run_id": "22337367627",
+  "tasks_done_this_run": ["task1", "task7", "task11"],
   "last_tasks": {
     "task1": "2026-02-24",
     "task2": "2026-02-23",
@@ -9,14 +9,14 @@
     "task4": "2026-02-22",
     "task5": "2026-02-24",
     "task6": "2026-02-23",
-    "task7": "2026-02-23",
+    "task7": "2026-02-24",
     "task8": "2026-02-22",
     "task9": "2026-02-23",
     "task10": "2026-02-23",
     "task11": "2026-02-24"
   },
-  "issue_backlog_cursor": 1343,
-  "label_backlog_cursor": 1194,
+  "issue_backlog_cursor": 1490,
+  "label_backlog_cursor": 1632,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
   "fix_attempts": {
@@ -67,7 +67,7 @@
     1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241,
     1336, 1325, 1109, 1245, 1115, 1432, 1439, 1233, 1358, 1221,
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
-    1338, 1478, 1317, 1632, 1260, 1343
+    1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635],
   "ideas_submitted": [],
@@ -91,7 +91,7 @@
     "issue_1417": "IMPLEMENTED in PR #1621 - merged by dsyme 2026-02-22",
     "issue_1419": "FIXED in PR #1626 - merged by dsyme 2026-02-23",
     "issue_1221": "PR #1628 closed by dsyme - too invasive. Issue #1221 also closed by dsyme.",
-    "issue_1632": "DTD exception after v6.7.0. PR #1633 (dsyme) reverted XXE fix - merged. PR #1635 (Repo Assist) adds DtdProcessing param with default Parse.",
+    "issue_1632": "DTD exception after v6.7.0. PR #1633 (dsyme) reverted XXE fix - merged. PR #1635 (Repo Assist) adds DtdProcessing param with default Parse. Labelled with bug.",
     "issue_1634": "Created by Repo Assist proposing DtdProcessing param. Implemented in PR #1635.",
     "pr_1635_status": "Draft PR open. Updated 2026-02-24 run 22336782304: default changed to Parse per dsyme, added open System.Xml, fixed CreateList to use XmlReader with settings, 83 snapshots updated. Build: 0 errors. FSharp.Data.Tests: 253/253 pass.",
     "pr_1629_status": "Draft PR open. UseOriginalNames param for XmlProvider (implements #1432). Tests pass.",
@@ -105,6 +105,8 @@
     "open_prs_repo_assist": "PR #1629 (UseOriginalNames XmlProvider), #1630 (HTML whitespace), #1635 (DtdProcessing XmlProvider)",
     "issue_1637": "Auto-generated failure report for run 22335631344. Root cause fixed in run 22336445497. Should be closed by maintainer.",
     "issue_1260": "Commented 2026-02-24: noted issue is from v3.1.1 (2019), likely obsolete in v7.0.1. Suggested closing.",
-    "issue_1343": "Commented 2026-02-24: noted Apache Arrow TP out of scope for FSharp.Data, suggested separate project."
+    "issue_1343": "Commented 2026-02-24: noted Apache Arrow TP out of scope for FSharp.Data, suggested separate project.",
+    "issue_1276": "Commented 2026-02-24: noted issue is about v3.1.1 (2019) package update, completely obsolete. Suggested closing.",
+    "issue_1274": "Commented 2026-02-24: noted CsvProvider single-column bug couldn't be reproduced in 2019. Suggested retesting with v7.0.x."
   }
 }
