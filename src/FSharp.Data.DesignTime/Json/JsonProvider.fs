@@ -59,6 +59,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let schema = args.[10] :?> string
         let preferDateOnly = args.[11] :?> bool
         let useOriginalNames = args.[12] :?> bool
+        let omitNullFields = args.[13] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -119,7 +120,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
                     unitsOfMeasureProvider,
                     inferenceMode,
                     ?preferDictionaries = Some preferDictionaries,
-                    ?useOriginalNames = Some useOriginalNames
+                    ?useOriginalNames = Some useOriginalNames,
+                    ?omitNullFields = Some omitNullFields
                 )
 
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
@@ -167,7 +169,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
           )
           ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("OmitNullFields", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -192,7 +195,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
            </param>
            <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>
            <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
-           <param name='UseOriginalNames'>When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>"""
+           <param name='UseOriginalNames'>When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
+           <param name='OmitNullFields'>When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)
