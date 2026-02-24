@@ -994,3 +994,26 @@ let ``JsonProvider With* methods do not mutate the original record`` () =
     let doc = JsonWithMethods.Parse("""{"name": "Alice", "age": 30, "active": true}""")
     let _ = doc.WithName("Bob")
     doc.Name |> should equal "Alice"
+type JsonOmitNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true, OmitNullFields = true>
+type JsonIncludeNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true>
+
+[<Test>]
+let ``JsonProvider OmitNullFields=true omits None optional fields from output`` () =
+    let value = JsonOmitNullFieldsSample.Root(color = "Blue", code = None)
+    let json = value.ToString()
+    json |> should not' (contain "null")
+    json |> should not' (contain "code")
+    json |> should contain "Blue"
+
+[<Test>]
+let ``JsonProvider default includes None optional fields as null`` () =
+    let value = JsonIncludeNullFieldsSample.Root(color = "Blue", code = None)
+    let json = value.ToString()
+    json |> should contain "null"
+
+[<Test>]
+let ``JsonProvider OmitNullFields=true includes non-None fields`` () =
+    let value = JsonOmitNullFieldsSample.Root(color = "Blue", code = Some 42)
+    let json = value.ToString()
+    json |> should contain "42"
+    json |> should contain "Blue"

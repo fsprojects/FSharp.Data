@@ -31,7 +31,8 @@ type internal JsonGenerationContext =
       GenerateConstructors: bool
       InferenceMode: InferenceMode'
       UnitsOfMeasureProvider: IUnitsOfMeasureProvider
-      UseOriginalNames: bool }
+      UseOriginalNames: bool
+      OmitNullFields: bool }
 
     static member Create
         (
@@ -42,7 +43,8 @@ type internal JsonGenerationContext =
             ?uniqueNiceName,
             ?typeCache,
             ?preferDictionaries,
-            ?useOriginalNames
+            ?useOriginalNames,
+            ?omitNullFields
         ) =
         let useOriginalNames = defaultArg useOriginalNames false
 
@@ -53,6 +55,7 @@ type internal JsonGenerationContext =
 
         let typeCache = defaultArg typeCache (Dictionary())
         let preferDictionaries = defaultArg preferDictionaries false
+        let omitNullFields = defaultArg omitNullFields false
 
         JsonGenerationContext.Create(
             cultureStr,
@@ -63,8 +66,36 @@ type internal JsonGenerationContext =
             true,
             inferenceMode,
             unitsOfMeasureProvider,
-            useOriginalNames
+            useOriginalNames,
+            omitNullFields
         )
+
+    static member Create
+        (
+            cultureStr,
+            tpType,
+            uniqueNiceName,
+            typeCache,
+            preferDictionaries,
+            generateConstructors,
+            inferenceMode,
+            unitsOfMeasureProvider,
+            useOriginalNames,
+            omitNullFields
+        ) =
+        { CultureStr = cultureStr
+          TypeProviderType = tpType
+          UniqueNiceName = uniqueNiceName
+          IJsonDocumentType = typeof<IJsonDocument>
+          JsonValueType = typeof<JsonValue>
+          JsonRuntimeType = typeof<JsonRuntime>
+          TypeCache = typeCache
+          PreferDictionaries = preferDictionaries
+          GenerateConstructors = generateConstructors
+          InferenceMode = inferenceMode
+          UnitsOfMeasureProvider = unitsOfMeasureProvider
+          UseOriginalNames = useOriginalNames
+          OmitNullFields = omitNullFields }
 
     static member Create
         (
@@ -78,18 +109,18 @@ type internal JsonGenerationContext =
             unitsOfMeasureProvider,
             useOriginalNames
         ) =
-        { CultureStr = cultureStr
-          TypeProviderType = tpType
-          UniqueNiceName = uniqueNiceName
-          IJsonDocumentType = typeof<IJsonDocument>
-          JsonValueType = typeof<JsonValue>
-          JsonRuntimeType = typeof<JsonRuntime>
-          TypeCache = typeCache
-          PreferDictionaries = preferDictionaries
-          GenerateConstructors = generateConstructors
-          InferenceMode = inferenceMode
-          UnitsOfMeasureProvider = unitsOfMeasureProvider
-          UseOriginalNames = useOriginalNames }
+        JsonGenerationContext.Create(
+            cultureStr,
+            tpType,
+            uniqueNiceName,
+            typeCache,
+            preferDictionaries,
+            generateConstructors,
+            inferenceMode,
+            unitsOfMeasureProvider,
+            useOriginalNames,
+            false
+        )
 
     member x.MakeOptionType(typ: Type) =
         typedefof<option<_>>.MakeGenericType typ
@@ -646,7 +677,11 @@ module JsonTypeBuilder =
                                 )
 
                             let cultureStr = ctx.CultureStr
-                            <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
+
+                            if ctx.OmitNullFields then
+                                <@@ JsonRuntime.CreateRecordOmitNulls(%%properties, cultureStr) @@>
+                            else
+                                <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
 
                         let ctor = ProvidedConstructor(parameters, invokeCode = ctorCode)
                         objectTy.AddMember ctor

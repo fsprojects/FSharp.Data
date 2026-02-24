@@ -57,7 +57,8 @@ type internal JsonProviderArgs =
       InferenceMode: InferenceMode
       Schema: string
       PreferDateOnly : bool
-      UseOriginalNames : bool }
+      UseOriginalNames : bool
+      OmitNullFields : bool }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -133,7 +134,8 @@ type internal TypeProviderInstantiation =
                    box x.InferenceMode
                    box x.Schema
                    box x.PreferDateOnly
-                   box x.UseOriginalNames |]
+                   box x.UseOriginalNames
+                   box x.OmitNullFields |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -271,7 +273,8 @@ type internal TypeProviderInstantiation =
                        InferenceMode = args.[7] |> InferenceMode.Parse
                        Schema = if args.Length > 8 then args.[8] else ""
                        PreferDateOnly = false
-                       UseOriginalNames = false }
+                       UseOriginalNames = false
+                       OmitNullFields = false }
             else
                 // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
                 Json { Sample = args.[1]
@@ -286,7 +289,8 @@ type internal TypeProviderInstantiation =
                        InferenceMode = InferenceMode.Parse "BackwardCompatible"
                        Schema = if args.Length > 8 then args.[8] else ""
                        PreferDateOnly = false
-                       UseOriginalNames = false }
+                       UseOriginalNames = false
+                       OmitNullFields = false }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
