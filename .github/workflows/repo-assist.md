@@ -35,6 +35,8 @@ network:
   - api.worldbank.org
   - schemas.microsoft.com
   - tomasp.net
+  - http://www.w3.org
+  - http://schemas.microsoft.com 
 
 safe-outputs:
   add-comment:
