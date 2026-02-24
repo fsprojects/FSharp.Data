@@ -351,6 +351,22 @@ type JsonRuntime =
 
         JsonDocument.Create(json, "")
 
+    // Creates a JsonValue.Record, omitting null fields, and wraps it in a json document
+    static member CreateRecordOmitNulls(properties, cultureStr) =
+        let cultureInfo = TextRuntime.GetCulture cultureStr
+
+        let json =
+            properties
+            |> Array.choose (fun (k, v: obj) ->
+                let jv = JsonRuntime.ToJsonValue cultureInfo v
+
+                match jv with
+                | JsonValue.Null -> None
+                | _ -> Some(k, jv))
+            |> JsonValue.Record
+
+        JsonDocument.Create(json, "")
+
     // Creates a JsonValue.Record from key*value seq and wraps it in a json document
     static member CreateRecordFromDictionary<'Key, 'Value when 'Key: equality>
         (keyValuePairs: ('Key * 'Value) seq, cultureStr, mappingKeyBack: Func<'Key, string>)
