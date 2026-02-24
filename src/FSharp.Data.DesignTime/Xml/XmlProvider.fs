@@ -52,6 +52,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let inferenceMode = args.[9] :?> InferenceMode
         let preferDateOnly = args.[10] :?> bool
         let dtdProcessing = args.[11] :?> string
+        let useOriginalNames = args.[11] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -95,7 +96,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         inferenceMode,
                         cultureStr,
                         tpType,
-                        globalInference || schema <> ""
+                        globalInference || schema <> "",
+                        useOriginalNames
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -151,7 +153,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         inferenceMode,
                         cultureStr,
                         tpType,
-                        globalInference || schema <> ""
+                        globalInference || schema <> "",
+                        useOriginalNames
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -200,6 +203,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
           )
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("DtdProcessing", typeof<string>, parameterDefaultValue = "Ignore") ]
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -225,6 +229,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
            </param>
            <param name='PreferDateOnly'>When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
            <param name='DtdProcessing'>Controls how DTD declarations in the XML are handled. Accepted values: "Ignore" (default, silently skips DTD processing, safe for most cases), "Prohibit" (throws on any DTD declaration), "Parse" (enables full DTD processing including entity expansion, use with caution).</param>"""
+           <param name='UseOriginalNames'>When true, XML element and attribute names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText

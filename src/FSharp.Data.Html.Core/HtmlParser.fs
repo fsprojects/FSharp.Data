@@ -49,6 +49,7 @@ module internal HtmlParser =
         | Text of string
         | Comment of string
         | CData of string
+        | InlineWhitespace // normalised whitespace-only DefaultMode text; kept only between inline siblings
         | EOF
 
         override x.ToString() =
@@ -60,6 +61,7 @@ module internal HtmlParser =
             | Comment _ -> "comment"
             | EOF -> "eof"
             | CData _ -> "cdata"
+            | InlineWhitespace -> "inlineWhitespace"
 
         member x.IsEndTag name =
             match x with
@@ -237,7 +239,7 @@ module internal HtmlParser =
                         let normalizedContent = wsRegex.Value.Replace(content, " ")
 
                         if normalizedContent = " " then
-                            Text ""
+                            InlineWhitespace // inter-element whitespace; kept only between inline siblings
                         else
                             Text normalizedContent
                 | ScriptMode -> content |> Text
@@ -935,6 +937,68 @@ module internal HtmlParser =
 
         state.Tokens |> List.rev
 
+    // Block-level HTML elements. Whitespace-only text nodes that are siblings of
+    // these elements are inter-element whitespace and are insignificant.
+    let private blockLevelElements =
+        set
+            [ "address"
+              "article"
+              "aside"
+              "blockquote"
+              "body"
+              "caption"
+              "col"
+              "colgroup"
+              "dd"
+              "details"
+              "dialog"
+              "dir"
+              "div"
+              "dl"
+              "dt"
+              "fieldset"
+              "figcaption"
+              "figure"
+              "footer"
+              "form"
+              "frameset"
+              "h1"
+              "h2"
+              "h3"
+              "h4"
+              "h5"
+              "h6"
+              "head"
+              "header"
+              "hgroup"
+              "html"
+              "legend"
+              "li"
+              "link"
+              "main"
+              "menu"
+              "meta"
+              "nav"
+              "noscript"
+              "ol"
+              "optgroup"
+              "option"
+              "p"
+              "pre"
+              "script"
+              "section"
+              "style"
+              "summary"
+              "table"
+              "tbody"
+              "td"
+              "tfoot"
+              "th"
+              "thead"
+              "title"
+              "tr"
+              "ul" ]
+
     let private parse reader =
         let canNotHaveChildren (name: string) =
             match name with
@@ -1050,6 +1114,26 @@ module internal HtmlParser =
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd parentTagName rest
             | TagEnd _ :: rest -> recursiveReturn (docType, rest, List.rev elements)
+            | InlineWhitespace :: rest ->
+                // This is normalised whitespace-only content from DefaultMode (e.g. the space
+                // between "</span> <span>").  Keep it as a space text node only when BOTH the
+                // previous accumulated node and the next token represent inline content.
+                let prevIsInline =
+                    match elements with
+                    | HtmlNode.HtmlElement(name, _, _) :: _ -> not (Set.contains name blockLevelElements)
+                    | HtmlNode.HtmlText t :: _ -> not (String.IsNullOrWhiteSpace t)
+                    | _ -> false
+
+                let nextIsInline =
+                    match rest with
+                    | Text t :: _ when t <> "" -> true
+                    | Tag(_, name, _) :: _ -> not (Set.contains name blockLevelElements)
+                    | _ -> false
+
+                if prevIsInline && nextIsInline then
+                    parse' docType (HtmlNode.HtmlText " " :: elements) expectedTagEnd parentTagName rest
+                else
+                    parse' docType elements expectedTagEnd parentTagName rest
             | Text a :: Text b :: rest ->
                 if a = "" && b = "" then
                     // ignore this token

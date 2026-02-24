@@ -58,6 +58,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let inferenceMode = args.[9] :?> InferenceMode
         let schema = args.[10] :?> string
         let preferDateOnly = args.[11] :?> bool
+        let useOriginalNames = args.[12] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -117,7 +118,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
                     tpType,
                     unitsOfMeasureProvider,
                     inferenceMode,
-                    ?preferDictionaries = Some preferDictionaries
+                    ?preferDictionaries = Some preferDictionaries,
+                    ?useOriginalNames = Some useOriginalNames
                 )
 
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
@@ -164,7 +166,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
           ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
-          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -188,7 +191,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
            </param>
            <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>
-           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>"""
+           <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
+           <param name='UseOriginalNames'>When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

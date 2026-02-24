@@ -30,13 +30,26 @@ type internal JsonGenerationContext =
       PreferDictionaries: bool
       GenerateConstructors: bool
       InferenceMode: InferenceMode'
-      UnitsOfMeasureProvider: IUnitsOfMeasureProvider }
+      UnitsOfMeasureProvider: IUnitsOfMeasureProvider
+      UseOriginalNames: bool }
 
     static member Create
-        (cultureStr, tpType, unitsOfMeasureProvider, inferenceMode, ?uniqueNiceName, ?typeCache, ?preferDictionaries)
-        =
+        (
+            cultureStr,
+            tpType,
+            unitsOfMeasureProvider,
+            inferenceMode,
+            ?uniqueNiceName,
+            ?typeCache,
+            ?preferDictionaries,
+            ?useOriginalNames
+        ) =
+        let useOriginalNames = defaultArg useOriginalNames false
+
         let uniqueNiceName =
-            defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
+            defaultArg
+                uniqueNiceName
+                (NameUtils.uniqueGenerator (if useOriginalNames then id else NameUtils.nicePascalName))
 
         let typeCache = defaultArg typeCache (Dictionary())
         let preferDictionaries = defaultArg preferDictionaries false
@@ -49,7 +62,8 @@ type internal JsonGenerationContext =
             preferDictionaries,
             true,
             inferenceMode,
-            unitsOfMeasureProvider
+            unitsOfMeasureProvider,
+            useOriginalNames
         )
 
     static member Create
@@ -61,7 +75,8 @@ type internal JsonGenerationContext =
             preferDictionaries,
             generateConstructors,
             inferenceMode,
-            unitsOfMeasureProvider
+            unitsOfMeasureProvider,
+            useOriginalNames
         ) =
         { CultureStr = cultureStr
           TypeProviderType = tpType
@@ -73,7 +88,8 @@ type internal JsonGenerationContext =
           PreferDictionaries = preferDictionaries
           GenerateConstructors = generateConstructors
           InferenceMode = inferenceMode
-          UnitsOfMeasureProvider = unitsOfMeasureProvider }
+          UnitsOfMeasureProvider = unitsOfMeasureProvider
+          UseOriginalNames = useOriginalNames }
 
     member x.MakeOptionType(typ: Type) =
         typedefof<option<_>>.MakeGenericType typ
@@ -376,7 +392,13 @@ module JsonTypeBuilder =
                 ctx.TypeProviderType.AddMember(objectTy)
 
                 // to nameclash property names
-                let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
+                let nicePropertyName =
+                    if ctx.UseOriginalNames then
+                        id
+                    else
+                        NameUtils.nicePascalName
+
+                let makeUnique = NameUtils.uniqueGenerator nicePropertyName
                 makeUnique "JsonValue" |> ignore
 
                 let inferedKeyValueType =
@@ -600,7 +622,13 @@ module JsonTypeBuilder =
 
                               prop.Name,
                               [ ProvidedProperty(name, convertedType, getterCode = getter) ],
-                              ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
+                              ProvidedParameter(
+                                  (if ctx.UseOriginalNames then
+                                       name
+                                   else
+                                       NameUtils.niceCamelName name),
+                                  replaceJDocWithJValue ctx convertedType
+                              ) ]
 
                     let names, properties, parameters = List.unzip3 members
                     let properties = properties |> List.concat

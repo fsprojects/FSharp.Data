@@ -983,3 +983,39 @@ let ``Can handle incomplete tags at end of file without creating an infinite loo
                 ("html",
                     [ HtmlNode.NewElement("head")])]
     result |> should equal expected
+
+[<Test>]
+let ``Preserves space between entity references in inline content (issue 1330)``() =
+    // &lt; &gt; — the space between the two entity refs must survive InnerText()
+    let result =
+        HtmlDocument.Parse "<p>&lt; &gt;</p>"
+        |> HtmlDocument.descendantsNamed true [ "p" ]
+        |> Seq.head
+        |> HtmlNode.innerText
+    result |> should equal "< >"
+
+[<Test>]
+let ``Preserves space between adjacent inline elements (issue 1330)``() =
+    // A space between two <span> siblings must not be dropped
+    let result =
+        HtmlDocument.Parse "<div><span>Hello,</span> <span>World</span></div>"
+        |> HtmlDocument.descendantsNamed true [ "div" ]
+        |> Seq.head
+        |> HtmlNode.innerText
+    result |> should equal "Hello, World"
+
+[<Test>]
+let ``Drops inter-block whitespace but keeps inline whitespace``() =
+    // Whitespace between block siblings (<li>) is dropped; whitespace
+    // between inline siblings (<span>) inside a <li> is kept.
+    let html =
+        """<ul>
+  <li><span>A</span> <span>B</span></li>
+  <li>C</li>
+</ul>"""
+    let result =
+        HtmlDocument.Parse html
+        |> HtmlDocument.descendantsNamed true [ "li" ]
+        |> Seq.map HtmlNode.innerText
+        |> Seq.toList
+    result |> should equal [ "A B"; "C" ]

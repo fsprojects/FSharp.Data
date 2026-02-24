@@ -60,3 +60,4 @@ let ``Generating expressions works in netstandard2.0 `` (testCaseSpec: string) =
     let _, testCase = TypeProviderInstantiation.Parse testCaseSpec
     let assemblyRefs = TypeProviderInstantiation.GetRuntimeAssemblyRefs()
     testCase.Dump(resolutionFolder, "", netstandard2RuntimeAssembly, assemblyRefs, signatureOnly=false, ignoreOutput=true) |> ignore
+
