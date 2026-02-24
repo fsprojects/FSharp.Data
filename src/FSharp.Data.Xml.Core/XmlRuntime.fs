@@ -6,7 +6,6 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
-open System.Xml
 open System.Xml.Linq
 
 #nowarn "10001"
@@ -57,16 +56,7 @@ type XmlElement =
                                IsError = false)>]
     static member Create(reader: TextReader) =
         use reader = reader
-        // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
-        let xmlReaderSettings =
-            new XmlReaderSettings(
-                DtdProcessing = DtdProcessing.Prohibit,
-                XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L
-            ) // 1MB limit
-
-        use xmlReader = XmlReader.Create(reader, xmlReaderSettings)
-        let element = XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root
+        let element = XDocument.Load(reader, LoadOptions.PreserveWhitespace).Root
         { XElement = element }
 
     /// <exclude />
@@ -79,26 +69,12 @@ type XmlElement =
         use reader = reader
         let text = reader.ReadToEnd()
 
-        // Secure XML parsing: disable DTD processing and external entities to prevent XXE attacks
-        let xmlReaderSettings =
-            new XmlReaderSettings(
-                DtdProcessing = DtdProcessing.Prohibit,
-                XmlResolver = null,
-                MaxCharactersFromEntities = 1024L * 1024L
-            ) // 1MB limit
-
         try
-            use stringReader = new StringReader(text)
-            use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
-
-            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
+            XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            use stringReader = new StringReader("<root>" + text + "</root>")
-            use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
-
-            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root.Elements()
+            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 
