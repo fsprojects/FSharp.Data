@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-02-25T03:00:00Z",
+  "last_updated": "2026-02-25T20:39:00Z",
   "monthly_activity_issue": 1599,
   "issue_triage_cursor": 1238,
   "open_repo_assist_prs": [
@@ -22,6 +22,13 @@
       "title": "Add YamlProvider type provider",
       "branch": "repo-assist/feature-yaml-provider",
       "closes": [1645],
+      "status": "open"
+    },
+    {
+      "number": null,
+      "title": "Add PreferOptionals parameter to XmlProvider and JsonProvider",
+      "branch": "repo-assist/fix-issue-649-prefer-optionals-xml-json",
+      "closes": [649],
       "status": "created_this_run"
     }
   ],
@@ -35,15 +42,15 @@
     { "issue": 1221, "pr": 1628, "outcome": "closed_by_maintainer_too_invasive" },
     { "issue": 1632, "pr": 1635, "outcome": "open" },
     { "issue": 1245, "pr": 1638, "outcome": "open", "branch": "repo-assist/fix-issue-1245-omit-null-fields" },
-    { "issue": 1645, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/feature-yaml-provider" }
+    { "issue": 1645, "pr": null, "outcome": "open", "branch": "repo-assist/feature-yaml-provider" },
+    { "issue": 649, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/fix-issue-649-prefer-optionals-xml-json" }
   ],
   "tasks_last_run": {
-    "task2_fix_issues": "2026-02-25T03:00:00Z",
-    "task11_monthly_summary": "2026-02-24T21:00:00Z"
+    "task2_fix_issues": "2026-02-25T20:39:00Z",
+    "task11_monthly_summary": "2026-02-25T20:39:00Z"
   },
   "future_work": [
     "Add With* methods to XmlProvider (scoped out of PR for #1431 due to complex structure)",
-    "Add PreferOptionals/AllowEmptyValues to XmlProvider (wait for PR #1635 to merge)",
     "Investigate #1392 HttpClient migration",
     "Continue triaging issues from #1238 onwards"
   ]
