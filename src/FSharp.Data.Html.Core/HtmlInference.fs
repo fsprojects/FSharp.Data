@@ -28,6 +28,7 @@ let internal inferColumns parameters (headerNamesAndUnits: _[]) rows =
         parameters.MissingValues
         parameters.InferenceMode
         false
+        false
         parameters.CultureInfo
         assumeMissingValues
         parameters.PreferOptionals

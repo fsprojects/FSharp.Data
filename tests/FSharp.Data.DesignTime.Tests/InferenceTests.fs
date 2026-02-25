@@ -24,7 +24,7 @@ let internal unitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
 
 let internal inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
     let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema unitsOfMeasureProvider
-    inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues inferenceMode false cultureInfo assumeMissingValues preferOptionals unitsOfMeasureProvider
+    inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues inferenceMode false false cultureInfo assumeMissingValues preferOptionals unitsOfMeasureProvider
 
 let internal toRecord fields = InferedType.Record(None, fields, false)
 
@@ -411,7 +411,7 @@ let ``Doesn't infer 12-002 as a date``() =
 
 [<Test>]
 let ``Doesn't infer ad3mar as a date``() =
-  StructuralInference.inferPrimitiveType unitsOfMeasureProvider inferenceMode CultureInfo.InvariantCulture "ad3mar" None
+  StructuralInference.inferPrimitiveType unitsOfMeasureProvider inferenceMode CultureInfo.InvariantCulture false "ad3mar" None
   |> should equal (InferedType.Primitive(typeof<string>, None, false, false))
 
 [<Test>]
