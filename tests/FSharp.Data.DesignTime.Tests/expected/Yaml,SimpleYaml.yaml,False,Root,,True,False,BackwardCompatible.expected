@@ -89,7 +89,7 @@ class YamlProvider+Root : FDR.BaseTypes.IJsonDocument
 
 
 class YamlProvider+Address : FDR.BaseTypes.IJsonDocument
-    new : street:string -> city:string -> zip:int -> YamlProvider+Address
+    new : street:string -> city:string -> zip:string -> YamlProvider+Address
     JsonRuntime.CreateRecord([| ("street",
                                  (street :> obj))
                                 ("city",
@@ -114,11 +114,11 @@ class YamlProvider+Address : FDR.BaseTypes.IJsonDocument
     member WithStreet: street:string -> YamlProvider+Address
     JsonRuntime.WithRecordProperty(this, "street", (street :> obj), "")
 
-    member WithZip: zip:int -> YamlProvider+Address
+    member WithZip: zip:string -> YamlProvider+Address
     JsonRuntime.WithRecordProperty(this, "zip", (zip :> obj), "")
 
-    member Zip: int with get
+    member Zip: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "zip")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 

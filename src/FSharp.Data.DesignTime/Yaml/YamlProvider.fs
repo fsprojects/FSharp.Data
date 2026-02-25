@@ -77,11 +77,11 @@ type public YamlProvider(cfg: TypeProviderConfig) as this =
 
                         if sampleIsList then
                             // If SampleIsList, parse as a YAML sequence or multiple documents
-                            match YamlDocument.ParseToJsonValue value with
+                            match YamlDocument.ParseToJsonValueForInference value with
                             | JsonValue.Array items -> items
                             | single -> [| single |]
                         else
-                            [| YamlDocument.ParseToJsonValue value |]
+                            [| YamlDocument.ParseToJsonValueForInference value |]
 
                     samples
                     |> Array.map (fun sampleJson ->
