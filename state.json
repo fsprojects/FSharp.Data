@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-25T18:23:44Z",
-  "workflow_run_id": "22410092427",
-  "tasks_done_this_run": ["task1", "task11"],
+  "last_run": "2026-02-25T18:32:04Z",
+  "workflow_run_id": "22410392604",
+  "tasks_done_this_run": ["task1", "task7", "task11"],
   "last_tasks": {
     "task1": "2026-02-25",
     "task2": "2026-02-24",
@@ -9,14 +9,14 @@
     "task4": "2026-02-22",
     "task5": "2026-02-25",
     "task6": "2026-02-25",
-    "task7": "2026-02-24",
+    "task7": "2026-02-25",
     "task8": "2026-02-22",
     "task9": "2026-02-25",
     "task10": "2026-02-25",
     "task11": "2026-02-25"
   },
-  "issue_backlog_cursor": 1188,
-  "label_backlog_cursor": 1632,
+  "issue_backlog_cursor": 1257,
+  "label_backlog_cursor": 1650,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
   "fix_attempts": {
@@ -54,7 +54,7 @@
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
     1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649,
-    818
+    818, 1257, 1218
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
   "stale_pr_nudges": [],
@@ -84,13 +84,21 @@
     "issue_1653_status": "Superseded by #1654 - should be closed.",
     "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
     "issue_818": "Commented 2026-02-25: explained AppDomain.BaseDirectory vs CWD for Load(string); suggested closing as by-design.",
+    "issue_1257": "Commented 2026-02-25: explained functional JSON API (JsonValue AST, JsonExtensions operators).",
+    "issue_1218": "Commented 2026-02-25: explained CSV TP path resolution - design-time vs runtime, ResolutionFolder solution. Similar to #818.",
     "yaml_quoted_strings": "Fixed in PR #1646: quoted YAML scalars (SingleQuoted/DoubleQuoted/Literal/Folded) now correctly infer as string even when InferTypesFromValues=true. Uses sentinel 's' for numeric-looking quoted values."
+  },
+  "labels_applied": {
+    "1650": ["enhancement"],
+    "1649": ["enhancement", "performance"],
+    "1645": ["enhancement"]
   },
   "future_work": [
     "Add With* methods to XmlProvider (scoped out of prior PRs due to complex structure)",
     "Add PreferOptionals/AllowEmptyValues to XmlProvider - allowEmptyValues param exists in XmlInference.fs",
     "Investigate #1392 HttpClient migration",
     "Continue triaging older open issues (pre-#838) - some haven't had Repo Assist comments yet",
-    "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR"
+    "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR",
+    "Check deps again - last done 2026-02-22"
   ]
 }
