@@ -56,6 +56,7 @@ let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (el
                             unitsOfMeasureProvider
                             inferenceMode
                             cultureInfo
+                            false
                             element.Name.LocalName
 
                     InferedType.Json(jsonType, optional)

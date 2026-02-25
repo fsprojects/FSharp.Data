@@ -14,7 +14,7 @@ open FSharp.Data.Runtime.StructuralInference
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
-let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo parentName json =
+let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues parentName json =
     let inline inRangeDecimal lo hi (v: decimal) : bool = (v >= decimal lo) && (v <= decimal hi)
     let inline inRangeFloat lo hi (v: float) : bool = (v >= float lo) && (v <= float hi)
     let inline isIntegerDecimal (v: decimal) : bool = Math.Round v = v
@@ -65,8 +65,15 @@ let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo pare
     // More interesting types
     | JsonValue.Array ar ->
         StructuralInference.inferCollectionType
-            false
-            (Seq.map (inferType unitsOfMeasureProvider inferenceMode cultureInfo (NameUtils.singularize parentName)) ar)
+            allowEmptyValues
+            (Seq.map
+                (inferType
+                    unitsOfMeasureProvider
+                    inferenceMode
+                    cultureInfo
+                    allowEmptyValues
+                    (NameUtils.singularize parentName))
+                ar)
     | JsonValue.Record properties ->
         let name =
             if String.IsNullOrEmpty parentName then
@@ -76,7 +83,9 @@ let rec internal inferType unitsOfMeasureProvider inferenceMode cultureInfo pare
 
         let props =
             [ for propName, value in properties ->
-                  let t = inferType unitsOfMeasureProvider inferenceMode cultureInfo propName value
+                  let t =
+                      inferType unitsOfMeasureProvider inferenceMode cultureInfo allowEmptyValues propName value
+
                   { Name = propName; Type = t } ]
 
         InferedType.Record(name, props, false)
