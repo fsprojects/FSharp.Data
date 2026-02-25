@@ -1,10 +1,10 @@
 {
-  "last_run": "2026-02-25T19:34:20Z",
-  "workflow_run_id": "22412614401",
-  "tasks_done_this_run": ["task5", "task11"],
+  "last_run": "2026-02-25T20:11:05Z",
+  "workflow_run_id": "22413956802",
+  "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-25",
-    "task2": "2026-02-24",
+    "task2": "2026-02-25",
     "task3": "2026-02-24",
     "task4": "2026-02-22",
     "task5": "2026-02-25",
@@ -34,9 +34,11 @@
     "1315": {"status": "merged", "pr": 1631, "date": "2026-02-24"},
     "1245": {"status": "merged", "pr": 1638, "date": "2026-02-24"},
     "1431": {"status": "merged", "pr": 1639, "date": "2026-02-24"},
-    "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25", "note": "CI fixed 2026-02-25: removed duplicate method defs (FS0037/FS0438)"},
+    "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25", "note": "CI pending as of 2026-02-25T20:11. All dsyme feedback addressed (Windows CI fix done via #1648 which is now merged; quoted YAML scalar inference fixed)."},
     "1650": {"status": "pr_open", "pr": 1652, "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "date": "2026-02-25"},
-    "1649": {"status": "push_failed_workflow_permission", "issue": 1654, "note": "Two failed push attempts: issues #1653 (run 22409411138) and #1654 (run 22409729632). #1654 supersedes #1653. Cannot push to .github/workflows/ without workflows:write permission."}
+    "1649": {"status": "push_failed_workflow_permission", "issue": 1654, "note": "Two failed push attempts: issues #1653 (run 22409411138) and #1654 (run 22409729632). #1654 supersedes #1653. Cannot push to .github/workflows/ without workflows:write permission."},
+    "838": {"status": "pr_open", "pr": 1655, "branch": "repo-assist/fix-issue-838-prefer-floats-csv-provider-1772049113-a80f9f561cd98a2e", "date": "2026-02-25", "note": "Draft PR. CI pending."},
+    "1648_ci_fix": {"status": "merged_by_dsyme", "pr": 1648, "date": "2026-02-25T20:09Z", "note": "Windows CI localhost fix merged"}
   },
   "deps_update_attempts": {
     "2026-02-22": {"branch": "repo-assist/deps-update-2026-02-22-22f87c2bfdc6ec83", "pr": 1614, "status": "merged"}
@@ -55,15 +57,15 @@
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
     1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649,
     818, 1257, 1218, 1080, 1220, 838, 1130, 953, 900, 942,
-    1207, 1159
+    1207, 1159, 1138
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
   "open_repo_assist_prs": [
-    {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open", "note": "CI fixed 2026-02-25"},
-    {"number": 1648, "title": "Fix Windows CI: use 127.0.0.1 instead of localhost for test HTTP servers", "branch": "repo-assist/fix-windows-ci-localhost-e388a49a78dc0a12", "status": "open_draft"},
-    {"number": 1652, "title": "Add TOML type provider (TomlProvider)", "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "closes": [1650], "status": "open_draft"}
+    {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open", "note": "CI pending as of 2026-02-25T20:11. All dsyme feedback addressed. Quoted YAML scalar inference fixed. Windows CI fix done via #1648 (merged by dsyme)."},
+    {"number": 1652, "title": "Add TOML type provider (TomlProvider)", "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "closes": [1650], "status": "open_draft"},
+    {"number": 1655, "title": "Add PreferFloats static parameter to CsvProvider", "branch": "repo-assist/fix-issue-838-prefer-floats-csv-provider-1772049113-a80f9f561cd98a2e", "closes": [838], "status": "open_draft"}
   ],
   "maintainer_instructions": [
     "dsyme closes release prep PRs without merging - manages releases himself",
@@ -72,18 +74,20 @@
     "dsyme instructed PR #1635: make DtdProcessing default Prohibit (security default)",
     "dsyme instructed PR #1646: quoted YAML scalars should stay as strings even with InferTypesFromValues=true - DONE 2026-02-25",
     "dsyme requested Repo Assist work on issue #1649 (Make CI faster) - ATTEMPTED but push to workflow files always fails (no workflows:write permission)",
-    "dsyme filed issue #1650 (TOML type provider) 2026-02-25 - DONE via PR #1652"
+    "dsyme filed issue #1650 (TOML type provider) 2026-02-25 - DONE via PR #1652",
+    "dsyme merged PR #1648 (Windows CI localhost fix) on 2026-02-25"
   ],
   "known_limitations": [
     "Cannot push changes to .github/workflows/ files - GitHub requires workflows:write permission which is separate from contents:write. This affects: #1641 (NuGet trusted publishing), #1649 (CI speedup). Patches are documented in issues #1643 and #1654 respectively."
   ],
   "notes": {
-    "pr_1646_status": "Open (not draft). CI fixed 2026-02-25 run 22412614401: duplicate methods removed. Waiting for dsyme review.",
-    "pr_1648_status": "Open draft. Windows CI localhost fix (2-line change). Waiting for review.",
+    "pr_1646_status": "Open (not draft). CI pending 2026-02-25. All dsyme feedback addressed. Waiting for review after CI passes.",
     "pr_1652_status": "Open draft. TomlProvider implementation. Waiting for dsyme review.",
+    "pr_1655_status": "Open draft. PreferFloats static param for CsvProvider. CI pending.",
     "issue_1654_status": "Open issue with CI speedup patch (supersedes #1653). Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
     "issue_1653_status": "Superseded by #1654 - should be closed.",
     "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
+    "issue_1138_commented": "Commented 2026-02-25: Noted Google Finance URL docs issue is resolved; docs updated to use Yahoo Finance local CSV. Suggested closing.",
     "issue_1207": "Commented 2026-02-25: Explained wide-CSV design-time slowness. Key: Schema param bypasses inference entirely. InferRows limits sample size. CsvFile for no inference.",
     "issue_1159": "Commented 2026-02-25: Documented Array.Parallel.map + ParseRows pattern for parallel CSV parsing. Noted quoted-newline limitation."
   },
@@ -95,9 +99,8 @@
   "future_work": [
     "Add With* methods to XmlProvider (scoped out of prior PRs due to complex structure)",
     "Add PreferOptionals/AllowEmptyValues to XmlProvider - allowEmptyValues param exists in XmlInference.fs",
-    "Add PreferFloats param to CsvProvider (#838) - awaiting maintainer confirmation; implementation plan in issue comment",
     "Investigate #1392 HttpClient migration",
-    "Continue triaging older open issues - next: #1246, #1138, #1151, #1040",
+    "Continue triaging older open issues - next: #1246, #1151",
     "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR"
   ]
 }
