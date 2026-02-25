@@ -60,6 +60,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let preferDateOnly = args.[11] :?> bool
         let useOriginalNames = args.[12] :?> bool
         let omitNullFields = args.[13] :?> bool
+        let preferOptionals = args.[14] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -100,8 +101,14 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
 
                         samples
                         |> Array.map (fun sampleJson ->
-                            JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
-                        |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                            JsonInference.inferType
+                                unitsOfMeasureProvider
+                                inferenceMode
+                                cultureInfo
+                                (not preferOptionals)
+                                ""
+                                sampleJson)
+                        |> Array.fold (StructuralInference.subtypeInfered (not preferOptionals)) InferedType.Top
 #if NET6_0_OR_GREATER
                 if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
                     rawInfered
@@ -170,7 +177,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("OmitNullFields", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("OmitNullFields", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = true) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -196,7 +204,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
            <param name='Schema'>Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.</param>
            <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
            <param name='UseOriginalNames'>When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
-           <param name='OmitNullFields'>When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.</param>"""
+           <param name='OmitNullFields'>When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.</param>
+           <param name='PreferOptionals'>When set to true (default), inference will use the option type for missing or null values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

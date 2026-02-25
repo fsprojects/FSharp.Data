@@ -57,7 +57,7 @@ let startHttpLocalServer() =
                 port <- random.Next(10000, 65000)
         port
 
-    let baseAddress = $"http://localhost:{freePort}"
+    let baseAddress = $"http://127.0.0.1:{freePort}"
 
     let workerTask = app.RunAsync(baseAddress)
     printfn $"Started local http server with address {baseAddress}"

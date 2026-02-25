@@ -58,6 +58,7 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
         let preferDateOnly = args.[16] :?> bool
         let strictBooleans = args.[17] :?> bool
         let useOriginalNames = args.[18] :?> bool
+        let preferFloats = args.[19] :?> bool
 
         // This provider already has a schema mechanism, so let's disable inline schemas.
         let inferenceMode = InferenceMode'.ValuesOnly
@@ -116,7 +117,8 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
                         assumeMissingValues,
                         preferOptionals,
                         unitsOfMeasureProvider,
-                        strictBooleans
+                        strictBooleans,
+                        preferFloats
                     )
 #if NET6_0_OR_GREATER
                 if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
@@ -241,7 +243,8 @@ type public CsvProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("EmbeddedResource", typeof<string>, parameterDefaultValue = "")
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("StrictBooleans", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("PreferFloats", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a CSV file.</summary>

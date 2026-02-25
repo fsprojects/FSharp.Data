@@ -1340,3 +1340,22 @@ let ``XmlProvider UseOriginalNames=true preserves attribute names as-is`` () =
 let ``XmlProvider default normalizes attribute names to PascalCase`` () =
     let root = XmlNormalizedNames.Parse("<root fault_code='world' />")
     root.FaultCode |> should equal "world"
+
+// Tests for PreferOptionals parameter on XmlProvider (issue #649)
+[<Literal>]
+let xmlOptionalAttr = """<root><item name="Alice" tag="x" /><item name="Bob" /></root>"""
+
+type XmlPreferOptionalsFalse = XmlProvider<xmlOptionalAttr, SampleIsList = false, PreferOptionals = false>
+type XmlPreferOptionalsTrue = XmlProvider<xmlOptionalAttr, SampleIsList = false, PreferOptionals = true>
+
+[<Test>]
+let ``XmlProvider PreferOptionals=true (default) uses option type for optional attributes`` () =
+    let root = XmlPreferOptionalsTrue.Parse("""<root><item name="Alice" tag="x" /><item name="Bob" /></root>""")
+    root.Items.[0].Tag.GetType() |> should equal typeof<string option>
+    root.Items.[1].Tag |> should equal None
+
+[<Test>]
+let ``XmlProvider PreferOptionals=false uses empty string for missing string attributes`` () =
+    let root = XmlPreferOptionalsFalse.Parse("""<root><item name="Bob" /></root>""")
+    root.Items.[0].Tag.GetType() |> should equal typeof<string>
+    root.Items.[0].Tag |> should equal ""

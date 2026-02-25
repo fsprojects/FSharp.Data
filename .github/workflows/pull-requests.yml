@@ -11,11 +11,18 @@ jobs:
 
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Setup .NET Core 8
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.400
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/paket.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
@@ -23,24 +30,27 @@ jobs:
     - name: Build and test (Release)
       env:
         FAKE_DETAILED_ERRORS: true
-      run: dotnet run --project build/build.fsproj -- -t All
-    - name: Build (Debug)
-      run: dotnet build -c Debug -v n
+      run: dotnet run --project build/build.fsproj -- -t RunTests
 
   build-ubuntu:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Setup .NET Core 8
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.400
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/paket.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
       run: dotnet paket restore
     - name: Build and test
       run: dotnet run --project build/build.fsproj -- -t RunTests
-    - name: Build (Debug)
-      run: dotnet build -c Debug -v n

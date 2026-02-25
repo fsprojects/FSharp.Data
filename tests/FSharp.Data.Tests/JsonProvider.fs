@@ -1019,3 +1019,23 @@ let ``JsonProvider OmitNullFields=true includes non-None fields`` () =
     let json = value.ToString()
     json |> should contain "42"
     json |> should contain "Blue"
+
+// Tests for PreferOptionals parameter on JsonProvider (issue #649)
+type JsonPreferOptionalsFalse =
+    JsonProvider<"""[{"name": "Alice", "tag": "x"}, {"name": "Bob"}]""", SampleIsList = true, PreferOptionals = false>
+
+type JsonPreferOptionalsTrue =
+    JsonProvider<"""[{"name": "Alice", "tag": "x"}, {"name": "Bob"}]""", SampleIsList = true, PreferOptionals = true>
+
+[<Test>]
+let ``JsonProvider PreferOptionals=true (default) uses option type for missing string fields`` () =
+    let doc = JsonPreferOptionalsTrue.Parse("""{"name": "Alice", "tag": "x"}""")
+    doc.Tag.GetType() |> should equal typeof<string option>
+    let docMissing = JsonPreferOptionalsTrue.Parse("""{"name": "Bob"}""")
+    docMissing.Tag |> should equal None
+
+[<Test>]
+let ``JsonProvider PreferOptionals=false uses empty string for missing string fields`` () =
+    let doc = JsonPreferOptionalsFalse.Parse("""{"name": "Bob"}""")
+    doc.Tag.GetType() |> should equal typeof<string>
+    doc.Tag |> should equal ""

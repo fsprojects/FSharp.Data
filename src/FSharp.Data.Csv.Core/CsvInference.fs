@@ -125,6 +125,7 @@ let internal inferCellType
     missingValues
     inferenceMode
     strictBooleans
+    preferFloats
     cultureInfo
     unit
     (value: string)
@@ -140,7 +141,15 @@ let internal inferCellType
         InferedType.Null
     else
         let inferedType =
-            StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
+            if preferFloats then
+                StructuralInference.getInferedTypeFromStringPreferFloats
+                    unitsOfMeasureProvider
+                    inferenceMode
+                    cultureInfo
+                    value
+                    unit
+            else
+                StructuralInference.getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit
 
         if strictBooleans then
             // With StrictBooleans=true, only "true"/"false" trigger bool inference.
@@ -305,6 +314,7 @@ let internal inferType
     missingValues
     inferenceMode
     strictBooleans
+    preferFloats
     cultureInfo
     assumeMissingValues
     preferOptionals
@@ -358,6 +368,7 @@ let internal inferType
                                     missingValues
                                     inferenceMode
                                     strictBooleans
+                                    preferFloats
                                     cultureInfo
                                     unit
                                     value
@@ -456,6 +467,7 @@ let internal inferColumnTypes
     missingValues
     inferenceMode
     strictBooleans
+    preferFloats
     cultureInfo
     assumeMissingValues
     preferOptionals
@@ -469,6 +481,7 @@ let internal inferColumnTypes
         missingValues
         inferenceMode
         strictBooleans
+        preferFloats
         cultureInfo
         assumeMissingValues
         preferOptionals
@@ -497,7 +510,8 @@ type CsvFile with
             assumeMissingValues,
             preferOptionals,
             unitsOfMeasureProvider,
-            ?strictBooleans
+            ?strictBooleans,
+            ?preferFloats
         ) =
 
         let headerNamesAndUnits, schema =
@@ -511,6 +525,7 @@ type CsvFile with
             missingValues
             inferenceMode
             (defaultArg strictBooleans false)
+            (defaultArg preferFloats false)
             cultureInfo
             assumeMissingValues
             preferOptionals
