@@ -1,31 +1,89 @@
 {
-  "last_run": "2026-02-25T17:42:00Z",
-  "last_run_id": "22408618150",
+  "last_run": "2026-02-25T17:40:20Z",
+  "workflow_run_id": "22408562175",
+  "tasks_done_this_run": ["task5", "task11"],
+  "last_tasks": {
+    "task1": "2026-02-24",
+    "task2": "2026-02-24",
+    "task3": "2026-02-24",
+    "task4": "2026-02-22",
+    "task5": "2026-02-25",
+    "task6": "2026-02-23",
+    "task7": "2026-02-24",
+    "task8": "2026-02-22",
+    "task9": "2026-02-23",
+    "task10": "2026-02-23",
+    "task11": "2026-02-25"
+  },
+  "issue_backlog_cursor": 1188,
+  "label_backlog_cursor": 1632,
   "monthly_activity_issue": 1599,
-  "backlog_cursor": null,
-  "issue_comments": {},
-  "pr_attempts": {
-    "1650": {
-      "branch": "repo-assist/fix-issue-1650-toml-type-provider",
-      "status": "created",
-      "pr_created": true,
-      "description": "TOML type provider - new FSharp.Data.TomlProvider"
-    },
-    "1641": {
-      "branch": "repo-assist/fix-issue-1641-nuget-trusted-publishing",
-      "status": "push_failed_multiple_times",
-      "notes": "patch is in issue #1643"
-    },
-    "1646": {
-      "branch": "repo-assist/fix-issue-1645-yaml-type-provider",
-      "pr_number": 1646,
-      "status": "open"
-    }
+  "monthly_activity_month": "2026-02",
+  "fix_attempts": {
+    "1453": {"status": "merged", "pr": 1612},
+    "1383": {"status": "merged", "pr": 1613, "date": "2026-02-22"},
+    "1437": {"status": "merged", "pr": 1617, "date": "2026-02-22"},
+    "1310": {"status": "merged", "pr": 1619, "date": "2026-02-23"},
+    "1417": {"status": "merged", "pr": 1621, "date": "2026-02-22"},
+    "1419": {"status": "merged", "pr": 1626, "date": "2026-02-22"},
+    "1439": {"status": "merged", "pr": 1625, "date": "2026-02-22"},
+    "1221": {"status": "closed_rejected", "pr": 1628, "date": "2026-02-23"},
+    "1432": {"status": "merged", "pr": 1629, "date": "2026-02-24"},
+    "1330": {"status": "merged", "pr": 1630, "date": "2026-02-24"},
+    "1632": {"status": "merged", "pr": 1635, "date": "2026-02-24"},
+    "1315": {"status": "merged", "pr": 1631, "date": "2026-02-24"},
+    "1245": {"status": "merged", "pr": 1638, "date": "2026-02-24"},
+    "1431": {"status": "merged", "pr": 1639, "date": "2026-02-24"},
+    "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25"}
   },
-  "submitted_ideas": [],
-  "tasks_last_run": {
-    "task2_fix_issues": "2026-02-25T17:42:00Z",
-    "task11_monthly_summary": "2026-02-25T17:42:00Z"
+  "deps_update_attempts": {
+    "2026-02-22": {"branch": "repo-assist/deps-update-2026-02-22-22f87c2bfdc6ec83", "pr": 1614, "status": "merged"}
   },
-  "checked_off_by_maintainer": []
+  "release_prep_attempts": {
+    "7.0.0": {"status": "closed_rejected - dsyme manages releases himself"}
+  },
+  "commented_issues": [
+    1532, 1531, 677, 1509, 1508, 1002, 1506, 1454, 1501, 1528, 946,
+    1223, 1259, 1356, 1230, 1391, 1349, 1321, 1490, 1461, 834, 1326,
+    1170, 1240, 1213, 1305, 1294, 1362, 1418, 1405, 1453, 1489,
+    1249, 1251, 1256, 1261, 1300, 1322, 1383, 1194, 1419, 1452, 1437,
+    1488, 1465, 1436, 1340, 1417, 1283, 1302, 1303, 1431, 1366, 1241,
+    1336, 1325, 1109, 1245, 1115, 1432, 1439, 1233, 1358, 1221,
+    1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
+    1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
+    1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319
+  ],
+  "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
+  "stale_pr_nudges": [],
+  "welcomed_contributors": [],
+  "open_repo_assist_prs": [
+    {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open"},
+    {"number": 1648, "title": "Fix Windows CI localhost binding", "branch": "repo-assist/fix-windows-ci-localhost-e388a49a78dc0a12", "status": "open"}
+  ],
+  "maintainer_instructions": [
+    "dsyme closes release prep PRs without merging - manages releases himself",
+    "dsyme endorsed fixing issue #1310 (EmbeddedResource + Schema/GetSchema bug)",
+    "dsyme endorsed UseOriginalNames/NamingConvention parameter for XmlProvider (issue #1432)",
+    "dsyme instructed PR #1635: make DtdProcessing default Prohibit (security default)",
+    "dsyme instructed PR #1646: quoted YAML scalars should stay as strings even with InferTypesFromValues=true - DONE 2026-02-25",
+    "dsyme requested Repo Assist work on issue #1649 (Make CI faster) - comment 2026-02-25",
+    "dsyme filed issue #1650 (TOML type provider) 2026-02-25"
+  ],
+  "notes": {
+    "pr_1646_status": "Open. Quoted YAML string inference fix pushed 2026-02-25 run 22408562175. Waiting for dsyme review.",
+    "pr_1648_status": "Open draft. Windows CI localhost fix (2-line change). Waiting for review.",
+    "issue_1649": "Make CI faster - dsyme commented /repo-assist work on this. Body is empty - need more context.",
+    "issue_1650": "Add TOML type provider - filed by dsyme 2026-02-25. Similar architecture to YamlProvider.",
+    "issue_1651": "Failed workflow run 22408420068 - create_pull_request failed. Auto-expires 2026-03-04.",
+    "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
+    "yaml_quoted_strings": "Fixed in PR #1646: quoted YAML scalars (SingleQuoted/DoubleQuoted/Literal/Folded) now correctly infer as string even when InferTypesFromValues=true. Uses sentinel 's' for numeric-looking quoted values."
+  },
+  "future_work": [
+    "Work on issue #1649 (Make CI faster) - check CI workflow for slow steps",
+    "Consider TomlProvider (issue #1650) - similar to YamlProvider architecture",
+    "Add With* methods to XmlProvider (scoped out of prior PRs due to complex structure)",
+    "Add PreferOptionals/AllowEmptyValues to XmlProvider - allowEmptyValues param exists in XmlInference.fs",
+    "Investigate #1392 HttpClient migration",
+    "Continue triaging issues from #1238 onwards"
+  ]
 }
