@@ -194,62 +194,6 @@ module internal YamlConversions =
         yaml.Load(reader)
         [| for doc in yaml.Documents -> yamlNodeToJsonValue doc.RootNode |]
 
-    // Like yamlNodeToJsonValue, but for design-time type inference only.
-    // In YAML, quoted scalars are always strings by spec (the quoting is an explicit type annotation).
-    // When InferTypesFromValues=true, JsonInference would otherwise re-infer "01234" as int.
-    // We prevent this by substituting a guaranteed non-numeric sentinel for quoted scalars,
-    // so inference always returns string for them. Runtime parsing still uses yamlNodeToJsonValue.
-    let rec yamlNodeToJsonValueForInference (node: YamlNode) : JsonValue =
-        match node with
-        | :? YamlMappingNode as mapping ->
-            let props =
-                [| for kvp in mapping.Children do
-                       let key =
-                           match kvp.Key with
-                           | :? YamlScalarNode as s -> s.Value
-                           | other -> other.ToString()
-
-                       yield (key, yamlNodeToJsonValueForInference kvp.Value) |]
-
-            JsonValue.Record props
-
-        | :? YamlSequenceNode as sequence ->
-            let elements =
-                [| for item in sequence.Children -> yamlNodeToJsonValueForInference item |]
-
-            JsonValue.Array elements
-
-        | :? YamlScalarNode as scalar ->
-            let value = scalar.Value
-
-            if value = null then
-                JsonValue.Null
-            else
-                match scalar.Style with
-                | YamlDotNet.Core.ScalarStyle.SingleQuoted
-                | YamlDotNet.Core.ScalarStyle.DoubleQuoted
-                | YamlDotNet.Core.ScalarStyle.Literal
-                | YamlDotNet.Core.ScalarStyle.Folded ->
-                    // Quoted scalar: YAML spec says this is always a string.
-                    // Use a non-numeric sentinel so InferTypesFromValues does not re-infer
-                    // the value content as int/bool/date/etc.
-                    JsonValue.String "quoted-string"
-                | _ ->
-                    // Plain scalars: same as runtime conversion
-                    yamlNodeToJsonValue node
-
-        | _ -> JsonValue.Null
-
-    let parseYamlForInference (text: string) : JsonValue =
-        let yaml = YamlStream()
-        use reader = new StringReader(text)
-        yaml.Load(reader)
-
-        if yaml.Documents.Count = 0 then
-            JsonValue.Null
-        else
-            yamlNodeToJsonValueForInference yaml.Documents.[0].RootNode
-
 
 // --------------------------------------------------------------------------------------
 // YamlDocument - implements IJsonDocument so it can be used with JSON-based generated code
@@ -314,17 +258,6 @@ type YamlDocument =
                                IsHidden = true,
                                IsError = false)>]
     static member ParseToJsonValueArray(text: string) : JsonValue[] = YamlConversions.parseYamlDocuments text
-
-    /// <exclude />
-    /// Design-time only: like ParseToJsonValue but quoted scalars are represented with a
-    /// non-numeric sentinel string so that InferTypesFromValues does not re-infer them.
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
-                               10001,
-                               IsHidden = true,
-                               IsError = false)>]
-    static member ParseToJsonValueForInference(text: string) : JsonValue =
-        YamlConversions.parseYamlForInference text
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
