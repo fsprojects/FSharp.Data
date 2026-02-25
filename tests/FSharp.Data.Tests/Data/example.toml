@@ -1,0 +1,32 @@
+# Example TOML file used by FSharp.Data tests
+
+title = "Example TOML document"
+version = 1
+
+[owner]
+name = "Jane Doe"
+dob = 1979-05-27T07:32:00Z
+
+[database]
+server = "192.168.1.1"
+ports = [8001, 8001, 8002]
+enabled = true
+
+[servers]
+
+  [servers.alpha]
+  ip = "10.0.0.1"
+  role = "frontend"
+
+  [servers.beta]
+  ip = "10.0.0.2"
+  role = "backend"
+
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]
+name = "Nail"
+sku = 284758393
+color = "gray"

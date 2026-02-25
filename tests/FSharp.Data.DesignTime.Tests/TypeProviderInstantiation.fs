@@ -76,12 +76,24 @@ type internal WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
+type internal TomlProviderArgs =
+    { Sample : string
+      RootName : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string
+      InferenceMode : InferenceMode
+      PreferDateOnly : bool
+      UseOriginalNames : bool }
+
 type internal TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
+    | Toml of TomlProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
         let f, args =
@@ -153,6 +165,17 @@ type internal TypeProviderInstantiation =
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |]
+            | Toml x ->
+                (fun cfg -> new TomlProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.RootName
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder
+                   box x.EmbeddedResource
+                   box x.InferenceMode
+                   box x.PreferDateOnly
+                   box x.UseOriginalNames |]
 
         Testing.GenerateProvidedTypeInstantiation(resolutionFolder, runtimeAssembly, runtimeAssemblyRefs, f, args)
 
@@ -198,6 +221,12 @@ type internal TypeProviderInstantiation =
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString() ]
+        | Toml x ->
+            ["Toml"
+             x.Sample
+             x.RootName
+             x.Culture
+             x.InferenceMode.ToString() ]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder =
@@ -307,6 +336,16 @@ type internal TypeProviderInstantiation =
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
+        | "Toml" ->
+            Toml { Sample = args.[1]
+                   RootName = if args.Length > 2 && args.[2] <> "" then args.[2] else "Root"
+                   Culture = if args.Length > 3 then args.[3] else ""
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = ""
+                   InferenceMode = if args.Length > 4 && args.[4] <> "" then InferenceMode.Parse args.[4] else InferenceMode.BackwardCompatible
+                   PreferDateOnly = false
+                   UseOriginalNames = false }
         | _ -> failwithf "Unknown: %s" args.[0]
 
     static member GetRuntimeAssemblyRefs () =
@@ -324,7 +363,8 @@ type internal TypeProviderInstantiation =
               "FSharp.Data.Html.Core"
               "FSharp.Data.Xml.Core"
               "FSharp.Data.Json.Core" 
-              "FSharp.Data.WorldBank.Core" ]
+              "FSharp.Data.WorldBank.Core"
+              "FSharp.Data.Toml.Core" ]
         let extraRefs = 
             [ for j in  extraDlls do
                 __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "src" ++ "FSharp.Data" ++ "bin" ++ build ++ "netstandard2.0" ++ (j + ".dll") ]

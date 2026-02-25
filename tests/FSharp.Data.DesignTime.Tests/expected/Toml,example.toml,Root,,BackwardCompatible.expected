@@ -1,0 +1,224 @@
+class TomlProvider : obj
+    static member AsyncGetSample: () -> TomlProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> TomlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "TOML" "" "example.toml"), f)
+
+    static member AsyncLoad: uri:string -> TomlProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> TomlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "TOML" "" uri), f)
+
+    static member GetSample: () -> TomlProvider+Root
+    TomlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "TOML" "" "example.toml")))
+
+    static member Load: stream:System.IO.Stream -> TomlProvider+Root
+    TomlDocument.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> TomlProvider+Root
+    TomlDocument.Create(reader)
+
+    static member Load: uri:string -> TomlProvider+Root
+    TomlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "TOML" "" uri)))
+
+    static member Load: value:JsonValue -> TomlProvider+Root
+    JsonDocument.Create(value, "")
+
+    static member Parse: text:string -> TomlProvider+Root
+    TomlDocument.Create(((new StringReader(text)) :> TextReader))
+
+
+class TomlProvider+Root : FDR.BaseTypes.IJsonDocument
+    new : title:string -> version:int -> owner:TomlProvider+Owner -> database:TomlProvider+Database -> servers:TomlProvider+Servers -> products:TomlProvider+TomlProvider+Product[] -> TomlProvider+Root
+    JsonRuntime.CreateRecord([| ("title",
+                                 (title :> obj))
+                                ("version",
+                                 (version :> obj))
+                                ("owner",
+                                 (owner :> obj))
+                                ("database",
+                                 (database :> obj))
+                                ("servers",
+                                 (servers :> obj))
+                                ("products",
+                                 (products :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
+    member Database: TomlProvider+Database with get
+    JsonRuntime.GetPropertyPacked(this, "database")
+
+    member Owner: TomlProvider+Owner with get
+    JsonRuntime.GetPropertyPacked(this, "owner")
+
+    member Products: TomlProvider+TomlProvider+Product[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "products"), new Func<_,_>(id)))
+
+    member Servers: TomlProvider+Servers with get
+    JsonRuntime.GetPropertyPacked(this, "servers")
+
+    member Title: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "title")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Version: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "version")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithDatabase: database:TomlProvider+Database -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "database", (database :> obj), "")
+
+    member WithOwner: owner:TomlProvider+Owner -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "owner", (owner :> obj), "")
+
+    member WithProducts: products:TomlProvider+TomlProvider+Product[] -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "products", (products :> obj), "")
+
+    member WithServers: servers:TomlProvider+Servers -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "servers", (servers :> obj), "")
+
+    member WithTitle: title:string -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "title", (title :> obj), "")
+
+    member WithVersion: version:int -> TomlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "version", (version :> obj), "")
+
+
+class TomlProvider+Database : FDR.BaseTypes.IJsonDocument
+    new : server:string -> ports:int[] -> enabled:bool -> TomlProvider+Database
+    JsonRuntime.CreateRecord([| ("server",
+                                 (server :> obj))
+                                ("ports",
+                                 (ports :> obj))
+                                ("enabled",
+                                 (enabled :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Database
+    JsonDocument.Create(jsonValue, "")
+
+    member Enabled: bool with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "enabled")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
+
+    member Ports: int[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "ports"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+
+    member Server: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "server")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithEnabled: enabled:bool -> TomlProvider+Database
+    JsonRuntime.WithRecordProperty(this, "enabled", (enabled :> obj), "")
+
+    member WithPorts: ports:int[] -> TomlProvider+Database
+    JsonRuntime.WithRecordProperty(this, "ports", (ports :> obj), "")
+
+    member WithServer: server:string -> TomlProvider+Database
+    JsonRuntime.WithRecordProperty(this, "server", (server :> obj), "")
+
+
+class TomlProvider+Owner : FDR.BaseTypes.IJsonDocument
+    new : name:string -> dob:System.DateTimeOffset -> TomlProvider+Owner
+    JsonRuntime.CreateRecord([| ("name",
+                                 (name :> obj))
+                                ("dob",
+                                 (dob :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Owner
+    JsonDocument.Create(jsonValue, "")
+
+    member Dob: System.DateTimeOffset with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "dob")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTimeOffset("", value.JsonOpt), value.JsonOpt)
+
+    member Name: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithDob: dob:System.DateTimeOffset -> TomlProvider+Owner
+    JsonRuntime.WithRecordProperty(this, "dob", (dob :> obj), "")
+
+    member WithName: name:string -> TomlProvider+Owner
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+
+class TomlProvider+Product : FDR.BaseTypes.IJsonDocument
+    new : name:string -> sku:int -> color:string option -> TomlProvider+Product
+    JsonRuntime.CreateRecord([| ("name",
+                                 (name :> obj))
+                                ("sku",
+                                 (sku :> obj))
+                                ("color",
+                                 (color :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Product
+    JsonDocument.Create(jsonValue, "")
+
+    member Color: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "color"))
+
+    member Name: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Sku: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "sku")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithColor: color:string option -> TomlProvider+Product
+    JsonRuntime.WithRecordProperty(this, "color", (color :> obj), "")
+
+    member WithName: name:string -> TomlProvider+Product
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithSku: sku:int -> TomlProvider+Product
+    JsonRuntime.WithRecordProperty(this, "sku", (sku :> obj), "")
+
+
+class TomlProvider+Servers : FDR.BaseTypes.IJsonDocument
+    new : alpha:TomlProvider+Alpha -> beta:TomlProvider+Alpha -> TomlProvider+Servers
+    JsonRuntime.CreateRecord([| ("alpha",
+                                 (alpha :> obj))
+                                ("beta",
+                                 (beta :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Servers
+    JsonDocument.Create(jsonValue, "")
+
+    member Alpha: TomlProvider+Alpha with get
+    JsonRuntime.GetPropertyPacked(this, "alpha")
+
+    member Beta: TomlProvider+Alpha with get
+    JsonRuntime.GetPropertyPacked(this, "beta")
+
+    member WithAlpha: alpha:TomlProvider+Alpha -> TomlProvider+Servers
+    JsonRuntime.WithRecordProperty(this, "alpha", (alpha :> obj), "")
+
+    member WithBeta: beta:TomlProvider+Alpha -> TomlProvider+Servers
+    JsonRuntime.WithRecordProperty(this, "beta", (beta :> obj), "")
+
+
+class TomlProvider+Alpha : FDR.BaseTypes.IJsonDocument
+    new : ip:string -> role:string -> TomlProvider+Alpha
+    JsonRuntime.CreateRecord([| ("ip",
+                                 (ip :> obj))
+                                ("role",
+                                 (role :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> TomlProvider+Alpha
+    JsonDocument.Create(jsonValue, "")
+
+    member Ip: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ip")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Role: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "role")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithIp: ip:string -> TomlProvider+Alpha
+    JsonRuntime.WithRecordProperty(this, "ip", (ip :> obj), "")
+
+    member WithRole: role:string -> TomlProvider+Alpha
+    JsonRuntime.WithRecordProperty(this, "role", (role :> obj), "")
+
+

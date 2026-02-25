@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:10001 --nowarn:44</OtherFlags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageIcon>logo.png</PackageIcon>
+    <!-- always have tailcalls on for design time compiler add-in to allow repo to compile in DEBUG, see https://github.com/fsprojects/FSharp.Data/issues/1410 -->
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="TomlValue.fs" />
+    <Compile Include="TomlDocument.fs" />
+    <Compile Include="../AssemblyInfo.Toml.Core.fs" />
+    <None Include="../../docs/img/logo.png" Pack="true" PackagePath="" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FSharp.Data.Http/FSharp.Data.Http.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
