@@ -1,5 +1,9 @@
 # Release Notes
 
+## 7.0.2
+
+- Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
+
 ## 7.0.1
 
 - Revert "fix potential XXE vulnerability in XML parsing by @Thorium in #1596"
