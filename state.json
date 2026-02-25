@@ -1,9 +1,9 @@
 {
-  "last_run": "2026-02-25T18:13:12Z",
-  "workflow_run_id": "22409729632",
-  "tasks_done_this_run": ["task5", "task11"],
+  "last_run": "2026-02-25T18:23:44Z",
+  "workflow_run_id": "22410092427",
+  "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
-    "task1": "2026-02-24",
+    "task1": "2026-02-25",
     "task2": "2026-02-24",
     "task3": "2026-02-24",
     "task4": "2026-02-22",
@@ -36,7 +36,7 @@
     "1431": {"status": "merged", "pr": 1639, "date": "2026-02-24"},
     "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25"},
     "1650": {"status": "pr_open", "pr": 1652, "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "date": "2026-02-25"},
-    "1649": {"status": "push_failed_workflow_permission", "issue": 1653, "note": "Repo Assist cannot push to .github/workflows/ files - no workflows:write permission. Patch documented in issue #1653. Attempted again in run 22409729632, same failure."}
+    "1649": {"status": "push_failed_workflow_permission", "issue": 1654, "note": "Two failed push attempts: issues #1653 (run 22409411138) and #1654 (run 22409729632). #1654 supersedes #1653. Cannot push to .github/workflows/ without workflows:write permission."}
   },
   "deps_update_attempts": {
     "2026-02-22": {"branch": "repo-assist/deps-update-2026-02-22-22f87c2bfdc6ec83", "pr": 1614, "status": "merged"}
@@ -53,7 +53,8 @@
     1336, 1325, 1109, 1245, 1115, 1432, 1439, 1233, 1358, 1221,
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
-    1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649
+    1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649,
+    818
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
   "stale_pr_nudges": [],
@@ -73,21 +74,23 @@
     "dsyme filed issue #1650 (TOML type provider) 2026-02-25 - DONE via PR #1652"
   ],
   "known_limitations": [
-    "Cannot push changes to .github/workflows/ files - GitHub requires workflows:write permission which is separate from contents:write. This affects: #1641 (NuGet trusted publishing), #1649 (CI speedup). Patches are documented in issues #1643 and #1653 respectively."
+    "Cannot push changes to .github/workflows/ files - GitHub requires workflows:write permission which is separate from contents:write. This affects: #1641 (NuGet trusted publishing), #1649 (CI speedup). Patches are documented in issues #1643 and #1654 respectively."
   ],
   "notes": {
-    "pr_1646_status": "Open (not draft). Quoted YAML string inference fix pushed 2026-02-25 run 22408562175. Waiting for dsyme review.",
+    "pr_1646_status": "Open (not draft). Quoted YAML string inference fix pushed 2026-02-25. Waiting for dsyme review.",
     "pr_1648_status": "Open draft. Windows CI localhost fix (2-line change). Waiting for review.",
     "pr_1652_status": "Open draft. TomlProvider implementation. Waiting for dsyme review.",
-    "issue_1653_status": "Open issue with CI speedup patch. Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
+    "issue_1654_status": "Open issue with CI speedup patch (supersedes #1653). Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
+    "issue_1653_status": "Superseded by #1654 - should be closed.",
     "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
+    "issue_818": "Commented 2026-02-25: explained AppDomain.BaseDirectory vs CWD for Load(string); suggested closing as by-design.",
     "yaml_quoted_strings": "Fixed in PR #1646: quoted YAML scalars (SingleQuoted/DoubleQuoted/Literal/Folded) now correctly infer as string even when InferTypesFromValues=true. Uses sentinel 's' for numeric-looking quoted values."
   },
   "future_work": [
     "Add With* methods to XmlProvider (scoped out of prior PRs due to complex structure)",
     "Add PreferOptionals/AllowEmptyValues to XmlProvider - allowEmptyValues param exists in XmlInference.fs",
     "Investigate #1392 HttpClient migration",
-    "Continue triaging issues from #1188 onwards",
+    "Continue triaging older open issues (pre-#838) - some haven't had Repo Assist comments yet",
     "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR"
   ]
 }
