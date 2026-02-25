@@ -249,8 +249,6 @@ let buildscript () =
     "Build" ==> "RunTests" ==> "All"
     "Build" ==> "RunBenchmarks"
 
-    Target.runOrDefaultWithArguments "Help"
-
 [<EntryPoint>]
 let main argv =
     argv
@@ -260,5 +258,5 @@ let main argv =
     |> Context.setExecutionContext
 
     buildscript ()
-    Target.runOrDefaultWithArguments "build"
+    Target.runOrDefaultWithArguments "Help"
     0
