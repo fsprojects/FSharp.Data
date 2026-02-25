@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-02-25T19:11:37Z",
-  "workflow_run_id": "22411806375",
+  "last_run": "2026-02-25T19:21:18Z",
+  "workflow_run_id": "22412134017",
   "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-25",
@@ -15,7 +15,7 @@
     "task10": "2026-02-25",
     "task11": "2026-02-25"
   },
-  "issue_backlog_cursor": 942,
+  "issue_backlog_cursor": 1207,
   "label_backlog_cursor": 1650,
   "monthly_activity_issue": 1599,
   "monthly_activity_month": "2026-02",
@@ -54,14 +54,15 @@
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
     1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649,
-    818, 1257, 1218, 1080, 1220, 838, 1130, 953, 900, 942
+    818, 1257, 1218, 1080, 1220, 838, 1130, 953, 900, 942,
+    1207, 1159
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
   "open_repo_assist_prs": [
     {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open"},
-    {"number": 1648, "title": "Fix Windows CI localhost binding", "branch": "repo-assist/fix-windows-ci-localhost-e388a49a78dc0a12", "status": "open_draft"},
+    {"number": 1648, "title": "Fix Windows CI: use 127.0.0.1 instead of localhost for test HTTP servers", "branch": "repo-assist/fix-windows-ci-localhost-e388a49a78dc0a12", "status": "open_draft"},
     {"number": 1652, "title": "Add TOML type provider (TomlProvider)", "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "closes": [1650], "status": "open_draft"}
   ],
   "maintainer_instructions": [
@@ -83,9 +84,8 @@
     "issue_1654_status": "Open issue with CI speedup patch (supersedes #1653). Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
     "issue_1653_status": "Superseded by #1654 - should be closed.",
     "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
-    "issue_838": "Commented 2026-02-25: PreferFloats not yet implemented. Explained decimal-first inference in StructuralInference.fs lines 576-577. Schema workaround documented. Implementation sketch: post-process decimal->float in CsvInference.fs when preferFloats=true. Offered to create PR if dsyme confirms.",
-    "issue_900": "Commented 2026-02-25: UseOriginalNames=true now addresses this. CsvProvider.fs line 244 has ProvidedStaticParameter for UseOriginalNames.",
-    "issue_942": "Commented 2026-02-25: No built-in API for per-row errors. Documented CsvFile manual iteration workaround with try/catch."
+    "issue_1207": "Commented 2026-02-25: Explained wide-CSV design-time slowness. Key: Schema param bypasses inference entirely. InferRows limits sample size. CsvFile for no inference.",
+    "issue_1159": "Commented 2026-02-25: Documented Array.Parallel.map + ParseRows pattern for parallel CSV parsing. Noted quoted-newline limitation."
   },
   "labels_applied": {
     "1650": ["enhancement"],
@@ -97,7 +97,7 @@
     "Add PreferOptionals/AllowEmptyValues to XmlProvider - allowEmptyValues param exists in XmlInference.fs",
     "Add PreferFloats param to CsvProvider (#838) - awaiting maintainer confirmation; implementation plan in issue comment",
     "Investigate #1392 HttpClient migration",
-    "Continue triaging older open issues - next: #805 (JSON TP pagination), #809 (HTML TP index access), #1040 (cookie bug)",
+    "Continue triaging older open issues - next: #1246, #1138, #1151, #1040",
     "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR"
   ]
 }
