@@ -59,4 +59,16 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "UtcTime")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTimeOffset("", value.JsonOpt), value.JsonOpt)
 
+    member WithAnniversary: anniversary:System.DateTimeOffset -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "anniversary", (anniversary :> obj), "")
+
+    member WithBirthdate: birthdate:System.DateTime -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "birthdate", (birthdate :> obj), "")
+
+    member WithNoTimeZone: noTimeZone:System.DateTime -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "NoTimeZone", (noTimeZone :> obj), "")
+
+    member WithUtcTime: utcTime:System.DateTimeOffset -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "UtcTime", (utcTime :> obj), "")
+
 

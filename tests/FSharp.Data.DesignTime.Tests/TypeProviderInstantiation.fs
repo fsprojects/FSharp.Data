@@ -42,6 +42,7 @@ type internal XmlProviderArgs =
       Schema : string
       InferenceMode: InferenceMode
       PreferDateOnly : bool
+      DtdProcessing : string
       UseOriginalNames : bool }
 
 type internal JsonProviderArgs =
@@ -119,6 +120,7 @@ type internal TypeProviderInstantiation =
                    box x.Schema
                    box x.InferenceMode
                    box x.PreferDateOnly
+                   box x.DtdProcessing
                    box x.UseOriginalNames |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
@@ -257,6 +259,7 @@ type internal TypeProviderInstantiation =
                   Schema = args.[6]
                   InferenceMode = args.[7] |> InferenceMode.Parse
                   PreferDateOnly = false
+                  DtdProcessing = "Ignore"
                   UseOriginalNames = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty

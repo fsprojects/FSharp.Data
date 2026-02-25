@@ -6,6 +6,7 @@ namespace FSharp.Data.Runtime.BaseTypes
 
 open System.ComponentModel
 open System.IO
+open System.Xml
 open System.Xml.Linq
 
 #nowarn "10001"
@@ -54,10 +55,7 @@ type XmlElement =
                                10001,
                                IsHidden = true,
                                IsError = false)>]
-    static member Create(reader: TextReader) =
-        use reader = reader
-        let element = XDocument.Load(reader, LoadOptions.PreserveWhitespace).Root
-        { XElement = element }
+    static member Create(reader: TextReader) = XmlElement.Create(reader, "Prohibit")
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -66,15 +64,60 @@ type XmlElement =
                                IsHidden = true,
                                IsError = false)>]
     static member CreateList(reader: TextReader) =
+        XmlElement.CreateList(reader, "Prohibit")
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    static member Create(reader: TextReader, dtdProcessing: string) =
+        use reader = reader
+
+        let dtd =
+            match dtdProcessing with
+            | "Ignore" -> DtdProcessing.Ignore
+            | "Parse" -> DtdProcessing.Parse
+            | _ -> DtdProcessing.Prohibit
+
+        let xmlReaderSettings =
+            new XmlReaderSettings(DtdProcessing = dtd, XmlResolver = null, MaxCharactersFromEntities = 1024L * 1024L)
+
+        use xmlReader = XmlReader.Create(reader, xmlReaderSettings)
+        let element = XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace).Root
+        { XElement = element }
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    static member CreateList(reader: TextReader, dtdProcessing: string) =
         use reader = reader
         let text = reader.ReadToEnd()
 
+        let dtd =
+            match dtdProcessing with
+            | "Ignore" -> DtdProcessing.Ignore
+            | "Parse" -> DtdProcessing.Parse
+            | _ -> DtdProcessing.Prohibit
+
+        let xmlReaderSettings =
+            new XmlReaderSettings(DtdProcessing = dtd, XmlResolver = null, MaxCharactersFromEntities = 1024L * 1024L)
+
+        let parseWithReader xmlText =
+            use stringReader = new StringReader(xmlText)
+            use xmlReader = XmlReader.Create(stringReader, xmlReaderSettings)
+            XDocument.Load(xmlReader, LoadOptions.PreserveWhitespace)
+
         try
-            XDocument.Parse(text, LoadOptions.PreserveWhitespace).Root.Elements()
+            (parseWithReader text).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
         with _ when text.TrimStart().StartsWith "<" ->
-            XDocument.Parse("<root>" + text + "</root>", LoadOptions.PreserveWhitespace).Root.Elements()
+            (parseWithReader ("<root>" + text + "</root>")).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
 

@@ -969,7 +969,34 @@ let ``JsonProvider default normalizes property names to PascalCase`` () =
     doc.FirstName |> should equal "Jane"
     doc.LastName |> should equal "Smith"
 
+// Tests for With* methods on JsonProvider record types (issue #1431)
+[<Literal>]
+let jsonForWithMethods = """{"name": "Alice", "age": 30, "active": true}"""
+type JsonWithMethods = JsonProvider<jsonForWithMethods>
+
+[<Test>]
+let ``JsonProvider With* method returns new record with updated field`` () =
+    let doc = JsonWithMethods.Parse("""{"name": "Alice", "age": 30, "active": true}""")
+    let updated = doc.WithName("Bob")
+    updated.Name |> should equal "Bob"
+    updated.Age |> should equal 30
+    updated.Active |> should equal true
+
+[<Test>]
+let ``JsonProvider WithAge returns new record with updated Age`` () =
+    let doc = JsonWithMethods.Parse("""{"name": "Alice", "age": 30, "active": true}""")
+    let updated = doc.WithAge(99)
+    updated.Name |> should equal "Alice"
+    updated.Age |> should equal 99
+
+[<Test>]
+let ``JsonProvider With* methods do not mutate the original record`` () =
+    let doc = JsonWithMethods.Parse("""{"name": "Alice", "age": 30, "active": true}""")
+    let _ = doc.WithName("Bob")
+    doc.Name |> should equal "Alice"
+
 type JsonOmitNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true, OmitNullFields = true>
+
 type JsonIncludeNullFieldsSample = JsonProvider<"""[{"color": "Red", "code": 15}, {"color": "Green"}]""", SampleIsList = true>
 
 [<Test>]

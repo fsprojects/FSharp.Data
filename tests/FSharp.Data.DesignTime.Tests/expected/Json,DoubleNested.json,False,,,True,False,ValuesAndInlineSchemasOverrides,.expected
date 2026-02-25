@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Main: JsonProvider+Main with get
     JsonRuntime.GetPropertyPacked(this, "main")
 
+    member WithMain: main:JsonProvider+Main -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "main", (main :> obj), "")
+
 
 class JsonProvider+Main : FDR.BaseTypes.IJsonDocument
     new : title:string -> nested:JsonProvider+Nested -> JsonProvider+Main
@@ -58,6 +61,12 @@ class JsonProvider+Main : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "title")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithNested: nested:JsonProvider+Nested -> JsonProvider+Main
+    JsonRuntime.WithRecordProperty(this, "nested", (nested :> obj), "")
+
+    member WithTitle: title:string -> JsonProvider+Main
+    JsonRuntime.WithRecordProperty(this, "title", (title :> obj), "")
+
 
 class JsonProvider+Nested : FDR.BaseTypes.IJsonDocument
     new : nestedTitle:string -> JsonProvider+Nested
@@ -70,5 +79,8 @@ class JsonProvider+Nested : FDR.BaseTypes.IJsonDocument
     member NestedTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "nestedTitle")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithNestedTitle: nestedTitle:string -> JsonProvider+Nested
+    JsonRuntime.WithRecordProperty(this, "nestedTitle", (nestedTitle :> obj), "")
 
 

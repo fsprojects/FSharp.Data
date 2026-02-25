@@ -53,4 +53,13 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "intLike")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithBoolLike1: boolLike1:decimal -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "boolLike1", (boolLike1 :> obj), "")
+
+    member WithBoolLike2: boolLike2:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "boolLike2", (boolLike2 :> obj), "")
+
+    member WithIntLike: intLike:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "intLike", (intLike :> obj), "")
+
 

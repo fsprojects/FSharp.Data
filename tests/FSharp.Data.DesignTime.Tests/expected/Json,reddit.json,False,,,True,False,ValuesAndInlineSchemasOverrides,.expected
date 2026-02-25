@@ -46,6 +46,12 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "kind")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithData: data:JsonProvider+Data -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "data", (data :> obj), "")
+
+    member WithKind: kind:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "kind", (kind :> obj), "")
+
 
 class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
     new : modhash:JsonValue -> children:JsonProvider+JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
@@ -74,6 +80,18 @@ class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
     member Modhash: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "modhash")
 
+    member WithAfter: after:string -> JsonProvider+Data
+    JsonRuntime.WithRecordProperty(this, "after", (after :> obj), "")
+
+    member WithBefore: before:JsonValue -> JsonProvider+Data
+    JsonRuntime.WithRecordProperty(this, "before", (before :> obj), "")
+
+    member WithChildren: children:JsonProvider+JsonProvider+Child[] -> JsonProvider+Data
+    JsonRuntime.WithRecordProperty(this, "children", (children :> obj), "")
+
+    member WithModhash: modhash:JsonValue -> JsonProvider+Data
+    JsonRuntime.WithRecordProperty(this, "modhash", (modhash :> obj), "")
+
 
 class JsonProvider+Child : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data2 -> JsonProvider+Child
@@ -91,6 +109,12 @@ class JsonProvider+Child : FDR.BaseTypes.IJsonDocument
     member Kind: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "kind")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithData: data:JsonProvider+Data2 -> JsonProvider+Child
+    JsonRuntime.WithRecordProperty(this, "data", (data :> obj), "")
+
+    member WithKind: kind:string -> JsonProvider+Child
+    JsonRuntime.WithRecordProperty(this, "kind", (kind :> obj), "")
 
 
 class JsonProvider+Data2 : FDR.BaseTypes.IJsonDocument
@@ -258,5 +282,89 @@ class JsonProvider+Data2 : FDR.BaseTypes.IJsonDocument
     member Ups: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ups")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithApprovedBy: approvedBy:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "approved_by", (approvedBy :> obj), "")
+
+    member WithAuthor: author:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "author", (author :> obj), "")
+
+    member WithAuthorFlairCssClass: authorFlairCssClass:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "author_flair_css_class", (authorFlairCssClass :> obj), "")
+
+    member WithAuthorFlairText: authorFlairText:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "author_flair_text", (authorFlairText :> obj), "")
+
+    member WithBannedBy: bannedBy:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "banned_by", (bannedBy :> obj), "")
+
+    member WithBody: body:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "body", (body :> obj), "")
+
+    member WithBodyHtml: bodyHtml:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "body_html", (bodyHtml :> obj), "")
+
+    member WithCreated: created:int -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "created", (created :> obj), "")
+
+    member WithCreatedUtc: createdUtc:int -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "created_utc", (createdUtc :> obj), "")
+
+    member WithDistinguished: distinguished:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "distinguished", (distinguished :> obj), "")
+
+    member WithDowns: downs:int -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "downs", (downs :> obj), "")
+
+    member WithEdited: edited:bool -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "edited", (edited :> obj), "")
+
+    member WithGilded: gilded:int -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "gilded", (gilded :> obj), "")
+
+    member WithId: id:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithLikes: likes:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "likes", (likes :> obj), "")
+
+    member WithLinkAuthor: linkAuthor:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "link_author", (linkAuthor :> obj), "")
+
+    member WithLinkId: linkId:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "link_id", (linkId :> obj), "")
+
+    member WithLinkTitle: linkTitle:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "link_title", (linkTitle :> obj), "")
+
+    member WithLinkUrl: linkUrl:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "link_url", (linkUrl :> obj), "")
+
+    member WithName: name:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithNumReports: numReports:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "num_reports", (numReports :> obj), "")
+
+    member WithParentId: parentId:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "parent_id", (parentId :> obj), "")
+
+    member WithReplies: replies:JsonValue -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "replies", (replies :> obj), "")
+
+    member WithSaved: saved:bool -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "saved", (saved :> obj), "")
+
+    member WithScoreHidden: scoreHidden:bool -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "score_hidden", (scoreHidden :> obj), "")
+
+    member WithSubreddit: subreddit:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "subreddit", (subreddit :> obj), "")
+
+    member WithSubredditId: subredditId:string -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "subreddit_id", (subredditId :> obj), "")
+
+    member WithUps: ups:int -> JsonProvider+Data2
+    JsonRuntime.WithRecordProperty(this, "ups", (ups :> obj), "")
 
 

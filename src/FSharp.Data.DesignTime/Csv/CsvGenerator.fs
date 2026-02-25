@@ -99,6 +99,35 @@ module internal CsvTypeBuilder =
         for field in fields do
             rowType.AddMember field.ProvidedProperty
 
+        // Add With* methods so users can create a modified copy of a row
+        // e.g. myRow.WithAmount(42.0) returns a new Row identical to myRow except Amount = 42.0
+        for targetIdx, targetField in List.indexed fields do
+            let methodName = "With" + targetField.ProvidedProperty.Name
+
+            let withMethod =
+                ProvidedMethod(
+                    methodName,
+                    [ ProvidedParameter(targetField.ProvidedParameter.Name, targetField.ProvidedProperty.PropertyType) ],
+                    rowType,
+                    invokeCode =
+                        fun args ->
+                            let row = args.[0]
+                            let newVal = args.[1]
+
+                            match fields with
+                            | [ _ ] ->
+                                // Single-column CSV: Row erases to the value itself
+                                newVal
+                            | _ ->
+                                let tupleArgs =
+                                    fields
+                                    |> List.mapi (fun i _ -> if i = targetIdx then newVal else Expr.TupleGet(row, i))
+
+                                Expr.NewTuple tupleArgs
+                )
+
+            rowType.AddMember withMethod
+
         // The erased csv type will be parameterised by the tuple type
         let csvErasedTypeWithRowErasedType =
             typedefof<CsvFile<_>>.MakeGenericType(rowErasedType)

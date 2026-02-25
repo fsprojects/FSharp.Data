@@ -406,4 +406,147 @@ class CsvProvider+Row : System.DateTime * string * string * string * string * st
     member USD: string with get
     (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2)
 
+    member WithAUD: aud:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    aud
+
+    member WithCAD: cad:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    cad,
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithCHF: chf:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    chf,
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithDKK: dkk:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    dkk,
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithDato: dato:System.DateTime -> CsvProvider+Row
+    dato,
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithEUR: eur:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    eur,
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithGBP: gbp:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    gbp,
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithISK: isk:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    isk,
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithJPY: jpy:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    jpy,
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithSEK: sek:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2),
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    sek,
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member WithUSD: usd:string -> CsvProvider+Row
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1),
+    usd,
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3),
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4),
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5),
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6),
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7),
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8),
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9),
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10),
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
 

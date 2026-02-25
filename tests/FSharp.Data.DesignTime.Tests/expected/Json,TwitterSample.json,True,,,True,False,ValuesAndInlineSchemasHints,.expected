@@ -165,6 +165,84 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member User: JsonProvider+User option with get
     JsonRuntime.TryGetPropertyPacked(this, "user")
 
+    member WithContributors: contributors:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "contributors", (contributors :> obj), "")
+
+    member WithCoordinates: coordinates:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "coordinates", (coordinates :> obj), "")
+
+    member WithCreatedAt: createdAt:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "created_at", (createdAt :> obj), "")
+
+    member WithDelete: delete:JsonProvider+Delete option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "delete", (delete :> obj), "")
+
+    member WithEntities: entities:JsonProvider+Entities2 option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "entities", (entities :> obj), "")
+
+    member WithFavoriteCount: favoriteCount:int option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "favorite_count", (favoriteCount :> obj), "")
+
+    member WithFavorited: favorited:bool option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "favorited", (favorited :> obj), "")
+
+    member WithFilterLevel: filterLevel:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "filter_level", (filterLevel :> obj), "")
+
+    member WithGeo: geo:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "geo", (geo :> obj), "")
+
+    member WithId: id:int64 option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int64 option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithInReplyToScreenName: inReplyToScreenName:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_screen_name", (inReplyToScreenName :> obj), "")
+
+    member WithInReplyToStatusId: inReplyToStatusId:int64 option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_status_id", (inReplyToStatusId :> obj), "")
+
+    member WithInReplyToStatusIdStr: inReplyToStatusIdStr:int64 option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_status_id_str", (inReplyToStatusIdStr :> obj), "")
+
+    member WithInReplyToUserId: inReplyToUserId:int option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_user_id", (inReplyToUserId :> obj), "")
+
+    member WithInReplyToUserIdStr: inReplyToUserIdStr:int option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_user_id_str", (inReplyToUserIdStr :> obj), "")
+
+    member WithLang: lang:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "lang", (lang :> obj), "")
+
+    member WithPlace: place:JsonProvider+Place option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "place", (place :> obj), "")
+
+    member WithPossiblySensitive: possiblySensitive:bool option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "possibly_sensitive", (possiblySensitive :> obj), "")
+
+    member WithRetweetCount: retweetCount:int option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "retweet_count", (retweetCount :> obj), "")
+
+    member WithRetweeted: retweeted:bool option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "retweeted", (retweeted :> obj), "")
+
+    member WithRetweetedStatus: retweetedStatus:JsonProvider+RetweetedStatus option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "retweeted_status", (retweetedStatus :> obj), "")
+
+    member WithSource: source:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "source", (source :> obj), "")
+
+    member WithText: text:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "text", (text :> obj), "")
+
+    member WithTruncated: truncated:bool option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "truncated", (truncated :> obj), "")
+
+    member WithUser: user:JsonProvider+User option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "user", (user :> obj), "")
+
 
 class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
     new : status:JsonProvider+Status -> JsonProvider+Delete
@@ -176,6 +254,9 @@ class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
 
     member Status: JsonProvider+Status with get
     JsonRuntime.GetPropertyPacked(this, "status")
+
+    member WithStatus: status:JsonProvider+Status -> JsonProvider+Delete
+    JsonRuntime.WithRecordProperty(this, "status", (status :> obj), "")
 
 
 class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
@@ -203,6 +284,18 @@ class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
 
     member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
+
+    member WithHashtags: hashtags:JsonProvider+JsonProvider+Hashtag[] -> JsonProvider+Entities2
+    JsonRuntime.WithRecordProperty(this, "hashtags", (hashtags :> obj), "")
+
+    member WithSymbols: symbols:JsonValue[] -> JsonProvider+Entities2
+    JsonRuntime.WithRecordProperty(this, "symbols", (symbols :> obj), "")
+
+    member WithUrls: urls:JsonProvider+JsonProvider+Url[] -> JsonProvider+Entities2
+    JsonRuntime.WithRecordProperty(this, "urls", (urls :> obj), "")
+
+    member WithUserMentions: userMentions:JsonProvider+JsonProvider+UserMention[] -> JsonProvider+Entities2
+    JsonRuntime.WithRecordProperty(this, "user_mentions", (userMentions :> obj), "")
 
 
 class JsonProvider+Place : FDR.BaseTypes.IJsonDocument
@@ -262,6 +355,33 @@ class JsonProvider+Place : FDR.BaseTypes.IJsonDocument
     member Url: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithAttributes: attributes:JsonProvider+Attributes -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "attributes", (attributes :> obj), "")
+
+    member WithBoundingBox: boundingBox:JsonProvider+BoundingBox -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "bounding_box", (boundingBox :> obj), "")
+
+    member WithCountry: country:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "country", (country :> obj), "")
+
+    member WithCountryCode: countryCode:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "country_code", (countryCode :> obj), "")
+
+    member WithFullName: fullName:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "full_name", (fullName :> obj), "")
+
+    member WithId: id:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithName: name:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithPlaceType: placeType:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "place_type", (placeType :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+Place
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
 
 
 class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
@@ -395,6 +515,75 @@ class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
 
     member User: JsonProvider+User2 with get
     JsonRuntime.GetPropertyPacked(this, "user")
+
+    member WithContributors: contributors:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "contributors", (contributors :> obj), "")
+
+    member WithCoordinates: coordinates:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "coordinates", (coordinates :> obj), "")
+
+    member WithCreatedAt: createdAt:string -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "created_at", (createdAt :> obj), "")
+
+    member WithEntities: entities:JsonProvider+Entities -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "entities", (entities :> obj), "")
+
+    member WithFavoriteCount: favoriteCount:int -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "favorite_count", (favoriteCount :> obj), "")
+
+    member WithFavorited: favorited:bool -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "favorited", (favorited :> obj), "")
+
+    member WithGeo: geo:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "geo", (geo :> obj), "")
+
+    member WithId: id:int64 -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int64 -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithInReplyToScreenName: inReplyToScreenName:string option -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_screen_name", (inReplyToScreenName :> obj), "")
+
+    member WithInReplyToStatusId: inReplyToStatusId:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_status_id", (inReplyToStatusId :> obj), "")
+
+    member WithInReplyToStatusIdStr: inReplyToStatusIdStr:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_status_id_str", (inReplyToStatusIdStr :> obj), "")
+
+    member WithInReplyToUserId: inReplyToUserId:int option -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_user_id", (inReplyToUserId :> obj), "")
+
+    member WithInReplyToUserIdStr: inReplyToUserIdStr:int option -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "in_reply_to_user_id_str", (inReplyToUserIdStr :> obj), "")
+
+    member WithLang: lang:string -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "lang", (lang :> obj), "")
+
+    member WithPlace: place:JsonValue -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "place", (place :> obj), "")
+
+    member WithPossiblySensitive: possiblySensitive:bool option -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "possibly_sensitive", (possiblySensitive :> obj), "")
+
+    member WithRetweetCount: retweetCount:int -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "retweet_count", (retweetCount :> obj), "")
+
+    member WithRetweeted: retweeted:bool -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "retweeted", (retweeted :> obj), "")
+
+    member WithSource: source:string -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "source", (source :> obj), "")
+
+    member WithText: text:string -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "text", (text :> obj), "")
+
+    member WithTruncated: truncated:bool -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "truncated", (truncated :> obj), "")
+
+    member WithUser: user:JsonProvider+User2 -> JsonProvider+RetweetedStatus
+    JsonRuntime.WithRecordProperty(this, "user", (user :> obj), "")
 
 
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
@@ -618,6 +807,120 @@ class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "verified")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
+    member WithContributorsEnabled: contributorsEnabled:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "contributors_enabled", (contributorsEnabled :> obj), "")
+
+    member WithCreatedAt: createdAt:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "created_at", (createdAt :> obj), "")
+
+    member WithDefaultProfile: defaultProfile:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "default_profile", (defaultProfile :> obj), "")
+
+    member WithDefaultProfileImage: defaultProfileImage:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "default_profile_image", (defaultProfileImage :> obj), "")
+
+    member WithDescription: description:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "description", (description :> obj), "")
+
+    member WithFavouritesCount: favouritesCount:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "favourites_count", (favouritesCount :> obj), "")
+
+    member WithFollowRequestSent: followRequestSent:JsonValue -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "follow_request_sent", (followRequestSent :> obj), "")
+
+    member WithFollowersCount: followersCount:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "followers_count", (followersCount :> obj), "")
+
+    member WithFollowing: following:JsonValue -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "following", (following :> obj), "")
+
+    member WithFriendsCount: friendsCount:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "friends_count", (friendsCount :> obj), "")
+
+    member WithGeoEnabled: geoEnabled:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "geo_enabled", (geoEnabled :> obj), "")
+
+    member WithId: id:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithIsTranslator: isTranslator:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "is_translator", (isTranslator :> obj), "")
+
+    member WithLang: lang:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "lang", (lang :> obj), "")
+
+    member WithListedCount: listedCount:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "listed_count", (listedCount :> obj), "")
+
+    member WithLocation: location:string option -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "location", (location :> obj), "")
+
+    member WithName: name:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithNotifications: notifications:JsonValue -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "notifications", (notifications :> obj), "")
+
+    member WithProfileBackgroundColor: profileBackgroundColor:JsonProvider+IntOrString -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_background_color", (profileBackgroundColor :> obj), "")
+
+    member WithProfileBackgroundImageUrl: profileBackgroundImageUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_background_image_url", (profileBackgroundImageUrl :> obj), "")
+
+    member WithProfileBackgroundImageUrlHttps: profileBackgroundImageUrlHttps:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_background_image_url_https", (profileBackgroundImageUrlHttps :> obj), "")
+
+    member WithProfileBackgroundTile: profileBackgroundTile:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_background_tile", (profileBackgroundTile :> obj), "")
+
+    member WithProfileBannerUrl: profileBannerUrl:string option -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_banner_url", (profileBannerUrl :> obj), "")
+
+    member WithProfileImageUrl: profileImageUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_image_url", (profileImageUrl :> obj), "")
+
+    member WithProfileImageUrlHttps: profileImageUrlHttps:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_image_url_https", (profileImageUrlHttps :> obj), "")
+
+    member WithProfileLinkColor: profileLinkColor:JsonProvider+IntOrString -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_link_color", (profileLinkColor :> obj), "")
+
+    member WithProfileSidebarBorderColor: profileSidebarBorderColor:JsonProvider+IntOrString -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_sidebar_border_color", (profileSidebarBorderColor :> obj), "")
+
+    member WithProfileSidebarFillColor: profileSidebarFillColor:JsonProvider+IntOrString -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_sidebar_fill_color", (profileSidebarFillColor :> obj), "")
+
+    member WithProfileTextColor: profileTextColor:JsonProvider+IntOrString -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_text_color", (profileTextColor :> obj), "")
+
+    member WithProfileUseBackgroundImage: profileUseBackgroundImage:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "profile_use_background_image", (profileUseBackgroundImage :> obj), "")
+
+    member WithProtected: protected:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "protected", (protected :> obj), "")
+
+    member WithScreenName: screenName:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "screen_name", (screenName :> obj), "")
+
+    member WithStatusesCount: statusesCount:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "statuses_count", (statusesCount :> obj), "")
+
+    member WithTimeZone: timeZone:string option -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "time_zone", (timeZone :> obj), "")
+
+    member WithUrl: url:string option -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
+
+    member WithUtcOffset: utcOffset:int option -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "utc_offset", (utcOffset :> obj), "")
+
+    member WithVerified: verified:bool -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "verified", (verified :> obj), "")
+
 
 class JsonProvider+Attributes : FDR.BaseTypes.IJsonDocument
     new : () -> JsonProvider+Attributes
@@ -643,6 +946,12 @@ class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
     member Type: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithCoordinates: coordinates:decimal[][][] -> JsonProvider+BoundingBox
+    JsonRuntime.WithRecordProperty(this, "coordinates", (coordinates :> obj), "")
+
+    member WithType: type:string -> JsonProvider+BoundingBox
+    JsonRuntime.WithRecordProperty(this, "type", (type :> obj), "")
 
 
 class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
@@ -676,6 +985,21 @@ class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     member UserMentions: JsonProvider+JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
+    member WithHashtags: hashtags:JsonProvider+JsonProvider+Hashtag[] -> JsonProvider+Entities
+    JsonRuntime.WithRecordProperty(this, "hashtags", (hashtags :> obj), "")
+
+    member WithMedia: media:JsonProvider+JsonProvider+Media[] -> JsonProvider+Entities
+    JsonRuntime.WithRecordProperty(this, "media", (media :> obj), "")
+
+    member WithSymbols: symbols:JsonValue[] -> JsonProvider+Entities
+    JsonRuntime.WithRecordProperty(this, "symbols", (symbols :> obj), "")
+
+    member WithUrls: urls:JsonProvider+JsonProvider+Url[] -> JsonProvider+Entities
+    JsonRuntime.WithRecordProperty(this, "urls", (urls :> obj), "")
+
+    member WithUserMentions: userMentions:JsonProvider+JsonProvider+UserMention[] -> JsonProvider+Entities
+    JsonRuntime.WithRecordProperty(this, "user_mentions", (userMentions :> obj), "")
+
 
 class JsonProvider+Hashtag : FDR.BaseTypes.IJsonDocument
     new : text:string -> indices:int[] -> JsonProvider+Hashtag
@@ -693,6 +1017,12 @@ class JsonProvider+Hashtag : FDR.BaseTypes.IJsonDocument
     member Text: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithIndices: indices:int[] -> JsonProvider+Hashtag
+    JsonRuntime.WithRecordProperty(this, "indices", (indices :> obj), "")
+
+    member WithText: text:string -> JsonProvider+Hashtag
+    JsonRuntime.WithRecordProperty(this, "text", (text :> obj), "")
 
 
 class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
@@ -745,6 +1075,18 @@ class JsonProvider+Status : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "user_id_str")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
+    member WithId: id:int64 -> JsonProvider+Status
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int64 -> JsonProvider+Status
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithUserId: userId:int -> JsonProvider+Status
+    JsonRuntime.WithRecordProperty(this, "user_id", (userId :> obj), "")
+
+    member WithUserIdStr: userIdStr:int -> JsonProvider+Status
+    JsonRuntime.WithRecordProperty(this, "user_id_str", (userIdStr :> obj), "")
+
 
 class JsonProvider+Url : FDR.BaseTypes.IJsonDocument
     new : url:string -> expandedUrl:string -> displayUrl:string -> indices:int[] -> JsonProvider+Url
@@ -774,6 +1116,18 @@ class JsonProvider+Url : FDR.BaseTypes.IJsonDocument
     member Url: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithDisplayUrl: displayUrl:string -> JsonProvider+Url
+    JsonRuntime.WithRecordProperty(this, "display_url", (displayUrl :> obj), "")
+
+    member WithExpandedUrl: expandedUrl:string -> JsonProvider+Url
+    JsonRuntime.WithRecordProperty(this, "expanded_url", (expandedUrl :> obj), "")
+
+    member WithIndices: indices:int[] -> JsonProvider+Url
+    JsonRuntime.WithRecordProperty(this, "indices", (indices :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+Url
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
 
 
 class JsonProvider+User2 : FDR.BaseTypes.IJsonDocument
@@ -998,6 +1352,120 @@ class JsonProvider+User2 : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "verified")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
+    member WithContributorsEnabled: contributorsEnabled:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "contributors_enabled", (contributorsEnabled :> obj), "")
+
+    member WithCreatedAt: createdAt:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "created_at", (createdAt :> obj), "")
+
+    member WithDefaultProfile: defaultProfile:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "default_profile", (defaultProfile :> obj), "")
+
+    member WithDefaultProfileImage: defaultProfileImage:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "default_profile_image", (defaultProfileImage :> obj), "")
+
+    member WithDescription: description:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "description", (description :> obj), "")
+
+    member WithFavouritesCount: favouritesCount:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "favourites_count", (favouritesCount :> obj), "")
+
+    member WithFollowRequestSent: followRequestSent:JsonValue -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "follow_request_sent", (followRequestSent :> obj), "")
+
+    member WithFollowersCount: followersCount:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "followers_count", (followersCount :> obj), "")
+
+    member WithFollowing: following:JsonValue -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "following", (following :> obj), "")
+
+    member WithFriendsCount: friendsCount:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "friends_count", (friendsCount :> obj), "")
+
+    member WithGeoEnabled: geoEnabled:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "geo_enabled", (geoEnabled :> obj), "")
+
+    member WithId: id:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithIsTranslator: isTranslator:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "is_translator", (isTranslator :> obj), "")
+
+    member WithLang: lang:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "lang", (lang :> obj), "")
+
+    member WithListedCount: listedCount:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "listed_count", (listedCount :> obj), "")
+
+    member WithLocation: location:string option -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "location", (location :> obj), "")
+
+    member WithName: name:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithNotifications: notifications:JsonValue -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "notifications", (notifications :> obj), "")
+
+    member WithProfileBackgroundColor: profileBackgroundColor:JsonProvider+IntOrString -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_background_color", (profileBackgroundColor :> obj), "")
+
+    member WithProfileBackgroundImageUrl: profileBackgroundImageUrl:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_background_image_url", (profileBackgroundImageUrl :> obj), "")
+
+    member WithProfileBackgroundImageUrlHttps: profileBackgroundImageUrlHttps:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_background_image_url_https", (profileBackgroundImageUrlHttps :> obj), "")
+
+    member WithProfileBackgroundTile: profileBackgroundTile:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_background_tile", (profileBackgroundTile :> obj), "")
+
+    member WithProfileBannerUrl: profileBannerUrl:string option -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_banner_url", (profileBannerUrl :> obj), "")
+
+    member WithProfileImageUrl: profileImageUrl:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_image_url", (profileImageUrl :> obj), "")
+
+    member WithProfileImageUrlHttps: profileImageUrlHttps:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_image_url_https", (profileImageUrlHttps :> obj), "")
+
+    member WithProfileLinkColor: profileLinkColor:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_link_color", (profileLinkColor :> obj), "")
+
+    member WithProfileSidebarBorderColor: profileSidebarBorderColor:JsonProvider+IntOrString -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_sidebar_border_color", (profileSidebarBorderColor :> obj), "")
+
+    member WithProfileSidebarFillColor: profileSidebarFillColor:JsonProvider+IntOrString -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_sidebar_fill_color", (profileSidebarFillColor :> obj), "")
+
+    member WithProfileTextColor: profileTextColor:JsonProvider+IntOrString -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_text_color", (profileTextColor :> obj), "")
+
+    member WithProfileUseBackgroundImage: profileUseBackgroundImage:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "profile_use_background_image", (profileUseBackgroundImage :> obj), "")
+
+    member WithProtected: protected:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "protected", (protected :> obj), "")
+
+    member WithScreenName: screenName:string -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "screen_name", (screenName :> obj), "")
+
+    member WithStatusesCount: statusesCount:int -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "statuses_count", (statusesCount :> obj), "")
+
+    member WithTimeZone: timeZone:string option -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "time_zone", (timeZone :> obj), "")
+
+    member WithUrl: url:string option -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
+
+    member WithUtcOffset: utcOffset:int option -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "utc_offset", (utcOffset :> obj), "")
+
+    member WithVerified: verified:bool -> JsonProvider+User2
+    JsonRuntime.WithRecordProperty(this, "verified", (verified :> obj), "")
+
 
 class JsonProvider+UserMention : FDR.BaseTypes.IJsonDocument
     new : screenName:string -> name:string -> id:int -> idStr:int -> indices:int[] -> JsonProvider+UserMention
@@ -1033,6 +1501,21 @@ class JsonProvider+UserMention : FDR.BaseTypes.IJsonDocument
     member ScreenName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "screen_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithId: id:int -> JsonProvider+UserMention
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int -> JsonProvider+UserMention
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithIndices: indices:int[] -> JsonProvider+UserMention
+    JsonRuntime.WithRecordProperty(this, "indices", (indices :> obj), "")
+
+    member WithName: name:string -> JsonProvider+UserMention
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithScreenName: screenName:string -> JsonProvider+UserMention
+    JsonRuntime.WithRecordProperty(this, "screen_name", (screenName :> obj), "")
 
 
 class JsonProvider+Media : FDR.BaseTypes.IJsonDocument
@@ -1111,6 +1594,42 @@ class JsonProvider+Media : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithDisplayUrl: displayUrl:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "display_url", (displayUrl :> obj), "")
+
+    member WithExpandedUrl: expandedUrl:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "expanded_url", (expandedUrl :> obj), "")
+
+    member WithId: id:int64 -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithIdStr: idStr:int64 -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "id_str", (idStr :> obj), "")
+
+    member WithIndices: indices:int[] -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "indices", (indices :> obj), "")
+
+    member WithMediaUrl: mediaUrl:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "media_url", (mediaUrl :> obj), "")
+
+    member WithMediaUrlHttps: mediaUrlHttps:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "media_url_https", (mediaUrlHttps :> obj), "")
+
+    member WithSizes: sizes:JsonProvider+Sizes -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "sizes", (sizes :> obj), "")
+
+    member WithSourceStatusId: sourceStatusId:int64 -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "source_status_id", (sourceStatusId :> obj), "")
+
+    member WithSourceStatusIdStr: sourceStatusIdStr:int64 -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "source_status_id_str", (sourceStatusIdStr :> obj), "")
+
+    member WithType: type:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "type", (type :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+Media
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
+
 
 class JsonProvider+Sizes : FDR.BaseTypes.IJsonDocument
     new : small:JsonProvider+Small -> thumb:JsonProvider+Small -> large:JsonProvider+Small -> medium:JsonProvider+Small -> JsonProvider+Sizes
@@ -1138,6 +1657,18 @@ class JsonProvider+Sizes : FDR.BaseTypes.IJsonDocument
     member Thumb: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "thumb")
 
+    member WithLarge: large:JsonProvider+Small -> JsonProvider+Sizes
+    JsonRuntime.WithRecordProperty(this, "large", (large :> obj), "")
+
+    member WithMedium: medium:JsonProvider+Small -> JsonProvider+Sizes
+    JsonRuntime.WithRecordProperty(this, "medium", (medium :> obj), "")
+
+    member WithSmall: small:JsonProvider+Small -> JsonProvider+Sizes
+    JsonRuntime.WithRecordProperty(this, "small", (small :> obj), "")
+
+    member WithThumb: thumb:JsonProvider+Small -> JsonProvider+Sizes
+    JsonRuntime.WithRecordProperty(this, "thumb", (thumb :> obj), "")
+
 
 class JsonProvider+Small : FDR.BaseTypes.IJsonDocument
     new : w:int -> h:int -> resize:string -> JsonProvider+Small
@@ -1162,5 +1693,14 @@ class JsonProvider+Small : FDR.BaseTypes.IJsonDocument
     member W: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "w")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithH: h:int -> JsonProvider+Small
+    JsonRuntime.WithRecordProperty(this, "h", (h :> obj), "")
+
+    member WithResize: resize:string -> JsonProvider+Small
+    JsonRuntime.WithRecordProperty(this, "resize", (resize :> obj), "")
+
+    member WithW: w:int -> JsonProvider+Small
+    JsonRuntime.WithRecordProperty(this, "w", (w :> obj), "")
 
 

@@ -63,6 +63,21 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "viewUrl")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithGame: game:JsonProvider+Game -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "game", (game :> obj), "")
+
+    member WithHero: hero:JsonProvider+Hero -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "hero", (hero :> obj), "")
+
+    member WithPlayUrl: playUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "playUrl", (playUrl :> obj), "")
+
+    member WithToken: token:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "token", (token :> obj), "")
+
+    member WithViewUrl: viewUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "viewUrl", (viewUrl :> obj), "")
+
 
 class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
@@ -103,6 +118,24 @@ class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
     member Turn: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "turn")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithBoard: board:JsonProvider+Board -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "board", (board :> obj), "")
+
+    member WithFinished: finished:bool -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "finished", (finished :> obj), "")
+
+    member WithHeroes: heroes:JsonProvider+JsonProvider+Hero[] -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "heroes", (heroes :> obj), "")
+
+    member WithId: id:string -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithMaxTurns: maxTurns:int -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "maxTurns", (maxTurns :> obj), "")
+
+    member WithTurn: turn:int -> JsonProvider+Game
+    JsonRuntime.WithRecordProperty(this, "turn", (turn :> obj), "")
 
 
 class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
@@ -169,6 +202,36 @@ class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "userId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithCrashed: crashed:bool -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "crashed", (crashed :> obj), "")
+
+    member WithElo: elo:int -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "elo", (elo :> obj), "")
+
+    member WithGold: gold:int -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "gold", (gold :> obj), "")
+
+    member WithId: id:int -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithLife: life:int -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "life", (life :> obj), "")
+
+    member WithMineCount: mineCount:int -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "mineCount", (mineCount :> obj), "")
+
+    member WithName: name:string -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithPos: pos:JsonProvider+Pos -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "pos", (pos :> obj), "")
+
+    member WithSpawnPos: spawnPos:JsonProvider+Pos -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "spawnPos", (spawnPos :> obj), "")
+
+    member WithUserId: userId:string -> JsonProvider+Hero
+    JsonRuntime.WithRecordProperty(this, "userId", (userId :> obj), "")
+
 
 class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
@@ -188,6 +251,12 @@ class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "tiles")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithSize: size:int -> JsonProvider+Board
+    JsonRuntime.WithRecordProperty(this, "size", (size :> obj), "")
+
+    member WithTiles: tiles:string -> JsonProvider+Board
+    JsonRuntime.WithRecordProperty(this, "tiles", (tiles :> obj), "")
+
 
 class JsonProvider+Pos : FDR.BaseTypes.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
@@ -198,6 +267,12 @@ class JsonProvider+Pos : FDR.BaseTypes.IJsonDocument
 
     new : jsonValue:JsonValue -> JsonProvider+Pos
     JsonDocument.Create(jsonValue, "")
+
+    member WithX: x:int -> JsonProvider+Pos
+    JsonRuntime.WithRecordProperty(this, "x", (x :> obj), "")
+
+    member WithY: y:int -> JsonProvider+Pos
+    JsonRuntime.WithRecordProperty(this, "y", (y :> obj), "")
 
     member X: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "x")

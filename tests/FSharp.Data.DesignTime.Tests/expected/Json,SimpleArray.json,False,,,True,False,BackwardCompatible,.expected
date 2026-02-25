@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Items: JsonProvider+JsonProvider+Item[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "items"), new Func<_,_>(id)))
 
+    member WithItems: items:JsonProvider+JsonProvider+Item[] -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "items", (items :> obj), "")
+
 
 class JsonProvider+Item : FDR.BaseTypes.IJsonDocument
     new : id:string -> JsonProvider+Item
@@ -52,5 +55,8 @@ class JsonProvider+Item : FDR.BaseTypes.IJsonDocument
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithId: id:string -> JsonProvider+Item
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
 
 

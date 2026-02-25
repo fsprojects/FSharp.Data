@@ -142,6 +142,63 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member User: JsonProvider+User with get
     JsonRuntime.GetPropertyPacked(this, "user")
 
+    member WithAssignee: assignee:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "assignee", (assignee :> obj), "")
+
+    member WithBody: body:string option -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "body", (body :> obj), "")
+
+    member WithClosedAt: closedAt:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "closed_at", (closedAt :> obj), "")
+
+    member WithComments: comments:int -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "comments", (comments :> obj), "")
+
+    member WithCommentsUrl: commentsUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "comments_url", (commentsUrl :> obj), "")
+
+    member WithCreatedAt: createdAt:System.DateTimeOffset -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "created_at", (createdAt :> obj), "")
+
+    member WithEventsUrl: eventsUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "events_url", (eventsUrl :> obj), "")
+
+    member WithHtmlUrl: htmlUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "html_url", (htmlUrl :> obj), "")
+
+    member WithId: id:int -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithLabels: labels:JsonProvider+JsonProvider+Label[] -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "labels", (labels :> obj), "")
+
+    member WithLabelsUrl: labelsUrl:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "labels_url", (labelsUrl :> obj), "")
+
+    member WithMilestone: milestone:JsonValue -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "milestone", (milestone :> obj), "")
+
+    member WithNumber: number:int -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "number", (number :> obj), "")
+
+    member WithPullRequest: pullRequest:JsonProvider+PullRequest -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "pull_request", (pullRequest :> obj), "")
+
+    member WithState: state:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "state", (state :> obj), "")
+
+    member WithTitle: title:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "title", (title :> obj), "")
+
+    member WithUpdatedAt: updatedAt:System.DateTimeOffset -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "updated_at", (updatedAt :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
+
+    member WithUser: user:JsonProvider+User -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "user", (user :> obj), "")
+
 
 class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
     new : url:string -> name:string -> color:JsonProvider+FloatOrString -> JsonProvider+Label
@@ -166,6 +223,15 @@ class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member WithColor: color:JsonProvider+FloatOrString -> JsonProvider+Label
+    JsonRuntime.WithRecordProperty(this, "color", (color :> obj), "")
+
+    member WithName: name:string -> JsonProvider+Label
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+Label
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
+
 
 class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
     new : htmlUrl:string option -> diffUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
@@ -187,6 +253,15 @@ class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
 
     member PatchUrl: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "patch_url"))
+
+    member WithDiffUrl: diffUrl:string option -> JsonProvider+PullRequest
+    JsonRuntime.WithRecordProperty(this, "diff_url", (diffUrl :> obj), "")
+
+    member WithHtmlUrl: htmlUrl:string option -> JsonProvider+PullRequest
+    JsonRuntime.WithRecordProperty(this, "html_url", (htmlUrl :> obj), "")
+
+    member WithPatchUrl: patchUrl:string option -> JsonProvider+PullRequest
+    JsonRuntime.WithRecordProperty(this, "patch_url", (patchUrl :> obj), "")
 
 
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
@@ -290,6 +365,54 @@ class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     member Url: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithAvatarUrl: avatarUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "avatar_url", (avatarUrl :> obj), "")
+
+    member WithEventsUrl: eventsUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "events_url", (eventsUrl :> obj), "")
+
+    member WithFollowersUrl: followersUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "followers_url", (followersUrl :> obj), "")
+
+    member WithFollowingUrl: followingUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "following_url", (followingUrl :> obj), "")
+
+    member WithGistsUrl: gistsUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "gists_url", (gistsUrl :> obj), "")
+
+    member WithGravatarId: gravatarId:System.Guid -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "gravatar_id", (gravatarId :> obj), "")
+
+    member WithHtmlUrl: htmlUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "html_url", (htmlUrl :> obj), "")
+
+    member WithId: id:int -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "id", (id :> obj), "")
+
+    member WithLogin: login:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "login", (login :> obj), "")
+
+    member WithOrganizationsUrl: organizationsUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "organizations_url", (organizationsUrl :> obj), "")
+
+    member WithReceivedEventsUrl: receivedEventsUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "received_events_url", (receivedEventsUrl :> obj), "")
+
+    member WithReposUrl: reposUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "repos_url", (reposUrl :> obj), "")
+
+    member WithStarredUrl: starredUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "starred_url", (starredUrl :> obj), "")
+
+    member WithSubscriptionsUrl: subscriptionsUrl:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "subscriptions_url", (subscriptionsUrl :> obj), "")
+
+    member WithType: type:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "type", (type :> obj), "")
+
+    member WithUrl: url:string -> JsonProvider+User
+    JsonRuntime.WithRecordProperty(this, "url", (url :> obj), "")
 
 
 class JsonProvider+FloatOrString : FDR.BaseTypes.IJsonDocument

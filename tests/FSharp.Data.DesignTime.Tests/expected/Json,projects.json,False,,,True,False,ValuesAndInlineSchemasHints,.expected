@@ -40,6 +40,9 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     member Ordercontainer: JsonProvider+Ordercontainer with get
     JsonRuntime.GetPropertyPacked(this, "ordercontainer")
 
+    member WithOrdercontainer: ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
+    JsonRuntime.WithRecordProperty(this, "ordercontainer", (ordercontainer :> obj), "")
+
 
 class JsonProvider+Ordercontainer : FDR.BaseTypes.IJsonDocument
     new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
@@ -57,6 +60,12 @@ class JsonProvider+Ordercontainer : FDR.BaseTypes.IJsonDocument
     member Project: JsonProvider+Background with get
     JsonRuntime.GetPropertyPacked(this, "project")
 
+    member WithBackgrounds: backgrounds:JsonProvider+Backgrounds -> JsonProvider+Ordercontainer
+    JsonRuntime.WithRecordProperty(this, "backgrounds", (backgrounds :> obj), "")
+
+    member WithProject: project:JsonProvider+Background -> JsonProvider+Ordercontainer
+    JsonRuntime.WithRecordProperty(this, "project", (project :> obj), "")
+
 
 class JsonProvider+Background : FDR.BaseTypes.IJsonDocument
     new : title:JsonProvider+Title -> JsonProvider+Background
@@ -68,6 +77,9 @@ class JsonProvider+Background : FDR.BaseTypes.IJsonDocument
 
     member Title: JsonProvider+Title with get
     JsonRuntime.GetPropertyPacked(this, "title")
+
+    member WithTitle: title:JsonProvider+Title -> JsonProvider+Background
+    JsonRuntime.WithRecordProperty(this, "title", (title :> obj), "")
 
 
 class JsonProvider+Backgrounds : FDR.BaseTypes.IJsonDocument
@@ -81,6 +93,9 @@ class JsonProvider+Backgrounds : FDR.BaseTypes.IJsonDocument
     member Background: JsonProvider+Background with get
     JsonRuntime.GetPropertyPacked(this, "background")
 
+    member WithBackground: background:JsonProvider+Background -> JsonProvider+Backgrounds
+    JsonRuntime.WithRecordProperty(this, "background", (background :> obj), "")
+
 
 class JsonProvider+Title : FDR.BaseTypes.IJsonDocument
     new : text:string -> JsonProvider+Title
@@ -93,5 +108,8 @@ class JsonProvider+Title : FDR.BaseTypes.IJsonDocument
     member Text: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithText: text:string -> JsonProvider+Title
+    JsonRuntime.WithRecordProperty(this, "text", (text :> obj), "")
 
 
