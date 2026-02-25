@@ -44,7 +44,8 @@ type internal XmlProviderArgs =
       InferenceMode: InferenceMode
       PreferDateOnly : bool
       DtdProcessing : string
-      UseOriginalNames : bool }
+      UseOriginalNames : bool
+      PreferOptionals : bool }
 
 type internal JsonProviderArgs =
     { Sample : string
@@ -60,7 +61,8 @@ type internal JsonProviderArgs =
       Schema: string
       PreferDateOnly : bool
       UseOriginalNames : bool
-      OmitNullFields : bool }
+      OmitNullFields : bool
+      PreferOptionals : bool }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -123,7 +125,8 @@ type internal TypeProviderInstantiation =
                    box x.InferenceMode
                    box x.PreferDateOnly
                    box x.DtdProcessing
-                   box x.UseOriginalNames |] 
+                   box x.UseOriginalNames
+                   box x.PreferOptionals |]
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -139,7 +142,8 @@ type internal TypeProviderInstantiation =
                    box x.Schema
                    box x.PreferDateOnly
                    box x.UseOriginalNames
-                   box x.OmitNullFields |]
+                   box x.OmitNullFields
+                   box x.PreferOptionals |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -263,7 +267,8 @@ type internal TypeProviderInstantiation =
                   InferenceMode = args.[7] |> InferenceMode.Parse
                   PreferDateOnly = false
                   DtdProcessing = "Ignore"
-                  UseOriginalNames = false }
+                  UseOriginalNames = false
+                  PreferOptionals = true }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty
             if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then
@@ -280,7 +285,8 @@ type internal TypeProviderInstantiation =
                        Schema = if args.Length > 8 then args.[8] else ""
                        PreferDateOnly = false
                        UseOriginalNames = false
-                       OmitNullFields = false }
+                       OmitNullFields = false
+                       PreferOptionals = true }
             else
                 // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
                 Json { Sample = args.[1]
@@ -296,7 +302,8 @@ type internal TypeProviderInstantiation =
                        Schema = if args.Length > 8 then args.[8] else ""
                        PreferDateOnly = false
                        UseOriginalNames = false
-                       OmitNullFields = false }
+                       OmitNullFields = false
+                       PreferOptionals = true }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
