@@ -28,7 +28,8 @@ type internal CsvProviderArgs =
       EmbeddedResource : string
       PreferDateOnly : bool
       StrictBooleans : bool
-      UseOriginalNames : bool }
+      UseOriginalNames : bool
+      PreferFloats : bool }
 
 type internal XmlProviderArgs =
     { Sample : string
@@ -121,7 +122,8 @@ type internal TypeProviderInstantiation =
                    box x.EmbeddedResource
                    box x.PreferDateOnly
                    box x.StrictBooleans
-                   box x.UseOriginalNames |]
+                   box x.UseOriginalNames
+                   box x.PreferFloats |]
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -284,7 +286,8 @@ type internal TypeProviderInstantiation =
                   EmbeddedResource = ""
                   PreferDateOnly = false
                   StrictBooleans = false
-                  UseOriginalNames = false }
+                  UseOriginalNames = false
+                  PreferFloats = false }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse

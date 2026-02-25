@@ -766,3 +766,21 @@ let ``CsvProvider Row With* methods do not mutate the original row`` () =
     let row = csv.Rows |> Seq.head
     let _ = row.WithName("Charlie")
     row.Name |> should equal "Alice"
+
+// Tests for PreferFloats static parameter (issue #838)
+let [<Literal>] csvWithDecimals = "Name,Price,Rate\nAlice,9.99,1.5\nBob,12.50,2.7"
+
+type CsvPreferFloats = CsvProvider<csvWithDecimals, PreferFloats = true>
+type CsvDefaultDecimal = CsvProvider<csvWithDecimals>
+
+[<Test>]
+let ``CsvProvider PreferFloats=true infers float instead of decimal`` () =
+    let row = CsvPreferFloats.GetSample().Rows |> Seq.head
+    row.Price |> should equal 9.99
+    row.Rate |> should equal 1.5
+
+[<Test>]
+let ``CsvProvider PreferFloats=false (default) infers decimal for decimal values`` () =
+    let row = CsvDefaultDecimal.GetSample().Rows |> Seq.head
+    row.Price |> should equal 9.99m
+    row.Rate |> should equal 1.5m
