@@ -337,6 +337,11 @@ module internal ProviderHelpers =
 
                     if not uri.IsAbsoluteUri then
                         // even if it's a valid uri, it could be sample text
+                        eprintfn
+                            "FSharp.Data: the path '%s' was not found; treating the value as inline %s content."
+                            valueToBeParsedOrItsUri
+                            formatName
+
                         try
                             { Spec = parseFunc "" valueToBeParsedOrItsUri
                               IsUri = false

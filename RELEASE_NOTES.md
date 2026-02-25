@@ -1,5 +1,9 @@
 # Release Notes
 
+## 7.0.2
+
+- When a Sample path is not found and the value is treated as inline content, emit a diagnostic warning message (fixes #953)
+
 ## 7.0.1
 
 - Revert "fix potential XXE vulnerability in XML parsing by @Thorium in #1596"
