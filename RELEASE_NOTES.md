@@ -1,8 +1,19 @@
 # Release Notes
 
-## 7.0.2
+## Unreleased
 
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
+
+## 8.0.0 - Feb 25 2026
+
+- Add PreferFloats static parameter to CsvProvider (#1655)
+- Add With* methods to CsvProvider Row and JsonProvider record types (closes #1431) (#1639)
+- Add DtdProcessing static parameter to XmlProvider (closes #1632) (#1635)
+- Add OmitNullFields static parameter to JsonProvider (closes #1245) (#1638)
+- Add UseOriginalNames parameter to XmlProvider (#1629)
+- Fix HTML parser dropping whitespace between inline elements (issue #1330) (#1630)
+- Fix HtmlNode.ToString: preserve whitespace in elements nested inside <pre> (closes #1509)
+- Fix CSV schema parsing: column names with parentheses no longer corrupt type annotation (fixes #946)
 
 ## 7.0.1
 
