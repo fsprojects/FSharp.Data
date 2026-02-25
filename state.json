@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-25T18:32:04Z",
-  "workflow_run_id": "22410392604",
-  "tasks_done_this_run": ["task1", "task7", "task11"],
+  "last_run": "2026-02-25T18:39:27Z",
+  "workflow_run_id": "22410659606",
+  "tasks_done_this_run": ["task1", "task11"],
   "last_tasks": {
     "task1": "2026-02-25",
     "task2": "2026-02-24",
@@ -54,7 +54,7 @@
     1363, 1392, 1330, 1382, 1425, 1307, 1269, 1315, 1333, 1341,
     1338, 1478, 1317, 1632, 1260, 1343, 1276, 1274, 1271, 1385,
     1265, 1298, 1031, 1188, 649, 1191, 1236, 1237, 1238, 1319, 1649,
-    818, 1257, 1218
+    818, 1257, 1218, 1080, 1220
   ],
   "commented_prs": [1613, 1614, 1619, 1621, 1635, 1646],
   "stale_pr_nudges": [],
@@ -83,9 +83,8 @@
     "issue_1654_status": "Open issue with CI speedup patch (supersedes #1653). Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
     "issue_1653_status": "Superseded by #1654 - should be closed.",
     "release_status": "dsyme released 7.0.0 and 7.0.1 on 2026-02-23. dsyme manages releases independently.",
-    "issue_818": "Commented 2026-02-25: explained AppDomain.BaseDirectory vs CWD for Load(string); suggested closing as by-design.",
-    "issue_1257": "Commented 2026-02-25: explained functional JSON API (JsonValue AST, JsonExtensions operators).",
-    "issue_1218": "Commented 2026-02-25: explained CSV TP path resolution - design-time vs runtime, ResolutionFolder solution. Similar to #818.",
+    "issue_1080": "Commented 2026-02-25: CsvFile.Load uses AppDomain.BaseDirectory by design; workaround: Path.Combine(__SOURCE_DIRECTORY__, filename). Similar to #818 and #1218.",
+    "issue_1220": "Commented 2026-02-25: Old FSharp.Core 4.4.1.0 error with FSharp.Data 3.0.0; fixed in 4.x+; advised upgrade to 7.0.1.",
     "yaml_quoted_strings": "Fixed in PR #1646: quoted YAML scalars (SingleQuoted/DoubleQuoted/Literal/Folded) now correctly infer as string even when InferTypesFromValues=true. Uses sentinel 's' for numeric-looking quoted values."
   },
   "labels_applied": {
@@ -99,6 +98,7 @@
     "Investigate #1392 HttpClient migration",
     "Continue triaging older open issues (pre-#838) - some haven't had Repo Assist comments yet",
     "NuGet trusted publishing (#1641) - patch in issue #1643 but requires workflows:write permission to apply as PR",
-    "Check deps again - last done 2026-02-22"
+    "Check deps again - last done 2026-02-22",
+    "Uncovered issues still to triage: #1040 (cookie bug), #1130 (CssSelect), #1207 (CSV perf), #1246 (Bing HTML)"
   ]
 }
