@@ -525,6 +525,7 @@ let inferPrimitiveType
     (unitsOfMeasureProvider: IUnitsOfMeasureProvider)
     (inferenceMode: InferenceMode')
     (cultureInfo: CultureInfo)
+    (preferFloats: bool)
     (value: string)
     (desiredUnit: Type option)
     =
@@ -573,7 +574,7 @@ let inferPrimitiveType
             makePrimitive typeof<DateOnly>
 #endif
         | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> makePrimitive typeof<DateTime>
-        | Parse TextConversions.AsDecimal _ -> makePrimitive typeof<decimal>
+        | Parse TextConversions.AsDecimal _ when not preferFloats -> makePrimitive typeof<decimal>
         | Parse (TextConversions.AsFloat [||] false) _ -> makePrimitive typeof<float>
         | Parse asGuid _ -> makePrimitive typeof<Guid>
         | _ -> None
@@ -622,7 +623,11 @@ let inferPrimitiveType
 /// Infers the type of a simple string value
 [<Obsolete("This API will be made internal in a future release. Please file an issue at https://github.com/fsprojects/FSharp.Data/issues/1458 if you need this public.")>]
 let getInferedTypeFromString unitsOfMeasureProvider inferenceMode cultureInfo value unit =
-    inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo value unit
+    inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo false value unit
+
+/// Infers the type of a simple string value, preferring float over decimal
+let internal getInferedTypeFromStringPreferFloats unitsOfMeasureProvider inferenceMode cultureInfo value unit =
+    inferPrimitiveType unitsOfMeasureProvider inferenceMode cultureInfo true value unit
 
 #if NET6_0_OR_GREATER
 /// Replaces DateOnly → DateTime and TimeOnly → TimeSpan throughout an InferedType tree.
