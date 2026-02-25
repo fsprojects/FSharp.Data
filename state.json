@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-02-25T19:21:18Z",
-  "workflow_run_id": "22412134017",
-  "tasks_done_this_run": ["task1", "task11"],
+  "last_run": "2026-02-25T19:34:20Z",
+  "workflow_run_id": "22412614401",
+  "tasks_done_this_run": ["task5", "task11"],
   "last_tasks": {
     "task1": "2026-02-25",
     "task2": "2026-02-24",
@@ -34,7 +34,7 @@
     "1315": {"status": "merged", "pr": 1631, "date": "2026-02-24"},
     "1245": {"status": "merged", "pr": 1638, "date": "2026-02-24"},
     "1431": {"status": "merged", "pr": 1639, "date": "2026-02-24"},
-    "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25"},
+    "1645": {"status": "pr_open", "pr": 1646, "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "date": "2026-02-25", "note": "CI fixed 2026-02-25: removed duplicate method defs (FS0037/FS0438)"},
     "1650": {"status": "pr_open", "pr": 1652, "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "date": "2026-02-25"},
     "1649": {"status": "push_failed_workflow_permission", "issue": 1654, "note": "Two failed push attempts: issues #1653 (run 22409411138) and #1654 (run 22409729632). #1654 supersedes #1653. Cannot push to .github/workflows/ without workflows:write permission."}
   },
@@ -61,7 +61,7 @@
   "stale_pr_nudges": [],
   "welcomed_contributors": [],
   "open_repo_assist_prs": [
-    {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open"},
+    {"number": 1646, "title": "Add YamlProvider type provider", "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b", "closes": [1645], "status": "open", "note": "CI fixed 2026-02-25"},
     {"number": 1648, "title": "Fix Windows CI: use 127.0.0.1 instead of localhost for test HTTP servers", "branch": "repo-assist/fix-windows-ci-localhost-e388a49a78dc0a12", "status": "open_draft"},
     {"number": 1652, "title": "Add TOML type provider (TomlProvider)", "branch": "repo-assist/fix-issue-1650-toml-type-provider-cb9fc3e6dabf0af2", "closes": [1650], "status": "open_draft"}
   ],
@@ -78,7 +78,7 @@
     "Cannot push changes to .github/workflows/ files - GitHub requires workflows:write permission which is separate from contents:write. This affects: #1641 (NuGet trusted publishing), #1649 (CI speedup). Patches are documented in issues #1643 and #1654 respectively."
   ],
   "notes": {
-    "pr_1646_status": "Open (not draft). Quoted YAML string inference fix pushed 2026-02-25. Waiting for dsyme review.",
+    "pr_1646_status": "Open (not draft). CI fixed 2026-02-25 run 22412614401: duplicate methods removed. Waiting for dsyme review.",
     "pr_1648_status": "Open draft. Windows CI localhost fix (2-line change). Waiting for review.",
     "pr_1652_status": "Open draft. TomlProvider implementation. Waiting for dsyme review.",
     "issue_1654_status": "Open issue with CI speedup patch (supersedes #1653). Cannot be pushed as PR due to workflow file permission restriction. dsyme needs to apply manually.",
