@@ -72,6 +72,20 @@ type internal HtmlProviderArgs =
       EmbeddedResource : string
       PreferDateOnly : bool }
 
+type internal YamlProviderArgs =
+    { Sample : string
+      SampleIsList : bool
+      RootName : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string
+      InferTypesFromValues : bool
+      PreferDictionaries : bool
+      InferenceMode: InferenceMode
+      PreferDateOnly : bool
+      UseOriginalNames : bool }
+
 type internal WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
@@ -81,6 +95,7 @@ type internal TypeProviderInstantiation =
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
+    | Yaml of YamlProviderArgs
     | WorldBank of WorldBankProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
@@ -149,6 +164,20 @@ type internal TypeProviderInstantiation =
                    box x.ResolutionFolder
                    box x.EmbeddedResource
                    box x.PreferDateOnly |]
+            | Yaml x ->
+                (fun cfg -> new YamlProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.SampleIsList
+                   box x.RootName
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues
+                   box x.PreferDictionaries
+                   box x.InferenceMode
+                   box x.PreferDateOnly
+                   box x.UseOriginalNames |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -194,6 +223,15 @@ type internal TypeProviderInstantiation =
              x.PreferOptionals.ToString()
              x.IncludeLayoutTables.ToString()
              x.Culture ]
+        | Yaml x ->
+            ["Yaml"
+             x.Sample
+             x.SampleIsList.ToString()
+             x.RootName
+             x.Culture
+             x.InferTypesFromValues.ToString()
+             x.PreferDictionaries.ToString()
+             x.InferenceMode.ToString() ]
         | WorldBank x ->
             ["WorldBank"
              x.Sources
@@ -304,6 +342,19 @@ type internal TypeProviderInstantiation =
                    ResolutionFolder = ""
                    EmbeddedResource = ""
                    PreferDateOnly = false }
+        | "Yaml" ->
+            Yaml { Sample = args.[1]
+                   SampleIsList = args.[2] |> bool.Parse
+                   RootName = args.[3]
+                   Culture = args.[4]
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = ""
+                   InferTypesFromValues = args.[5] |> bool.Parse
+                   PreferDictionaries = args.[6] |> bool.Parse
+                   InferenceMode = args.[7] |> InferenceMode.Parse
+                   PreferDateOnly = false
+                   UseOriginalNames = false }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
@@ -324,6 +375,7 @@ type internal TypeProviderInstantiation =
               "FSharp.Data.Html.Core"
               "FSharp.Data.Xml.Core"
               "FSharp.Data.Json.Core" 
+              "FSharp.Data.Yaml.Core"
               "FSharp.Data.WorldBank.Core" ]
         let extraRefs = 
             [ for j in  extraDlls do

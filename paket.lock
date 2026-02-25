@@ -22,11 +22,12 @@ NUGET
     NETStandard.Library (2.0.3) - restriction: || (== net8.0) (&& (== netstandard2.0) (>= netcoreapp2.2))
       Microsoft.NETCore.Platforms (>= 1.1)
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
+    YamlDotNet (16.3)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (ce34c1cc71096857b8342f1dedf93391addc9df6)
-    src/ProvidedTypes.fsi (ce34c1cc71096857b8342f1dedf93391addc9df6)
-    tests/ProvidedTypesTesting.fs (ce34c1cc71096857b8342f1dedf93391addc9df6)
+    src/ProvidedTypes.fs (90e8e3532960bffc71198fc12a01761a1f39624d)
+    src/ProvidedTypes.fsi (90e8e3532960bffc71198fc12a01761a1f39624d)
+    tests/ProvidedTypesTesting.fs (90e8e3532960bffc71198fc12a01761a1f39624d)
 GROUP Benchmarks
 RESTRICTION: == net8.0
 NUGET

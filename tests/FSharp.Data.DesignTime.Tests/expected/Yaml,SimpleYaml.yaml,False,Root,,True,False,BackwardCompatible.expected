@@ -1,0 +1,124 @@
+class YamlProvider : obj
+    static member AsyncGetSample: () -> YamlProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> YamlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "YAML" "" "SimpleYaml.yaml"), f)
+
+    static member AsyncLoad: uri:string -> YamlProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> YamlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "YAML" "" uri), f)
+
+    static member GetSample: () -> YamlProvider+Root
+    YamlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "YAML" "" "SimpleYaml.yaml")))
+
+    static member Load: stream:System.IO.Stream -> YamlProvider+Root
+    YamlDocument.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> YamlProvider+Root
+    YamlDocument.Create(reader)
+
+    static member Load: uri:string -> YamlProvider+Root
+    YamlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "YAML" "" uri)))
+
+    static member Load: value:JsonValue -> YamlProvider+Root
+    YamlDocument.Create(value, "")
+
+    static member Parse: text:string -> YamlProvider+Root
+    YamlDocument.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseList: text:string -> YamlProvider+YamlProvider+Root[]
+    YamlDocument.CreateList(((new StringReader(text)) :> TextReader))
+
+
+class YamlProvider+Root : FDR.BaseTypes.IJsonDocument
+    new : name:string -> age:int -> score:decimal -> active:bool -> address:YamlProvider+Address -> tags:string[] -> YamlProvider+Root
+    JsonRuntime.CreateRecord([| ("name",
+                                 (name :> obj))
+                                ("age",
+                                 (age :> obj))
+                                ("score",
+                                 (score :> obj))
+                                ("active",
+                                 (active :> obj))
+                                ("address",
+                                 (address :> obj))
+                                ("tags",
+                                 (tags :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> YamlProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
+    member Active: bool with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "active")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
+
+    member Address: YamlProvider+Address with get
+    JsonRuntime.GetPropertyPacked(this, "address")
+
+    member Age: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "age")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member Name: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Score: decimal with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "score")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
+
+    member Tags: string[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "tags"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+
+    member WithActive: active:bool -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "active", (active :> obj), "")
+
+    member WithAddress: address:YamlProvider+Address -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "address", (address :> obj), "")
+
+    member WithAge: age:int -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "age", (age :> obj), "")
+
+    member WithName: name:string -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "name", (name :> obj), "")
+
+    member WithScore: score:decimal -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "score", (score :> obj), "")
+
+    member WithTags: tags:string[] -> YamlProvider+Root
+    JsonRuntime.WithRecordProperty(this, "tags", (tags :> obj), "")
+
+
+class YamlProvider+Address : FDR.BaseTypes.IJsonDocument
+    new : street:string -> city:string -> zip:int -> YamlProvider+Address
+    JsonRuntime.CreateRecord([| ("street",
+                                 (street :> obj))
+                                ("city",
+                                 (city :> obj))
+                                ("zip",
+                                 (zip :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> YamlProvider+Address
+    JsonDocument.Create(jsonValue, "")
+
+    member City: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "city")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Street: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "street")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member WithCity: city:string -> YamlProvider+Address
+    JsonRuntime.WithRecordProperty(this, "city", (city :> obj), "")
+
+    member WithStreet: street:string -> YamlProvider+Address
+    JsonRuntime.WithRecordProperty(this, "street", (street :> obj), "")
+
+    member WithZip: zip:int -> YamlProvider+Address
+    JsonRuntime.WithRecordProperty(this, "zip", (zip :> obj), "")
+
+    member Zip: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "zip")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+

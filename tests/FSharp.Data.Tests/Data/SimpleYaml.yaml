@@ -1,0 +1,12 @@
+name: John
+age: 30
+score: 9.5
+active: true
+address:
+  street: 123 Main St
+  city: Springfield
+  zip: "01234"
+tags:
+  - fsharp
+  - dotnet
+  - yaml

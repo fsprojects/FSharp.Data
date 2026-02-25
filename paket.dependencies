@@ -12,6 +12,7 @@ github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 github fsprojects/FSharp.TypeProviders.SDK tests/ProvidedTypesTesting.fs
 
 nuget FSharp.Core >= 6.0.1 lowest_matching: true
+nuget YamlDotNet >= 13.0.0
 nuget Microsoft.SourceLink.GitHub 1.0 copy_local: true
 nuget Microsoft.SourceLink.Common 1.0 copy_local: true
 nuget Microsoft.Build.Tasks.Git 1.0 copy_local: true

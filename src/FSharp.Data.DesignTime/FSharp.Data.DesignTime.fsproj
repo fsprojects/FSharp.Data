@@ -32,12 +32,14 @@
     <Compile Include="WorldBank/WorldBankProvider.fs" />
     <Compile Include="Html/HtmlGenerator.fs" />
     <Compile Include="Html/HtmlProvider.fs" />
+    <Compile Include="Yaml/YamlProvider.fs" />
     <Compile Include="../AssemblyInfo.DesignTime.fs" />
     <None Include="../Test.fsx" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Yaml.Core/FSharp.Data.Yaml.Core.fsproj" />
     <ProjectReference Include="../FSharp.Data.Xml.Core/FSharp.Data.Xml.Core.fsproj" />
     <ProjectReference Include="../FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj" />
     <ProjectReference Include="../FSharp.Data.Html.Core/FSharp.Data.Html.Core.fsproj" />
