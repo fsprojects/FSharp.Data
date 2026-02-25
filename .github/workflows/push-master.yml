@@ -39,12 +39,9 @@ jobs:
       uses: NuGet/login@v1
       id: nuget-login
       with:
-        user: dsyme
+        organization: fsprojects
     - name: Publish NuGets (if this version not published before)
       run: dotnet nuget push bin\FSharp.Data.*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate
 
-# Trusted publishing uses NuGet OIDC (no long-lived secret required).
-# Before this works, dsyme must configure a Trusted Publisher on nuget.org:
-#   nuget.org → Account settings → Trusted publishers → Add GitHub Actions publisher
-#   Set: Owner = fsprojects, Repository = FSharp.Data, Workflow = push-master.yml
+# Trusted publishing uses NuGet OIDC
 # See: https://learn.microsoft.com/nuget/nuget-org/publish-a-package#trusted-publishing
