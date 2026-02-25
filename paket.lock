@@ -24,9 +24,9 @@ NUGET
     NETStandard.Library.NETFramework (2.0.0-preview2-25405-01)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (ce34c1cc71096857b8342f1dedf93391addc9df6)
-    src/ProvidedTypes.fsi (ce34c1cc71096857b8342f1dedf93391addc9df6)
-    tests/ProvidedTypesTesting.fs (ce34c1cc71096857b8342f1dedf93391addc9df6)
+    src/ProvidedTypes.fs (ec4d4522cf4a2a7cd4f4d166ff053e6617dcf1c6)
+    src/ProvidedTypes.fsi (ec4d4522cf4a2a7cd4f4d166ff053e6617dcf1c6)
+    tests/ProvidedTypesTesting.fs (ec4d4522cf4a2a7cd4f4d166ff053e6617dcf1c6)
 GROUP Benchmarks
 RESTRICTION: == net8.0
 NUGET

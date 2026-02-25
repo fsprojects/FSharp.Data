@@ -467,14 +467,14 @@ type private TomlParser(text: string) =
         let dateFormats = [| "yyyy-MM-dd" |]
 
         let timeFormats =
-            [| "HH:mm:ss"
-               "HH:mm:ss.fffffff"
-               "HH:mm:ss.ffffff"
-               "HH:mm:ss.fffff"
-               "HH:mm:ss.ffff"
-               "HH:mm:ss.fff"
-               "HH:mm:ss.ff"
-               "HH:mm:ss.f" |]
+            [| @"hh\:mm\:ss"
+               @"hh\:mm\:ss\.fffffff"
+               @"hh\:mm\:ss\.ffffff"
+               @"hh\:mm\:ss\.fffff"
+               @"hh\:mm\:ss\.ffff"
+               @"hh\:mm\:ss\.fff"
+               @"hh\:mm\:ss\.ff"
+               @"hh\:mm\:ss\.f" |]
 
         // Normalize Z to +00:00 for DateTimeOffset parsing
         let sNorm =
@@ -583,9 +583,14 @@ type private TomlParser(text: string) =
                       || c = 'o'
                       || c = 'b'
                       || c = 'a'
+                      || c = 'A'
+                      || c = 'B'
                       || c = 'c'
+                      || c = 'C'
                       || c = 'd'
+                      || c = 'D'
                       || c = 'f'
+                      || c = 'F'
                       || (c = ' ' && hasDash && pos + 1 < len && Char.IsDigit(text.[pos + 1]))) do
                 let c = text.[pos]
 
@@ -604,7 +609,13 @@ type private TomlParser(text: string) =
 
             let token = text.[start .. pos - 1].Replace("_", "")
 
-            let isDateLike = hasDash && (hasColon || hasTorSpace)
+            // Date-only: has dashes but no colons, T, or decimal (distinguishes from negative-exponent floats)
+            let isDateOnly = hasDash && not hasColon && not hasTorSpace && not hasDecimalOrExp
+            // DateTime: has dashes with colons or T separator
+            let isDateTime = hasDash && (hasColon || hasTorSpace)
+            // Time-only: has colons but no dashes
+            let isTime = not hasDash && hasColon
+            let isDateLike = isDateOnly || isDateTime || isTime
 
             if isDateLike then
                 match tryParseDateTime token with
