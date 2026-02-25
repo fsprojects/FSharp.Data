@@ -40,7 +40,7 @@ jobs:
       uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
       id: login
       with:
-          user: fsprojects
+          user: dsyme
     - name: Publish NuGets (if this version not published before)
       run: dotnet nuget push bin\FSharp.Data.*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate
 
