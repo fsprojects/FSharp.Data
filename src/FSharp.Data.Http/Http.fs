@@ -2004,7 +2004,7 @@ type Http private () =
         (WebUtility.UrlEncode query).Replace("+", "%20")
 
     /// Appends the query parameters to the url, taking care of proper escaping
-    static member internal AppendQueryToUrl(url: string, query) =
+    static member AppendQueryToUrl(url: string, query) =
         match query with
         | [] -> url
         | query ->
