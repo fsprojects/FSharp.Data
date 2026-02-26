@@ -58,6 +58,7 @@ type public YamlProvider(cfg: TypeProviderConfig) as this =
         let inferenceMode = args.[9] :?> InferenceMode
         let preferDateOnly = args.[10] :?> bool
         let useOriginalNames = args.[11] :?> bool
+        let preferOptionals = args.[12] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -85,8 +86,14 @@ type public YamlProvider(cfg: TypeProviderConfig) as this =
 
                     samples
                     |> Array.map (fun sampleJson ->
-                        JsonInference.inferType unitsOfMeasureProvider inferenceMode cultureInfo "" sampleJson)
-                    |> Array.fold (StructuralInference.subtypeInfered false) InferedType.Top
+                        JsonInference.inferType
+                            unitsOfMeasureProvider
+                            inferenceMode
+                            cultureInfo
+                            (not preferOptionals)
+                            ""
+                            sampleJson)
+                    |> Array.fold (StructuralInference.subtypeInfered (not preferOptionals)) InferedType.Top
 
 #if NET6_0_OR_GREATER
                 if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
@@ -140,7 +147,8 @@ type public YamlProvider(cfg: TypeProviderConfig) as this =
               parameterDefaultValue = InferenceMode.BackwardCompatible
           )
           ProvidedStaticParameter("PreferDateOnly", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = true) ]
 
     let helpText =
         """<summary>Typed representation of a YAML document.</summary>
@@ -164,7 +172,8 @@ type public YamlProvider(cfg: TypeProviderConfig) as this =
               | ValuesAndInlineSchemasOverrides -> Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
            </param>
            <param name='PreferDateOnly'>When true on .NET 6+, date-only strings (e.g. "2023-01-15") are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.</param>
-           <param name='UseOriginalNames'>When true, YAML key names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>"""
+           <param name='UseOriginalNames'>When true, YAML key names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
+           <param name='PreferOptionals'>When set to false, optional YAML fields are represented as empty string or NaN instead of option types. Defaults to true.</param>"""
 
     do yamlProvTy.AddXmlDoc helpText
     do yamlProvTy.DefineStaticParameters(parameters, buildTypes)

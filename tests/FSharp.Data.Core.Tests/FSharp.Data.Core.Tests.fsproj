@@ -51,6 +51,7 @@
     <Compile Include="XmlRuntime.fs" />
     <Compile Include="XmlSchema.fs" />
     <Compile Include="WorldBankRuntime.fs" />
+    <Compile Include="YamlDocument.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,7 @@
     <ProjectReference Include="..\..\src\FSharp.Data.Csv.Core\FSharp.Data.Csv.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.Html.Core\FSharp.Data.Html.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.WorldBank.Core\FSharp.Data.WorldBank.Core.fsproj" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Yaml.Core\FSharp.Data.Yaml.Core.fsproj" />
     <ProjectReference Include="..\..\src\FSharp.Data.DesignTime\FSharp.Data.DesignTime.fsproj" />
   </ItemGroup>
   <ItemGroup>

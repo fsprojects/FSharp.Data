@@ -87,7 +87,8 @@ type internal YamlProviderArgs =
       PreferDictionaries : bool
       InferenceMode: InferenceMode
       PreferDateOnly : bool
-      UseOriginalNames : bool }
+      UseOriginalNames : bool
+      PreferOptionals : bool }
 
 type internal WorldBankProviderArgs =
     { Sources : string
@@ -183,7 +184,8 @@ type internal TypeProviderInstantiation =
                    box x.PreferDictionaries
                    box x.InferenceMode
                    box x.PreferDateOnly
-                   box x.UseOriginalNames |]
+                   box x.UseOriginalNames
+                   box x.PreferOptionals |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -237,7 +239,8 @@ type internal TypeProviderInstantiation =
              x.Culture
              x.InferTypesFromValues.ToString()
              x.PreferDictionaries.ToString()
-             x.InferenceMode.ToString() ]
+             x.InferenceMode.ToString()
+             x.PreferOptionals.ToString() ]
         | WorldBank x ->
             ["WorldBank"
              x.Sources
@@ -364,7 +367,8 @@ type internal TypeProviderInstantiation =
                    PreferDictionaries = args.[6] |> bool.Parse
                    InferenceMode = args.[7] |> InferenceMode.Parse
                    PreferDateOnly = false
-                   UseOriginalNames = false }
+                   UseOriginalNames = false
+                   PreferOptionals = if args.Length > 8 then args.[8] |> bool.Parse else true }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
