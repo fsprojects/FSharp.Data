@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-02-26T12:08:53Z",
-  "last_run_id": "22441367258",
+  "last_updated": "2026-02-26T12:16:37Z",
+  "last_run_id": "22441625361",
   "monthly_summary_issue": 1599,
   "open_repo_assist_prs": [
     {
@@ -45,6 +45,13 @@
       "status": "open",
       "closes": 1645,
       "notes": "20 core tests added, PreferOptionals param added, merged latest main, release notes updated. Awaiting dsyme review."
+    },
+    {
+      "number": null,
+      "branch": "repo-assist/fix-issue-1392-httpclient-net8",
+      "title": "[Repo Assist] Use HttpClient with SocketsHttpHandler on .NET 8+ to avoid socket exhaustion",
+      "status": "created_this_run",
+      "closes": 1392
     }
   ],
   "merged_prs": [
@@ -56,7 +63,7 @@
   ],
   "task_last_run": {
     "task1": "2026-02-26T12:08:53Z",
-    "task2": "2026-02-26T12:00:27Z",
+    "task2": "2026-02-26T12:16:37Z",
     "task3": "2026-02-26T10:00:00Z",
     "task4": "2026-02-22T00:00:00Z",
     "task5": "2026-02-26T11:41:00Z",
@@ -64,16 +71,15 @@
     "task7": "2026-02-25T20:00:00Z",
     "task8": "2026-02-22T00:00:00Z",
     "task9": "2026-02-22T00:00:00Z",
-    "task10": "2026-02-26T10:00:00Z",
-    "task11": "2026-02-26T12:08:53Z"
+    "task10": "2026-02-26T12:16:37Z",
+    "task11": "2026-02-26T12:16:37Z"
   },
   "issue_backlog_cursor": 134,
-  "commented_issues": [1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018, 1241, 1338, 1382, 1432, 1317, 1363, 1425, 1478, 1303, 1251, 1170, 1452, 1436, 1321, 1490, 1358, 1100, 1072],
-  "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325, 1251, 1321],
+  "commented_issues": [1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018, 1241, 1338, 1382, 1432, 1317, 1363, 1425, 1478, 1303, 1251, 1170, 1452, 1436, 1321, 1490, 1358, 1100, 1072, 1392],
+  "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325, 1251, 1321, 1392],
   "future_work": [
     "Add With* methods to XmlProvider types (complex; deferred)",
-    "Investigate #1392 HttpClient migration — dual-TFM approach",
-    "Implement PreferDateTimeOffset parameter for CsvProvider/JsonProvider — see #1100, #1072",
-    "Continue triaging older open issues (#134, #158, #739, #805, #809, #1114, #1132)"
+    "Investigate PreferDateTimeOffset parameter for CsvProvider/JsonProvider — see #1100, #1072",
+    "Continue triaging older open issues (#158, #739, #805, #809, #1114, #1132)"
   ]
 }
