@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-02-26T10:36:00Z",
-  "last_run_id": "22438292766",
+  "last_updated": "2026-02-26T11:30:00Z",
+  "last_run_id": "22439045759",
   "monthly_summary_issue": 1599,
   "open_repo_assist_prs": [
     {
@@ -12,99 +12,49 @@
     },
     {
       "number": 1646,
-      "branch": "repo-assist/feature-yaml-provider",
+      "branch": "repo-assist/feature-yaml-provider-09be4085d1b6fe5b",
       "title": "[Repo Assist] Add YamlProvider type provider",
       "status": "open",
-      "closes": 1645
+      "closes": 1645,
+      "notes": "Core tests added (20 tests in YamlDocument.fs), PreferOptionals param added, merged latest main, release notes updated. Addressed dsyme's review requests 2026-02-25."
     },
     {
       "number": null,
       "branch": "repo-assist/fix-issue-1488-xsd-use-schema-type-names",
       "title": "Add UseSchemaTypeNames parameter to XmlProvider for XSD type deduplication",
-      "status": "created_this_run",
+      "status": "open",
       "closes": 1488
     }
   ],
   "merged_prs": [
-    {"number": 1660, "title": "Add PreferOptionals param to XmlProvider+JsonProvider", "merged": "2026-02-25"},
-    {"number": 1655, "title": "Add PreferFloats param to CsvProvider", "merged": "2026-02-25"},
-    {"number": 1656, "title": "Speed up PR CI", "merged": "2026-02-25"},
-    {"number": 1639, "title": "With* methods for CsvProvider/JsonProvider", "merged": "2026-02-24"},
-    {"number": 1638, "title": "OmitNullFields for JsonProvider", "merged": "2026-02-24"}
+    { "number": 1660, "title": "Add PreferOptionals to XmlProvider and JsonProvider", "merged_by": "dsyme", "date": "2026-02-25" },
+    { "number": 1656, "title": "Speed up CI for pull requests", "merged_by": "dsyme", "date": "2026-02-25" },
+    { "number": 1655, "title": "Add PreferFloats to CsvProvider", "merged_by": "dsyme", "date": "2026-02-25" },
+    { "number": 1639, "title": "Add With* methods to CsvProvider Row and JsonProvider records", "merged_by": "dsyme", "date": "2026-02-24" },
+    { "number": 1638, "title": "Add OmitNullFields to JsonProvider", "merged_by": "dsyme", "date": "2026-02-24" }
   ],
-  "issues_commented": {
-    "1488": {"comment_date": "2026-02-26", "topic": "UseSchemaTypeNames implementation PR created"},
-    "1657": {"comment_date": "2026-02-26", "topic": "MarkdownProvider implementation"},
-    "953": {"comment_date": "2026-02-25"},
-    "649": {"comment_date": "2026-02-25"},
-    "838": {"comment_date": "2026-02-25"},
-    "1138": {"comment_date": "2026-02-25"},
-    "1207": {"comment_date": "2026-02-25"},
-    "1159": {"comment_date": "2026-02-25"},
-    "900": {"comment_date": "2026-02-25"},
-    "942": {"comment_date": "2026-02-25"},
-    "1130": {"comment_date": "2026-02-25"},
-    "1080": {"comment_date": "2026-02-25"},
-    "1220": {"comment_date": "2026-02-25"},
-    "818": {"comment_date": "2026-02-25"},
-    "1218": {"comment_date": "2026-02-25"},
-    "1257": {"comment_date": "2026-02-25"},
-    "1191": {"comment_date": "2026-02-24"},
-    "1236": {"comment_date": "2026-02-24"},
-    "1245": {"comment_date": "2026-02-24"},
-    "1237": {"comment_date": "2026-02-24"},
-    "1431": {"comment_date": "2026-02-24"},
-    "1031": {"comment_date": "2026-02-24"},
-    "1188": {"comment_date": "2026-02-24"},
-    "1265": {"comment_date": "2026-02-24"},
-    "1298": {"comment_date": "2026-02-24"},
-    "1385": {"comment_date": "2026-02-24"},
-    "1271": {"comment_date": "2026-02-24"}
-  },
-  "fix_attempts": {
-    "1488": {"branch": "repo-assist/fix-issue-1488-xsd-use-schema-type-names", "status": "pr_created", "date": "2026-02-26"},
-    "1657": {"branch": "repo-assist/feature-markdown-provider-ff1df2a", "status": "branch_not_pushed_retry_needed", "date": "2026-02-26"},
-    "1650": {"pr": 1652, "status": "open"},
-    "1645": {"pr": 1646, "status": "open"},
-    "649": {"pr": 1660, "status": "merged"},
-    "838": {"pr": 1655, "status": "merged"},
-    "953": {"branch": "repo-assist/fix-issue-953-inline-fallback-warning", "status": "closed_not_merged"}
-  },
-  "checked_off_by_maintainer": [1655, "953_pr", 1654, 1653, 1643, 1641, 1651, 1138, 900, 818, 1218, 1080, 1220, 1207, 1159],
-  "tasks_last_run": {
-    "task1_triage": "2026-02-25",
-    "task2_fix": "2026-02-26",
-    "task3_improvements": "2026-02-25",
-    "task4_deps": "2026-02-22",
-    "task5_maintain_prs": "2026-02-26",
-    "task6_stale_nudges": "2026-02-26",
-    "task7_labels": "2026-02-25",
-    "task8_release": "2026-02-22",
-    "task9_welcome": "2026-02-22",
-    "task10_forward": "2026-02-26",
-    "task11_monthly_summary": "2026-02-26"
-  },
-  "backlog_cursor": {
-    "issues": 1600,
-    "prs": null
-  },
-  "improvement_ideas_submitted": [
-    "OmitNullFields for JsonProvider (#1638)",
-    "With* methods for CsvProvider/JsonProvider (#1639)",
-    "PreferFloats for CsvProvider (#1655)",
-    "PreferOptionals for XmlProvider+JsonProvider (#1660)",
-    "TomlProvider (#1652)",
-    "YamlProvider (#1646)",
-    "MarkdownProvider (#1657, PR creation failed - branch not pushed)",
-    "UseSchemaTypeNames for XmlProvider (#1488, PR created this run)"
+  "closed_prs": [
+    { "number": 1661, "title": "Add MarkdownProvider", "closed_reason": "dsyme closed (issue #1657 marked completed)" }
   ],
-  "notes": [
-    "dsyme pattern: files bare-bones enhancement issues (#1650=TOML, #1645=YAML, #1657=Markdown) and merges implementations quickly",
-    "MarkdownProvider branch repo-assist/feature-markdown-provider-ff1df2a was NOT pushed - retry needed",
-    "FSharp.Data.Tests OOM (exit 137) is pre-existing CI infra issue, not caused by new code",
-    "436 design-time tests fail pre-existing (test infra cross-context issue), 50 pass - this is expected",
-    "Repo Assist cannot push workflow files (lacks workflows:write permission)",
-    "TypeProviderInstantiation.fs must be updated when adding any new provider static parameter",
-    "UseSchemaTypeNames: XsdComplexType now has Name field (XmlQualifiedName option) set from XmlSchemaComplexType.QualifiedName"
+  "task_last_run": {
+    "task1": "2026-02-26T03:00:00Z",
+    "task2": "2026-02-26T03:00:00Z",
+    "task3": "2026-02-26T10:00:00Z",
+    "task4": "2026-02-22T00:00:00Z",
+    "task5": "2026-02-26T11:30:00Z",
+    "task6": "2026-02-26T10:00:00Z",
+    "task7": "2026-02-25T20:00:00Z",
+    "task8": "2026-02-22T00:00:00Z",
+    "task9": "2026-02-22T00:00:00Z",
+    "task10": "2026-02-26T10:00:00Z",
+    "task11": "2026-02-26T11:30:00Z"
+  },
+  "issue_backlog_cursor": 50,
+  "commented_issues": [1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657],
+  "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657],
+  "future_work": [
+    "Add With* methods to XmlProvider types (complex; deferred)",
+    "Investigate #1392 HttpClient migration — dual-TFM approach",
+    "Continue triaging older open issues"
   ]
 }
