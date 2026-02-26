@@ -37,6 +37,7 @@ to provide easy to use type-safe access to documents that follow the same struct
  * [HTML Type Provider](library/HtmlProvider.html) - discusses the `HtmlProvider<...>` type
  * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
  * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
+ * [Type Inference and Missing Values](library/TypeInference.html) - explains type inference rules, how missing/null values map to F# types, and how to control inference behaviour
 
 The package also contains a type provider for accessing data from 
 [the WorldBank](library/WorldBank.html).
