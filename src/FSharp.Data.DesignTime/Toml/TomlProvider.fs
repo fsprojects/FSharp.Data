@@ -70,7 +70,7 @@ type public TomlProvider(cfg: TypeProviderConfig) as this =
                 use _holder = IO.logTime "Inference" sample
 
                 let rawInfered =
-                    JsonInference.inferType unitsOfMeasureProvider inferenceMode' cultureInfo "" sampleJson
+                    JsonInference.inferType unitsOfMeasureProvider inferenceMode' cultureInfo true "" sampleJson
 
 #if NET6_0_OR_GREATER
                 if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
