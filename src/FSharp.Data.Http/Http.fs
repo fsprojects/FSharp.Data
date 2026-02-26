@@ -1990,6 +1990,241 @@ module internal CookieHandling =
                 cookiesFromCookieContainer
         | None -> cookiesFromCookieContainer
 
+#if NET8_0_OR_GREATER
+/// Internal HttpClient-based HTTP implementation for .NET 8+.
+/// Uses a shared HttpClient with SocketsHttpHandler for proper connection pooling.
+module internal HttpClientImpl =
+
+    open System.Net.Http
+    open System.Net.Http.Headers
+
+    // Shared HttpClient instance. SocketsHttpHandler is used for connection reuse
+    // to avoid socket exhaustion. UseCookies=false because we handle cookies manually.
+    let private handler =
+        let h = new SocketsHttpHandler()
+        h.PooledConnectionLifetime <- TimeSpan.FromMinutes(2.0)
+
+        h.AutomaticDecompression <-
+            DecompressionMethods.GZip
+            ||| DecompressionMethods.Deflate
+            ||| DecompressionMethods.Brotli
+
+        h.UseCookies <- false
+        h.AllowAutoRedirect <- true
+        h
+
+    let private sharedClient = new HttpClient(handler)
+
+    let private charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Compiled)
+
+    let private getBodyEncoding (contentType: string) =
+        let m = charsetRegex.Match(contentType)
+
+        if m.Success then
+            try
+                Encoding.GetEncoding(m.Groups.[1].Value)
+            with _ ->
+                HttpEncodings.PostDefaultEncoding
+        else
+            HttpEncodings.PostDefaultEncoding
+
+    let private encodeFormData (query: string) =
+        (WebUtility.UrlEncode query).Replace("+", "%20")
+
+    /// Build an HttpContent from an HttpRequestBody and content-type override headers
+    let private buildContent (body: HttpRequestBody) (contentTypeOverride: string option) : HttpContent * string =
+        let defaultContentType, streamFactory =
+            match body with
+            | TextRequest text ->
+                HttpContentTypes.Text, (fun (e: Encoding) -> new MemoryStream(e.GetBytes(text)) :> Stream)
+            | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> new MemoryStream(bytes) :> Stream)
+            | FormValues values ->
+                let factory (e: Encoding) =
+                    let encoded =
+                        [ for k, v in values -> encodeFormData k + "=" + encodeFormData v ]
+                        |> String.concat "&"
+
+                    new MemoryStream(e.GetBytes(encoded)) :> Stream
+
+                HttpContentTypes.FormValues, factory
+            | Multipart(boundary, parts) -> HttpContentTypes.Multipart(boundary), writeMultipart boundary parts
+            | MultipartFormData(boundary, parts) ->
+                let fileParts =
+                    parts
+                    |> Seq.map (fun p ->
+                        match p with
+                        | FormValue(formField, value) ->
+                            MultipartFileItem(formField, None, None, new MemoryStream(Encoding.UTF8.GetBytes(value)))
+                        | FileValue item -> item)
+
+                HttpContentTypes.Multipart(boundary), writeMultipartFileItem boundary fileParts
+
+        let effectiveContentType = defaultArg contentTypeOverride defaultContentType
+        let encoding = getBodyEncoding effectiveContentType
+        let stream = streamFactory encoding
+        let content = new StreamContent(stream)
+        // Use TryAddWithoutValidation to avoid parsing issues with multipart boundaries etc.
+        content.Headers.TryAddWithoutValidation("Content-Type", effectiveContentType)
+        |> ignore
+
+        content, effectiveContentType
+
+    let innerRequestAsync
+        toHttpResponse
+        (uri: Uri)
+        (method: string)
+        (headers: (string * string) list)
+        (body: HttpRequestBody option)
+        (cookies: seq<string * string> option)
+        (cookieContainer: CookieContainer)
+        (addCookiesToCookieContainer: bool)
+        (silentHttpErrors: bool option)
+        (silentCookieErrors: bool option)
+        (responseEncodingOverride: string option)
+        (timeout: int option)
+        =
+        async {
+            use req = new HttpRequestMessage(HttpMethod(method), uri)
+
+            // Enforce the same "no duplicate headers" invariant as the HttpWebRequest path
+            HttpHelpers.checkForRepeatedHeaders [] headers
+
+            // Separate content-type from other headers (content-type goes on content, not request)
+            let contentTypeOverride =
+                headers
+                |> List.tryFind (fun (h, _) -> h.Equals("content-type", StringComparison.OrdinalIgnoreCase))
+                |> Option.map snd
+
+            // Build and attach body content
+            match body with
+            | Some b ->
+                let content, _ = buildContent b contentTypeOverride
+                req.Content <- content
+            | None -> ()
+
+            // Set request headers (skip Content-* headers when we have a body, those go on content)
+            for header, value in headers do
+                let isContentHeader =
+                    header.StartsWith("content-", StringComparison.OrdinalIgnoreCase)
+
+                if isContentHeader then
+                    if not (isNull req.Content) then
+                        req.Content.Headers.TryAddWithoutValidation(header, value) |> ignore
+                else
+                    req.Headers.TryAddWithoutValidation(header, value) |> ignore
+
+            // Manually set Cookie header (UseCookies=false means the handler won't do this)
+            let cookiesFromContainer = cookieContainer.GetCookies(uri) |> Seq.cast<Cookie>
+
+            let allCookieParts =
+                [ for c in cookiesFromContainer -> sprintf "%s=%s" c.Name c.Value
+                  match cookies with
+                  | Some cs -> for name, value in cs -> sprintf "%s=%s" name value
+                  | None -> () ]
+
+            if not allCookieParts.IsEmpty then
+                req.Headers.TryAddWithoutValidation("Cookie", String.concat "; " allCookieParts)
+                |> ignore
+
+            // Send request with optional timeout
+            use cts =
+                match timeout with
+                | Some ms -> new CancellationTokenSource(ms)
+                | None -> new CancellationTokenSource()
+
+            let! response =
+                async {
+                    try
+                        return!
+                            sharedClient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token)
+                            |> Async.AwaitTask
+                    with :? OperationCanceledException ->
+                        // Convert timeout to WebException for backward compatibility
+                        raise (
+                            WebException(
+                                "Timeout exceeded while getting response",
+                                null,
+                                WebExceptionStatus.Timeout,
+                                null
+                            )
+                        )
+
+                        return Unchecked.defaultof<_>
+                }
+
+            // Raise on HTTP error codes unless silentHttpErrors is set
+            let isSilent = defaultArg silentHttpErrors false
+
+            if not isSilent && int response.StatusCode >= 400 then
+                let! bodyText = response.Content.ReadAsStringAsync(cts.Token) |> Async.AwaitTask
+
+                let msg =
+                    if String.IsNullOrEmpty bodyText then
+                        sprintf "The remote server returned an error: (%d)" (int response.StatusCode)
+                    else
+                        sprintf
+                            "The remote server returned an error: (%d)\nResponse from %s:\n%s"
+                            (int response.StatusCode)
+                            uri.OriginalString
+                            bodyText
+
+                failwith msg
+
+            // Build response headers map (combining request and content headers)
+            let respHeaders =
+                [ for h in response.Headers do
+                      yield h.Key, String.concat ", " h.Value
+                  for h in response.Content.Headers do
+                      yield h.Key, String.concat ", " h.Value ]
+                |> Map.ofList
+
+            // Determine the final URI (after any redirects)
+            let responseUri =
+                if
+                    not (isNull response.RequestMessage)
+                    && not (isNull response.RequestMessage.RequestUri)
+                then
+                    response.RequestMessage.RequestUri
+                else
+                    uri
+
+            // Handle cookies from Set-Cookie header
+            let responseCookies =
+                CookieHandling.getCookiesAndManageCookieContainer
+                    uri
+                    responseUri
+                    respHeaders
+                    cookieContainer
+                    addCookiesToCookieContainer
+                    (defaultArg silentCookieErrors false)
+
+            let contentTypeHeader =
+                match response.Content.Headers.ContentType with
+                | null -> "application/octet-stream"
+                | ct -> ct.ToString()
+
+            let statusCode = int response.StatusCode
+
+            let characterSet =
+                match response.Content.Headers.ContentType with
+                | null -> ""
+                | ct -> if isNull ct.CharSet then "" else ct.CharSet
+
+            let stream = response.Content.ReadAsStream()
+
+            return!
+                toHttpResponse
+                    responseUri.OriginalString
+                    statusCode
+                    contentTypeHeader
+                    characterSet
+                    responseEncodingOverride
+                    responseCookies
+                    respHeaders
+                    stream
+        }
+#endif
+
 /// Utilities for working with network via HTTP. Includes methods for downloading
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
@@ -2012,7 +2247,7 @@ type Http private () =
             + if url.Contains "?" then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
-    static member private InnerRequest
+    static member private InnerRequestWebRequest
         (
             url: string,
             toHttpResponse,
@@ -2167,6 +2402,84 @@ type Http private () =
                         headers
                         stream
             })
+
+    static member private InnerRequest
+        (
+            url: string,
+            toHttpResponse,
+            [<Optional>] ?query,
+            [<Optional>] ?headers: seq<_>,
+            [<Optional>] ?httpMethod,
+            [<Optional>] ?body,
+            [<Optional>] ?cookies: seq<_>,
+            [<Optional>] ?cookieContainer,
+            [<Optional>] ?silentHttpErrors,
+            [<Optional>] ?silentCookieErrors,
+            [<Optional>] ?responseEncodingOverride,
+            [<Optional>] ?customizeHttpRequest,
+            [<Optional>] ?timeout
+        ) =
+#if NET8_0_OR_GREATER
+        // On .NET 8+, use HttpClient for connection pooling and to avoid socket
+        // exhaustion. Fall back to HttpWebRequest when customizeHttpRequest is
+        // provided, to preserve backward compatibility with that callback.
+        if customizeHttpRequest.IsNone then
+            let uri = Http.AppendQueryToUrl(url, defaultArg query []) |> Uri
+            let headersList = defaultArg (Option.map List.ofSeq headers) []
+            let defaultMethod = if body.IsSome then HttpMethod.Post else HttpMethod.Get
+            let methodStr = (defaultArg httpMethod defaultMethod).ToString()
+
+            let addCookiesFromHeadersToCookieContainer, cookieContainer =
+                match cookieContainer with
+                | Some x -> false, x
+                | None -> true, CookieContainer()
+
+            HttpClientImpl.innerRequestAsync
+                toHttpResponse
+                uri
+                methodStr
+                headersList
+                body
+                cookies
+                cookieContainer
+                addCookiesFromHeadersToCookieContainer
+                silentHttpErrors
+                silentCookieErrors
+                responseEncodingOverride
+                timeout
+        else
+            Http.InnerRequestWebRequest(
+                url,
+                toHttpResponse,
+                ?query = query,
+                ?headers = headers,
+                ?httpMethod = httpMethod,
+                ?body = body,
+                ?cookies = cookies,
+                ?cookieContainer = cookieContainer,
+                ?silentHttpErrors = silentHttpErrors,
+                ?silentCookieErrors = silentCookieErrors,
+                ?responseEncodingOverride = responseEncodingOverride,
+                ?customizeHttpRequest = customizeHttpRequest,
+                ?timeout = timeout
+            )
+#else
+        Http.InnerRequestWebRequest(
+            url,
+            toHttpResponse,
+            ?query = query,
+            ?headers = headers,
+            ?httpMethod = httpMethod,
+            ?body = body,
+            ?cookies = cookies,
+            ?cookieContainer = cookieContainer,
+            ?silentHttpErrors = silentHttpErrors,
+            ?silentCookieErrors = silentCookieErrors,
+            ?responseEncodingOverride = responseEncodingOverride,
+            ?customizeHttpRequest = customizeHttpRequest,
+            ?timeout = timeout
+        )
+#endif
 
     /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including

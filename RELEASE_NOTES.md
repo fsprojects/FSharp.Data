@@ -3,6 +3,7 @@
 ## 8.1.0-beta
 
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
+- Use `System.Net.Http.HttpClient` with `SocketsHttpHandler` on .NET 8+ for connection pooling and to avoid socket exhaustion (closes #1392). Falls back to `HttpWebRequest` when `customizeHttpRequest` is supplied.
 
 ## 8.0.0 - Feb 25 2026
 
