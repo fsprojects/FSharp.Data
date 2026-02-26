@@ -1,11 +1,11 @@
 {
-  "last_updated": "2026-02-26T11:20:28Z",
-  "last_run_id": "22439785482",
+  "last_updated": "2026-02-26T11:33:00Z",
+  "last_run_id": "22440204443",
   "monthly_summary_issue": 1599,
   "open_repo_assist_prs": [
     {
-      "number": null,
-      "branch": "repo-assist/fix-issue-1325-append-query-to-url-public",
+      "number": 1664,
+      "branch": "repo-assist/fix-issue-1325-append-query-to-url-public-a77d7d7711e28325",
       "title": "[Repo Assist] Make Http.AppendQueryToUrl public",
       "status": "open",
       "closes": 1325
@@ -30,7 +30,7 @@
       "title": "[Repo Assist] Add YamlProvider type provider",
       "status": "open",
       "closes": 1645,
-      "notes": "Core tests added (20 tests in YamlDocument.fs), PreferOptionals param added, merged latest main, release notes updated. Addressed dsyme's review requests 2026-02-25."
+      "notes": "20 core tests added (YamlDocument.fs), PreferOptionals param added, merged latest main, release notes updated. Awaiting dsyme review."
     }
   ],
   "merged_prs": [
@@ -44,24 +44,24 @@
     { "number": 1661, "title": "Add MarkdownProvider", "closed_reason": "dsyme closed (issue #1657 marked completed)" }
   ],
   "task_last_run": {
-    "task1": "2026-02-26T11:20:00Z",
+    "task1": "2026-02-26T11:33:00Z",
     "task2": "2026-02-26T11:20:00Z",
     "task3": "2026-02-26T10:00:00Z",
     "task4": "2026-02-22T00:00:00Z",
-    "task5": "2026-02-26T11:20:00Z",
+    "task5": "2026-02-26T11:33:00Z",
     "task6": "2026-02-26T10:00:00Z",
     "task7": "2026-02-25T20:00:00Z",
     "task8": "2026-02-22T00:00:00Z",
     "task9": "2026-02-22T00:00:00Z",
     "task10": "2026-02-26T10:00:00Z",
-    "task11": "2026-02-26T11:20:00Z"
+    "task11": "2026-02-26T11:33:00Z"
   },
   "issue_backlog_cursor": 60,
-  "commented_issues": [1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333],
+  "commented_issues": [1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018],
   "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325],
   "future_work": [
     "Add With* methods to XmlProvider types (complex; deferred)",
     "Investigate #1392 HttpClient migration — dual-TFM approach",
-    "Continue triaging older open issues (backlog cursor ~60, next: #1338)"
+    "Continue triaging older open issues (backlog cursor ~60, next: #1132)"
   ]
 }
