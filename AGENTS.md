@@ -69,3 +69,5 @@ Update `RELEASE_NOTES.md` at the top of the file for any user-facing changes. Fo
 
 - Description of change by @author in #PR
 ```
+
+You should bump the version number in `RELEASE_NOTES.md` and `Directory.Build.props` for the next release - choose a new version number following semantic versioning guidelines. Assume that any listed versions have already been released.
