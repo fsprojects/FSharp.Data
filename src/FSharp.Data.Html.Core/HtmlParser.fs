@@ -177,12 +177,12 @@ module internal HtmlParser =
             x.Tokens <- result :: x.Tokens
 
         member x.IsFormattedTag =
-            match x.CurrentTagName().ToLower() with
+            match x.CurrentTagName().ToLowerInvariant() with
             | "pre" -> true
             | _ -> false
 
         member x.IsScriptTag =
-            match x.CurrentTagName().ToLower() with
+            match x.CurrentTagName().ToLowerInvariant() with
             | "script"
             | "style" -> true
             | _ -> false

@@ -319,7 +319,7 @@ module JsonSchema =
         // This is a simplified implementation - a complete one would handle JSON pointers properly
         let rec resolveRef (refPath: string) =
             match refPath with
-            | path when path.StartsWith("#/") ->
+            | path when path.StartsWith("#/", StringComparison.Ordinal) ->
                 // Handle local references like "#/definitions/Point"
                 let parts = path.Substring(2).Split('/')
 

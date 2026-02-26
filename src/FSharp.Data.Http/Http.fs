@@ -1740,7 +1740,7 @@ module internal HttpHelpers =
             | "origin" -> req.Headers.["Origin"] <- value
             | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
             | "range" ->
-                if not (value.StartsWith("bytes=")) then
+                if not (value.StartsWith("bytes=", StringComparison.Ordinal)) then
                     failwithf "Invalid value for the Range header (%O)" value
 
                 let bytes = value.Substring("bytes=".Length).Split('-')
@@ -1821,15 +1821,17 @@ module internal HttpHelpers =
                 let isText (mimeType: string) =
                     let mimeType = mimeType.Trim()
 
-                    mimeType.StartsWith "text/"
+                    mimeType.StartsWith("text/", StringComparison.Ordinal)
                     || mimeType = HttpContentTypes.Json
                     || mimeType = HttpContentTypes.Xml
                     || mimeType = HttpContentTypes.JavaScript
                     || mimeType = HttpContentTypes.JsonRpc
                     || mimeType = "application/ecmascript"
                     || mimeType = "application/xml-dtd"
-                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
-                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+json"
+                    || mimeType.StartsWith("application/", StringComparison.Ordinal)
+                       && mimeType.EndsWith("+xml", StringComparison.Ordinal)
+                    || mimeType.StartsWith("application/", StringComparison.Ordinal)
+                       && mimeType.EndsWith("+json", StringComparison.Ordinal)
 
                 mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
                 |> Array.exists isText
@@ -2009,7 +2011,7 @@ type Http private () =
         | [] -> url
         | query ->
             url
-            + if url.Contains "?" then "&" else "?"
+            + if url.IndexOf('?') >= 0 then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest

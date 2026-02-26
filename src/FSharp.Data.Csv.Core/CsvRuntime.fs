@@ -382,7 +382,7 @@ type CsvFile<'RowType>
         let probablyTabSeparated =
             parsedCsvLines.ColumnCount < 2
             && noSeparatorsSpecified
-            && fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.Contains "\t")
+            && fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.IndexOf('\t') >= 0)
 
         let parsedCsvLines =
             if probablyTabSeparated then
@@ -474,7 +474,11 @@ type CsvFile<'RowType>
             |> writeLine (fun item ->
                 let item = item |> nullSafeguard
 
-                if item.Contains separator || item.Contains quote || item.Contains "\n" then
+                if
+                    item.IndexOf(separator, StringComparison.Ordinal) >= 0
+                    || item.IndexOf(quote, StringComparison.Ordinal) >= 0
+                    || item.IndexOf('\n') >= 0
+                then
                     writer.Write quote
                     writer.Write(item.Replace(quote, doubleQuote))
                     writer.Write quote
