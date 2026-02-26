@@ -1,28 +1,28 @@
 {
-  "last_updated": "2026-02-26T03:42:00Z",
-  "last_run_id": "22426818359",
+  "last_updated": "2026-02-26T10:36:00Z",
+  "last_run_id": "22438292766",
   "monthly_summary_issue": 1599,
   "open_repo_assist_prs": [
     {
       "number": 1652,
-      "branch": "repo-assist/feature-toml-provider-...",
-      "title": "Add TOML type provider (TomlProvider)",
+      "branch": "repo-assist/feature-toml-provider",
+      "title": "[Repo Assist] Add TOML type provider (TomlProvider)",
       "status": "open",
       "closes": 1650
     },
     {
       "number": 1646,
-      "branch": "repo-assist/feature-yaml-provider-...",
-      "title": "Add YamlProvider type provider",
+      "branch": "repo-assist/feature-yaml-provider",
+      "title": "[Repo Assist] Add YamlProvider type provider",
       "status": "open",
       "closes": 1645
     },
     {
       "number": null,
-      "branch": "repo-assist/feature-markdown-provider-ff1df2a",
-      "title": "Add MarkdownProvider type provider",
-      "status": "open (PR number pending)",
-      "closes": 1657
+      "branch": "repo-assist/fix-issue-1488-xsd-use-schema-type-names",
+      "title": "Add UseSchemaTypeNames parameter to XmlProvider for XSD type deduplication",
+      "status": "created_this_run",
+      "closes": 1488
     }
   ],
   "merged_prs": [
@@ -32,11 +32,8 @@
     {"number": 1639, "title": "With* methods for CsvProvider/JsonProvider", "merged": "2026-02-24"},
     {"number": 1638, "title": "OmitNullFields for JsonProvider", "merged": "2026-02-24"}
   ],
-  "closed_prs": [
-    {"number": null, "branch": "repo-assist/fix-issue-953-inline-fallback-warning", "closed": "2026-02-25", "reason": "not merged by dsyme"},
-    {"number": 1628, "title": "Too invasive", "closed": "2026-02-24"}
-  ],
   "issues_commented": {
+    "1488": {"comment_date": "2026-02-26", "topic": "UseSchemaTypeNames implementation PR created"},
     "1657": {"comment_date": "2026-02-26", "topic": "MarkdownProvider implementation"},
     "953": {"comment_date": "2026-02-25"},
     "649": {"comment_date": "2026-02-25"},
@@ -65,9 +62,10 @@
     "1271": {"comment_date": "2026-02-24"}
   },
   "fix_attempts": {
-    "1657": {"branch": "repo-assist/feature-markdown-provider-ff1df2a", "status": "pr_created", "date": "2026-02-26"},
-    "1650": {"branch": "...", "pr": 1652, "status": "open"},
-    "1645": {"branch": "...", "pr": 1646, "status": "open"},
+    "1488": {"branch": "repo-assist/fix-issue-1488-xsd-use-schema-type-names", "status": "pr_created", "date": "2026-02-26"},
+    "1657": {"branch": "repo-assist/feature-markdown-provider-ff1df2a", "status": "branch_not_pushed_retry_needed", "date": "2026-02-26"},
+    "1650": {"pr": 1652, "status": "open"},
+    "1645": {"pr": 1646, "status": "open"},
     "649": {"pr": 1660, "status": "merged"},
     "838": {"pr": 1655, "status": "merged"},
     "953": {"branch": "repo-assist/fix-issue-953-inline-fallback-warning", "status": "closed_not_merged"}
@@ -78,8 +76,8 @@
     "task2_fix": "2026-02-26",
     "task3_improvements": "2026-02-25",
     "task4_deps": "2026-02-22",
-    "task5_maintain_prs": "2026-02-25",
-    "task6_stale_nudges": "2026-02-22",
+    "task5_maintain_prs": "2026-02-26",
+    "task6_stale_nudges": "2026-02-26",
     "task7_labels": "2026-02-25",
     "task8_release": "2026-02-22",
     "task9_welcome": "2026-02-22",
@@ -97,13 +95,16 @@
     "PreferOptionals for XmlProvider+JsonProvider (#1660)",
     "TomlProvider (#1652)",
     "YamlProvider (#1646)",
-    "MarkdownProvider (#1657, PR pending)"
+    "MarkdownProvider (#1657, PR creation failed - branch not pushed)",
+    "UseSchemaTypeNames for XmlProvider (#1488, PR created this run)"
   ],
   "notes": [
     "dsyme pattern: files bare-bones enhancement issues (#1650=TOML, #1645=YAML, #1657=Markdown) and merges implementations quickly",
-    "MarkdownProvider reuses JSON inference - MarkdownDocument implements IJsonDocument",
+    "MarkdownProvider branch repo-assist/feature-markdown-provider-ff1df2a was NOT pushed - retry needed",
     "FSharp.Data.Tests OOM (exit 137) is pre-existing CI infra issue, not caused by new code",
+    "436 design-time tests fail pre-existing (test infra cross-context issue), 50 pass - this is expected",
     "Repo Assist cannot push workflow files (lacks workflows:write permission)",
-    "TypeProviderInstantiation.fs must be updated when adding any new provider"
+    "TypeProviderInstantiation.fs must be updated when adding any new provider static parameter",
+    "UseSchemaTypeNames: XsdComplexType now has Name field (XmlQualifiedName option) set from XmlSchemaComplexType.QualifiedName"
   ]
 }
