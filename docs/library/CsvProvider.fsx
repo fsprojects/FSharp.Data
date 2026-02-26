@@ -90,8 +90,8 @@ let msft = Stocks.Load(__SOURCE_DIRECTORY__ + "/../data/MSFT.csv").Cache()
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' by default. Set PreferDateOnly = true
-// to use 'DateOnly' on .NET 6+
-// and 'Open' has a type 'decimal'
+// to use 'DateOnly' on .NET 6+, or PreferDateTimeOffset = true
+// to use 'DateTimeOffset'. 'Open' has a type 'decimal'.
 let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
@@ -111,6 +111,7 @@ to the columns in the CSV file.
 As you can see, the type provider also infers types of individual rows. The `Date`
 property is inferred as `DateTime` by default. When you set `PreferDateOnly = true`
 on .NET 6 and later, date-only strings (without a time component) are inferred as `DateOnly`.
+Set `PreferDateTimeOffset = true` to infer date-time values as `DateTimeOffset`.
 HLOC prices are inferred as `decimal`.
 
 ## Using units of measure
@@ -276,6 +277,10 @@ On .NET 6 and later, when you set `PreferDateOnly = true`, columns whose values 
 are inferred as `DateOnly`. Time-only strings are inferred as `TimeOnly`. If a column mixes `DateOnly` and `DateTime` values, it is unified to `DateTime`.
 By default (`PreferDateOnly = false`), all date values are inferred as `DateTime` for backward compatibility.
 
+Set `PreferDateTimeOffset = true` to infer all date-time columns (that would otherwise be `DateTime`) as `DateTimeOffset` instead.
+Values that already carry an explicit timezone offset (e.g. `2023-06-15T10:30:00+05:30`) are always inferred as `DateTimeOffset` regardless of this flag.
+`PreferDateTimeOffset` and `PreferDateOnly` are independent: `DateOnly` columns stay as `DateOnly` even when `PreferDateTimeOffset=true`.
+
 If a value is missing in any row, by default the CSV type provider will infer a nullable (for `int`, `int64`, and `DateOnly`) or an optional
 (for `bool`, `DateTime`, `DateTimeOffset`, and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
@@ -402,6 +407,13 @@ You can also explicitly request a `DateOnly` or `TimeOnly` column using schema a
 
 In the example above, `EventDate` is explicitly annotated as `dateonly` and `Duration` is explicitly
 annotated as `timeonly?` (a nullable `TimeOnly`).
+
+### DateTimeOffset
+
+Set `PreferDateTimeOffset = true` to infer all date-time columns (that would otherwise be `DateTime`) as
+`DateTimeOffset` instead. This is useful when you need to preserve or work with timezone-aware values.
+Values that already carry an explicit timezone offset in the sample data (e.g. `2023-06-15T10:30:00+05:30`)
+are always inferred as `DateTimeOffset` regardless of this flag.
 
 ## Transforming CSV files
 

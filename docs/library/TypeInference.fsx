@@ -83,13 +83,20 @@ The providers recognise date and time strings in standard ISO 8601 formats:
 | Inferred Type | When Used | Example Value |
 |---|---|---|
 | `DateTime` | Date + time strings (default) | `"2023-06-15T12:00:00"` |
-| `DateTimeOffset` | Date + time + timezone offset | `"2023-06-15T12:00:00+02:00"` |
+| `DateTimeOffset` | Date + time + timezone offset (always) | `"2023-06-15T12:00:00+02:00"` |
+| `DateTimeOffset` | Any date + time string when `PreferDateTimeOffset=true` | `"2023-06-15T12:00:00"` |
 | `DateOnly` (.NET 6+) | Date-only strings when `PreferDateOnly=true` | `"2023-06-15"` |
 | `TimeOnly` (.NET 6+) | Time-only strings when `PreferDateOnly=true` | `"12:00:00"` |
 
 By default (`PreferDateOnly = false`), date-only strings such as `"2023-06-15"` are
 inferred as `DateTime` for backward compatibility. Set `PreferDateOnly = true` on
 .NET 6 and later to infer them as `DateOnly` instead.
+
+Set `PreferDateTimeOffset = true` to infer all date-time values (that would otherwise be
+`DateTime`) as `DateTimeOffset` instead. Values that already carry an explicit timezone
+offset (e.g. `"2023-06-15T12:00:00+02:00"`) are always inferred as `DateTimeOffset`
+regardless of this flag. `PreferDateTimeOffset` and `PreferDateOnly` are independent:
+`DateOnly` values stay as `DateOnly` even when `PreferDateTimeOffset=true`.
 
 If a column mixes `DateOnly` and `DateTime` values, they are unified to `DateTime`.
 
@@ -270,6 +277,7 @@ The following static parameters let you override the default inference behaviour
 | `InferRows` | CSV | Number of rows to use for type inference (default 1000; 0 = all rows) |
 | `SampleIsList` | JSON, XML | Treat the top-level array as a list of sample objects, not a single sample |
 | `PreferDateOnly` | CSV, JSON, XML | Infer date-only strings as `DateOnly` on .NET 6+ (default `false`) |
+| `PreferDateTimeOffset` | CSV, JSON, XML | Infer all date-time values as `DateTimeOffset` instead of `DateTime` (default `false`) |
 | `InferenceMode` | JSON, XML | Enable inline schema annotations (`ValuesAndInlineSchemasHints` or `ValuesAndInlineSchemasOverrides`) |
 | `Schema` | CSV | Override column names and/or types directly |
 

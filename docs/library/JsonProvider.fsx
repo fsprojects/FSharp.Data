@@ -126,6 +126,10 @@ On .NET 6 and later, when you set `PreferDateOnly = true`, strings that represen
 are inferred as `DateOnly`, and time-only strings are inferred as `TimeOnly`. By default (`PreferDateOnly = false`),
 all dates are inferred as `DateTime` for backward compatibility.
 
+Set `PreferDateTimeOffset = true` to infer all date-time values (that would otherwise be `DateTime`) as `DateTimeOffset`.
+Values that already contain an explicit timezone offset (e.g. `"2023-06-15T10:30:00+05:30"`) are always inferred as
+`DateTimeOffset` regardless of this flag.
+
 ### Inferring record types
 
 Now let's look at a sample JSON document that contains a list of records. The
