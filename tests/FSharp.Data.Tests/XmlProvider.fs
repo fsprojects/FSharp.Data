@@ -1359,3 +1359,61 @@ let ``XmlProvider PreferOptionals=false uses empty string for missing string att
     let root = XmlPreferOptionalsFalse.Parse("""<root><item name="Bob" /></root>""")
     root.Items.[0].Tag.GetType() |> should equal typeof<string>
     root.Items.[0].Tag |> should equal ""
+
+// Tests for UseSchemaTypeNames parameter on XmlProvider (issue #1488)
+type XmlSharedTypes =
+    XmlProvider<
+        Schema = """
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <xs:element name="order" type="OrderType"/>
+          <xs:complexType name="OrderType">
+            <xs:sequence>
+              <xs:element name="shipTo" type="AddressType"/>
+              <xs:element name="billTo" type="AddressType"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required"/>
+          </xs:complexType>
+          <xs:complexType name="AddressType">
+            <xs:sequence>
+              <xs:element name="street" type="xs:string"/>
+              <xs:element name="city" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:schema>""",
+        UseSchemaTypeNames = true>
+
+[<Test>]
+let ``XmlProvider UseSchemaTypeNames=true: shipTo and billTo share the same generated F# type`` () =
+    let order =
+        XmlSharedTypes.Parse(
+            """<order id="1"><shipTo><street>1 Main</street><city>Springfield</city></shipTo>
+               <billTo><street>2 Oak</street><city>Shelbyville</city></billTo></order>"""
+        )
+
+    order.Id |> should equal "1"
+    order.ShipTo.Street |> should equal "1 Main"
+    order.BillTo.City |> should equal "Shelbyville"
+    // Both shipTo and billTo reference AddressType, so they must have the same .NET type
+    order.ShipTo.GetType() |> should equal (order.BillTo.GetType())
+
+type XmlSharedTypesFile =
+    XmlProvider<Schema = "Data/shared-types.xsd", UseSchemaTypeNames = true>
+
+[<Test>]
+let ``XmlProvider UseSchemaTypeNames=true with shared-types.xsd: shipTo and billTo share AddressType`` () =
+    let order =
+        XmlSharedTypesFile.Parse(
+            """<order id="ORD-001">
+               <shipTo country="US"><street>123 Main St</street><city>Springfield</city><zip>12345</zip></shipTo>
+               <billTo><street>456 Oak Ave</street><city>Shelbyville</city><zip>67890</zip></billTo>
+             </order>"""
+        )
+
+    order.Id |> should equal "ORD-001"
+    order.ShipTo.Street |> should equal "123 Main St"
+    order.ShipTo.Country |> should equal (Some "US")
+    order.BillTo.City |> should equal "Shelbyville"
+    order.BillTo.Zip |> should equal "67890"
+    order.Contact |> should equal None
+    // Both elements share the same XSD AddressType, so the generated .NET types must match
+    order.ShipTo.GetType() |> should equal (order.BillTo.GetType())

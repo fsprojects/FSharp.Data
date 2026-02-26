@@ -40,7 +40,8 @@ module XsdModel =
         | ComplexType of XsdComplexType
 
     and [<ReferenceEquality>] XsdComplexType =
-        { Attributes: (XmlQualifiedName * XmlTypeCode * IsOptional) list
+        { Name: XmlQualifiedName option
+          Attributes: (XmlQualifiedName * XmlTypeCode * IsOptional) list
           Contents: XsdContent }
 
     and XsdContent =
@@ -150,7 +151,12 @@ module XsdParsing =
                 result
 
     and parseComplexType ctx (x: XmlSchemaComplexType) =
-        { Attributes =
+        { Name =
+            if x.QualifiedName.IsEmpty then
+                None
+            else
+                Some x.QualifiedName
+          Attributes =
             x.AttributeUses.Values
             |> ofType<XmlSchemaAttribute>
             |> Seq.filter (fun a -> a.Use <> XmlSchemaUse.Prohibited)
@@ -274,8 +280,14 @@ module internal XsdInference =
     type InferenceContext = System.Collections.Generic.Dictionary<XsdComplexType, InferedProperty>
 
     // derives an InferedType for an element definition
-    let rec inferElementType ctx elm =
-        let name = getElementName elm
+    let rec inferElementType useSchemaTypeNames ctx (elm: XsdElement) =
+        let name =
+            if useSchemaTypeNames then
+                match elm.Type with
+                | ComplexType cty when cty.Name.IsSome -> Some(formatName cty.Name.Value)
+                | _ -> getElementName elm
+            else
+                getElementName elm
 
         if elm.IsAbstract then
             InferedType.Record(name, [], optional = false)
@@ -287,7 +299,7 @@ module internal XsdInference =
                 let props = if elm.IsNillable then [ prop; nil ] else [ prop ]
                 InferedType.Record(name, props, optional = false)
             | ComplexType cty ->
-                let props = inferProperties ctx cty
+                let props = inferProperties useSchemaTypeNames ctx cty
 
                 let props =
                     if elm.IsNillable then
@@ -301,7 +313,7 @@ module internal XsdInference =
                 InferedType.Record(name, props, optional = false)
 
 
-    and inferProperties (ctx: InferenceContext) cty =
+    and inferProperties useSchemaTypeNames (ctx: InferenceContext) cty =
         let attrs: InferedProperty list =
             cty.Attributes
             |> List.map (fun (name, typeCode, optional) ->
@@ -328,14 +340,14 @@ module internal XsdInference =
                     let getRecordTag (e: XsdElement) = InferedTypeTag.Record(getElementName e)
 
                     result.Type <-
-                        match getElements ctx Single xsdParticle with
+                        match getElements useSchemaTypeNames ctx Single xsdParticle with
                         | [] -> InferedType.Null
                         | items ->
                             let tags = items |> List.map (fst >> getRecordTag)
 
                             let types =
                                 items
-                                |> List.map (fun (e, m) -> m, inferElementType ctx e)
+                                |> List.map (fun (e, m) -> m, inferElementType useSchemaTypeNames ctx e)
                                 |> Seq.zip tags
                                 |> Map.ofSeq
 
@@ -349,7 +361,7 @@ module internal XsdInference =
                 body :: attrs
 
     // collects element definitions in a particle
-    and getElements ctx parentMultiplicity =
+    and getElements useSchemaTypeNames ctx parentMultiplicity =
         function
         | XsdParticle.Element(occ, elm) ->
             let mult = combineMultiplicity (parentMultiplicity, getMultiplicity occ)
@@ -362,23 +374,24 @@ module internal XsdInference =
         | XsdParticle.Sequence(occ, particles)
         | XsdParticle.All(occ, particles) ->
             let mult = combineMultiplicity (parentMultiplicity, getMultiplicity occ)
-            particles |> List.collect (getElements ctx mult)
+            particles |> List.collect (getElements useSchemaTypeNames ctx mult)
         | XsdParticle.Choice(occ, particles) ->
             let mult = makeOptional (getMultiplicity occ)
             let mult' = combineMultiplicity (parentMultiplicity, mult)
-            particles |> List.collect (getElements ctx mult')
+            particles |> List.collect (getElements useSchemaTypeNames ctx mult')
         | XsdParticle.Empty -> []
         | XsdParticle.Any _ -> []
 
 
-    let inferElements elms =
+    let inferElements useSchemaTypeNames elms =
         let ctx = InferenceContext()
 
         match elms |> List.filter (fun elm -> not elm.IsAbstract) with
         | [] -> failwith "No suitable element definition found in the schema."
-        | [ elm ] -> inferElementType ctx elm
+        | [ elm ] -> inferElementType useSchemaTypeNames ctx elm
         | elms ->
             elms
-            |> List.map (fun elm -> InferedTypeTag.Record(getElementName elm), inferElementType ctx elm)
+            |> List.map (fun elm ->
+                InferedTypeTag.Record(getElementName elm), inferElementType useSchemaTypeNames ctx elm)
             |> Map.ofList
             |> (fun x -> InferedType.Heterogeneous(x, false))

@@ -47,6 +47,7 @@ type internal XmlProviderArgs =
       DtdProcessing : string
       UseOriginalNames : bool
       PreferOptionals : bool
+      UseSchemaTypeNames : bool
       PreferDateTimeOffset : bool }
 
 type internal JsonProviderArgs =
@@ -131,6 +132,7 @@ type internal TypeProviderInstantiation =
                    box x.DtdProcessing
                    box x.UseOriginalNames
                    box x.PreferOptionals
+                   box x.UseSchemaTypeNames
                    box x.PreferDateTimeOffset |]
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
@@ -276,6 +278,7 @@ type internal TypeProviderInstantiation =
                   DtdProcessing = "Ignore"
                   UseOriginalNames = false
                   PreferOptionals = true
+                  UseSchemaTypeNames = false
                   PreferDateTimeOffset = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty

@@ -444,7 +444,14 @@ let internal getInferedTypeFromSchema xsd =
     |> XmlSchema.parseSchema ""
     |> XsdParsing.getElements
     |> List.ofSeq
-    |> XsdInference.inferElements
+    |> XsdInference.inferElements false
+
+let internal getInferedTypeFromSchemaWithTypeNames xsd =
+    xsd
+    |> XmlSchema.parseSchema ""
+    |> XsdParsing.getElements
+    |> List.ofSeq
+    |> XsdInference.inferElements true
 
 let internal isValid xsd =
     let xmlSchemaSet = XmlSchema.parseSchema "" xsd
@@ -965,4 +972,100 @@ let ``circular group references do not cause a stack overflow``() =
 
     // Must complete without StackOverflowException
     getInferedTypeFromSchema xsd |> ignore
+
+// Schema with shared complex types, used to test UseSchemaTypeNames
+let private sharedTypesXsd =
+    """
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="order" type="OrderType"/>
+      <xs:complexType name="OrderType">
+        <xs:sequence>
+          <xs:element name="shipTo" type="AddressType"/>
+          <xs:element name="billTo" type="AddressType"/>
+          <xs:element name="contact" type="PersonType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+      </xs:complexType>
+      <xs:complexType name="AddressType">
+        <xs:sequence>
+          <xs:element name="street" type="xs:string"/>
+          <xs:element name="city" type="xs:string"/>
+          <xs:element name="zip" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="country" type="xs:string"/>
+      </xs:complexType>
+      <xs:complexType name="PersonType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="email" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    """
+
+// Extracts the record type name for a child element from the body Collection inside a top-level Record.
+// The body property has Name = "" and type InferedType.Collection whose Map keys are InferedTypeTag.Record
+// (keyed by element name) and whose values are (multiplicity, InferedType.Record(typeName, ...)).
+let private getChildRecordName (elementName: string) ty =
+    match ty with
+    | InferedType.Record(_, props, _) ->
+        let body = props |> List.find (fun p -> p.Name = "")
+
+        match body.Type with
+        | InferedType.Collection(_, types) ->
+            let key = InferedTypeTag.Record(Some elementName)
+
+            match types |> Map.tryFind key with
+            | Some(_, InferedType.Record(name, _, _)) -> name
+            | Some(_, t) -> failwithf "Expected Record for element '%s', got %A" elementName t
+            | None -> failwithf "Element '%s' not found in Collection; keys: %A" elementName (types |> Map.toList |> List.map fst)
+        | t -> failwithf "Expected Collection body property, got %A" t
+    | _ -> failwithf "Expected top-level Record, got %A" ty
+
+[<Test>]
+let ``UseSchemaTypeNames false: child elements use element names as record type names``() =
+    let ty = getInferedTypeFromSchema sharedTypesXsd
+
+    match ty with
+    | InferedType.Record(Some "order", _, _) ->
+        getChildRecordName "shipTo" ty |> should equal (Some "shipTo")
+        getChildRecordName "billTo" ty |> should equal (Some "billTo")
+        getChildRecordName "contact" ty |> should equal (Some "contact")
+    | _ -> failwithf "Expected Record(Some 'order'), got %A" ty
+
+[<Test>]
+let ``UseSchemaTypeNames true: shared complex types get XSD type name``() =
+    let ty = getInferedTypeFromSchemaWithTypeNames sharedTypesXsd
+
+    // The root element itself is named after its XSD type
+    match ty with
+    | InferedType.Record(Some "OrderType", _, _) ->
+        // Both shipTo and billTo reference AddressType, so both should get the XSD type name
+        getChildRecordName "shipTo" ty |> should equal (Some "AddressType")
+        getChildRecordName "billTo" ty |> should equal (Some "AddressType")
+        getChildRecordName "contact" ty |> should equal (Some "PersonType")
+    | _ -> failwithf "Expected Record(Some 'OrderType'), got %A" ty
+
+[<Test>]
+let ``UseSchemaTypeNames true: anonymous types still use element names``() =
+    let xsd =
+        """
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          <xs:element name="root">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="child" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+        """
+
+    let ty = getInferedTypeFromSchemaWithTypeNames xsd
+
+    // Root element uses anonymous inline type — no named XSD type, so element name is used
+    match ty with
+    | InferedType.Record(Some "root", _, _) -> ()
+    | _ -> failwithf "Expected Record(Some 'root'), got %A" ty
+
 
