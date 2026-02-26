@@ -79,12 +79,24 @@ type internal WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
+type internal MarkdownProviderArgs =
+    { Sample : string
+      RootName : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string
+      InferTypesFromValues : bool
+      UseOriginalNames : bool
+      PreferOptionals : bool }
+
 type internal TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
+    | Markdown of MarkdownProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly runtimeAssemblyRefs =
         let f, args =
@@ -159,6 +171,17 @@ type internal TypeProviderInstantiation =
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |]
+            | Markdown x ->
+                (fun cfg -> new MarkdownProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.RootName
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues
+                   box x.UseOriginalNames
+                   box x.PreferOptionals |]
 
         Testing.GenerateProvidedTypeInstantiation(resolutionFolder, runtimeAssembly, runtimeAssemblyRefs, f, args)
 
@@ -204,6 +227,11 @@ type internal TypeProviderInstantiation =
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString() ]
+        | Markdown x ->
+            ["Markdown"
+             x.Sample
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder =
@@ -317,6 +345,16 @@ type internal TypeProviderInstantiation =
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
+        | "Markdown" ->
+            Markdown { Sample = args.[1]
+                       RootName = "Root"
+                       Culture = args.[2]
+                       Encoding = ""
+                       ResolutionFolder = ""
+                       EmbeddedResource = ""
+                       InferTypesFromValues = args.[3] |> bool.Parse
+                       UseOriginalNames = false
+                       PreferOptionals = true }
         | _ -> failwithf "Unknown: %s" args.[0]
 
     static member GetRuntimeAssemblyRefs () =

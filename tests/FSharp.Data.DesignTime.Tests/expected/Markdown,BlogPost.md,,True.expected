@@ -1,0 +1,97 @@
+class MarkdownProvider : obj
+    static member AsyncGetSample: () -> MarkdownProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> MarkdownDocument.Load(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "Markdown" "" "BlogPost.md"), f)
+
+    static member AsyncLoad: uri:string -> MarkdownProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> MarkdownDocument.Load(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "Markdown" "" uri), f)
+
+    static member GetSample: () -> MarkdownProvider+Root
+    MarkdownDocument.Load(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "Markdown" "" "BlogPost.md")))
+
+    static member Load: stream:System.IO.Stream -> MarkdownProvider+Root
+    MarkdownDocument.Load(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> MarkdownProvider+Root
+    MarkdownDocument.Load(reader)
+
+    static member Load: uri:string -> MarkdownProvider+Root
+    MarkdownDocument.Load(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "Markdown" "" uri)))
+
+    static member Parse: text:string -> MarkdownProvider+Root
+    MarkdownDocument.Load(((new StringReader(text)) :> TextReader))
+
+
+class MarkdownProvider+Root : FDR.BaseTypes.IJsonDocument
+    new : title:string -> date:System.DateTime -> author:string -> tags:string[] -> draft:bool -> views:int -> rating:decimal -> MarkdownProvider+Root
+    JsonRuntime.CreateRecord([| ("title",
+                                 (title :> obj))
+                                ("date",
+                                 (date :> obj))
+                                ("author",
+                                 (author :> obj))
+                                ("tags",
+                                 (tags :> obj))
+                                ("draft",
+                                 (draft :> obj))
+                                ("views",
+                                 (views :> obj))
+                                ("rating",
+                                 (rating :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> MarkdownProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
+    member Author: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "author")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Body: string with get
+    LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Body
+
+    member Date: System.DateTime with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "date")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDateTime("", value.JsonOpt), value.JsonOpt)
+
+    member Draft: bool with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "draft")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
+
+    member Rating: decimal with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "rating")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
+
+    member Tags: string[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "tags"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+
+    member Title: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "title")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Views: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "views")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member WithAuthor: author:string -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "author", (author :> obj), "")
+
+    member WithDate: date:System.DateTime -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "date", (date :> obj), "")
+
+    member WithDraft: draft:bool -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "draft", (draft :> obj), "")
+
+    member WithRating: rating:decimal -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "rating", (rating :> obj), "")
+
+    member WithTags: tags:string[] -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "tags", (tags :> obj), "")
+
+    member WithTitle: title:string -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "title", (title :> obj), "")
+
+    member WithViews: views:int -> MarkdownProvider+Root
+    JsonRuntime.WithRecordProperty(this, "views", (views :> obj), "")
+
+

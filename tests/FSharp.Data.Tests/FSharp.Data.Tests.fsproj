@@ -24,6 +24,7 @@
     <Compile Include="WorldBankProvider.fs" />
     <Compile Include="HtmlProvider.fs" />
     <Compile Include="HtmlProviderList.fs" />
+    <Compile Include="MarkdownProvider.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
