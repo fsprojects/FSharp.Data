@@ -45,7 +45,8 @@ type internal XmlProviderArgs =
       PreferDateOnly : bool
       DtdProcessing : string
       UseOriginalNames : bool
-      PreferOptionals : bool }
+      PreferOptionals : bool
+      UseSchemaTypeNames : bool }
 
 type internal JsonProviderArgs =
     { Sample : string
@@ -126,7 +127,8 @@ type internal TypeProviderInstantiation =
                    box x.PreferDateOnly
                    box x.DtdProcessing
                    box x.UseOriginalNames
-                   box x.PreferOptionals |]
+                   box x.PreferOptionals
+                   box x.UseSchemaTypeNames |]
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -268,7 +270,8 @@ type internal TypeProviderInstantiation =
                   PreferDateOnly = false
                   DtdProcessing = "Ignore"
                   UseOriginalNames = false
-                  PreferOptionals = true }
+                  PreferOptionals = true
+                  UseSchemaTypeNames = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty
             if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then

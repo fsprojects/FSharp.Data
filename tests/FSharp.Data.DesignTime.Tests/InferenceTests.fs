@@ -444,7 +444,7 @@ let internal getInferedTypeFromSchema xsd =
     |> XmlSchema.parseSchema ""
     |> XsdParsing.getElements
     |> List.ofSeq
-    |> XsdInference.inferElements
+    |> XsdInference.inferElements false
 
 let internal isValid xsd =
     let xmlSchemaSet = XmlSchema.parseSchema "" xsd
