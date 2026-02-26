@@ -441,7 +441,8 @@ module internal XmlTypeBuilder =
                         [ for child in children ->
 
                               let isCollectionName parentName childName =
-                                  parentName = NameUtils.pluralize childName || parentName.StartsWith childName
+                                  parentName = NameUtils.pluralize childName
+                                  || parentName.StartsWith(childName, StringComparison.Ordinal)
 
                               let child =
                                   match child with
@@ -495,9 +496,9 @@ module internal XmlTypeBuilder =
                                       let convFunc = ReflectionHelpers.makeDelegate result.Converter typeof<XmlElement>
 
                                       let isCollectionName =
-                                          names.[0].EndsWith "List"
-                                          || names.[0].EndsWith "Array"
-                                          || names.[0].EndsWith "Collection"
+                                          names.[0].EndsWith("List", StringComparison.Ordinal)
+                                          || names.[0].EndsWith("Array", StringComparison.Ordinal)
+                                          || names.[0].EndsWith("Collection", StringComparison.Ordinal)
 
                                       let name =
                                           makeUnique (
@@ -527,7 +528,12 @@ module internal XmlTypeBuilder =
                                       let convFunc = ReflectionHelpers.makeDelegate result.Converter typeof<XmlElement>
                                       let name = makeUnique names.[names.Length - 1]
 
-                                      if result.ConvertedType.Name.StartsWith "FSharpOption`1" then
+                                      if
+                                          result.ConvertedType.Name.StartsWith(
+                                              "FSharpOption`1",
+                                              StringComparison.Ordinal
+                                          )
+                                      then
                                           nameWithNS,
                                           ProvidedProperty(
                                               name,

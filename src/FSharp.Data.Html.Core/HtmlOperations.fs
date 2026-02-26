@@ -352,11 +352,15 @@ module HtmlNode =
                     selectElements' FilterLevel.Root selectedNodes t
 
                 | OpenAttribute _ :: AttributeName(_, name) :: EndWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
-                    let selectedNodes = filterByAttr level acc name (fun v -> v.EndsWith value)
+                    let selectedNodes =
+                        filterByAttr level acc name (fun v -> v.EndsWith(value, StringComparison.Ordinal))
+
                     selectElements' FilterLevel.Root selectedNodes t
 
                 | OpenAttribute _ :: AttributeName(_, name) :: StartWith _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->
-                    let selectedNodes = filterByAttr level acc name (fun v -> v.StartsWith value)
+                    let selectedNodes =
+                        filterByAttr level acc name (fun v -> v.StartsWith(value, StringComparison.Ordinal))
+
                     selectElements' FilterLevel.Root selectedNodes t
 
                 | OpenAttribute _ :: AttributeName(_, name) :: AttributeContainsPrefix _ :: AttributeValue(_, value) :: CloseAttribute _ :: t ->

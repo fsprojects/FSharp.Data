@@ -413,7 +413,7 @@ let parseUnitOfMeasure (provider: IUnitsOfMeasureProvider) (str: string) =
         uomTransformations
         |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
         |> List.tryPick (fun (suffix, trans) ->
-            if str.EndsWith suffix then
+            if str.EndsWith(suffix, StringComparison.Ordinal) then
                 let baseUnitStr = str.[.. str.Length - suffix.Length - 1]
                 let baseUnit = provider.SI baseUnitStr
 
