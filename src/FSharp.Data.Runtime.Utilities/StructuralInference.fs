@@ -708,3 +708,70 @@ let internal downgradeNet6PrimitiveProperty (field: StructuralTypes.PrimitiveInf
     else
         field
 #endif
+
+/// Replaces DateTime → DateTimeOffset throughout an InferedType tree.
+/// Used when PreferDateTimeOffset=true to infer all date-time values as DateTimeOffset.
+let internal upgradeToDateTimeOffset (inferedType: InferedType) : InferedType =
+    let upgradeTag tag =
+        match tag with
+        | InferedTypeTag.DateTime -> InferedTypeTag.DateTimeOffset
+        | _ -> tag
+
+    let upgradeType (typ: Type) =
+        if typ = typeof<DateTime> then
+            typeof<DateTimeOffset>
+        else
+            typ
+
+    let visited =
+        System.Collections.Generic.HashSet<InferedType>(
+            { new System.Collections.Generic.IEqualityComparer<InferedType> with
+                member _.Equals(x, y) = obj.ReferenceEquals(x, y)
+
+                member _.GetHashCode(x) =
+                    System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(x) }
+        )
+
+    let rec convert infType =
+        if not (visited.Add(infType)) then
+            infType
+        else
+            match infType with
+            | InferedType.Primitive(typ, unit, optional, overrideOnMerge) ->
+                InferedType.Primitive(upgradeType typ, unit, optional, overrideOnMerge)
+            | InferedType.Record(name, props, optional) ->
+                InferedType.Record(name, props |> List.map (fun p -> { p with Type = convert p.Type }), optional)
+            | InferedType.Collection(order, types) ->
+                InferedType.Collection(
+                    order |> List.map upgradeTag,
+                    types
+                    |> Map.toSeq
+                    |> Seq.map (fun (k, (m, t)) -> upgradeTag k, (m, convert t))
+                    |> Map.ofSeq
+                )
+            | InferedType.Heterogeneous(types, containsOptional) ->
+                InferedType.Heterogeneous(
+                    types
+                    |> Map.toSeq
+                    |> Seq.map (fun (k, t) -> upgradeTag k, convert t)
+                    |> Map.ofSeq,
+                    containsOptional
+                )
+            | InferedType.Json(innerType, optional) -> InferedType.Json(convert innerType, optional)
+            | _ -> infType
+
+    convert inferedType
+
+/// Replaces DateTime → DateTimeOffset in a PrimitiveInferedProperty.
+/// Used when PreferDateTimeOffset=true.
+let internal upgradeToDateTimeOffsetPrimitiveProperty (field: StructuralTypes.PrimitiveInferedProperty) =
+    let v = field.Value
+
+    if v.InferedType = typeof<DateTime> then
+        { field with
+            Value =
+                { v with
+                    InferedType = typeof<DateTimeOffset>
+                    RuntimeType = typeof<DateTimeOffset> } }
+    else
+        field

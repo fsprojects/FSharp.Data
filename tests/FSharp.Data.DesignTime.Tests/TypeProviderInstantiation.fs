@@ -29,7 +29,8 @@ type internal CsvProviderArgs =
       PreferDateOnly : bool
       StrictBooleans : bool
       UseOriginalNames : bool
-      PreferFloats : bool }
+      PreferFloats : bool
+      PreferDateTimeOffset : bool }
 
 type internal XmlProviderArgs =
     { Sample : string
@@ -45,7 +46,8 @@ type internal XmlProviderArgs =
       PreferDateOnly : bool
       DtdProcessing : string
       UseOriginalNames : bool
-      PreferOptionals : bool }
+      PreferOptionals : bool
+      PreferDateTimeOffset : bool }
 
 type internal JsonProviderArgs =
     { Sample : string
@@ -62,7 +64,8 @@ type internal JsonProviderArgs =
       PreferDateOnly : bool
       UseOriginalNames : bool
       OmitNullFields : bool
-      PreferOptionals : bool }
+      PreferOptionals : bool
+      PreferDateTimeOffset : bool }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -110,7 +113,8 @@ type internal TypeProviderInstantiation =
                    box x.PreferDateOnly
                    box x.StrictBooleans
                    box x.UseOriginalNames
-                   box x.PreferFloats |]
+                   box x.PreferFloats
+                   box x.PreferDateTimeOffset |]
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -126,7 +130,8 @@ type internal TypeProviderInstantiation =
                    box x.PreferDateOnly
                    box x.DtdProcessing
                    box x.UseOriginalNames
-                   box x.PreferOptionals |]
+                   box x.PreferOptionals
+                   box x.PreferDateTimeOffset |]
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -143,7 +148,8 @@ type internal TypeProviderInstantiation =
                    box x.PreferDateOnly
                    box x.UseOriginalNames
                    box x.OmitNullFields
-                   box x.PreferOptionals |]
+                   box x.PreferOptionals
+                   box x.PreferDateTimeOffset |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -253,7 +259,8 @@ type internal TypeProviderInstantiation =
                   PreferDateOnly = false
                   StrictBooleans = false
                   UseOriginalNames = false
-                  PreferFloats = false }
+                  PreferFloats = false
+                  PreferDateTimeOffset = false }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
@@ -268,7 +275,8 @@ type internal TypeProviderInstantiation =
                   PreferDateOnly = false
                   DtdProcessing = "Ignore"
                   UseOriginalNames = false
-                  PreferOptionals = true }
+                  PreferOptionals = true
+                  PreferDateTimeOffset = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty
             if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then
@@ -286,7 +294,8 @@ type internal TypeProviderInstantiation =
                        PreferDateOnly = false
                        UseOriginalNames = false
                        OmitNullFields = false
-                       PreferOptionals = true }
+                       PreferOptionals = true
+                       PreferDateTimeOffset = false }
             else
                 // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
                 Json { Sample = args.[1]
@@ -303,7 +312,8 @@ type internal TypeProviderInstantiation =
                        PreferDateOnly = false
                        UseOriginalNames = false
                        OmitNullFields = false
-                       PreferOptionals = true }
+                       PreferOptionals = true
+                       PreferDateTimeOffset = false }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
