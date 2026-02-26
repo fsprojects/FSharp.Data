@@ -1376,8 +1376,8 @@ module HttpEncodings =
     /// ISO-8859-1
     let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
 
-    /// ISO-8859-1
-    let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
+    /// UTF-8 (matches System.Net.Http.HttpClient default behaviour; RFC 2616 specifies ISO-8859-1 but modern servers and browsers default to UTF-8)
+    let ResponseDefaultEncoding = Encoding.UTF8
 
     let internal getEncoding (encodingStr: string) =
         match Int32.TryParse(encodingStr, NumberStyles.Integer, CultureInfo.InvariantCulture) with
