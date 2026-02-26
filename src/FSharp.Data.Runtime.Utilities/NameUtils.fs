@@ -117,7 +117,7 @@ let uniqueGenerator (niceName: string -> string) =
                 lastLetterPos <- lastLetterPos - 1
 
             if lastLetterPos = name.Length - 1 then
-                if name.Contains " " then
+                if name.IndexOf(' ') >= 0 then
                     name <- name + " 2"
                 else
                     name <- name + "2"

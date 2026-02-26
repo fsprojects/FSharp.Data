@@ -45,7 +45,9 @@ let getInferedTypeFromValue unitsOfMeasureProvider inferenceMode cultureInfo (el
         | InferedType.Primitive(t, _, optional, _) when
             t = typeof<string>
             && let v = (element.Value).TrimStart() in
-               v.StartsWith "{" || v.StartsWith "["
+
+               v.StartsWith("{", StringComparison.Ordinal)
+               || v.StartsWith("[", StringComparison.Ordinal)
             ->
             try
                 match JsonValue.Parse(element.Value) with

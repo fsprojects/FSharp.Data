@@ -116,7 +116,7 @@ type XmlElement =
             (parseWithReader text).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
-        with _ when text.TrimStart().StartsWith "<" ->
+        with _ when text.TrimStart().StartsWith("<", System.StringComparison.Ordinal) ->
             (parseWithReader ("<root>" + text + "</root>")).Root.Elements()
             |> Seq.map (fun value -> { XElement = value })
             |> Seq.toArray
@@ -380,7 +380,10 @@ module XmlSchema =
         let uri = // Uri must end with separator (maybe there's a better way)
             if resolutionFolder = "" then
                 ""
-            elif resolutionFolder.EndsWith "/" || resolutionFolder.EndsWith "\\" then
+            elif
+                resolutionFolder.EndsWith("/", StringComparison.Ordinal)
+                || resolutionFolder.EndsWith("\\", StringComparison.Ordinal)
+            then
                 resolutionFolder
             else
                 resolutionFolder + "/"

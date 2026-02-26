@@ -55,6 +55,7 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let useOriginalNames = args.[12] :?> bool
         let preferOptionals = args.[13] :?> bool
         let useSchemaTypeNames = args.[14] :?> bool
+        let preferDateTimeOffset = args.[14] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -84,14 +85,21 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         |> XsdParsing.getElements
                         |> List.ofSeq
                         |> XsdInference.inferElements useSchemaTypeNames
+
+                    let t =
 #if NET6_0_OR_GREATER
-                    if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
-                        t
-                    else
-                        StructuralInference.downgradeNet6Types t
+                        if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                            t
+                        else
+                            StructuralInference.downgradeNet6Types t
 #else
-                    t
+                        t
 #endif
+
+                    if preferDateTimeOffset then
+                        StructuralInference.upgradeToDateTimeOffset t
+                    else
+                        t
 
                 use _holder = IO.logTime "TypeGeneration" sample
 
@@ -141,14 +149,21 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                             (not preferOptionals)
                             globalInference
                         |> Array.fold (StructuralInference.subtypeInfered (not preferOptionals)) InferedType.Top
+
+                    let t =
 #if NET6_0_OR_GREATER
-                    if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
-                        t
-                    else
-                        StructuralInference.downgradeNet6Types t
+                        if preferDateOnly && ProviderHelpers.runtimeSupportsNet6Types cfg.RuntimeAssembly then
+                            t
+                        else
+                            StructuralInference.downgradeNet6Types t
 #else
-                    t
+                        t
 #endif
+
+                    if preferDateTimeOffset then
+                        StructuralInference.upgradeToDateTimeOffset t
+                    else
+                        t
 
                 use _holder = IO.logTime "TypeGeneration" sample
 
@@ -210,7 +225,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("DtdProcessing", typeof<string>, parameterDefaultValue = "Ignore")
           ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = true)
-          ProvidedStaticParameter("UseSchemaTypeNames", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("UseSchemaTypeNames", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("PreferDateTimeOffset", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -238,7 +254,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
            <param name='DtdProcessing'>Controls how DTD declarations in the XML are handled. Accepted values: "Ignore" (default, silently skips DTD processing, safe for most cases), "Prohibit" (throws on any DTD declaration), "Parse" (enables full DTD processing including entity expansion, use with caution).</param>
            <param name='UseOriginalNames'>When true, XML element and attribute names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
            <param name='PreferOptionals'>When set to true (default), inference will use the option type for missing or absent values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.</param>
-           <param name='UseSchemaTypeNames'>When true and a Schema is provided, the XSD complex type name is used for the generated F# type instead of the element name. This causes multiple elements that share the same XSD type to map to a single F# type. Defaults to false for backward compatibility.</param>"""
+           <param name='UseSchemaTypeNames'>When true and a Schema is provided, the XSD complex type name is used for the generated F# type instead of the element name. This causes multiple elements that share the same XSD type to map to a single F# type. Defaults to false for backward compatibility.</param>
+           <param name='PreferDateTimeOffset'>When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText
