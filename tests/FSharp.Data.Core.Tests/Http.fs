@@ -70,6 +70,30 @@ let startHttpLocalServer() =
         member this.BaseAddress = baseAddress }
 
 [<Test>]
+let ``AppendQueryToUrl with no query returns url unchanged`` () =
+    Http.AppendQueryToUrl("https://example.com/api", []) |> should equal "https://example.com/api"
+
+[<Test>]
+let ``AppendQueryToUrl appends query parameters`` () =
+    Http.AppendQueryToUrl("https://example.com/api", [ "key", "value" ])
+    |> should equal "https://example.com/api?key=value"
+
+[<Test>]
+let ``AppendQueryToUrl appends multiple query parameters`` () =
+    Http.AppendQueryToUrl("https://example.com/api", [ "a", "1"; "b", "2" ])
+    |> should equal "https://example.com/api?a=1&b=2"
+
+[<Test>]
+let ``AppendQueryToUrl uses ampersand when url already contains query`` () =
+    Http.AppendQueryToUrl("https://example.com/api?existing=x", [ "key", "value" ])
+    |> should equal "https://example.com/api?existing=x&key=value"
+
+[<Test>]
+let ``AppendQueryToUrl percent-encodes special characters in keys and values`` () =
+    Http.AppendQueryToUrl("https://example.com/search", [ "q", "hello world" ])
+    |> should equal "https://example.com/search?q=hello%20world"
+
+[<Test>]
 let ``Don't throw exceptions on http error`` () =
     use localServer = startHttpLocalServer()
     let response = Http.Request(localServer.BaseAddress + "/401", silentHttpErrors = true)

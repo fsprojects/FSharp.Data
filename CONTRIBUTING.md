@@ -87,10 +87,9 @@ between _runtime_ and _design-time_ components, so you'll find at least two file
 
 ### Debugging
 
-To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application,
-rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them.  
-This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio.  
-You'll also see in the console output the complete dump of the generated types and expressions.  
+To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application and hit the Run command in the IDE, setting the breakpoints where you need them.
+This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio.
+You'll also see in the console output the complete dump of the generated types and expressions.
 This is also the process used for the signature tests.
 
 ## Documentation
