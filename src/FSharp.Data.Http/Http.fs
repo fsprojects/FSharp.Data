@@ -1999,6 +1999,9 @@ type Http private () =
 
     static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Compiled)
 
+    static let linkHeaderPattern =
+        Regex(@"<([^>]+)>\s*;\s*rel=""([^""]+)""", RegexOptions.Compiled)
+
     /// Correctly encodes large form data values.
     /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
     /// and https://msdn.microsoft.com/en-us/library/system.uri.escapedatastring(v=vs.110).aspx
@@ -2013,6 +2016,21 @@ type Http private () =
             url
             + if url.IndexOf('?') >= 0 then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+
+    /// Parses an RFC 5988 Link header value (e.g. from a GitHub or other paginated API response)
+    /// and returns a map from relation type to URL.
+    ///
+    /// For example, given the header value:
+    ///   &lt;https://api.github.com/repos/.../releases?page=2&gt;; rel="next", &lt;...&gt;; rel="last"
+    /// this returns: Map [ "next", "https://..."; "last", "https://..." ]
+    static member ParseLinkHeader(linkHeader: string) =
+        if String.IsNullOrWhiteSpace(linkHeader) then
+            Map.empty
+        else
+            linkHeaderPattern.Matches(linkHeader)
+            |> Seq.cast<Match>
+            |> Seq.map (fun m -> m.Groups.[2].Value, m.Groups.[1].Value)
+            |> Map.ofSeq
 
     static member private InnerRequest
         (

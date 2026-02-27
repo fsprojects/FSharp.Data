@@ -94,6 +94,35 @@ let ``AppendQueryToUrl percent-encodes special characters in keys and values`` (
     |> should equal "https://example.com/search?q=hello%20world"
 
 [<Test>]
+let ``ParseLinkHeader returns empty map for empty string`` () =
+    Http.ParseLinkHeader("") |> should equal Map.empty
+
+[<Test>]
+let ``ParseLinkHeader parses next and last relations`` () =
+    let header =
+        "<https://api.github.com/repos/octocat/hello-world/releases?page=2>; rel=\"next\", <https://api.github.com/repos/octocat/hello-world/releases?page=5>; rel=\"last\""
+    let result = Http.ParseLinkHeader(header)
+    result |> Map.find "next" |> should equal "https://api.github.com/repos/octocat/hello-world/releases?page=2"
+    result |> Map.find "last" |> should equal "https://api.github.com/repos/octocat/hello-world/releases?page=5"
+
+[<Test>]
+let ``ParseLinkHeader parses single relation`` () =
+    let header = "<https://example.com/items?page=3>; rel=\"next\""
+    let result = Http.ParseLinkHeader(header)
+    result |> Map.find "next" |> should equal "https://example.com/items?page=3"
+    result |> Map.containsKey "prev" |> should equal false
+
+[<Test>]
+let ``ParseLinkHeader handles prev, next, first, last`` () =
+    let header =
+        "<https://example.com/items?page=1>; rel=\"first\", <https://example.com/items?page=2>; rel=\"prev\", <https://example.com/items?page=4>; rel=\"next\", <https://example.com/items?page=10>; rel=\"last\""
+    let result = Http.ParseLinkHeader(header)
+    result |> Map.find "first" |> should equal "https://example.com/items?page=1"
+    result |> Map.find "prev" |> should equal "https://example.com/items?page=2"
+    result |> Map.find "next" |> should equal "https://example.com/items?page=4"
+    result |> Map.find "last" |> should equal "https://example.com/items?page=10"
+
+[<Test>]
 let ``Don't throw exceptions on http error`` () =
     use localServer = startHttpLocalServer()
     let response = Http.Request(localServer.BaseAddress + "/401", silentHttpErrors = true)

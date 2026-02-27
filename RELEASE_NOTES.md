@@ -2,6 +2,7 @@
 
 ## 8.1.0-beta
 
+- Add `Http.ParseLinkHeader` utility for parsing RFC 5988 `Link` response headers (used by GitHub, GitLab, and other paginated APIs) into a `Map<string, string>` from relation name to URL (closes #805)
 - Add `PreferDateTimeOffset` parameter to `CsvProvider`, `JsonProvider`, and `XmlProvider`: when true, date-time values without an explicit timezone offset are inferred as `DateTimeOffset` (using local offset) instead of `DateTime` (closes #1100, #1072)
 - Make `Http.AppendQueryToUrl` public (closes #1325)
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
