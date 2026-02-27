@@ -242,6 +242,71 @@ match Http.Request(logoUrl).Body with
 | Binary bytes -> printfn "Got %d bytes of binary content" bytes.Length
 
 (**
+## HTTP Authentication
+
+FSharp.Data provides built-in helpers in `cref:T:FSharp.Data.HttpRequestHeaders` for the most common authentication schemes.
+
+### Basic authentication
+
+Use `cref:M:FSharp.Data.HttpRequestHeaders.BasicAuth` to add an `Authorization: Basic …` header.
+The helper encodes the credentials as UTF-8 before base64-encoding them:
+*)
+
+(*** do-not-eval ***)
+
+Http.RequestString(
+    "https://api.example.com/data",
+    headers = [ HttpRequestHeaders.BasicAuth "myUsername" "myPassword" ]
+)
+
+(**
+### Bearer / token authentication
+
+Use `cref:M:FSharp.Data.HttpRequestHeaders.Authorization` to send any other `Authorization` header value,
+such as a Bearer token used by OAuth 2.0 or personal-access-token APIs:
+*)
+
+(*** do-not-eval ***)
+
+let token = "<your-access-token>"
+
+Http.RequestString(
+    "https://api.github.com/user",
+    headers =
+        [ HttpRequestHeaders.Authorization(sprintf "Bearer %s" token)
+          HttpRequestHeaders.UserAgent "MyApp" ]
+)
+
+(**
+### Windows / NTLM integrated authentication
+
+For services that require Windows Integrated Authentication (NTLM or Negotiate), use the
+`customizeHttpRequest` parameter to set the credentials on the underlying `HttpWebRequest`:
+*)
+
+(*** do-not-eval ***)
+
+open System.Net
+
+// Use the current Windows user's credentials
+Http.RequestString(
+    "https://intranet.example.com/api/data",
+    customizeHttpRequest =
+        fun req ->
+            req.UseDefaultCredentials <- true
+            req
+)
+
+// Or supply explicit credentials
+Http.RequestString(
+    "https://intranet.example.com/api/data",
+    customizeHttpRequest =
+        fun req ->
+            req.Credentials <- NetworkCredential("username", "password", "DOMAIN")
+            req
+)
+
+(**
 ## Customizing the HTTP request
 
 For the cases where you need something not natively provided by the library, you can use the
