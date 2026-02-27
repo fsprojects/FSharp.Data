@@ -359,6 +359,47 @@ Http.Request(
 )
 
 (**
+## Paginated APIs (RFC 5988 Link headers)
+
+Many REST APIs — including GitHub, GitLab, and others — use the `Link` response header
+(defined by [RFC 5988](https://tools.ietf.org/html/rfc5988)) to indicate pagination URLs.
+A typical `Link` header looks like this:
+
+```
+<https://api.github.com/repos/octocat/hello-world/releases?page=2>; rel="next",
+<https://api.github.com/repos/octocat/hello-world/releases?page=5>; rel="last"
+```
+
+The `cref:M:FSharp.Data.Http.ParseLinkHeader` utility parses such a header into a
+`Map<string, string>` from relation type to URL. You can then use the result to walk through pages:
+*)
+
+(*** do-not-eval ***)
+
+type Release = JsonProvider<"https://api.github.com/repos/fsprojects/FSharp.Data/releases">
+
+let fetchAllReleases () =
+    let rec loop url acc =
+        let response =
+            Http.Request(url, headers = [ HttpRequestHeaders.UserAgent "myapp" ])
+
+        let items =
+            match response.Body with
+            | Text text -> Release.ParseList text
+            | Binary _ -> [||]
+
+        let acc' = Array.append acc items
+
+        match response.Headers |> Map.tryFind HttpResponseHeaders.Link with
+        | Some linkHeader ->
+            match Http.ParseLinkHeader(linkHeader) |> Map.tryFind "next" with
+            | Some nextUrl -> loop nextUrl acc'
+            | None -> acc'
+        | None -> acc'
+
+    loop "https://api.github.com/repos/fsprojects/FSharp.Data/releases" [||]
+
+(**
 ## Related articles
 
  * API Reference: `cref:T:FSharp.Data.Http`
