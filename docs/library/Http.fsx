@@ -242,6 +242,71 @@ match Http.Request(logoUrl).Body with
 | Binary bytes -> printfn "Got %d bytes of binary content" bytes.Length
 
 (**
+## HTTP Authentication
+
+FSharp.Data provides built-in helpers in `cref:T:FSharp.Data.HttpRequestHeaders` for the most common authentication schemes.
+
+### Basic authentication
+
+Use `cref:M:FSharp.Data.HttpRequestHeaders.BasicAuth` to add an `Authorization: Basic …` header.
+The helper encodes the credentials as UTF-8 before base64-encoding them:
+*)
+
+(*** do-not-eval ***)
+
+Http.RequestString(
+    "https://api.example.com/data",
+    headers = [ HttpRequestHeaders.BasicAuth "myUsername" "myPassword" ]
+)
+
+(**
+### Bearer / token authentication
+
+Use `cref:M:FSharp.Data.HttpRequestHeaders.Authorization` to send any other `Authorization` header value,
+such as a Bearer token used by OAuth 2.0 or personal-access-token APIs:
+*)
+
+(*** do-not-eval ***)
+
+let token = "<your-access-token>"
+
+Http.RequestString(
+    "https://api.github.com/user",
+    headers =
+        [ HttpRequestHeaders.Authorization(sprintf "Bearer %s" token)
+          HttpRequestHeaders.UserAgent "MyApp" ]
+)
+
+(**
+### Windows / NTLM integrated authentication
+
+For services that require Windows Integrated Authentication (NTLM or Negotiate), use the
+`customizeHttpRequest` parameter to set the credentials on the underlying `HttpWebRequest`:
+*)
+
+(*** do-not-eval ***)
+
+open System.Net
+
+// Use the current Windows user's credentials
+Http.RequestString(
+    "https://intranet.example.com/api/data",
+    customizeHttpRequest =
+        fun req ->
+            req.UseDefaultCredentials <- true
+            req
+)
+
+// Or supply explicit credentials
+Http.RequestString(
+    "https://intranet.example.com/api/data",
+    customizeHttpRequest =
+        fun req ->
+            req.Credentials <- NetworkCredential("username", "password", "DOMAIN")
+            req
+)
+
+(**
 ## Customizing the HTTP request
 
 For the cases where you need something not natively provided by the library, you can use the
@@ -292,6 +357,47 @@ Http.Request(
             parts = [ MultipartItem("formFieldName", System.IO.Path.GetFileName(largeFilePath), data) ]
         )
 )
+
+(**
+## Paginated APIs (RFC 5988 Link headers)
+
+Many REST APIs — including GitHub, GitLab, and others — use the `Link` response header
+(defined by [RFC 5988](https://tools.ietf.org/html/rfc5988)) to indicate pagination URLs.
+A typical `Link` header looks like this:
+
+```
+<https://api.github.com/repos/octocat/hello-world/releases?page=2>; rel="next",
+<https://api.github.com/repos/octocat/hello-world/releases?page=5>; rel="last"
+```
+
+The `cref:M:FSharp.Data.Http.ParseLinkHeader` utility parses such a header into a
+`Map<string, string>` from relation type to URL. You can then use the result to walk through pages:
+*)
+
+(*** do-not-eval ***)
+
+type Release = JsonProvider<"https://api.github.com/repos/fsprojects/FSharp.Data/releases">
+
+let fetchAllReleases () =
+    let rec loop url acc =
+        let response =
+            Http.Request(url, headers = [ HttpRequestHeaders.UserAgent "myapp" ])
+
+        let items =
+            match response.Body with
+            | Text text -> Release.ParseList text
+            | Binary _ -> [||]
+
+        let acc' = Array.append acc items
+
+        match response.Headers |> Map.tryFind HttpResponseHeaders.Link with
+        | Some linkHeader ->
+            match Http.ParseLinkHeader(linkHeader) |> Map.tryFind "next" with
+            | Some nextUrl -> loop nextUrl acc'
+            | None -> acc'
+        | None -> acc'
+
+    loop "https://api.github.com/repos/fsprojects/FSharp.Data/releases" [||]
 
 (**
 ## Related articles

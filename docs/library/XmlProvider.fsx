@@ -330,6 +330,20 @@ attributes in our sample, so it is inferred as `string`), and then it recursivel
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
+## Inferring date types
+
+Element and attribute values that look like dates are inferred as `DateTime` or `DateTimeOffset`.
+Values that already carry an explicit timezone offset (e.g. `"2023-06-15T12:00:00+02:00"`) are always
+inferred as `DateTimeOffset`.
+
+On .NET 6 and later, when you set `PreferDateOnly = true`, values that represent a date without a time
+component (e.g. `"2023-01-15"`) are inferred as `DateOnly`, and time-only values as `TimeOnly`.
+By default (`PreferDateOnly = false`), all date values are inferred as `DateTime` for backward compatibility.
+
+Set `PreferDateTimeOffset = true` to infer all date-time values (that would otherwise be `DateTime`) as
+`DateTimeOffset`. This is useful when you need timezone-aware values. `PreferDateTimeOffset` and
+`PreferDateOnly` are independent: `DateOnly` values stay as `DateOnly` even when `PreferDateTimeOffset=true`.
+
 ## Loading Directly from a File or URL
 
 In many cases, we might want to define schema using a local sample file, but then directly

@@ -178,7 +178,7 @@ type internal InferedTypeTag with
     /// Parses code returned by 'Code' member (to be used in provided code)
     static member ParseCode(str: string) =
         match str with
-        | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
+        | s when s.StartsWith("Record@", StringComparison.Ordinal) -> Record(Some(s.Substring("Record@".Length)))
         | "Record" -> Record None
         | "Json" -> Json
         | "Number" -> Number

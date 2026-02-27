@@ -37,6 +37,7 @@ network:
   - tomasp.net
   - http://www.w3.org
   - http://schemas.microsoft.com
+  - www.google.com
 
 safe-outputs:
   add-comment:

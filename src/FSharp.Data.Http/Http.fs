@@ -1740,7 +1740,7 @@ module internal HttpHelpers =
             | "origin" -> req.Headers.["Origin"] <- value
             | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
             | "range" ->
-                if not (value.StartsWith("bytes=")) then
+                if not (value.StartsWith("bytes=", StringComparison.Ordinal)) then
                     failwithf "Invalid value for the Range header (%O)" value
 
                 let bytes = value.Substring("bytes=".Length).Split('-')
@@ -1821,15 +1821,17 @@ module internal HttpHelpers =
                 let isText (mimeType: string) =
                     let mimeType = mimeType.Trim()
 
-                    mimeType.StartsWith "text/"
+                    mimeType.StartsWith("text/", StringComparison.Ordinal)
                     || mimeType = HttpContentTypes.Json
                     || mimeType = HttpContentTypes.Xml
                     || mimeType = HttpContentTypes.JavaScript
                     || mimeType = HttpContentTypes.JsonRpc
                     || mimeType = "application/ecmascript"
                     || mimeType = "application/xml-dtd"
-                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
-                    || mimeType.StartsWith "application/" && mimeType.EndsWith "+json"
+                    || mimeType.StartsWith("application/", StringComparison.Ordinal)
+                       && mimeType.EndsWith("+xml", StringComparison.Ordinal)
+                    || mimeType.StartsWith("application/", StringComparison.Ordinal)
+                       && mimeType.EndsWith("+json", StringComparison.Ordinal)
 
                 mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
                 |> Array.exists isText
@@ -1997,6 +1999,9 @@ type Http private () =
 
     static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Compiled)
 
+    static let linkHeaderPattern =
+        Regex(@"<([^>]+)>\s*;\s*rel=""([^""]+)""", RegexOptions.Compiled)
+
     /// Correctly encodes large form data values.
     /// See https://blogs.msdn.microsoft.com/yangxind/2006/11/08/dont-use-net-system-uri-unescapedatastring-in-url-decoding/
     /// and https://msdn.microsoft.com/en-us/library/system.uri.escapedatastring(v=vs.110).aspx
@@ -2009,8 +2014,23 @@ type Http private () =
         | [] -> url
         | query ->
             url
-            + if url.Contains "?" then "&" else "?"
+            + if url.IndexOf('?') >= 0 then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+
+    /// Parses an RFC 5988 Link header value (e.g. from a GitHub or other paginated API response)
+    /// and returns a map from relation type to URL.
+    ///
+    /// For example, given the header value:
+    ///   &lt;https://api.github.com/repos/.../releases?page=2&gt;; rel="next", &lt;...&gt;; rel="last"
+    /// this returns: Map [ "next", "https://..."; "last", "https://..." ]
+    static member ParseLinkHeader(linkHeader: string) =
+        if String.IsNullOrWhiteSpace(linkHeader) then
+            Map.empty
+        else
+            linkHeaderPattern.Matches(linkHeader)
+            |> Seq.cast<Match>
+            |> Seq.map (fun m -> m.Groups.[2].Value, m.Groups.[1].Value)
+            |> Map.ofSeq
 
     static member private InnerRequest
         (

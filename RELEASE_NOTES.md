@@ -3,8 +3,11 @@
 ## 9.0.0 - Feb 26 2026
 
 - Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+- Add `Http.ParseLinkHeader` utility for parsing RFC 5988 `Link` response headers (used by GitHub, GitLab, and other paginated APIs) into a `Map<string, string>` from relation name to URL (closes #805)
+- Add `PreferDateTimeOffset` parameter to `CsvProvider`, `JsonProvider`, and `XmlProvider`: when true, date-time values without an explicit timezone offset are inferred as `DateTimeOffset` (using local offset) instead of `DateTime` (closes #1100, #1072)
 - Make `Http.AppendQueryToUrl` public (closes #1325)
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
+- Add `UseSchemaTypeNames` parameter to `XmlProvider`: when `true` and `Schema` is provided, multiple elements sharing the same XSD complex type generate a single F# type (named after the XSD type) instead of separate per-element types (closes #1488)
 
 ## 8.0.0 - Feb 25 2026
 
