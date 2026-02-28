@@ -28,6 +28,9 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     static member Parse: text:string -> HtmlProvider
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
+    member Schemas: HtmlProvider+SchemasContainer with get
+    this
+
     member Tables: HtmlProvider+TablesContainer with get
     this
 
@@ -130,6 +133,11 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Property type")
 
 
+class HtmlProvider+SchemasContainer : FDR.BaseTypes.HtmlDocument
+    member WebPage: HtmlProvider+HtmlProvider+WebPage[] with get
+    this.GetSchema("WebPage").Items
+
+
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Currently available to rent in London``: HtmlProvider+CurrentlyAvailableToRentInLondon with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -179,6 +187,19 @@ class HtmlProvider+MarketedBy : FDR.BaseTypes.HtmlList<string>
 class HtmlProvider+PropertyFeatures : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+PropertyType : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+WebPage : FDR.HtmlSchemaItem
+    member Breadcrumb: string with get
+    this.Properties |> (MapModule.TryFind "breadcrumb" table) |> let value = ""
+                                                                 Lambda (option, Call (None, DefaultValue, [value, option]))
+
+    member Html: HtmlNode with get
+    this.Html
+
+    member Name: string with get
+    this.Properties |> (MapModule.TryFind "name" table) |> let value = ""
+                                                           Lambda (option, Call (None, DefaultValue, [value, option]))
+
 
 class HtmlProvider+CurrentlyAvailableToRentInLondon+Row : string * int * int * int * float
     member ``1 bed``: int with get

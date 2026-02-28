@@ -28,6 +28,9 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     static member Parse: text:string -> HtmlProvider
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
+    member Schemas: HtmlProvider+SchemasContainer with get
+    this
+
     member Tables: HtmlProvider+TablesContainer with get
     this
 
@@ -70,6 +73,11 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "YOUR WATCHLIST")
 
 
+class HtmlProvider+SchemasContainer : FDR.BaseTypes.HtmlDocument
+    member AggregateRating: HtmlProvider+HtmlProvider+AggregateRating[] with get
+    this.GetSchema("AggregateRating").Items
+
+
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Take The Quiz!``: HtmlProvider+TakeTheQuiz with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -104,6 +112,23 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Column5", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Top 250", true)
+
+
+class HtmlProvider+AggregateRating : FDR.HtmlSchemaItem
+    member BestRating: string with get
+    this.Properties |> (MapModule.TryFind "bestRating" table) |> let value = ""
+                                                                 Lambda (option, Call (None, DefaultValue, [value, option]))
+
+    member Html: HtmlNode with get
+    this.Html
+
+    member RatingCount: string with get
+    this.Properties |> (MapModule.TryFind "ratingCount" table) |> let value = ""
+                                                                  Lambda (option, Call (None, DefaultValue, [value, option]))
+
+    member RatingValue: string with get
+    this.Properties |> (MapModule.TryFind "ratingValue" table) |> let value = ""
+                                                                  Lambda (option, Call (None, DefaultValue, [value, option]))
 
 
 class HtmlProvider+ConsumerMainNav : FDR.BaseTypes.HtmlList<string>
