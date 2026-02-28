@@ -343,6 +343,52 @@ module internal HtmlGenerator =
 
         itemType
 
+    let private createJsonLdItemType getJsonLdTypeName (group: HtmlJsonLdGroup) =
+
+        // Each item is erased as HtmlJsonLdItem, which carries the property map.
+        let itemType =
+            ProvidedTypeDefinition(
+                getJsonLdTypeName group.Name,
+                Some typeof<HtmlJsonLdItem>,
+                hideObjectMethods = true,
+                nonNullable = true
+            )
+
+        itemType.AddXmlDoc(
+            sprintf
+                "Represents a single JSON-LD item of type '%s' found in a <script type=\"application/ld+json\"> block."
+                group.TypeName
+        )
+
+        for propName in group.Properties do
+            let keyCapture = propName
+
+            let prop =
+                ProvidedProperty(
+                    NameUtils.nicePascalName propName,
+                    typeof<string>,
+                    getterCode =
+                        (fun (Singleton item) ->
+                            <@@
+                                (%%item: HtmlJsonLdItem).Properties
+                                |> Map.tryFind keyCapture
+                                |> Option.defaultValue ""
+                            @@>)
+                )
+
+            prop.AddXmlDoc(sprintf "Gets the '%s' JSON-LD property value." propName)
+            itemType.AddMember prop
+
+        itemType.AddMember(
+            ProvidedProperty(
+                "Raw",
+                typeof<string>,
+                getterCode = fun (Singleton item) -> <@@ (%%item: HtmlJsonLdItem).Raw @@>
+            )
+        )
+
+        itemType
+
     let generateTypes asm ns typeName parameters supportsNet6Types htmlObjects =
 
         let htmlType =
@@ -434,6 +480,21 @@ module internal HtmlGenerator =
                     getPropertyName schemaGroup.Name,
                     itemType.MakeArrayType(),
                     getterCode = fun (Singleton doc) -> <@@ (%%doc: HtmlDocument).GetSchema(nameCapture).Items @@>
+                )
+
+            | JsonLdGroup group ->
+                let containerType = getOrCreateContainer "JsonLd"
+                let nameCapture = group.Name
+                let itemType = createJsonLdItemType getTypeName group
+
+                htmlType.AddMember itemType
+
+                // Expose as a property returning an array of item types (erased as HtmlJsonLdItem[])
+                containerType.AddMember
+                <| ProvidedProperty(
+                    getPropertyName group.Name,
+                    itemType.MakeArrayType(),
+                    getterCode = fun (Singleton doc) -> <@@ (%%doc: HtmlDocument).GetJsonLd(nameCapture).Items @@>
                 )
 
         htmlType

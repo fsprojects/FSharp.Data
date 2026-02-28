@@ -256,3 +256,88 @@ let ``HtmlDocument.Create processes multiple definition lists correctly`` () =
     htmlDoc.Html.ToString() |> should contain "Definition A"
     htmlDoc.Html.ToString() |> should contain "Term B"
     htmlDoc.Html.ToString() |> should contain "Definition B"
+// ============================================
+// JSON-LD Parsing Tests
+// ============================================
+
+[<Test>]
+let ``HtmlDocument.Create parses JSON-LD script blocks`` () =
+    let htmlContent =
+        """<html>
+<head>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","name":"Test Article","headline":"A test","url":"https://example.com"}
+  </script>
+</head>
+<body></body>
+</html>"""
+
+    use reader = new StringReader(htmlContent)
+    let htmlDoc = HtmlDocument.Create(false, reader)
+    let article = htmlDoc.GetJsonLd("Article")
+    article.Items |> should haveLength 1
+    article.Items.[0].Properties |> Map.find "name" |> should equal "Test Article"
+
+[<Test>]
+let ``HtmlDocument.Create returns empty JSON-LD when no script blocks present`` () =
+    let htmlContent = "<html><body><p>No JSON-LD here</p></body></html>"
+
+    use reader = new StringReader(htmlContent)
+    let htmlDoc = HtmlDocument.Create(false, reader)
+    (fun () -> htmlDoc.GetJsonLd("Article") |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
+
+[<Test>]
+let ``HtmlDocument.Create handles multiple JSON-LD script blocks of different types`` () =
+    let htmlContent =
+        """<html>
+<head>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","name":"My Article","headline":"A headline"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"My Site","url":"https://example.com"}
+  </script>
+</head>
+<body></body>
+</html>"""
+
+    use reader = new StringReader(htmlContent)
+    let htmlDoc = HtmlDocument.Create(false, reader)
+    htmlDoc.GetJsonLd("Article").Items |> should haveLength 1
+    htmlDoc.GetJsonLd("WebSite").Items |> should haveLength 1
+    htmlDoc.GetJsonLd("WebSite").Items.[0].Properties |> Map.find "url" |> should equal "https://example.com"
+
+[<Test>]
+let ``JSON-LD parser handles array top-level`` () =
+    let htmlContent =
+        """<html>
+<head>
+  <script type="application/ld+json">
+  [{"@context":"https://schema.org","@type":"Article","name":"Item 1"},
+   {"@context":"https://schema.org","@type":"Article","name":"Item 2"}]
+  </script>
+</head>
+<body></body>
+</html>"""
+
+    use reader = new StringReader(htmlContent)
+    let htmlDoc = HtmlDocument.Create(false, reader)
+    htmlDoc.GetJsonLd("Article").Items |> should haveLength 2
+
+[<Test>]
+let ``JSON-LD Raw property contains the original JSON`` () =
+    let htmlContent =
+        """<html>
+<head>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","name":"Test","description":"Desc"}
+  </script>
+</head>
+<body></body>
+</html>"""
+
+    use reader = new StringReader(htmlContent)
+    let htmlDoc = HtmlDocument.Create(false, reader)
+    let item = htmlDoc.GetJsonLd("Article").Items.[0]
+    item.Raw |> should contain "Test"
+    item.Raw |> should contain "Desc"

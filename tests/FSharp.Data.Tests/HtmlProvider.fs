@@ -412,3 +412,120 @@ let ``HtmlProvider Schemas.Person items have typed properties`` () =
     people.[0].JobTitle |> should equal "Software Engineer"
     people.[0].Url |> should equal "https://example.com"
     people.[1].Name |> should equal "Bob Jones"
+
+// ============================================
+// JSON-LD via HtmlProvider
+// ============================================
+
+[<Literal>]
+let jsonLdArticle =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "F# Data Library",
+    "headline": "F# Data: Library for Data Access",
+    "description": "A library for working with structured data",
+    "url": "https://fsprojects.github.io/FSharp.Data",
+    "datePublished": "2012-01-01",
+    "dateModified": "2024-01-01"
+  }
+  </script>
+</head>
+<body><p>Content here</p></body>
+</html>"""
+
+type JsonLdArticleHtml = HtmlProvider<jsonLdArticle>
+
+[<Test>]
+let ``HtmlProvider exposes JsonLd container for JSON-LD`` () =
+    let doc = JsonLdArticleHtml.GetSample()
+    let articles = doc.JsonLd.Article
+    articles |> should not' (be null)
+
+[<Test>]
+let ``HtmlProvider JsonLd.Article returns items`` () =
+    let doc = JsonLdArticleHtml.GetSample()
+    let articles = doc.JsonLd.Article
+    articles |> should haveLength 1
+
+[<Test>]
+let ``HtmlProvider JsonLd.Article items have typed properties`` () =
+    let doc = JsonLdArticleHtml.GetSample()
+    let article = doc.JsonLd.Article.[0]
+    article.Name |> should equal "F# Data Library"
+    article.Headline |> should equal "F# Data: Library for Data Access"
+    article.Url |> should equal "https://fsprojects.github.io/FSharp.Data"
+    article.DatePublished |> should equal "2012-01-01"
+
+[<Test>]
+let ``HtmlProvider JsonLd.Article item has Raw property`` () =
+    let doc = JsonLdArticleHtml.GetSample()
+    let article = doc.JsonLd.Article.[0]
+    article.Raw |> should contain "F# Data Library"
+
+[<Literal>]
+let jsonLdMultipleTypes =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "My Page",
+    "url": "https://example.com/page"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "My Article",
+    "headline": "An interesting article",
+    "datePublished": "2025-01-01"
+  }
+  </script>
+</head>
+<body></body>
+</html>"""
+
+type JsonLdMultiTypeHtml = HtmlProvider<jsonLdMultipleTypes>
+
+[<Test>]
+let ``HtmlProvider JsonLd supports multiple type groups`` () =
+    let doc = JsonLdMultiTypeHtml.GetSample()
+    doc.JsonLd.WebPage |> should haveLength 1
+    doc.JsonLd.Article |> should haveLength 1
+    doc.JsonLd.WebPage.[0].Name |> should equal "My Page"
+    doc.JsonLd.Article.[0].Name |> should equal "My Article"
+
+[<Literal>]
+let jsonLdMixed =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "Mixed Page",
+    "description": "A page with both JSON-LD and a table"
+  }
+  </script>
+</head>
+<body>
+  <table>
+    <tr><th>Column1</th><th>Column2</th></tr>
+    <tr><td>Value1</td><td>Value2</td></tr>
+  </table>
+</body>
+</html>"""
+
+type JsonLdMixedHtml = HtmlProvider<jsonLdMixed>
+
+[<Test>]
+let ``HtmlProvider can combine JSON-LD and table extraction`` () =
+    let doc = JsonLdMixedHtml.GetSample()
+    doc.JsonLd.Article.[0].Name |> should equal "Mixed Page"
+    doc.Tables.Table1.Rows |> should haveLength 1

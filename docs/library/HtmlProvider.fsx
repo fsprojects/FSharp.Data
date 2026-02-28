@@ -269,19 +269,215 @@ for row in page.Tables.Table1.Rows do
 
 (**
 
-> **Note on modern websites**: Many websites today (including IMDB and eBay) use
-> client-side JavaScript frameworks (React, Next.js, etc.) that render content
-> dynamically — meaning the HTML served to the browser contains little or no table
-> data or microdata. These sites often embed structured data as
-> [JSON-LD](https://json-ld.org/) inside a `<script type="application/ld+json">` tag
-> instead. For such sites, use `HtmlDocument.Load` to fetch the page and then
-> `HtmlDocumentExtensions.Descendants` to locate the JSON-LD script block, then parse
-> its text with `JsonProvider`.  See the [HTML Parser](HtmlParser.html) article for
-> examples of working with the underlying document model.
+## JSON-LD Structured Data
+
+Many modern websites — including **Wikipedia** — embed structured metadata as
+[JSON-LD](https://json-ld.org/) inside `<script type="application/ld+json">` elements in
+the page `<head>`.  `HtmlProvider` now parses these blocks automatically and exposes them
+via a typed `.JsonLd` container, exactly like the `.Schemas` container for microdata.
+
+### What Wikipedia exposes via JSON-LD
+
+Wikipedia embeds a JSON-LD block on every article page that describes the article using
+the [schema.org `Article` type](https://schema.org/Article).  The block includes:
+
+| Property | Description |
+|---|---|
+| `name` | Article title |
+| `headline` | Short headline |
+| `description` | Brief description |
+| `url` | Canonical URL |
+| `datePublished` | First published date |
+| `dateModified` | Last modified date |
+
+Wikipedia also has pages about specific entities (people, places, organisations, events)
+that carry a `mainEntity` link back to the corresponding [Wikidata](https://www.wikidata.org/)
+item, and article categories encoded as `about` objects.
+
+The sample HTML below mirrors the structure Wikipedia actually serves:
+*)
+
+[<Literal>]
+let WikipediaArticleSample =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "F Sharp (programming language)",
+    "headline": "Functional-first programming language for .NET",
+    "description": "F# is a strongly typed, multi-paradigm programming language.",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "datePublished": "2003-01-01",
+    "dateModified": "2024-06-15",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "inLanguage": "en"
+  }
+  </script>
+</head>
+<body>
+  <table>
+    <tr><th>Year</th><th>Event</th></tr>
+    <tr><td>2002</td><td>F# created by Don Syme at Microsoft Research Cambridge</td></tr>
+    <tr><td>2005</td><td>First public release of F#</td></tr>
+    <tr><td>2010</td><td>F# ships with Visual Studio 2010</td></tr>
+    <tr><td>2020</td><td>F# 5.0 released</td></tr>
+  </table>
+</body>
+</html>"""
+
+type WikipediaArticle = HtmlProvider<WikipediaArticleSample>
+
+let wiki = WikipediaArticle.Parse(WikipediaArticleSample)
+
+// Access the JSON-LD Article metadata
+let article = wiki.JsonLd.Article |> Array.head
+printfn "Title: %s" article.Name
+printfn "Description: %s" article.Description
+printfn "Published: %s  |  Modified: %s" article.DatePublished article.DateModified
+printfn "URL: %s" article.Url
+
+(*** include-fsi-merged-output ***)
+
+(**
+The `.JsonLd` container has one property per `@type` found in the JSON-LD blocks.  Each
+property returns an array of items — so `wiki.JsonLd.Article` is an
+`WikipediaArticle+Article[]`.  Each item has one `string` property per top-level scalar
+field (strings, numbers, booleans), with names Pascal-cased for F# convention.  A `.Raw`
+property gives the original JSON text if you need to access complex nested values.
+
+### Wikipedia timeline article: tables + JSON-LD metadata
+
+The next example shows combining the Wikipedia HTML table (a timeline of events) with the
+JSON-LD article metadata, all via a single provider type:
+*)
+
+// Access the events table in the same page
+for row in wiki.Tables.Table1.Rows do
+    printfn "%d: %s" row.Year row.Event
+
+(*** include-fsi-merged-output ***)
+
+(**
+
+### Multiple JSON-LD types on one page
+
+Some pages include multiple JSON-LD blocks, e.g. a `WebPage` descriptor alongside the
+`Article`.  The provider generates separate typed properties for each `@type`:
+*)
+
+[<Literal>]
+let WikipediaWithWebPageSample =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "F Sharp — Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "inLanguage": "en",
+    "isPartOf": "https://en.wikipedia.org/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "F Sharp (programming language)",
+    "headline": "Functional-first programming language for .NET",
+    "description": "F# is a strongly typed, multi-paradigm programming language.",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "datePublished": "2003-01-01",
+    "dateModified": "2024-06-15"
+  }
+  </script>
+</head>
+<body></body>
+</html>"""
+
+type WikipediaWithWebPage = HtmlProvider<WikipediaWithWebPageSample>
+
+let wikiMulti = WikipediaWithWebPage.Parse(WikipediaWithWebPageSample)
+
+// Both JsonLd types are available as separate typed properties
+printfn "WebPage name: %s" wikiMulti.JsonLd.WebPage.[0].Name
+printfn "Article name: %s" wikiMulti.JsonLd.Article.[0].Name
+printfn "Article published: %s" wikiMulti.JsonLd.Article.[0].DatePublished
+
+(*** include-fsi-merged-output ***)
+
+(**
+
+### Accessing raw JSON for complex properties
+
+For properties with nested object values (such as `image`, `author`, or `publisher`
+in a Wikipedia article), only scalar top-level fields are reflected as typed properties.
+Use the `.Raw` property to access the full original JSON and parse it further with
+`JsonProvider` or `JsonValue.Parse` if needed:
+*)
+
+[<Literal>]
+let WikipediaPersonSample =
+    """<html>
+<head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "Alan Turing",
+    "headline": "British mathematician and computer scientist",
+    "description": "Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst, philosopher, and theoretical biologist.",
+    "url": "https://en.wikipedia.org/wiki/Alan_Turing",
+    "datePublished": "2001-10-13",
+    "dateModified": "2024-09-10",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "inLanguage": "en"
+  }
+  </script>
+</head>
+<body>
+  <table>
+    <tr><th>Year</th><th>Achievement</th></tr>
+    <tr><td>1936</td><td>Turing machine concept published</td></tr>
+    <tr><td>1939</td><td>Bombe code-breaking machine</td></tr>
+    <tr><td>1950</td><td>Turing Test proposed</td></tr>
+  </table>
+</body>
+</html>"""
+
+type WikipediaPerson = HtmlProvider<WikipediaPersonSample>
+
+let turingPage = WikipediaPerson.Parse(WikipediaPersonSample)
+
+// JSON-LD article metadata
+let turingArticle = turingPage.JsonLd.Article.[0]
+printfn "Subject: %s" turingArticle.Name
+printfn "Published: %s" turingArticle.DatePublished
+printfn "License: %s" turingArticle.License
+
+// Timeline table from the article body
+for row in turingPage.Tables.Table1.Rows do
+    printfn "%d — %s" row.Year row.Achievement
+
+(*** include-fsi-merged-output ***)
+
+(**
+
+## Summary of structured data formats
+
+| Format | HTML mechanism | Provider access | Typical use |
+|---|---|---|---|
+| Tables | `<table>` elements | `.Tables.TableName` | Tabular data, statistics |
+| Microdata | `itemscope`/`itemprop` attributes | `.Schemas.TypeName` | Inline product/event/person markup |
+| JSON-LD | `<script type="application/ld+json">` | `.JsonLd.TypeName` | Article/page metadata, SEO |
+
+All three formats can coexist in the same `HtmlProvider` type.
 
 ## Related articles
 
  * [HTML Parser](HtmlParser.html) - provides more information about
-   working with HTML documents dynamically, including extracting JSON-LD structured data.
+   working with HTML documents dynamically.
 
 *)

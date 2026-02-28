@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../FSharp.Data.Csv.Core/FSharp.Data.Csv.Core.fsproj" />
+    <ProjectReference Include="../FSharp.Data.Json.Core/FSharp.Data.Json.Core.fsproj" />
     <ProjectReference Include="../FSharp.Data.Runtime.Utilities/FSharp.Data.Runtime.Utilities.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

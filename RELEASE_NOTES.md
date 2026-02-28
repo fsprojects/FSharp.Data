@@ -3,6 +3,7 @@
 ## 8.1.0-beta
 
 - Add schema.org microdata support to `HtmlProvider`: when an HTML document contains elements with `itemscope`/`itemtype`/`itemprop` attributes, the provider now generates a typed `Schemas` container (e.g. `doc.Schemas.Person`) with one strongly-typed property per `itemprop` name discovered in the sample (closes #611)
+- Add JSON-LD support to `HtmlProvider`: when an HTML document contains `<script type="application/ld+json">` blocks, the provider generates a typed `JsonLd` container (e.g. `doc.JsonLd.Article`) with one strongly-typed property per top-level scalar field discovered in the sample — Wikipedia pages, for instance, embed schema.org `Article` JSON-LD with `name`, `headline`, `description`, `url`, `datePublished`, and `dateModified`
 - Add `Http.ParseLinkHeader` utility for parsing RFC 5988 `Link` response headers (used by GitHub, GitLab, and other paginated APIs) into a `Map<string, string>` from relation name to URL (closes #805)
 - Add `PreferDateTimeOffset` parameter to `CsvProvider`, `JsonProvider`, and `XmlProvider`: when true, date-time values without an explicit timezone offset are inferred as `DateTimeOffset` (using local offset) instead of `DateTime` (closes #1100, #1072)
 - Make `Http.AppendQueryToUrl` public (closes #1325)

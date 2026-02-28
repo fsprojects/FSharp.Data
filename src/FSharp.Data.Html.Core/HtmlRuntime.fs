@@ -137,12 +137,45 @@ type HtmlSchemaGroup =
 
         sb.ToString()
 
+/// A single JSON-LD item parsed from a <script type="application/ld+json"> element
+type HtmlJsonLdItem =
+    {
+        /// Flat string representation of top-level scalar properties (strings, numbers, booleans)
+        Properties: Map<string, string>
+        /// The raw JSON text of this item
+        Raw: string
+    }
+
+/// A group of JSON-LD items sharing the same @type value
+type HtmlJsonLdGroup =
+    {
+        /// The local type name (e.g. "Article" from "@type": "https://schema.org/Article")
+        Name: string
+        /// The raw @type value
+        TypeName: string
+        /// All items in this group
+        Items: HtmlJsonLdItem[]
+        /// Union of all property names discovered across items, for type generation
+        Properties: string[]
+    }
+
+    override x.ToString() =
+        let sb = System.Text.StringBuilder()
+        sb.AppendLine(sprintf "%s (%d items)" x.Name x.Items.Length) |> ignore
+
+        for item in x.Items do
+            for (k, v) in item.Properties |> Map.toSeq do
+                sb.AppendLine(sprintf "  %s = %s" k v) |> ignore
+
+        sb.ToString()
+
 /// Representation of an HTML table, list, or definition list
 type HtmlObjectDescription =
     | Table of HtmlTable
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
     | SchemaGroup of HtmlSchemaGroup
+    | JsonLdGroup of HtmlJsonLdGroup
 
     member x.Name =
         match x with
@@ -150,6 +183,7 @@ type HtmlObjectDescription =
         | List l -> l.Name
         | DefinitionList dl -> dl.Name
         | SchemaGroup sg -> sg.Name
+        | JsonLdGroup jl -> jl.Name
 
 // --------------------------------------------------------------------------------------
 
@@ -532,6 +566,111 @@ module HtmlRuntime =
               Items = items
               Properties = allProps })
 
+    /// Get the local type name from a JSON-LD @type value,
+    /// e.g. "Article" from "https://schema.org/Article" or "Article"
+    let private jsonLdTypeName (typeName: string) =
+        let last = typeName.TrimEnd('/').Split([| '/'; '#' |]) |> Array.last
+
+        if String.IsNullOrWhiteSpace last then
+            "JsonLd"
+        else
+            NameUtils.nicePascalName last
+
+    /// Extract top-level scalar properties from a JSON-LD object (JsonValue.Record).
+    /// Skips @context, @type, @id and complex nested values.
+    let private extractJsonLdProperties (json: JsonValue) : Map<string, string> =
+        match json with
+        | JsonValue.Record props ->
+            props
+            |> Array.choose (fun (k, v) ->
+                if k.StartsWith("@") then
+                    None
+                else
+                    match v with
+                    | JsonValue.String s -> Some(k, s)
+                    | JsonValue.Number n -> Some(k, string n)
+                    | JsonValue.Boolean b -> Some(k, if b then "true" else "false")
+                    | JsonValue.Array arr when arr.Length > 0 ->
+                        // For arrays, take the first string/number element as representative
+                        arr
+                        |> Array.tryPick (fun elem ->
+                            match elem with
+                            | JsonValue.String s -> Some(k, s)
+                            | JsonValue.Number n -> Some(k, string n)
+                            | _ -> None)
+                    | _ -> None)
+            |> Map.ofArray
+        | _ -> Map.empty
+
+    /// Parse all JSON-LD groups from <script type="application/ld+json"> elements,
+    /// grouped by @type.
+    let getJsonLd (doc: HtmlDocument) : HtmlJsonLdGroup list =
+        let makeUnique = NameUtils.uniqueGenerator id
+
+        doc.Descendants(
+            (fun n ->
+                match n with
+                | HtmlElement("script", attrs, _) ->
+                    attrs
+                    |> List.exists (fun a ->
+                        HtmlAttribute.name a = "type" && HtmlAttribute.value a = "application/ld+json")
+                | _ -> false),
+            false
+        )
+        |> Seq.toList
+        |> List.collect (fun script ->
+            let text = script.InnerText()
+
+            try
+                let json = JsonValue.Parse text
+
+                match json with
+                | JsonValue.Array items -> items |> Array.toList
+                | obj -> [ obj ]
+            with _ ->
+                [])
+        |> List.choose (fun json ->
+            match json with
+            | JsonValue.Record props ->
+                let typeName =
+                    props
+                    |> Array.tryPick (fun (k, v) ->
+                        if k = "@type" then
+                            match v with
+                            | JsonValue.String s -> Some s
+                            | JsonValue.Array arr ->
+                                arr
+                                |> Array.tryPick (fun e ->
+                                    match e with
+                                    | JsonValue.String s -> Some s
+                                    | _ -> None)
+                            | _ -> None
+                        else
+                            None)
+
+                typeName |> Option.map (fun t -> t, json)
+            | _ -> None)
+        |> List.groupBy fst
+        |> List.map (fun (typeName, items) ->
+            let name = makeUnique (jsonLdTypeName typeName)
+
+            let jsonLdItems =
+                items
+                |> List.map (fun (_, json) ->
+                    { Properties = extractJsonLdProperties json
+                      Raw = json.ToString() })
+                |> Array.ofList
+
+            let allProps =
+                jsonLdItems
+                |> Array.collect (fun item -> item.Properties |> Map.toArray |> Array.map fst)
+                |> Array.distinct
+
+            { Name = name
+              TypeName = typeName
+              Items = jsonLdItems
+              Properties = allProps })
+
     let internal getTables inferenceParameters includeLayoutTables (doc: HtmlDocument) =
         let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
 
@@ -566,7 +705,8 @@ module HtmlRuntime =
             [ doc |> getTables inferenceParameters includeLayoutTables |> List.map Table
               doc |> getLists |> List.map List
               doc |> getDefinitionLists |> List.map DefinitionList
-              doc |> getSchemas |> List.map SchemaGroup ]
+              doc |> getSchemas |> List.map SchemaGroup
+              doc |> getJsonLd |> List.map JsonLdGroup ]
 
 // --------------------------------------------------------------------------------------
 
@@ -579,7 +719,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Underlying representation of the root types generated by HtmlProvider
-type HtmlDocument internal (doc, tables, lists, definitionLists, schemas) =
+type HtmlDocument internal (doc, tables, lists, definitionLists, schemas, jsonLd) =
 
     member _.Html = doc
 
@@ -610,7 +750,10 @@ type HtmlDocument internal (doc, tables, lists, definitionLists, schemas) =
         let schemas =
             doc |> HtmlRuntime.getSchemas |> List.map (fun e -> e.Name, e) |> Map.ofList
 
-        HtmlDocument(doc, tables, lists, definitionLists, schemas)
+        let jsonLd =
+            doc |> HtmlRuntime.getJsonLd |> List.map (fun e -> e.Name, e) |> Map.ofList
+
+        HtmlDocument(doc, tables, lists, definitionLists, schemas, jsonLd)
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -643,6 +786,14 @@ type HtmlDocument internal (doc, tables, lists, definitionLists, schemas) =
                                IsHidden = true,
                                IsError = false)>]
     member _.GetSchema(id: string) = schemas |> Map.find id
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    member _.GetJsonLd(id: string) = jsonLd |> Map.find id
 
 /// Underlying representation of table types generated by HtmlProvider
 type HtmlTable<'RowType> internal (name: string, headers: string[] option, values: 'RowType[], html: HtmlNode) =
