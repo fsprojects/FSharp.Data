@@ -38,6 +38,10 @@ network:
   - http://www.w3.org
   - http://schemas.microsoft.com
   - www.google.com
+  # wikipedia, ebay, imdb websites for HTML
+  - https://en.wikipedia.org
+  - https://www.ebay.com
+  - https://www.imdb.com  
 
 safe-outputs:
   add-comment:
