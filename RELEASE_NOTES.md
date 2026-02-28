@@ -2,6 +2,7 @@
 
 ## 8.1.0-beta
 
+- Add `ExceptionIfMissing` static parameter to `JsonProvider` and `XmlProvider`: when true, accessing a non-optional field that is missing in the data raises an exception instead of silently returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.
 - Add `Http.ParseLinkHeader` utility for parsing RFC 5988 `Link` response headers (used by GitHub, GitLab, and other paginated APIs) into a `Map<string, string>` from relation name to URL (closes #805)
 - Add `PreferDateTimeOffset` parameter to `CsvProvider`, `JsonProvider`, and `XmlProvider`: when true, date-time values without an explicit timezone offset are inferred as `DateTimeOffset` (using local offset) instead of `DateTime` (closes #1100, #1072)
 - Make `Http.AppendQueryToUrl` public (closes #1325)

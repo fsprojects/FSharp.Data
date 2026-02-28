@@ -32,7 +32,8 @@ type internal JsonGenerationContext =
       InferenceMode: InferenceMode'
       UnitsOfMeasureProvider: IUnitsOfMeasureProvider
       UseOriginalNames: bool
-      OmitNullFields: bool }
+      OmitNullFields: bool
+      ExceptionIfMissing: bool }
 
     static member Create
         (
@@ -44,7 +45,8 @@ type internal JsonGenerationContext =
             ?typeCache,
             ?preferDictionaries,
             ?useOriginalNames,
-            ?omitNullFields
+            ?omitNullFields,
+            ?exceptionIfMissing
         ) =
         let useOriginalNames = defaultArg useOriginalNames false
 
@@ -56,6 +58,7 @@ type internal JsonGenerationContext =
         let typeCache = defaultArg typeCache (Dictionary())
         let preferDictionaries = defaultArg preferDictionaries false
         let omitNullFields = defaultArg omitNullFields false
+        let exceptionIfMissing = defaultArg exceptionIfMissing false
 
         JsonGenerationContext.Create(
             cultureStr,
@@ -67,7 +70,8 @@ type internal JsonGenerationContext =
             inferenceMode,
             unitsOfMeasureProvider,
             useOriginalNames,
-            omitNullFields
+            omitNullFields,
+            exceptionIfMissing
         )
 
     static member Create
@@ -81,7 +85,8 @@ type internal JsonGenerationContext =
             inferenceMode,
             unitsOfMeasureProvider,
             useOriginalNames,
-            omitNullFields
+            omitNullFields,
+            exceptionIfMissing
         ) =
         { CultureStr = cultureStr
           TypeProviderType = tpType
@@ -95,7 +100,8 @@ type internal JsonGenerationContext =
           InferenceMode = inferenceMode
           UnitsOfMeasureProvider = unitsOfMeasureProvider
           UseOriginalNames = useOriginalNames
-          OmitNullFields = omitNullFields }
+          OmitNullFields = omitNullFields
+          ExceptionIfMissing = exceptionIfMissing }
 
     static member Create
         (
@@ -119,6 +125,7 @@ type internal JsonGenerationContext =
             inferenceMode,
             unitsOfMeasureProvider,
             useOriginalNames,
+            false,
             false
         )
 
@@ -367,7 +374,7 @@ module JsonTypeBuilder =
 
             let typ, conv, conversionCallingType =
                 PrimitiveInferedValue.Create(inferedType, optional, unit)
-                |> convertJsonValue "" ctx.CultureStr canPassAllConversionCallingTypes
+                |> convertJsonValue "" ctx.CultureStr canPassAllConversionCallingTypes ctx.ExceptionIfMissing
 
             { ConvertedType = typ
               OptionalConverter = Some conv

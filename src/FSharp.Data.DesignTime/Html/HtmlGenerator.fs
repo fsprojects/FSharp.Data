@@ -67,7 +67,7 @@ module internal HtmlGenerator =
             columns
             |> List.mapi (fun index field ->
                 let typ, typWithoutMeasure, conv, _convBack =
-                    ConversionsGenerator.convertStringValue missingValuesStr cultureStr field
+                    ConversionsGenerator.convertStringValue missingValuesStr cultureStr false field
 
                 { TypeForTuple = typWithoutMeasure
                   ProvidedProperty =
@@ -165,6 +165,7 @@ module internal HtmlGenerator =
                     ConversionsGenerator.convertStringValue
                         missingValuesStr
                         cultureStr
+                        false
                         (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
 
                 typ, conv
@@ -173,6 +174,7 @@ module internal HtmlGenerator =
                     ConversionsGenerator.convertStringValue
                         missingValuesStr
                         cultureStr
+                        false
                         (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<string>, false, None))
 
                 typ, conv
@@ -238,6 +240,7 @@ module internal HtmlGenerator =
                         ConversionsGenerator.convertStringValue
                             missingValuesStr
                             cultureStr
+                            false
                             (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
 
                     typ, conv
@@ -246,6 +249,7 @@ module internal HtmlGenerator =
                         ConversionsGenerator.convertStringValue
                             missingValuesStr
                             cultureStr
+                            false
                             (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
 
                     typ, conv
