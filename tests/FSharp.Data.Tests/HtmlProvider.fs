@@ -372,3 +372,43 @@ let ``Can infer DateTime and DateTimeOffset types correctly`` () =
     table.Rows.[0].DateOnly.GetType() |> should equal typeof<DateOnly>
     table.Rows.[0].MixedDate.GetType() |> should equal typeof<DateTime>
     table.Rows.[0].DateWithOffset.GetType() |> should equal typeof<DateTimeOffset>
+
+// ============================================
+// Schema.org Microdata via HtmlProvider
+// ============================================
+
+[<Literal>]
+let schemaMicrodata = """<html><body>
+  <div itemscope itemtype="http://schema.org/Person">
+    <span itemprop="name">Jane Smith</span>
+    <span itemprop="jobTitle">Software Engineer</span>
+    <a itemprop="url" href="https://example.com">Homepage</a>
+  </div>
+  <div itemscope itemtype="http://schema.org/Person">
+    <span itemprop="name">Bob Jones</span>
+    <span itemprop="jobTitle">Designer</span>
+  </div>
+</body></html>"""
+
+type SchemaMicrodataHtml = HtmlProvider<schemaMicrodata>
+
+[<Test>]
+let ``HtmlProvider exposes Schemas container for microdata`` () =
+    let doc = SchemaMicrodataHtml.GetSample()
+    let people = doc.Schemas.Person
+    people |> should not' (be null)
+
+[<Test>]
+let ``HtmlProvider Schemas.Person returns all items`` () =
+    let doc = SchemaMicrodataHtml.GetSample()
+    let people = doc.Schemas.Person
+    people |> should haveLength 2
+
+[<Test>]
+let ``HtmlProvider Schemas.Person items have typed properties`` () =
+    let doc = SchemaMicrodataHtml.GetSample()
+    let people = doc.Schemas.Person
+    people.[0].Name |> should equal "Jane Smith"
+    people.[0].JobTitle |> should equal "Software Engineer"
+    people.[0].Url |> should equal "https://example.com"
+    people.[1].Name |> should equal "Bob Jones"

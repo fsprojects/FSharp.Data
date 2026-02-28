@@ -109,17 +109,47 @@ type HtmlDefinitionList =
 
         sb.ToString()
 
+/// Representation of a single schema.org microdata item (an element with itemscope/itemtype)
+type HtmlSchemaItem =
+    { Properties: Map<string, string>
+      Html: HtmlNode }
+
+/// Representation of a collection of schema.org microdata items sharing the same type URL
+type HtmlSchemaGroup =
+    {
+        /// The local name from the schema type URL (e.g. "Person" from "http://schema.org/Person")
+        Name: string
+        /// The full schema type URL (e.g. "http://schema.org/Person")
+        TypeUrl: string
+        /// All item instances found in the document for this schema type
+        Items: HtmlSchemaItem[]
+        /// All property names discovered across items (union of keys), for type generation
+        Properties: string[]
+    }
+
+    override x.ToString() =
+        let sb = System.Text.StringBuilder()
+        sb.AppendLine(sprintf "%s (%d items)" x.Name x.Items.Length) |> ignore
+
+        for item in x.Items do
+            for (k, v) in item.Properties |> Map.toSeq do
+                sb.AppendLine(sprintf "  %s = %s" k v) |> ignore
+
+        sb.ToString()
+
 /// Representation of an HTML table, list, or definition list
 type HtmlObjectDescription =
     | Table of HtmlTable
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
+    | SchemaGroup of HtmlSchemaGroup
 
     member x.Name =
         match x with
         | Table t -> t.Name
         | List l -> l.Name
         | DefinitionList dl -> dl.Name
+        | SchemaGroup sg -> sg.Name
 
 // --------------------------------------------------------------------------------------
 
@@ -396,6 +426,112 @@ module HtmlRuntime =
               Html = definitionList }
             |> Some
 
+
+    let private hasAttr (name: string) (n: HtmlNode) = n.TryGetAttribute name |> Option.isSome
+
+    /// Extract the property value for a schema.org microdata itemprop element.
+    /// Follows the HTML microdata specification: uses content attr, href, src, or inner text.
+    let private getMicrodataValue (node: HtmlNode) =
+        match node with
+        | HtmlElement("meta", _, _) ->
+            node.TryGetAttribute "content"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultValue ""
+        | HtmlElement("a", _, _)
+        | HtmlElement("link", _, _) ->
+            node.TryGetAttribute "href"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultWith (fun () -> node.InnerText())
+        | HtmlElement("img", _, _)
+        | HtmlElement("audio", _, _)
+        | HtmlElement("video", _, _)
+        | HtmlElement("source", _, _) ->
+            node.TryGetAttribute "src"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultValue ""
+        | HtmlElement("time", _, _) ->
+            node.TryGetAttribute "datetime"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultWith (fun () -> normalizeWs (node.InnerText()))
+        | _ ->
+            node.TryGetAttribute "content"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultWith (fun () -> normalizeWs (node.InnerText()))
+
+    /// Parse a single itemscope element into an HtmlSchemaItem.
+    /// Extracts all direct (non-nested) itemprop values.
+    let private parseSchemaItem (node: HtmlNode) : HtmlSchemaItem =
+        let rec collectProps acc (n: HtmlNode) : (string * string) list =
+            match n with
+            | HtmlElement(_, _, children) ->
+                let hasProp = n.TryGetAttribute "itemprop" |> Option.map HtmlAttribute.value
+
+                let isNestedScope = hasAttr "itemscope" n && n <> node
+
+                match hasProp with
+                | Some propName ->
+                    let value = getMicrodataValue n
+                    let acc' = (propName, value) :: acc
+                    // Don't recurse into nested itemscope elements
+                    if isNestedScope then
+                        acc'
+                    else
+                        List.fold collectProps acc' children
+                | None ->
+                    if isNestedScope then
+                        acc
+                    else
+                        List.fold collectProps acc children
+            | _ -> acc
+
+        let children =
+            match node with
+            | HtmlElement(_, _, cs) -> cs
+            | _ -> []
+
+        let props = List.fold collectProps [] children |> List.rev
+
+        let propMap =
+            props
+            |> List.fold (fun (m: Map<string, string>) (k, v) -> if m.ContainsKey k then m else m.Add(k, v)) Map.empty
+
+        { Properties = propMap; Html = node }
+
+    /// Get the local name from a schema type URL, e.g. "Person" from "http://schema.org/Person"
+    let private schemaTypeName (typeUrl: string) =
+        let last = typeUrl.TrimEnd('/').Split([| '/'; '#' |]) |> Array.last
+
+        if String.IsNullOrWhiteSpace last then
+            "Schema"
+        else
+            NameUtils.nicePascalName last
+
+    /// Extract all schema.org microdata groups from the document,
+    /// grouped by itemtype URL.
+    let getSchemas (doc: HtmlDocument) : HtmlSchemaGroup list =
+        let makeUnique = NameUtils.uniqueGenerator id
+
+        doc.Descendants((fun n -> hasAttr "itemscope" n && hasAttr "itemtype" n), false)
+        |> Seq.toList
+        |> List.groupBy (fun n ->
+            n.TryGetAttribute "itemtype"
+            |> Option.map HtmlAttribute.value
+            |> Option.defaultValue "")
+        |> List.filter (fun (typeUrl, _) -> typeUrl <> "")
+        |> List.map (fun (typeUrl, nodes) ->
+            let name = makeUnique (schemaTypeName typeUrl)
+            let items = nodes |> List.map parseSchemaItem |> Array.ofList
+
+            let allProps =
+                items
+                |> Array.collect (fun item -> item.Properties |> Map.toArray |> Array.map fst)
+                |> Array.distinct
+
+            { Name = name
+              TypeUrl = typeUrl
+              Items = items
+              Properties = allProps })
+
     let internal getTables inferenceParameters includeLayoutTables (doc: HtmlDocument) =
         let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
 
@@ -429,7 +565,8 @@ module HtmlRuntime =
         Seq.concat
             [ doc |> getTables inferenceParameters includeLayoutTables |> List.map Table
               doc |> getLists |> List.map List
-              doc |> getDefinitionLists |> List.map DefinitionList ]
+              doc |> getDefinitionLists |> List.map DefinitionList
+              doc |> getSchemas |> List.map SchemaGroup ]
 
 // --------------------------------------------------------------------------------------
 
@@ -442,7 +579,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Underlying representation of the root types generated by HtmlProvider
-type HtmlDocument internal (doc, tables, lists, definitionLists) =
+type HtmlDocument internal (doc, tables, lists, definitionLists, schemas) =
 
     member _.Html = doc
 
@@ -470,7 +607,10 @@ type HtmlDocument internal (doc, tables, lists, definitionLists) =
             |> List.map (fun e -> e.Name, e)
             |> Map.ofList
 
-        HtmlDocument(doc, tables, lists, definitionLists)
+        let schemas =
+            doc |> HtmlRuntime.getSchemas |> List.map (fun e -> e.Name, e) |> Map.ofList
+
+        HtmlDocument(doc, tables, lists, definitionLists, schemas)
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -495,6 +635,14 @@ type HtmlDocument internal (doc, tables, lists, definitionLists) =
                                IsHidden = true,
                                IsError = false)>]
     member _.GetDefinitionList(id: string) = definitionLists |> Map.find id
+
+    /// <exclude />
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.",
+                               10001,
+                               IsHidden = true,
+                               IsError = false)>]
+    member _.GetSchema(id: string) = schemas |> Map.find id
 
 /// Underlying representation of table types generated by HtmlProvider
 type HtmlTable<'RowType> internal (name: string, headers: string[] option, values: 'RowType[], html: HtmlNode) =
