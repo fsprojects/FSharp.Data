@@ -113,19 +113,32 @@ type TextConversions private () =
     static member AsString str =
         if String.IsNullOrWhiteSpace str then None else Some str
 
+    /// <summary>Attempts to parse the string as an integer using the given culture.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse. Currency and percentage adorners are removed before parsing.</param>
     static member AsInteger cultureInfo text =
         Int32.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Integer, cultureInfo)
         |> asOption
 
+    /// <summary>Attempts to parse the string as a 64-bit integer using the given culture.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse. Currency and percentage adorners are removed before parsing.</param>
     static member AsInteger64 cultureInfo text =
         Int64.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Integer, cultureInfo)
         |> asOption
 
+    /// <summary>Attempts to parse the string as a decimal using the given culture.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse. Currency and percentage adorners are removed before parsing.</param>
     static member AsDecimal cultureInfo text =
         Decimal.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Currency, cultureInfo)
         |> asOption
 
-    /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
+    /// <summary>Attempts to parse the string as a float using the given culture.</summary>
+    /// <param name="missingValues">Values to treat as missing. If matched, returns None or Some NaN depending on <paramref name="useNoneForMissingValues"/>.</param>
+    /// <param name="useNoneForMissingValues">If true, missing values and NaN are returned as None; otherwise Some Double.NaN is used.</param>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse.</param>
     static member AsFloat missingValues useNoneForMissingValues cultureInfo (text: string) =
         match text.Trim() with
         | OneOfIgnoreCase missingValues -> if useNoneForMissingValues then None else Some Double.NaN
@@ -138,6 +151,8 @@ type TextConversions private () =
                 else
                     Some f)
 
+    /// <summary>Attempts to parse the string as a boolean. Accepts "true", "false", "yes", "no", "1", "0" (case-insensitive).</summary>
+    /// <param name="text">The string to parse.</param>
     static member AsBoolean(text: string) =
         match text.Trim() with
         | StringEqualsIgnoreCase "true"
@@ -148,9 +163,9 @@ type TextConversions private () =
         | StringEqualsIgnoreCase "0" -> Some false
         | _ -> None
 
-    /// Parse date time using either the JSON milliseconds format or using ISO 8601
-    /// that is, either `/Date(<msec-since-1/1/1970>)/` or something
-    /// along the lines of `2013-01-28T00:37Z`
+    /// <summary>Attempts to parse the string as a DateTime using ISO 8601 format or MSFT JSON date format.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse. Accepts e.g. <c>2013-01-28T00:37Z</c> or <c>/Date(1234567890)/</c>.</param>
     static member AsDateTime cultureInfo (text: string) =
         // Try parse "Date(<msec>)" style format
         let matchesMS = msDateRegex.Value.Match(text.Trim())
@@ -167,6 +182,9 @@ type TextConversions private () =
             | ValueSome x -> Some x
             | ValueNone -> None
 
+    /// <summary>Attempts to parse the string as a DateTimeOffset using ISO 8601 format or MSFT JSON date with offset.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse. The timezone offset must be present.</param>
     static member AsDateTimeOffset cultureInfo (text: string) =
         // get TimeSpan presentation from 4-digit integers like 0000 or -0600
         let getTimeSpanFromHourMin (hourMin: int) =
@@ -203,12 +221,19 @@ type TextConversions private () =
                 | false, _ -> None
             | _ -> None
 
+    /// <summary>Attempts to parse the string as a TimeSpan using the given culture.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse.</param>
     static member AsTimeSpan (cultureInfo: CultureInfo) (text: string) =
         match TimeSpan.TryParse(text, cultureInfo) with
         | true, t -> Some t
         | _ -> None
 
 #if NET6_0_OR_GREATER
+    /// <summary>Attempts to parse the string as a DateOnly using the given culture.
+    /// Strings that also parse as a DateTime with a non-zero time component are rejected.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse.</param>
     static member AsDateOnly (cultureInfo: CultureInfo) (text: string) =
         let mutable d = DateOnly.MinValue
 
@@ -221,6 +246,10 @@ type TextConversions private () =
         else
             None
 
+    /// <summary>Attempts to parse the string as a TimeOnly using the given culture.
+    /// Strings that also parse as a DateTime with a specific non-today date are rejected.</summary>
+    /// <param name="cultureInfo">The culture to use for parsing.</param>
+    /// <param name="text">The string to parse.</param>
     static member AsTimeOnly (cultureInfo: CultureInfo) (text: string) =
         let mutable t = TimeOnly.MinValue
 
@@ -234,6 +263,8 @@ type TextConversions private () =
             None
 #endif
 
+    /// <summary>Attempts to parse the string as a Guid.</summary>
+    /// <param name="text">The string to parse. Leading and trailing whitespace is trimmed before parsing.</param>
     static member AsGuid(text: string) = Guid.TryParse(text.Trim()) |> asOption
 
 module internal UnicodeHelper =
