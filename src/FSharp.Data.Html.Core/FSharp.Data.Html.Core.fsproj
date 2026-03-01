@@ -17,6 +17,7 @@
     <Compile Include="HtmlNode.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlDocumentOperations.fs" />
     <Compile Include="HtmlCssSelectorExtensions.fs" />
     <Compile Include="HtmlActivePatterns.fs" />
     <Compile Include="HtmlInference.fs" />
