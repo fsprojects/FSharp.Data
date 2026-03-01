@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="HTML Parser
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="HTML Parser
+">
+    
+    <title>HTML Parser
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlParser.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/HtmlParser.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/HtmlParser.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="HTML-Parser" class="anchor" href="#HTML-Parser">HTML Parser</a></h1>
+<p>This article demonstrates how to use the HTML Parser to parse HTML files.</p>
+<p>The HTML parser takes any fragment of HTML, uri or a stream and trys to parse it into a DOM.
+The parser is based on the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/index.html#contents">HTML Living Standard</a>
+Once a document/fragment has been parsed, a set of extension methods over the HTML DOM elements allow you to extract information from a web page
+independently of the actual HTML Type provider.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<p>The following example uses Google to search for <code>FSharp.Data</code> and then parses the first set of
+search results from the page, extracting the URL and Title of the link.
+We use the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-htmldocument.html">HtmlDocument</a> type.</p>
+<p>To achieve this we must first parse the webpage into our DOM. We can do this using
+the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-htmldocument.html">HtmlDocument.Load</a> method. This method will take a URL and make a synchronous web call
+to extract the data from the page. Note: an asynchronous variant <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-htmldocument.html">HtmlDocument.AsyncLoad</a> is also available</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">results</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="m">HtmlDocument</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">Load</span><span class="pn">(</span><span class="s">&quot;http://www.google.co.uk/search?q=FSharp.Data&quot;</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val results: HtmlDocument =
+  &lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;title&gt;Google Search&lt;/title&gt;&lt;style&gt;body{background-color:#fff}&lt;/style&gt;&lt;script nonce="25kZBc76dGlXYGv9XTjVUg"&gt;window.google = window.google || {};window.google.c = window.google.c || {cap:0};&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;noscript&gt;
+      &lt;style&gt;table,div,span,p{display:none}&lt;/style&gt;&lt;meta content="0;url=/httpservice/retry/enablejs?sei=uEKkaYPrJILdkPIP37r5wAk" http-equiv="refresh" /&gt;
+      &lt;div style="display:block"&gt;
+        Please click &lt;a href="/ht...</code></pre></td></tr></table>
+<p>Now that we have a loaded HTML document we can begin to extract data from it.
+Firstly, we want to extract all of the anchor tags <code>a</code> out of the document, then
+inspect the links to see if it has a <code>href</code> attribute, using <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-htmldocumentextensions.html#Descendants">HtmlDocumentExtensions.Descendants</a>. If it does, extract the value,
+which in this case is the url that the search result is pointing to, and additionally the
+<code>InnerText</code> of the anchor tag to provide the name of the web page for the search result
+we are looking at.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="id">links</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="id">results</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="id">Descendants</span> <span class="pn">[</span> <span class="s">&quot;a&quot;</span> <span class="pn">]</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="id">choose</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="fn">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="id">TryGetAttribute</span><span class="pn">(</span><span class="s">&quot;href&quot;</span><span class="pn">)</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="m">Option</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs14', 16)" onmouseover="showTip(event, 'fs14', 16)" class="fn">a</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 18)" onmouseover="showTip(event, 'fs15', 18)" class="id">InnerText</span><span class="pn">(</span><span class="pn">)</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="fn">a</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 20)" onmouseover="showTip(event, 'fs16', 20)" class="id">Value</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 21)" onmouseover="showTip(event, 'fs8', 21)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 22)" onmouseover="showTip(event, 'fs17', 22)" class="id">truncate</span> <span class="n">10</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 23)" onmouseover="showTip(event, 'fs8', 23)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="id">toList</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val links: (string * string) list =
+  [("here", "/httpservice/retry/enablejs?sei=uEKkaYPrJILdkPIP37r5wAk");
+   ("click here",
+    "/search?q=FSharp.Data&amp;sca_esv=d2de273313dd764e&amp;ie=UTF-8&amp;emsg="+[34 chars]);
+   ("feedback", "https://support.google.com/websearch")]</code></pre></td></tr></table>
+<p>Now that we have extracted our search results you will notice that there are lots of
+other links to various Google services and cached/similar results. Ideally, we would
+like to filter these results as we are probably not interested in them.
+At this point we simply have a sequence of Tuples, so F# makes this trivial using <code>Seq.filter</code>
+and <code>Seq.map</code>.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 25)" onmouseover="showTip(event, 'fs19', 25)" class="id">searchResults</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs6', 26)" onmouseover="showTip(event, 'fs6', 26)" class="id">links</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 27)" onmouseover="showTip(event, 'fs20', 27)" class="m">List</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs21', 28)" onmouseover="showTip(event, 'fs21', 28)" class="id">filter</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs22', 29)" onmouseover="showTip(event, 'fs22', 29)" class="fn">name</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs23', 30)" onmouseover="showTip(event, 'fs23', 30)" class="fn">url</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs22', 31)" onmouseover="showTip(event, 'fs22', 31)" class="fn">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Cached&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs22', 32)" onmouseover="showTip(event, 'fs22', 32)" class="fn">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Similar&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs23', 33)" onmouseover="showTip(event, 'fs23', 33)" class="fn">url</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 34)" onmouseover="showTip(event, 'fs24', 34)" class="id">StartsWith</span><span class="pn">(</span><span class="s">&quot;/url?&quot;</span><span class="pn">)</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 35)" onmouseover="showTip(event, 'fs20', 35)" class="m">List</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs25', 36)" onmouseover="showTip(event, 'fs25', 36)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs22', 37)" onmouseover="showTip(event, 'fs22', 37)" class="fn">name</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs23', 38)" onmouseover="showTip(event, 'fs23', 38)" class="fn">url</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs22', 39)" onmouseover="showTip(event, 'fs22', 39)" class="fn">name</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="fn">url</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs26', 41)" onmouseover="showTip(event, 'fs26', 41)" class="id">Substring</span><span class="pn">(</span><span class="n">0</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs23', 42)" onmouseover="showTip(event, 'fs23', 42)" class="fn">url</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs27', 43)" onmouseover="showTip(event, 'fs27', 43)" class="id">IndexOf</span><span class="pn">(</span><span class="s">&quot;&amp;sa=&quot;</span><span class="pn">)</span><span class="pn">)</span><span class="pn">.</span><span class="id">Replace</span><span class="pn">(</span><span class="s">&quot;/url?q=&quot;</span><span class="pn">,</span> <span class="s">&quot;&quot;</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val searchResults: (string * string) list = []</code></pre></td></tr></table>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">val results: HtmlDocument</div>
+<div class="fsdocs-tip" id="fs4">Multiple items<br />module HtmlDocument
+
+from FSharp.Data<br /><br />--------------------<br />type HtmlDocument =
+  private | HtmlDocument of docType: string * elements: HtmlNode list
+  override ToString: unit -&gt; string
+  static member New: docType: string * children: HtmlNode seq -&gt; HtmlDocument + 1 overload</div>
+<div class="fsdocs-tip" id="fs5">static member HtmlDocument.Load: stream: System.IO.Stream -&gt; HtmlDocument<br />static member HtmlDocument.Load: reader: System.IO.TextReader -&gt; HtmlDocument<br />static member HtmlDocument.Load: uri: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?encoding: System.Text.Encoding -&gt; HtmlDocument</div>
+<div class="fsdocs-tip" id="fs6">val links: (string * string) list</div>
+<div class="fsdocs-tip" id="fs7">static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * predicate: (HtmlNode -&gt; bool) -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * names: string seq -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * name: string -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * predicate: (HtmlNode -&gt; bool) * recurseOnMatch: bool -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * names: string seq * recurseOnMatch: bool -&gt; HtmlNode seq<br />static member HtmlDocumentExtensions.Descendants: doc: HtmlDocument * name: string * recurseOnMatch: bool -&gt; HtmlNode seq</div>
+<div class="fsdocs-tip" id="fs8">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs9">val choose: chooser: (&#39;T -&gt; &#39;U option) -&gt; source: &#39;T seq -&gt; &#39;U seq</div>
+<div class="fsdocs-tip" id="fs10">val x: HtmlNode</div>
+<div class="fsdocs-tip" id="fs11">static member HtmlNodeExtensions.TryGetAttribute: n: HtmlNode * name: string -&gt; HtmlAttribute option</div>
+<div class="fsdocs-tip" id="fs12">module Option
+
+from Microsoft.FSharp.Core</div>
+<div class="fsdocs-tip" id="fs13">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; option: &#39;T option -&gt; &#39;U option</div>
+<div class="fsdocs-tip" id="fs14">val a: HtmlAttribute</div>
+<div class="fsdocs-tip" id="fs15">static member HtmlNodeExtensions.InnerText: n: HtmlNode -&gt; string</div>
+<div class="fsdocs-tip" id="fs16">static member HtmlAttributeExtensions.Value: attr: HtmlAttribute -&gt; string</div>
+<div class="fsdocs-tip" id="fs17">val truncate: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div class="fsdocs-tip" id="fs18">val toList: source: &#39;T seq -&gt; &#39;T list</div>
+<div class="fsdocs-tip" id="fs19">val searchResults: (string * string) list</div>
+<div class="fsdocs-tip" id="fs20">Multiple items<br />module List
+
+from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =
+  | op_Nil
+  | op_ColonColon of Head: &#39;T * Tail: &#39;T list
+  interface IReadOnlyList&lt;&#39;T&gt;
+  interface IReadOnlyCollection&lt;&#39;T&gt;
+  interface IEnumerable
+  interface IEnumerable&lt;&#39;T&gt;
+  member GetReverseIndex: rank: int * offset: int -&gt; int
+  member GetSlice: startIndex: int option * endIndex: int option -&gt; &#39;T list
+  static member Cons: head: &#39;T * tail: &#39;T list -&gt; &#39;T list
+  member Head: &#39;T
+  member IsEmpty: bool
+  member Item: index: int -&gt; &#39;T with get
+  ...</div>
+<div class="fsdocs-tip" id="fs21">val filter: predicate: (&#39;T -&gt; bool) -&gt; list: &#39;T list -&gt; &#39;T list</div>
+<div class="fsdocs-tip" id="fs22">val name: string</div>
+<div class="fsdocs-tip" id="fs23">val url: string</div>
+<div class="fsdocs-tip" id="fs24">System.String.StartsWith(value: string) : bool<br />System.String.StartsWith(value: char) : bool<br />System.String.StartsWith(value: string, comparisonType: System.StringComparison) : bool<br />System.String.StartsWith(value: string, ignoreCase: bool, culture: System.Globalization.CultureInfo) : bool</div>
+<div class="fsdocs-tip" id="fs25">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; list: &#39;T list -&gt; &#39;U list</div>
+<div class="fsdocs-tip" id="fs26">System.String.Substring(startIndex: int) : string<br />System.String.Substring(startIndex: int, length: int) : string</div>
+<div class="fsdocs-tip" id="fs27">System.String.IndexOf(value: string) : int<br />System.String.IndexOf(value: char) : int<br />System.String.IndexOf(value: string, comparisonType: System.StringComparison) : int<br />System.String.IndexOf(value: string, startIndex: int) : int<br />System.String.IndexOf(value: char, comparisonType: System.StringComparison) : int<br />System.String.IndexOf(value: char, startIndex: int) : int<br />System.String.IndexOf(value: string, startIndex: int, comparisonType: System.StringComparison) : int<br />System.String.IndexOf(value: string, startIndex: int, count: int) : int<br />System.String.IndexOf(value: char, startIndex: int, count: int) : int<br />System.String.IndexOf(value: string, startIndex: int, count: int, comparisonType: System.StringComparison) : int</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#HTML-Parser">
+      HTML Parser
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

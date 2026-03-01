@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="FSharp.Data: Data Access Made Simple
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/index.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="FSharp.Data: Data Access Made Simple
+">
+    
+    <title>FSharp.Data: Data Access Made Simple
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <h1><a name="FSharp-Data-Data-Access-Made-Simple" class="anchor" href="#FSharp-Data-Data-Access-Made-Simple">FSharp.Data: Data Access Made Simple</a></h1>
+<p>The FSharp.Data package implements core functionality to
+access common data formats in your F# applications and scripts. It contains F# type
+providers for working with structured file formats (CSV, HTML, JSON and XML) and helpers for parsing
+CSV, HTML and JSON files and for sending HTTP requests.</p>
+<p>This library focuses on providing simple access to the structured documents
+and other data sources.</p>
+<p>FSharp.Data stems from <a href="http://tomasp.net/academic/papers/fsharp-data/">Types from data Making structured data first-class citizens in F#</a> by Petricek, Syme and Guerra. This paper
+received a Distinguished Paper award at PLDI 2016 and was selected as one of three CACM Research
+Highlight in 2018. 🏆🏆🏆</p>
+<p>The package is available on <a href="https://nuget.org/packages/FSharp.Data">NuGet</a>. <a href="https://www.nuget.org/packages/FSharp.Data/"><img src="//img.shields.io/nuget/v/FSharp.Data.svg?style=flat" alt="NuGet Status" /></a></p>
+<h2><a name="Type-Providers" class="anchor" href="#Type-Providers">Type Providers</a></h2>
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <a id="lnk" href="images/json.gif"><img id="anim" src="images/json.gif" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+<p>The FSharp.Data type providers for CSV, HTML, JSON and XML infer types from the structure of a sample
+document (or a document containing multiple samples). The structure is then used
+to provide easy to use type-safe access to documents that follow the same structure.</p>
+<ul>
+<li><a href="library/CsvProvider.html">CSV Type Provider</a> - discusses the <code>CsvProvider&lt;..&gt;</code> type</li>
+<li><a href="library/HtmlProvider.html">HTML Type Provider</a> - discusses the <code>HtmlProvider&lt;...&gt;</code> type</li>
+<li><a href="library/JsonProvider.html">JSON Type Provider</a> - discusses the <code>JsonProvider&lt;..&gt;</code> type</li>
+<li><a href="library/XmlProvider.html">XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
+<li><a href="library/TypeInference.html">Type Inference and Missing Values</a> - explains type inference rules, how missing/null values map to F# types, and how to control inference behaviour</li>
+</ul>
+<p>The package also contains a type provider for accessing data from
+<a href="library/WorldBank.html">the WorldBank</a>.</p>
+<h2><a name="Data-Access-Tools" class="anchor" href="#Data-Access-Tools">Data Access Tools</a></h2>
+<p>The package contains functionality to simplify data access. In particular, it includes tools for HTTP web requests and
+CSV, HTML, and JSON parsers with simple dynamic API. For more information, see the
+following topics:</p>
+<ul>
+<li>
+<a href="library/Http.html">HTTP Utilities</a> - discusses the <code>Http</code> type that can be used
+to send HTTP web requests.
+</li>
+<li>
+<a href="library/CsvFile.html">CSV Parser</a> - introduces the CSV parser 
+(without using the type provider)
+</li>
+<li>
+<a href="library/HtmlParser.html">HTML Parser</a> - introduces the HTML parser 
+(without using the type provider)
+</li>
+<li>
+<a href="library/JsonValue.html">JSON Parser</a> - introduces the JSON parser 
+(without using the type provider)
+</li>
+</ul>
+<h2><a name="Tutorials" class="anchor" href="#Tutorials">Tutorials</a></h2>
+<p>The following tutorials contain additional examples that
+use multiple features together:</p>
+<ul>
+<li>
+<a href="tutorials/JsonToXml.html">Converting between JSON and XML</a> - implements two serialization 
+functions that convert between the standard .NET <code>XElement</code> and the <code>JsonValue</code> from FSharp.Data.
+The tutorial demonstrates pattern matching on <code>JsonValue</code>.
+</li>
+<li>
+<a href="tutorials/JsonAnonymizer.html">Anonymizing JSON</a> - implements a function to anonymize a <code>JsonValue</code> from FSharp.Data.
+The tutorial demonstrates pattern matching on <code>JsonValue</code>.
+</li>
+</ul>
+<h2><a name="Reference-Documentation" class="anchor" href="#Reference-Documentation">Reference Documentation</a></h2>
+<p>There's also <a href="reference">reference documentation</a> available. Please note that everything under
+the <code>FSharp.Data.Runtime</code> namespace is not considered as part of the public API and can change without notice.</p>
+<h2><a name="Contributing-and-license" class="anchor" href="#Contributing-and-license">Contributing and license</a></h2>
+<p>The library is available under Apache 2.0. For more information see the
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License file</a> in the GitHub repository. In summary, this means that you can
+use the library for commercial purposes, fork it, and modify it as you wish. FSharp.Data is made possible by the volunteer work <a href="https://github.com/fsharp/FSharp.Data/graphs/contributors">of more than a dozen
+contributors</a> and we're open to
+contributions from anyone. If you want to help out but don't know where to start, you
+can take one of the <a href="https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&amp;state=open">Up-For-Grabs</a>
+issues, or help to improve the documentation.</p>
+<p>The project is hosted on <a href="https://github.com/fsharp/FSharp.Data">GitHub</a> where you can <a href="https://github.com/fsharp/FSharp.Data/issues">report issues</a>, fork
+the project and submit pull requests. If you're adding new public API's, please also
+contribute <a href="https://github.com/fsprojects/FSharp.Data/tree/master/docs/">samples</a> to the docs.</p>
+
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#FSharp-Data-Data-Access-Made-Simple">
+      FSharp.Data: Data Access Made Simple
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Type-Providers">
+      Type Providers
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Data-Access-Tools">
+      Data Access Tools
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Tutorials">
+      Tutorials
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Reference-Documentation">
+      Reference Documentation
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Contributing-and-license">
+      Contributing and license
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

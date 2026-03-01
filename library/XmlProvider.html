@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="XML Type Provider
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="XML Type Provider
+">
+    
+    <title>XML Type Provider
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects.github.io/FSharp.Data/main?filepath=library/XmlProvider.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/XmlProvider.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/XmlProvider.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="XML-Type-Provider" class="anchor" href="#XML-Type-Provider">XML Type Provider</a></h1>
+<p>This article demonstrates how to use the XML Type Provider to access XML documents
+in a statically typed way. We first look at how the structure is inferred and then
+demonstrate the provider by parsing an RSS feed.</p>
+<p>The XML Type Provider provides statically typed access to XML documents.
+It takes a sample document as an input (or a document containing a root XML node with
+multiple child nodes that are used as samples). The generated type can then be used
+to read files with the same structure</p>
+<p>If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present)</p>
+<p>Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
+relying on samples.</p>
+<h2><a name="Introducing-the-provider" class="anchor" href="#Introducing-the-provider">Introducing the provider</a></h2>
+<p>The type provider is located in the <code>FSharp.Data.dll</code> assembly. Assuming the assembly
+is located in the <code>../../bin</code> directory, we can load it in F# Interactive as follows:
+(note we also need a reference to <code>System.Xml.Linq</code>, because the provider uses the
+<code>XDocument</code> type internally):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;System.Xml.Linq.dll&quot;</span>
+
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<h3><a name="Inferring-type-from-sample" class="anchor" href="#Inferring-type-from-sample">Inferring type from sample</a></h3>
+<p>The <code>XmlProvider&lt;...&gt;</code> takes one static parameter of type <code>string</code>. The parameter can
+be <em>either</em> a sample XML string <em>or</em> a sample file (relative to the current folder or online
+accessible via <code>http</code> or <code>https</code>). It is not likely that this could lead to ambiguities.</p>
+<p>The following sample generates a type that can read simple XML documents with a root node
+containing two attributes:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="rt">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Paul Feyerabend&quot; born=&quot;1924&quot; /&gt;&quot;&quot;&quot;</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">sample</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="rt">Author</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Karl Popper&quot; born=&quot;1902&quot; /&gt;&quot;&quot;&quot;</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="id">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="id">Name</span> <span onmouseout="hideTip(event, 'fs5', 11)" onmouseover="showTip(event, 'fs5', 11)" class="id">sample</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="id">Born</span>
+</code></pre>
+<p>The type provider generates a type <code>Author</code> that has properties corresponding to the
+attributes of the root element of the XML document. The types of the properties are
+inferred based on the values in the sample document. In this case, the <code>Name</code> property
+has a type <code>string</code> and <code>Born</code> is <code>int</code>.</p>
+<p>XML is a quite flexible format, so we could represent the same document differently.
+Instead of using attributes, we could use nested nodes (<code>&lt;name&gt;</code> and <code>&lt;born&gt;</code> nested
+under <code>&lt;author&gt;</code>) that directly contain the values:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="rt">AuthorAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;&lt;author&gt;&lt;name&gt;Karl Popper&lt;/name&gt;&lt;born&gt;1902&lt;/born&gt;&lt;/author&gt;&quot;</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="id">doc</span> <span class="o">=</span> <span class="s">&quot;&lt;author&gt;&lt;name&gt;Paul Feyerabend&lt;/name&gt;&lt;born&gt;1924&lt;/born&gt;&lt;/author&gt;&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="id">sampleAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="rt">AuthorAlt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="id">doc</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs7', 20)" onmouseover="showTip(event, 'fs7', 20)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs12', 21)" onmouseover="showTip(event, 'fs12', 21)" class="id">sampleAlt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="id">Name</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="id">sampleAlt</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 24)" onmouseover="showTip(event, 'fs9', 24)" class="id">Born</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Paul Feyerabend (1924)
+type AuthorAlt = XmlProvider&lt;...&gt;
+val doc: string =
+  "&lt;author&gt;&lt;name&gt;Paul Feyerabend&lt;/name&gt;&lt;born&gt;1924&lt;/born&gt;&lt;/author&gt;"
+val sampleAlt: XmlProvider&lt;...&gt;.Author =
+  &lt;author&gt;
+  &lt;name&gt;Paul Feyerabend&lt;/name&gt;
+  &lt;born&gt;1924&lt;/born&gt;
+&lt;/author&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>The generated type provides exactly the same API for reading documents following this
+convention (Note that you cannot use <code>AuthorAlt</code> to parse samples that use the
+first style - the implementation of the types differs, they just provide the same public API.)</p>
+<p>The provider turns a node into a simply typed property only when the node contains just
+a primitive value and has no children or attributes.</p>
+<h3><a name="Types-for-more-complex-structure" class="anchor" href="#Types-for-more-complex-structure">Types for more complex structure</a></h3>
+<p>Now let's look at a number of examples that have more interesting structure. First of
+all, what if a node contains some value, but also has some attributes?</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="rt">Detailed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;true&quot;&gt;Karl Popper&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 27)" onmouseover="showTip(event, 'fs14', 27)" class="id">info</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="rt">Detailed</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;false&quot;&gt;Thomas Kuhn&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs7', 30)" onmouseover="showTip(event, 'fs7', 30)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (full=</span><span class="pf">%b</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs14', 31)" onmouseover="showTip(event, 'fs14', 31)" class="id">info</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 32)" onmouseover="showTip(event, 'fs15', 32)" class="prop">Name</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 33)" onmouseover="showTip(event, 'fs16', 33)" class="id">Value</span> <span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="id">info</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 35)" onmouseover="showTip(event, 'fs15', 35)" class="prop">Name</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 36)" onmouseover="showTip(event, 'fs17', 36)" class="id">Full</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Thomas Kuhn (full=false)
+type Detailed = XmlProvider&lt;...&gt;
+val info: XmlProvider&lt;...&gt;.Author =
+  &lt;author&gt;
+  &lt;name full="false"&gt;Thomas Kuhn&lt;/name&gt;
+&lt;/author&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>If the node cannot be represented as a simple type (like <code>string</code>) then the provider
+builds a new type with multiple properties. Here, it generates a property <code>Full</code>
+(based on the name of the attribute) and infers its type to be boolean. Then it
+adds a property with a (special) name <code>Value</code> that returns the content of the element.</p>
+<h3><a name="Types-for-multiple-simple-elements" class="anchor" href="#Types-for-multiple-simple-elements">Types for multiple simple elements</a></h3>
+<p>Another interesting case is when there are multiple nodes that contain just a
+primitive value. The following example shows what happens when the root node
+contains multiple <code>&lt;value&gt;</code> nodes (note that if we leave out the parameter to the
+<code>Parse</code> method, the same text used for the schema will be used as the runtime value).</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="rt">Test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;&lt;root&gt;&lt;value&gt;1&lt;/value&gt;&lt;value&gt;3&lt;/value&gt;&lt;/root&gt;&quot;</span><span class="pn">&gt;</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs19', 39)" onmouseover="showTip(event, 'fs19', 39)" class="fn">v</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs18', 40)" onmouseover="showTip(event, 'fs18', 40)" class="rt">Test</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs20', 41)" onmouseover="showTip(event, 'fs20', 41)" class="id">GetSample</span><span class="pn">(</span><span class="pn">)</span><span class="pn">.</span><span class="id">Values</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs7', 42)" onmouseover="showTip(event, 'fs7', 42)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs19', 43)" onmouseover="showTip(event, 'fs19', 43)" class="fn">v</span>
+</code></pre>
+<p>The type provider generates a property <code>Values</code> that returns an array with the
+values - as the <code>&lt;value&gt;</code> nodes do not contain any attributes or children, they
+are turned into <code>int</code> values and so the <code>Values</code> property returns just <code>int[]</code>!</p>
+<h2><a name="Type-inference-hints-inline-schemas" class="anchor" href="#Type-inference-hints-inline-schemas">Type inference hints / inline schemas</a></h2>
+<p>Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)</p>
+<p>This feature is disabled by default and has to be explicitly enabled with the <code>InferenceMode</code>
+static parameter.</p>
+<p>Let's consider an example where this can be useful:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs21', 44)" onmouseover="showTip(event, 'fs21', 44)" class="rt">AmbiguousEntity</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 45)" onmouseover="showTip(event, 'fs4', 45)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Sample</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        &lt;Entity Code=&quot;000&quot; Length=&quot;0&quot;/&gt;</span>
+<span class="s">        &lt;Entity Code=&quot;123&quot; Length=&quot;42&quot;/&gt;</span>
+<span class="s">        &lt;Entity Code=&quot;4E5&quot; Length=&quot;1.83&quot;/&gt;</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="id">code</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs21', 47)" onmouseover="showTip(event, 'fs21', 47)" class="rt">AmbiguousEntity</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Code</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="id">length</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs21', 50)" onmouseover="showTip(event, 'fs21', 50)" class="rt">AmbiguousEntity</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 51)" onmouseover="showTip(event, 'fs23', 51)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Length</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type AmbiguousEntity = XmlProvider&lt;...&gt;
+val code: float = 123.0
+val length: decimal = 42M</code></pre></td></tr></table>
+<p>In the previous example, <code>Code</code> is inferred as a <code>float</code>,
+even though it looks more like it should be a <code>string</code>.
+(<code>4E5</code> is interpreted as an exponential float notation instead of a string)</p>
+<p>Now let's enable inline schemas:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 52)" onmouseover="showTip(event, 'fs1', 52)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 53)" onmouseover="showTip(event, 'fs2', 53)" class="id">Data</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs25', 54)" onmouseover="showTip(event, 'fs25', 54)" class="id">Runtime</span><span class="pn">.</span><span class="m">StructuralInference</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs26', 55)" onmouseover="showTip(event, 'fs26', 55)" class="rt">AmbiguousEntity2</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 56)" onmouseover="showTip(event, 'fs4', 56)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Sample</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        &lt;Entity Code=&quot;typeof{string}&quot; Length=&quot;typeof{float{metre}}&quot;/&gt;</span>
+<span class="s">        &lt;Entity Code=&quot;123&quot; Length=&quot;42&quot;/&gt;</span>
+<span class="s">        &lt;Entity Code=&quot;4E5&quot; Length=&quot;1.83&quot;/&gt;</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="pn">,</span>
+        <span onmouseout="hideTip(event, 'fs27', 57)" onmouseover="showTip(event, 'fs27', 57)" class="fn">InferenceMode</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs27', 58)" onmouseover="showTip(event, 'fs27', 58)" class="en">InferenceMode</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 59)" onmouseover="showTip(event, 'fs28', 59)" class="id">ValuesAndInlineSchemasOverrides</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 60)" onmouseover="showTip(event, 'fs29', 60)" class="id">code2</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs26', 61)" onmouseover="showTip(event, 'fs26', 61)" class="rt">AmbiguousEntity2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 62)" onmouseover="showTip(event, 'fs23', 62)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Code</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 63)" onmouseover="showTip(event, 'fs30', 63)" class="id">length2</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs26', 64)" onmouseover="showTip(event, 'fs26', 64)" class="rt">AmbiguousEntity2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 65)" onmouseover="showTip(event, 'fs23', 65)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Length</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type AmbiguousEntity2 = XmlProvider&lt;...&gt;
+val code2: string = "123"
+val length2: float&lt;UnitSystems.SI.UnitNames.metre&gt; = 42.0</code></pre></td></tr></table>
+<p>With the <code>ValuesAndInlineSchemasOverrides</code> inference mode, the <code>typeof{string}</code> inline schema
+takes priority over the type inferred from other values.
+<code>Code</code> is now a <code>string</code>, as we wanted it to be!</p>
+<p>Note that an alternative to obtain the same result would have been to replace all the <code>Code</code> values
+in the samples with unambiguous string values. (But this can be very cumbersome, especially with big samples)</p>
+<p>If we had used the <code>ValuesAndInlineSchemasHints</code> inference mode instead, our inline schema
+would have had the same precedence as the types inferred from other values, and <code>Code</code>
+would have been inferred as a choice between either a number or a string,
+exactly as if we had added another sample with an unambiguous string value for <code>Code</code>.</p>
+<h3><a name="Units-of-measure" class="anchor" href="#Units-of-measure">Units of measure</a></h3>
+<p>Inline schemas also enable support for units of measure.</p>
+<p>In the previous example, the <code>Length</code> property is now inferred as a <code>float</code>
+with the <code>metre</code> unit of measure (from the default SI units).</p>
+<p>Warning: units of measures are discarded when merged with types without a unit or with a different unit.
+As mentioned previously, with the <code>ValuesAndInlineSchemasHints</code> inference mode,
+inline schemas types are merged with other inferred types with the same precedence.
+Since values-inferred types never have units, inline-schemas-inferred types will lose their
+unit if the sample contains other values...</p>
+<h2><a name="Processing-philosophers" class="anchor" href="#Processing-philosophers">Processing philosophers</a></h2>
+<p>In this section, we look at an example that demonstrates how the type provider works
+on a simple document that lists authors who write about a specific topic. The
+sample document <a href="../data/Writers.xml"><code>data/Writers.xml</code></a> looks as follows:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Paul Feyerabend"</span> <span class="o">born</span><span class="k">="1924"</span> <span class="k">/&gt;</span>
+  <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Thomas Kuhn"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">authors</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p>At runtime, we use the generated type provider to parse the following string
+(which has the same structure as the sample document with the exception that
+one of the <code>author</code> nodes also contains a <code>died</code> attribute):</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 66)" onmouseover="showTip(event, 'fs31', 66)" class="id">authors</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;authors topic=&quot;Philosophy of Mathematics&quot;&gt;</span>
+<span class="s">    &lt;author name=&quot;Bertrand Russell&quot; /&gt;</span>
+<span class="s">    &lt;author name=&quot;Ludwig Wittgenstein&quot; born=&quot;1889&quot; /&gt;</span>
+<span class="s">    &lt;author name=&quot;Alfred North Whitehead&quot; died=&quot;1947&quot; /&gt;</span>
+<span class="s">  &lt;/authors&gt; &quot;&quot;&quot;</span>
+</code></pre>
+<p>When initializing the <code>XmlProvider</code>, we can pass it a file name or a web URL.
+The <code>Load</code> and <code>AsyncLoad</code> methods allow reading the data from a file or from a web resource. The
+<code>Parse</code> method takes the data as a string, so we can now print the information as follows:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs32', 67)" onmouseover="showTip(event, 'fs32', 67)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs33', 68)" onmouseover="showTip(event, 'fs33', 68)" class="prop">ResolutionFolder</span> <span class="o">=</span> <span class="k">__SOURCE_DIRECTORY__</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs34', 69)" onmouseover="showTip(event, 'fs34', 69)" class="rt">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 70)" onmouseover="showTip(event, 'fs4', 70)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/Writers.xml&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs33', 71)" onmouseover="showTip(event, 'fs33', 71)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs33', 72)" onmouseover="showTip(event, 'fs33', 72)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs35', 73)" onmouseover="showTip(event, 'fs35', 73)" class="id">topic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs34', 74)" onmouseover="showTip(event, 'fs34', 74)" class="rt">Authors</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs36', 75)" onmouseover="showTip(event, 'fs36', 75)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs31', 76)" onmouseover="showTip(event, 'fs31', 76)" class="id">authors</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs7', 77)" onmouseover="showTip(event, 'fs7', 77)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs35', 78)" onmouseover="showTip(event, 'fs35', 78)" class="id">topic</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs37', 79)" onmouseover="showTip(event, 'fs37', 79)" class="id">Topic</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs38', 80)" onmouseover="showTip(event, 'fs38', 80)" class="fn">author</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs35', 81)" onmouseover="showTip(event, 'fs35', 81)" class="id">topic</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs39', 82)" onmouseover="showTip(event, 'fs39', 82)" class="id">Authors</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="fn">printf</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs38', 84)" onmouseover="showTip(event, 'fs38', 84)" class="fn">author</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 85)" onmouseover="showTip(event, 'fs8', 85)" class="id">Name</span>
+    <span onmouseout="hideTip(event, 'fs38', 86)" onmouseover="showTip(event, 'fs38', 86)" class="fn">author</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 87)" onmouseover="showTip(event, 'fs41', 87)" class="id">Born</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs42', 88)" onmouseover="showTip(event, 'fs42', 88)" class="m">Option</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs43', 89)" onmouseover="showTip(event, 'fs43', 89)" class="id">iter</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs40', 90)" onmouseover="showTip(event, 'fs40', 90)" class="fn">printf</span> <span class="s">&quot; (</span><span class="pf">%d</span><span class="s">)&quot;</span><span class="pn">)</span>
+    <span onmouseout="hideTip(event, 'fs7', 91)" onmouseover="showTip(event, 'fs7', 91)" class="fn">printfn</span> <span class="s">&quot;&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Philosophy of Mathematics
+ - Bertrand Russell
+ - Ludwig Wittgenstein (1889)
+ - Alfred North Whitehead
+[&lt;Literal&gt;]
+val ResolutionFolder: string = "D:\a\FSharp.Data\FSharp.Data\docs\library"
+type Authors = XmlProvider&lt;...&gt;
+val topic: XmlProvider&lt;...&gt;.Authors =
+  &lt;authors topic="Philosophy of Mathematics"&gt;
+    &lt;author name="Bertrand Russell" /&gt;
+    &lt;author name="Ludwig Wittgenstein" born="1889" /&gt;
+    &lt;author name="Alfred North Whitehead" died="1947" /&gt;
+  &lt;/authors&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>The value <code>topic</code> has a property <code>Topic</code> (of type <code>string</code>), which returns the value
+of the attribute with the same name. It also has a property <code>Authors</code> that returns
+an array with all the authors. The <code>Born</code> property is missing for some authors,
+so it becomes <code>option&lt;int&gt;</code> and we need to print it using <code>Option.iter</code>.</p>
+<p>The <code>died</code> attribute was not present in the sample used for the inference, so we
+cannot obtain it in a statically typed way (although it can still be obtained
+dynamically using <code>author.XElement.Attribute(XName.Get("died"))</code>).</p>
+<h2><a name="Global-inference-mode" class="anchor" href="#Global-inference-mode">Global inference mode</a></h2>
+<p>In the examples shown earlier, an element was never (recursively) contained in an
+element of the same name (for example <code>&lt;author&gt;</code> never contained another <code>&lt;author&gt;</code>).
+However, when we work with documents such as XHTML files, this can often be the case.
+Consider for example, the following sample (a simplified version of
+<a href="../data/HtmlBody.xml"><code>data/HtmlBody.xml</code></a>):</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">span</span><span class="k">&gt;</span>Main text<span class="k">&lt;/</span><span class="i">span</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="first"</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">div</span><span class="k">&gt;</span>Second text<span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
+  <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
+<span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p>Here, a <code>&lt;div&gt;</code> element can contain other <code>&lt;div&gt;</code> elements, and it is quite clear that
+they should all have the same type - we want to be able to write a recursive function
+that processes <code>&lt;div&gt;</code> elements. To make this possible, you need to set an optional
+parameter <code>Global</code> to <code>true</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs44', 92)" onmouseover="showTip(event, 'fs44', 92)" class="rt">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 93)" onmouseover="showTip(event, 'fs4', 93)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/HtmlBody.xml&quot;</span><span class="pn">,</span> <span class="fn">Global</span><span class="o">=</span><span class="k">true</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs33', 94)" onmouseover="showTip(event, 'fs33', 94)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs33', 95)" onmouseover="showTip(event, 'fs33', 95)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs45', 96)" onmouseover="showTip(event, 'fs45', 96)" class="id">html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs44', 97)" onmouseover="showTip(event, 'fs44', 97)" class="rt">Html</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs46', 98)" onmouseover="showTip(event, 'fs46', 98)" class="id">GetSample</span><span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<p>When the <code>Global</code> parameter is <code>true</code>, the type provider <em>unifies</em> all elements of the
+same name. This means that all <code>&lt;div&gt;</code> elements have the same type (with a union
+of all attributes and all possible child nodes that appear in the sample document).</p>
+<p>The type is located under a type <code>Html</code>, so we can write a <code>printDiv</code> function
+that takes <code>Html.Div</code> and acts as follows:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">/// Prints the content of a &lt;div&gt; element</span>
+<span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs47', 99)" onmouseover="showTip(event, 'fs47', 99)" class="fn">printDiv</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs48', 100)" onmouseover="showTip(event, 'fs48', 100)" class="fn">div</span><span class="pn">:</span> <span onmouseout="hideTip(event, 'fs44', 101)" onmouseover="showTip(event, 'fs44', 101)" class="rt">Html</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs49', 102)" onmouseover="showTip(event, 'fs49', 102)" class="id">Div</span><span class="pn">)</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs48', 103)" onmouseover="showTip(event, 'fs48', 103)" class="fn">div</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs50', 104)" onmouseover="showTip(event, 'fs50', 104)" class="id">Spans</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 105)" onmouseover="showTip(event, 'fs51', 105)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs52', 106)" onmouseover="showTip(event, 'fs52', 106)" class="id">iter</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs7', 107)" onmouseover="showTip(event, 'fs7', 107)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span><span class="pn">)</span>
+    <span onmouseout="hideTip(event, 'fs48', 108)" onmouseover="showTip(event, 'fs48', 108)" class="fn">div</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs53', 109)" onmouseover="showTip(event, 'fs53', 109)" class="id">Divs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs51', 110)" onmouseover="showTip(event, 'fs51', 110)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs52', 111)" onmouseover="showTip(event, 'fs52', 111)" class="id">iter</span> <span onmouseout="hideTip(event, 'fs47', 112)" onmouseover="showTip(event, 'fs47', 112)" class="fn">printDiv</span>
+
+    <span class="k">if</span> <span onmouseout="hideTip(event, 'fs48', 113)" onmouseover="showTip(event, 'fs48', 113)" class="fn">div</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs50', 114)" onmouseover="showTip(event, 'fs50', 114)" class="prop">Spans</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs54', 115)" onmouseover="showTip(event, 'fs54', 115)" class="id">Length</span> <span class="o">=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs48', 116)" onmouseover="showTip(event, 'fs48', 116)" class="fn">div</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs53', 117)" onmouseover="showTip(event, 'fs53', 117)" class="prop">Divs</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs54', 118)" onmouseover="showTip(event, 'fs54', 118)" class="id">Length</span> <span class="o">=</span> <span class="n">0</span> <span class="k">then</span>
+        <span onmouseout="hideTip(event, 'fs48', 119)" onmouseover="showTip(event, 'fs48', 119)" class="fn">div</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs55', 120)" onmouseover="showTip(event, 'fs55', 120)" class="id">Value</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs42', 121)" onmouseover="showTip(event, 'fs42', 121)" class="m">Option</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs43', 122)" onmouseover="showTip(event, 'fs43', 122)" class="id">iter</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs7', 123)" onmouseover="showTip(event, 'fs7', 123)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span><span class="pn">)</span>
+
+<span class="c">// Print the root &lt;div&gt; element with all children</span>
+<span onmouseout="hideTip(event, 'fs47', 124)" onmouseover="showTip(event, 'fs47', 124)" class="fn">printDiv</span> <span onmouseout="hideTip(event, 'fs45', 125)" onmouseover="showTip(event, 'fs45', 125)" class="id">html</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Main text
+First text
+Another text
+Second text
+val printDiv: div: XmlProvider&lt;...&gt;.Div -&gt; unit
+val it: unit = ()</code></pre></td></tr></table>
+<p>The function first prints all text included as <code>&lt;span&gt;</code> (the element never has any
+attributes in our sample, so it is inferred as <code>string</code>), and then it recursively prints
+the content of all <code>&lt;div&gt;</code> elements. If the element does not contain nested elements,
+then we print the <code>Value</code> (inner text).</p>
+<h2><a name="Inferring-date-types" class="anchor" href="#Inferring-date-types">Inferring date types</a></h2>
+<p>Element and attribute values that look like dates are inferred as <code>DateTime</code> or <code>DateTimeOffset</code>.
+Values that already carry an explicit timezone offset (e.g. <code>"2023-06-15T12:00:00+02:00"</code>) are always
+inferred as <code>DateTimeOffset</code>.</p>
+<p>On .NET 6 and later, when you set <code>PreferDateOnly = true</code>, values that represent a date without a time
+component (e.g. <code>"2023-01-15"</code>) are inferred as <code>DateOnly</code>, and time-only values as <code>TimeOnly</code>.
+By default (<code>PreferDateOnly = false</code>), all date values are inferred as <code>DateTime</code> for backward compatibility.</p>
+<p>Set <code>PreferDateTimeOffset = true</code> to infer all date-time values (that would otherwise be <code>DateTime</code>) as
+<code>DateTimeOffset</code>. This is useful when you need timezone-aware values. <code>PreferDateTimeOffset</code> and
+<code>PreferDateOnly</code> are independent: <code>DateOnly</code> values stay as <code>DateOnly</code> even when <code>PreferDateTimeOffset=true</code>.</p>
+<h2><a name="Loading-Directly-from-a-File-or-URL" class="anchor" href="#Loading-Directly-from-a-File-or-URL">Loading Directly from a File or URL</a></h2>
+<p>In many cases, we might want to define schema using a local sample file, but then directly
+load the data from disk or from a URL either synchronously (with <code>Load</code>) or asynchronously
+(with <code>AsyncLoad</code>).</p>
+<p>For this example, I am using the US Census data set from <code>https://api.census.gov/data.xml</code>, a sample of
+which I have used here for <code>../data/Census.xml</code>. This sample is greatly reduced from the live data, so
+that it contains only the elements and attributes relevant to us:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">census-api</span>
+    <span class="o">xmlns</span><span class="k">="http://thedataweb.rm.census.gov/api/discovery/"</span>
+    <span class="o">xmlns:dcat</span><span class="k">="http://www.w3.org/ns/dcat#"</span>
+    <span class="o">xmlns:dct</span><span class="k">="http://purl.org/dc/terms/"</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">dct:dataset</span><span class="k">&gt;</span>
+        <span class="k">&lt;</span><span class="i">dct:title</span><span class="k">&gt;</span>2006-2010 American Community Survey 5-Year Estimates<span class="k">&lt;/</span><span class="i">dct:title</span><span class="k">&gt;</span>
+        <span class="k">&lt;</span><span class="i">dcat:distribution</span>
+            <span class="o">dcat:accessURL</span><span class="k">="https://api.census.gov/data/2010/acs5"</span><span class="k">&gt;</span>
+        <span class="k">&lt;/</span><span class="i">dcat:distribution</span><span class="k">&gt;</span>
+    <span class="k">&lt;/</span><span class="i">dct:dataset</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">dct:dataset</span><span class="k">&gt;</span>
+        <span class="k">&lt;</span><span class="i">dct:title</span><span class="k">&gt;</span>2006-2010 American Community Survey 5-Year Estimates<span class="k">&lt;/</span><span class="i">dct:title</span><span class="k">&gt;</span>
+        <span class="k">&lt;</span><span class="i">dcat:distribution</span>
+            <span class="o">dcat:accessURL</span><span class="k">="https://api.census.gov/data/2010/acs5"</span><span class="k">&gt;</span>
+        <span class="k">&lt;/</span><span class="i">dcat:distribution</span><span class="k">&gt;</span>
+    <span class="k">&lt;/</span><span class="i">dct:dataset</span><span class="k">&gt;</span>
+<span class="k">&lt;/</span><span class="i">census-api</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p>When doing this for your scenario, be careful to ensure that enough data is given for the provider
+to infer the schema correctly. For example, the first level <code>&lt;dct:dataset&gt;</code> element must be included at
+least twice for the provider to infer the <code>Datasets</code> array rather than a single <code>Dataset</code> object.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs56', 126)" onmouseover="showTip(event, 'fs56', 126)" class="rt">Census</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 127)" onmouseover="showTip(event, 'fs4', 127)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/Census.xml&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs33', 128)" onmouseover="showTip(event, 'fs33', 128)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs33', 129)" onmouseover="showTip(event, 'fs33', 129)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 130)" onmouseover="showTip(event, 'fs57', 130)" class="id">data</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs56', 131)" onmouseover="showTip(event, 'fs56', 131)" class="rt">Census</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs58', 132)" onmouseover="showTip(event, 'fs58', 132)" class="id">Load</span><span class="pn">(</span><span class="s">&quot;https://api.census.gov/data.xml&quot;</span><span class="pn">)</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs59', 133)" onmouseover="showTip(event, 'fs59', 133)" class="id">apiLinks</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs57', 134)" onmouseover="showTip(event, 'fs57', 134)" class="id">data</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs60', 135)" onmouseover="showTip(event, 'fs60', 135)" class="id">Datasets</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs61', 136)" onmouseover="showTip(event, 'fs61', 136)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs62', 137)" onmouseover="showTip(event, 'fs62', 137)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs63', 138)" onmouseover="showTip(event, 'fs63', 138)" class="fn">ds</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs63', 139)" onmouseover="showTip(event, 'fs63', 139)" class="fn">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs64', 140)" onmouseover="showTip(event, 'fs64', 140)" class="id">Title</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs63', 141)" onmouseover="showTip(event, 'fs63', 141)" class="fn">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs65', 142)" onmouseover="showTip(event, 'fs65', 142)" class="prop">Distribution</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs66', 143)" onmouseover="showTip(event, 'fs66', 143)" class="id">AccessUrl</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs61', 144)" onmouseover="showTip(event, 'fs61', 144)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 145)" onmouseover="showTip(event, 'fs67', 145)" class="id">truncate</span> <span class="n">10</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type Census = XmlProvider&lt;...&gt;
+val data: XmlProvider&lt;...&gt;.CensusApi =
+  &lt;census-api xmlns="http://thedataweb.rm.census.gov/api/discovery/" xmlns:dcat="http://www.w3.org/ns/dcat#" xmlns:dct="http://purl.org/dc/terms/" xmlns:pod="https://project-open-data.cio.gov/v1.1/schema/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:org="http://www.w3.org/ns/org#" xmlns:vcard="http://www.w3.org/2006/vcard/ns#"&gt;
+    &lt;dct:dataset vintage="1999" geographyLink="http://api.census.gov/data/1999/nonemp/geography.xml" variablesLink="http://api.census.gov/data/1999/nonemp/variables.xml" tagsLink...
+val apiLinks: (string * string) array =
+  [|("1999 Nonemployer Statistics: Non Employer Statistics",
+     "http://api.census.gov/data/1999/nonemp");
+    ("1997 Nonemployer Statistics: Non Employer Statistics",
+     "http://api.census.gov/data/1997/nonemp");
+    ("1986 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1986/cbp");
+    ("1997 County Business Patterns - Zip Code Business Patterns: T"+[17 chars],
+     "http://api.census.gov/data/1997/zbp");
+    ("1987 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1987/cbp");
+    ("1999 County Business Patterns - Zip Code Business Patterns: T"+[17 chars],
+     "http://api.census.gov/data/1999/zbp");
+    ("1988 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1988/cbp");
+    ("2000 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/2000/cbp");
+    ("1989 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1989/cbp");
+    ("1990 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1990/cbp")|]</code></pre></td></tr></table>
+<p>This US Census data is an interesting dataset with this top level API returning hundreds of other
+datasets each with their own API. Here, we use the Census data to get a list of titles and URLs for
+the lower level APIs.</p>
+<h2><a name="Bringing-in-Some-Async-Action" class="anchor" href="#Bringing-in-Some-Async-Action">Bringing in Some Async Action</a></h2>
+<p>Let's go one step further and assume here a slightly contrived but certainly plausible example where
+we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background
+and then post each link over (for example) a message queue.</p>
+<p>This is where <code>AsyncLoad</code> comes into play:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 146)" onmouseover="showTip(event, 'fs68', 146)" class="fn">enqueue</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs69', 147)" onmouseover="showTip(event, 'fs69', 147)" class="fn">title</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs70', 148)" onmouseover="showTip(event, 'fs70', 148)" class="fn">apiUrl</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="c">// do the real message enqueueing here instead of</span>
+    <span onmouseout="hideTip(event, 'fs7', 149)" onmouseover="showTip(event, 'fs7', 149)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> -&gt; </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs69', 150)" onmouseover="showTip(event, 'fs69', 150)" class="fn">title</span> <span onmouseout="hideTip(event, 'fs70', 151)" onmouseover="showTip(event, 'fs70', 151)" class="fn">apiUrl</span>
+
+<span class="c">// helper task which gets scheduled on some background thread somewhere...</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs71', 152)" onmouseover="showTip(event, 'fs71', 152)" class="fn">cacheJanitor</span> <span class="pn">(</span><span class="pn">)</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs72', 153)" onmouseover="showTip(event, 'fs72', 153)" class="k">async</span> <span class="pn">{</span>
+        <span class="k">let!</span> <span onmouseout="hideTip(event, 'fs73', 154)" onmouseover="showTip(event, 'fs73', 154)" class="fn">reloadData</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs56', 155)" onmouseover="showTip(event, 'fs56', 155)" class="rt">Census</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs74', 156)" onmouseover="showTip(event, 'fs74', 156)" class="id">AsyncLoad</span><span class="pn">(</span><span class="s">&quot;https://api.census.gov/data.xml&quot;</span><span class="pn">)</span>
+
+        <span onmouseout="hideTip(event, 'fs73', 157)" onmouseover="showTip(event, 'fs73', 157)" class="fn">reloadData</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs60', 158)" onmouseover="showTip(event, 'fs60', 158)" class="id">Datasets</span>
+        <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs61', 159)" onmouseover="showTip(event, 'fs61', 159)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs62', 160)" onmouseover="showTip(event, 'fs62', 160)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs63', 161)" onmouseover="showTip(event, 'fs63', 161)" class="fn">ds</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs63', 162)" onmouseover="showTip(event, 'fs63', 162)" class="fn">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs64', 163)" onmouseover="showTip(event, 'fs64', 163)" class="id">Title</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs63', 164)" onmouseover="showTip(event, 'fs63', 164)" class="fn">ds</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs65', 165)" onmouseover="showTip(event, 'fs65', 165)" class="prop">Distribution</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs66', 166)" onmouseover="showTip(event, 'fs66', 166)" class="id">AccessUrl</span><span class="pn">)</span>
+        <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs61', 167)" onmouseover="showTip(event, 'fs61', 167)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs75', 168)" onmouseover="showTip(event, 'fs75', 168)" class="id">iter</span> <span onmouseout="hideTip(event, 'fs68', 169)" onmouseover="showTip(event, 'fs68', 169)" class="fn">enqueue</span>
+    <span class="pn">}</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val enqueue: title: string * apiUrl: string -&gt; unit
+val cacheJanitor: unit -&gt; Async&lt;unit&gt;</code></pre></td></tr></table>
+<h2><a name="Reading-RSS-feeds" class="anchor" href="#Reading-RSS-feeds">Reading RSS feeds</a></h2>
+<p>To conclude this introduction with a more interesting example, let's look at how to parse an
+RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
+the type provider:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs76', 170)" onmouseover="showTip(event, 'fs76', 170)" class="rt">Rss</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 171)" onmouseover="showTip(event, 'fs4', 171)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;https://tomasp.net/rss.xml&quot;</span><span class="pn">&gt;</span>
+</code></pre>
+<p>This code builds a type <code>Rss</code> that represents RSS feeds (with the features that are used
+on <code>https://tomasp.net</code>). The type <code>Rss</code> provides static methods <code>Parse</code>, <code>Load</code> and <code>AsyncLoad</code>
+to construct it - here, we just want to reuse the same URI of the schema, so we
+use the <code>GetSample</code> static method:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs77', 172)" onmouseover="showTip(event, 'fs77', 172)" class="id">blog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs76', 173)" onmouseover="showTip(event, 'fs76', 173)" class="rt">Rss</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs78', 174)" onmouseover="showTip(event, 'fs78', 174)" class="id">GetSample</span><span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<p>Printing the title of the RSS feed together with a list of recent posts is now quite
+easy - you can simply type <code>blog</code> followed by <code>.</code> and see what the autocompletion
+offers. The code looks like this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Title is a property returning string</span>
+<span onmouseout="hideTip(event, 'fs7', 175)" onmouseover="showTip(event, 'fs7', 175)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs77', 176)" onmouseover="showTip(event, 'fs77', 176)" class="id">blog</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs79', 177)" onmouseover="showTip(event, 'fs79', 177)" class="prop">Channel</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 178)" onmouseover="showTip(event, 'fs80', 178)" class="id">Title</span>
+
+<span class="c">// Get all item nodes and print title with link</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs81', 179)" onmouseover="showTip(event, 'fs81', 179)" class="fn">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs77', 180)" onmouseover="showTip(event, 'fs77', 180)" class="id">blog</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs79', 181)" onmouseover="showTip(event, 'fs79', 181)" class="prop">Channel</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs82', 182)" onmouseover="showTip(event, 'fs82', 182)" class="id">Items</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs7', 183)" onmouseover="showTip(event, 'fs7', 183)" class="fn">printfn</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%s</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs81', 184)" onmouseover="showTip(event, 'fs81', 184)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs83', 185)" onmouseover="showTip(event, 'fs83', 185)" class="id">Title</span> <span onmouseout="hideTip(event, 'fs81', 186)" onmouseover="showTip(event, 'fs81', 186)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 187)" onmouseover="showTip(event, 'fs84', 187)" class="id">Link</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Tomas Petricek - Languages and tools, open-source, philosophy of science and F# coding
+ - Choose Your Own Adventure Calculus (http://tomasp.net/blog/2025/adventure-calculus/)
+ - What can routers at Centre Pompidou teach us about software evolution? (http://tomasp.net/blog/2023/pompidou/)
+ - Where programs live? Vague spaces and software systems (http://tomasp.net/blog/2023/vague-spaces/)
+ - The Timeless Way of Programming (http://tomasp.net/blog/2022/timeless-way/)
+ - No-code, no thought? Substrates for simple programming for all (http://tomasp.net/blog/2022/no-code-substrates/)
+ - Pop-up from Hell: On the growing opacity of web programs (http://tomasp.net/blog/2021/popup-from-hell/)
+ - Software designers, not engineers: An interview from alternative universe (http://tomasp.net/blog/2021/software-designers/)
+ - Is deep learning a new kind of programming? Operationalistic look at programming (http://tomasp.net/blog/2020/learning-and-programming/)
+ - Creating interactive You Draw bar chart with Compost (http://tomasp.net/blog/2020/youdraw-compost-visualization/)
+ - Data exploration calculus: Capturing the essence of exploratory data scripting (http://tomasp.net/blog/2020/data-exploration-calculus/)
+ - On architecture, urban planning and software construction (http://tomasp.net/blog/2020/cities-and-programming/)
+ - What to teach as the first programming language and why (http://tomasp.net/blog/2019/first-language/)
+ - What should a Software Engineering course look like? (http://tomasp.net/blog/2019/software-engineering/)
+ - Write your own Excel in 100 lines of F# (http://tomasp.net/blog/2018/write-your-own-excel/)
+ - Programming as interaction: A new perspective for programming language research (http://tomasp.net/blog/2018/programming-interaction/)
+ - Would aliens understand lambda calculus? (http://tomasp.net/blog/2018/alien-lambda-calculus/)
+ - The design side of programming language design (http://tomasp.net/blog/2017/design-side-of-pl/)
+ - Getting started with The Gamma just got easier (http://tomasp.net/blog/2017/thegamma-getting-started/)
+ - Papers we Scrutinize: How to critically read papers (http://tomasp.net/blog/2017/papers-we-scrutinize/)
+ - The mythology of programming language ideas (http://tomasp.net/blog/2017/programming-mythology/)
+val it: unit = ()</code></pre></td></tr></table>
+<h2><a name="Transforming-XML" class="anchor" href="#Transforming-XML">Transforming XML</a></h2>
+<p>In this example we will now also create XML in addition to consuming it.
+Consider the problem of flattening a data set. Let's say you have xml data that looks like this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs32', 188)" onmouseover="showTip(event, 'fs32', 188)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs85', 189)" onmouseover="showTip(event, 'fs85', 189)" class="prop">customersXmlSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;Customers&gt;</span>
+<span class="s">    &lt;Customer name=&quot;ACME&quot;&gt;</span>
+<span class="s">      &lt;Order Number=&quot;A012345&quot;&gt;</span>
+<span class="s">        &lt;OrderLine Item=&quot;widget&quot; Quantity=&quot;1&quot;/&gt;</span>
+<span class="s">      &lt;/Order&gt;</span>
+<span class="s">      &lt;Order Number=&quot;A012346&quot;&gt;</span>
+<span class="s">        &lt;OrderLine Item=&quot;trinket&quot; Quantity=&quot;2&quot;/&gt;</span>
+<span class="s">      &lt;/Order&gt;</span>
+<span class="s">    &lt;/Customer&gt;</span>
+<span class="s">    &lt;Customer name=&quot;Southwind&quot;&gt;</span>
+<span class="s">      &lt;Order Number=&quot;A012347&quot;&gt;</span>
+<span class="s">        &lt;OrderLine Item=&quot;skyhook&quot; Quantity=&quot;3&quot;/&gt;</span>
+<span class="s">        &lt;OrderLine Item=&quot;gizmo&quot; Quantity=&quot;4&quot;/&gt;</span>
+<span class="s">      &lt;/Order&gt;</span>
+<span class="s">    &lt;/Customer&gt;</span>
+<span class="s">  &lt;/Customers&gt;&quot;&quot;&quot;</span>
+</code></pre>
+<p>and you want to transform it into something like this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs32', 190)" onmouseover="showTip(event, 'fs32', 190)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs86', 191)" onmouseover="showTip(event, 'fs86', 191)" class="prop">orderLinesXmlSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;OrderLines&gt;</span>
+<span class="s">    &lt;OrderLine Customer=&quot;ACME&quot; Order=&quot;A012345&quot; Item=&quot;widget&quot; Quantity=&quot;1&quot;/&gt;</span>
+<span class="s">    &lt;OrderLine Customer=&quot;ACME&quot; Order=&quot;A012346&quot; Item=&quot;trinket&quot; Quantity=&quot;2&quot;/&gt;</span>
+<span class="s">    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;skyhook&quot; Quantity=&quot;3&quot;/&gt;</span>
+<span class="s">    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;gizmo&quot; Quantity=&quot;4&quot;/&gt;</span>
+<span class="s">  &lt;/OrderLines&gt;&quot;&quot;&quot;</span>
+</code></pre>
+<p>We'll create types from both the input and output samples and use the constructors on the types generated by the XmlProvider:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs87', 192)" onmouseover="showTip(event, 'fs87', 192)" class="rt">InputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 193)" onmouseover="showTip(event, 'fs4', 193)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs85', 194)" onmouseover="showTip(event, 'fs85', 194)" class="prop">customersXmlSample</span><span class="pn">&gt;</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs88', 195)" onmouseover="showTip(event, 'fs88', 195)" class="rt">OutputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 196)" onmouseover="showTip(event, 'fs4', 196)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs86', 197)" onmouseover="showTip(event, 'fs86', 197)" class="prop">orderLinesXmlSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs89', 198)" onmouseover="showTip(event, 'fs89', 198)" class="id">orderLines</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs88', 199)" onmouseover="showTip(event, 'fs88', 199)" class="rt">OutputXml</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs90', 200)" onmouseover="showTip(event, 'fs90', 200)" class="id">OrderLines</span>
+        <span class="pn">[|</span> <span class="k">for</span> <span onmouseout="hideTip(event, 'fs91', 201)" onmouseover="showTip(event, 'fs91', 201)" class="fn">customer</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs87', 202)" onmouseover="showTip(event, 'fs87', 202)" class="rt">InputXml</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 203)" onmouseover="showTip(event, 'fs92', 203)" class="id">GetSample</span><span class="pn">(</span><span class="pn">)</span><span class="pn">.</span><span class="id">Customers</span> <span class="k">do</span>
+               <span class="k">for</span> <span onmouseout="hideTip(event, 'fs93', 204)" onmouseover="showTip(event, 'fs93', 204)" class="fn">order</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs91', 205)" onmouseover="showTip(event, 'fs91', 205)" class="fn">customer</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs94', 206)" onmouseover="showTip(event, 'fs94', 206)" class="id">Orders</span> <span class="k">do</span>
+                   <span class="k">for</span> <span onmouseout="hideTip(event, 'fs95', 207)" onmouseover="showTip(event, 'fs95', 207)" class="fn">line</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs93', 208)" onmouseover="showTip(event, 'fs93', 208)" class="fn">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs96', 209)" onmouseover="showTip(event, 'fs96', 209)" class="id">OrderLines</span> <span class="k">do</span>
+                       <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs88', 210)" onmouseover="showTip(event, 'fs88', 210)" class="rt">OutputXml</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs97', 211)" onmouseover="showTip(event, 'fs97', 211)" class="id">OrderLine</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs91', 212)" onmouseover="showTip(event, 'fs91', 212)" class="fn">customer</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs98', 213)" onmouseover="showTip(event, 'fs98', 213)" class="id">Name</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs93', 214)" onmouseover="showTip(event, 'fs93', 214)" class="fn">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs99', 215)" onmouseover="showTip(event, 'fs99', 215)" class="id">Number</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs95', 216)" onmouseover="showTip(event, 'fs95', 216)" class="fn">line</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs100', 217)" onmouseover="showTip(event, 'fs100', 217)" class="id">Item</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs95', 218)" onmouseover="showTip(event, 'fs95', 218)" class="fn">line</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs101', 219)" onmouseover="showTip(event, 'fs101', 219)" class="id">Quantity</span><span class="pn">)</span> <span class="pn">|]</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type InputXml = XmlProvider&lt;...&gt;
+type OutputXml = XmlProvider&lt;...&gt;
+val orderLines: XmlProvider&lt;...&gt;.OrderLines =
+  &lt;OrderLines&gt;
+  &lt;OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1" /&gt;
+  &lt;OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2" /&gt;
+  &lt;OrderLine Customer="Southwind" Order="A012347" Item="skyhook" Quantity="3" /&gt;
+  &lt;OrderLine Customer="Southwind" Order="A012347" Item="gizmo" Quantity="4" /&gt;
+&lt;/OrderLines&gt;</code></pre></td></tr></table>
+<h2><a name="Using-a-schema-XSD" class="anchor" href="#Using-a-schema-XSD">Using a schema (XSD)</a></h2>
+<p>The <code>Schema</code> parameter can be used (instead of <code>Sample</code>) to specify an XML schema.
+The value of the parameter can be either the name of a schema file or plain text
+like in the following example:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs102', 220)" onmouseover="showTip(event, 'fs102', 220)" class="rt">Person</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 221)" onmouseover="showTip(event, 'fs4', 221)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+<span class="s">    elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;</span>
+<span class="s">    &lt;xs:element name=&quot;person&quot;&gt;</span>
+<span class="s">      &lt;xs:complexType&gt;</span>
+<span class="s">        &lt;xs:sequence&gt;</span>
+<span class="s">          &lt;xs:element name=&quot;surname&quot; type=&quot;xs:string&quot;/&gt;</span>
+<span class="s">          &lt;xs:element name=&quot;birthDate&quot; type=&quot;xs:date&quot;/&gt;</span>
+<span class="s">        &lt;/xs:sequence&gt;</span>
+<span class="s">      &lt;/xs:complexType&gt;</span>
+<span class="s">    &lt;/xs:element&gt;</span>
+<span class="s">  &lt;/xs:schema&gt;&quot;&quot;&quot;</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs103', 222)" onmouseover="showTip(event, 'fs103', 222)" class="id">turing</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs102', 223)" onmouseover="showTip(event, 'fs102', 223)" class="rt">Person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs104', 224)" onmouseover="showTip(event, 'fs104', 224)" class="id">Parse</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;person&gt;</span>
+<span class="s">    &lt;surname&gt;Turing&lt;/surname&gt;</span>
+<span class="s">    &lt;birthDate&gt;1912-06-23&lt;/birthDate&gt;</span>
+<span class="s">  &lt;/person&gt;</span>
+<span class="s">  &quot;&quot;&quot;</span>
+
+<span onmouseout="hideTip(event, 'fs7', 225)" onmouseover="showTip(event, 'fs7', 225)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> was born in </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs103', 226)" onmouseover="showTip(event, 'fs103', 226)" class="id">turing</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs105', 227)" onmouseover="showTip(event, 'fs105', 227)" class="id">Surname</span> <span onmouseout="hideTip(event, 'fs103', 228)" onmouseover="showTip(event, 'fs103', 228)" class="id">turing</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs106', 229)" onmouseover="showTip(event, 'fs106', 229)" class="prop">BirthDate</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs107', 230)" onmouseover="showTip(event, 'fs107', 230)" class="id">Year</span>
+</code></pre>
+<p>The properties of the provided type are derived from the schema instead of being inferred from samples.</p>
+<p>Usually, a schema is not specified as plain text but stored in a file like
+<a href="../data/po.xsd"><code>data/po.xsd</code></a> and the uri is set in the <code>Schema</code> parameter:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs108', 231)" onmouseover="showTip(event, 'fs108', 231)" class="rt">PurchaseOrder</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 232)" onmouseover="showTip(event, 'fs4', 232)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;../data/po.xsd&quot;</span><span class="pn">&gt;</span>
+</code></pre>
+<p>When the file includes other schema files, the <code>ResolutionFolder</code> parameter can help locating them.
+The uri may also refer to online resources:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs109', 233)" onmouseover="showTip(event, 'fs109', 233)" class="rt">RssXsd</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 234)" onmouseover="showTip(event, 'fs4', 234)" class="rt">XmlProvider</span><span class="pn">&lt;</span><span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;https://www.w3schools.com/xml/note.xsd&quot;</span><span class="pn">&gt;</span>
+</code></pre>
+<p>The schema is expected to define a root element (a global element with a complex type).
+In case of multiple root elements:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs110', 235)" onmouseover="showTip(event, 'fs110', 235)" class="rt">TwoRoots</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 236)" onmouseover="showTip(event, 'fs4', 236)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">  &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+<span class="s">    elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;</span>
+<span class="s">    &lt;xs:element name=&quot;root1&quot;&gt;</span>
+<span class="s">      &lt;xs:complexType&gt;</span>
+<span class="s">        &lt;xs:attribute name=&quot;foo&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;</span>
+<span class="s">        &lt;xs:attribute name=&quot;fow&quot; type=&quot;xs:int&quot; /&gt;</span>
+<span class="s">      &lt;/xs:complexType&gt;</span>
+<span class="s">    &lt;/xs:element&gt;</span>
+<span class="s">    &lt;xs:element name=&quot;root2&quot;&gt;</span>
+<span class="s">      &lt;xs:complexType&gt;</span>
+<span class="s">        &lt;xs:attribute name=&quot;bar&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;</span>
+<span class="s">        &lt;xs:attribute name=&quot;baz&quot; type=&quot;xs:date&quot; use=&quot;required&quot; /&gt;</span>
+<span class="s">      &lt;/xs:complexType&gt;</span>
+<span class="s">    &lt;/xs:element&gt;</span>
+<span class="s">  &lt;/xs:schema&gt;</span>
+<span class="s">&quot;&quot;&quot;</span>
+     <span class="pn">&gt;</span>
+</code></pre>
+<p>the provided type has an optional property for each alternative:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs111', 237)" onmouseover="showTip(event, 'fs111', 237)" class="id">e1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs110', 238)" onmouseover="showTip(event, 'fs110', 238)" class="rt">TwoRoots</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs112', 239)" onmouseover="showTip(event, 'fs112', 239)" class="id">Parse</span> <span class="s">&quot;&lt;root1 foo=&#39;aa&#39; fow=&#39;2&#39; /&gt;&quot;</span>
+
+<span class="k">match</span> <span onmouseout="hideTip(event, 'fs111', 240)" onmouseover="showTip(event, 'fs111', 240)" class="id">e1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs113', 241)" onmouseover="showTip(event, 'fs113', 241)" class="id">Root1</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs111', 242)" onmouseover="showTip(event, 'fs111', 242)" class="id">e1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs114', 243)" onmouseover="showTip(event, 'fs114', 243)" class="id">Root2</span> <span class="k">with</span>
+<span class="pn">|</span> <span onmouseout="hideTip(event, 'fs115', 244)" onmouseover="showTip(event, 'fs115', 244)" class="uc">Some</span> <span onmouseout="hideTip(event, 'fs116', 245)" onmouseover="showTip(event, 'fs116', 245)" class="fn">x</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs117', 246)" onmouseover="showTip(event, 'fs117', 246)" class="uc">None</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs7', 247)" onmouseover="showTip(event, 'fs7', 247)" class="fn">printfn</span> <span class="s">&quot;Foo = </span><span class="pf">%s</span><span class="s"> and Fow = </span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs116', 248)" onmouseover="showTip(event, 'fs116', 248)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs118', 249)" onmouseover="showTip(event, 'fs118', 249)" class="id">Foo</span> <span onmouseout="hideTip(event, 'fs116', 250)" onmouseover="showTip(event, 'fs116', 250)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs119', 251)" onmouseover="showTip(event, 'fs119', 251)" class="id">Fow</span>
+<span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs120', 252)" onmouseover="showTip(event, 'fs120', 252)" class="fn">failwith</span> <span class="s">&quot;Unexpected&quot;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs121', 253)" onmouseover="showTip(event, 'fs121', 253)" class="id">e2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs110', 254)" onmouseover="showTip(event, 'fs110', 254)" class="rt">TwoRoots</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs112', 255)" onmouseover="showTip(event, 'fs112', 255)" class="id">Parse</span> <span class="s">&quot;&lt;root2 bar=&#39;aa&#39; baz=&#39;2017-12-22&#39; /&gt;&quot;</span>
+
+<span class="k">match</span> <span onmouseout="hideTip(event, 'fs121', 256)" onmouseover="showTip(event, 'fs121', 256)" class="id">e2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs113', 257)" onmouseover="showTip(event, 'fs113', 257)" class="id">Root1</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs121', 258)" onmouseover="showTip(event, 'fs121', 258)" class="id">e2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs114', 259)" onmouseover="showTip(event, 'fs114', 259)" class="id">Root2</span> <span class="k">with</span>
+<span class="pn">|</span> <span onmouseout="hideTip(event, 'fs117', 260)" onmouseover="showTip(event, 'fs117', 260)" class="uc">None</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs115', 261)" onmouseover="showTip(event, 'fs115', 261)" class="uc">Some</span> <span onmouseout="hideTip(event, 'fs122', 262)" onmouseover="showTip(event, 'fs122', 262)" class="fn">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs7', 263)" onmouseover="showTip(event, 'fs7', 263)" class="fn">printfn</span> <span class="s">&quot;Bar = </span><span class="pf">%s</span><span class="s"> and Baz = </span><span class="pf">%O</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs122', 264)" onmouseover="showTip(event, 'fs122', 264)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs123', 265)" onmouseover="showTip(event, 'fs123', 265)" class="id">Bar</span> <span onmouseout="hideTip(event, 'fs122', 266)" onmouseover="showTip(event, 'fs122', 266)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs124', 267)" onmouseover="showTip(event, 'fs124', 267)" class="id">Baz</span>
+<span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs120', 268)" onmouseover="showTip(event, 'fs120', 268)" class="fn">failwith</span> <span class="s">&quot;Unexpected&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Foo = aa and Fow = Some 2
+Bar = aa and Baz = 12/22/2017 12:00:00 AM
+val e1: XmlProvider&lt;...&gt;.Choice = &lt;root1 foo="aa" fow="2" /&gt;
+val e2: XmlProvider&lt;...&gt;.Choice = &lt;root2 bar="aa" baz="2017-12-22" /&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<h3><a name="Common-XSD-constructs-sequence-and-choice" class="anchor" href="#Common-XSD-constructs-sequence-and-choice">Common XSD constructs: sequence and choice</a></h3>
+<p>A <code>sequence</code> is the most common way of structuring elements in a schema.
+The following xsd defines <code>foo</code> as a sequence made of an arbitrary number
+of <code>bar</code> elements followed by a single <code>baz</code> element.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs125', 269)" onmouseover="showTip(event, 'fs125', 269)" class="rt">FooSequence</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 270)" onmouseover="showTip(event, 'fs4', 270)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+<span class="s">      elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;</span>
+<span class="s">        &lt;xs:element name=&quot;foo&quot;&gt;</span>
+<span class="s">          &lt;xs:complexType&gt;</span>
+<span class="s">            &lt;xs:sequence&gt;</span>
+<span class="s">              &lt;xs:element name=&quot;bar&quot; type=&quot;xs:int&quot; maxOccurs=&quot;unbounded&quot; /&gt;</span>
+<span class="s">              &lt;xs:element name=&quot;baz&quot; type=&quot;xs:date&quot; minOccurs=&quot;1&quot; /&gt;</span>
+<span class="s">            &lt;/xs:sequence&gt;</span>
+<span class="s">          &lt;/xs:complexType&gt;</span>
+<span class="s">        &lt;/xs:element&gt;</span>
+<span class="s">    &lt;/xs:schema&gt;&quot;&quot;&quot;</span>
+     <span class="pn">&gt;</span>
+</code></pre>
+<p>here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to <code>bar</code> and <code>baz</code> elements, where the former is an array in order to hold multiple elements:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs126', 271)" onmouseover="showTip(event, 'fs126', 271)" class="id">fooSequence</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs125', 272)" onmouseover="showTip(event, 'fs125', 272)" class="rt">FooSequence</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs127', 273)" onmouseover="showTip(event, 'fs127', 273)" class="id">Parse</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">&lt;foo&gt;</span>
+<span class="s">    &lt;bar&gt;42&lt;/bar&gt;</span>
+<span class="s">    &lt;bar&gt;43&lt;/bar&gt;</span>
+<span class="s">    &lt;baz&gt;1957-08-13&lt;/baz&gt;</span>
+<span class="s">&lt;/foo&gt;&quot;&quot;&quot;</span>
+
+<span onmouseout="hideTip(event, 'fs7', 274)" onmouseover="showTip(event, 'fs7', 274)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs126', 275)" onmouseover="showTip(event, 'fs126', 275)" class="id">fooSequence</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs128', 276)" onmouseover="showTip(event, 'fs128', 276)" class="id">Bars</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span> <span class="c">// 42</span>
+<span onmouseout="hideTip(event, 'fs7', 277)" onmouseover="showTip(event, 'fs7', 277)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs126', 278)" onmouseover="showTip(event, 'fs126', 278)" class="id">fooSequence</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs128', 279)" onmouseover="showTip(event, 'fs128', 279)" class="id">Bars</span><span class="pn">.</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span> <span class="c">// 43</span>
+<span onmouseout="hideTip(event, 'fs7', 280)" onmouseover="showTip(event, 'fs7', 280)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs126', 281)" onmouseover="showTip(event, 'fs126', 281)" class="id">fooSequence</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs129', 282)" onmouseover="showTip(event, 'fs129', 282)" class="prop">Baz</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs107', 283)" onmouseover="showTip(event, 'fs107', 283)" class="id">Year</span> <span class="c">// 1957</span>
+</code></pre>
+<p>Instead of a sequence we may have a <code>choice</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs130', 284)" onmouseover="showTip(event, 'fs130', 284)" class="rt">FooChoice</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 285)" onmouseover="showTip(event, 'fs4', 285)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+<span class="s">      elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;</span>
+<span class="s">        &lt;xs:element name=&quot;foo&quot;&gt;</span>
+<span class="s">          &lt;xs:complexType&gt;</span>
+<span class="s">            &lt;xs:choice&gt;</span>
+<span class="s">              &lt;xs:element name=&quot;bar&quot; type=&quot;xs:int&quot; maxOccurs=&quot;unbounded&quot; /&gt;</span>
+<span class="s">              &lt;xs:element name=&quot;baz&quot; type=&quot;xs:date&quot; minOccurs=&quot;1&quot; /&gt;</span>
+<span class="s">            &lt;/xs:choice&gt;</span>
+<span class="s">          &lt;/xs:complexType&gt;</span>
+<span class="s">        &lt;/xs:element&gt;</span>
+<span class="s">    &lt;/xs:schema&gt;&quot;&quot;&quot;</span>
+     <span class="pn">&gt;</span>
+</code></pre>
+<p>although a choice is akin to a union type in F#, the provided type still has
+properties for <code>bar</code> and <code>baz</code> directly available on the <code>foo</code> object; in fact
+the properties representing alternatives in a choice are simply made optional
+(notice that for arrays this is not even necessary because an array can be empty).
+This decision is due to technical limitations (discriminated unions are not supported
+in type providers) but also preferred because it improves discoverability:
+intellisense can show both alternatives. There is a lack of precision but this is not the main goal.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs131', 286)" onmouseover="showTip(event, 'fs131', 286)" class="id">fooChoice</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs130', 287)" onmouseover="showTip(event, 'fs130', 287)" class="rt">FooChoice</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs127', 288)" onmouseover="showTip(event, 'fs127', 288)" class="id">Parse</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">&lt;foo&gt;</span>
+<span class="s">  &lt;baz&gt;1957-08-13&lt;/baz&gt;</span>
+<span class="s">&lt;/foo&gt;&quot;&quot;&quot;</span>
+
+<span onmouseout="hideTip(event, 'fs7', 289)" onmouseover="showTip(event, 'fs7', 289)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s"> items&quot;</span> <span onmouseout="hideTip(event, 'fs131', 290)" onmouseover="showTip(event, 'fs131', 290)" class="id">fooChoice</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs128', 291)" onmouseover="showTip(event, 'fs128', 291)" class="prop">Bars</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs54', 292)" onmouseover="showTip(event, 'fs54', 292)" class="id">Length</span> <span class="c">// 0 items</span>
+
+<span class="k">match</span> <span onmouseout="hideTip(event, 'fs131', 293)" onmouseover="showTip(event, 'fs131', 293)" class="id">fooChoice</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs132', 294)" onmouseover="showTip(event, 'fs132', 294)" class="id">Baz</span> <span class="k">with</span>
+<span class="pn">|</span> <span onmouseout="hideTip(event, 'fs115', 295)" onmouseover="showTip(event, 'fs115', 295)" class="uc">Some</span> <span onmouseout="hideTip(event, 'fs133', 296)" onmouseover="showTip(event, 'fs133', 296)" class="fn">date</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs7', 297)" onmouseover="showTip(event, 'fs7', 297)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs133', 298)" onmouseover="showTip(event, 'fs133', 298)" class="fn">date</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs107', 299)" onmouseover="showTip(event, 'fs107', 299)" class="id">Year</span> <span class="c">// 1957</span>
+<span class="pn">|</span> <span onmouseout="hideTip(event, 'fs117', 300)" onmouseover="showTip(event, 'fs117', 300)" class="uc">None</span> <span class="k">-&gt;</span> <span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>0 items
+1957
+val fooChoice: XmlProvider&lt;...&gt;.Foo = &lt;foo&gt;
+  &lt;baz&gt;1957-08-13&lt;/baz&gt;
+&lt;/foo&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>Another xsd construct to model the content of an element is <code>all</code>, which is used less often and
+it's like a sequence where the order of elements does not matter. The corresponding provided type
+in fact is essentially the same as for a sequence.</p>
+<h3><a name="Advanced-schema-constructs" class="anchor" href="#Advanced-schema-constructs">Advanced schema constructs</a></h3>
+<p>XML Schema provides various extensibility mechanisms. The following example
+is a terse summary mixing substitution groups with abstract recursive definitions.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs134', 301)" onmouseover="showTip(event, 'fs134', 301)" class="rt">Prop</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 302)" onmouseover="showTip(event, 'fs4', 302)" class="rt">XmlProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Schema</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+<span class="s">      elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;</span>
+<span class="s">        &lt;xs:element name=&quot;Formula&quot; abstract=&quot;true&quot;/&gt;</span>
+<span class="s">        &lt;xs:element name=&quot;Prop&quot; type=&quot;xs:string&quot; substitutionGroup=&quot;Formula&quot;/&gt;</span>
+<span class="s">        &lt;xs:element name=&quot;And&quot; substitutionGroup=&quot;Formula&quot;&gt;</span>
+<span class="s">          &lt;xs:complexType&gt;</span>
+<span class="s">            &lt;xs:sequence&gt;</span>
+<span class="s">              &lt;xs:element ref=&quot;Formula&quot; minOccurs=&quot;2&quot; maxOccurs=&quot;2&quot;/&gt;</span>
+<span class="s">              &lt;/xs:sequence&gt;</span>
+<span class="s">          &lt;/xs:complexType&gt;</span>
+<span class="s">        &lt;/xs:element&gt;</span>
+<span class="s">    &lt;/xs:schema&gt;&quot;&quot;&quot;</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs135', 303)" onmouseover="showTip(event, 'fs135', 303)" class="id">formula</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs134', 304)" onmouseover="showTip(event, 'fs134', 304)" class="rt">Prop</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs136', 305)" onmouseover="showTip(event, 'fs136', 305)" class="id">Parse</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    &lt;And&gt;</span>
+<span class="s">        &lt;Prop&gt;p1&lt;/Prop&gt;</span>
+<span class="s">        &lt;And&gt;</span>
+<span class="s">            &lt;Prop&gt;p2&lt;/Prop&gt;</span>
+<span class="s">            &lt;Prop&gt;p3&lt;/Prop&gt;</span>
+<span class="s">        &lt;/And&gt;</span>
+<span class="s">    &lt;/And&gt;</span>
+<span class="s">    &quot;&quot;&quot;</span>
+
+<span onmouseout="hideTip(event, 'fs7', 306)" onmouseover="showTip(event, 'fs7', 306)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs135', 307)" onmouseover="showTip(event, 'fs135', 307)" class="id">formula</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs137', 308)" onmouseover="showTip(event, 'fs137', 308)" class="id">Props</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span> <span class="c">// p1</span>
+<span onmouseout="hideTip(event, 'fs7', 309)" onmouseover="showTip(event, 'fs7', 309)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs135', 310)" onmouseover="showTip(event, 'fs135', 310)" class="id">formula</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs138', 311)" onmouseover="showTip(event, 'fs138', 311)" class="id">Ands</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">Props</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span> <span class="c">// p2</span>
+<span onmouseout="hideTip(event, 'fs7', 312)" onmouseover="showTip(event, 'fs7', 312)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs135', 313)" onmouseover="showTip(event, 'fs135', 313)" class="id">formula</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs138', 314)" onmouseover="showTip(event, 'fs138', 314)" class="id">Ands</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">Props</span><span class="pn">.</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span> <span class="c">// p3</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>p1
+p2
+p3
+type Prop = XmlProvider&lt;...&gt;
+val formula: XmlProvider&lt;...&gt;.And =
+  &lt;And&gt;
+        &lt;Prop&gt;p1&lt;/Prop&gt;
+        &lt;And&gt;
+            &lt;Prop&gt;p2&lt;/Prop&gt;
+            &lt;Prop&gt;p3&lt;/Prop&gt;
+        &lt;/And&gt;
+    &lt;/And&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>Substitution groups are like choices, and the type provider produces an optional
+property for each alternative.</p>
+<h3><a name="Validation" class="anchor" href="#Validation">Validation</a></h3>
+<p>The <code>GetSchema</code> method on the generated type returns an instance
+of <code>System.Xml.Schema.XmlSchemaSet</code> that can be used to validate documents:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs139', 315)" onmouseover="showTip(event, 'fs139', 315)" class="id">System</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs140', 316)" onmouseover="showTip(event, 'fs140', 316)" class="id">Xml</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs141', 317)" onmouseover="showTip(event, 'fs141', 317)" class="id">Schema</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs142', 318)" onmouseover="showTip(event, 'fs142', 318)" class="id">schema</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs102', 319)" onmouseover="showTip(event, 'fs102', 319)" class="rt">Person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs143', 320)" onmouseover="showTip(event, 'fs143', 320)" class="id">GetSchema</span><span class="pn">(</span><span class="pn">)</span>
+<span onmouseout="hideTip(event, 'fs103', 321)" onmouseover="showTip(event, 'fs103', 321)" class="id">turing</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs144', 322)" onmouseover="showTip(event, 'fs144', 322)" class="prop">XElement</span><span class="pn">.</span><span class="prop">Document</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs145', 323)" onmouseover="showTip(event, 'fs145', 323)" class="id">Validate</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs142', 324)" onmouseover="showTip(event, 'fs142', 324)" class="id">schema</span><span class="pn">,</span> <span class="fn">validationEventHandler</span> <span class="o">=</span> <span class="k">null</span><span class="pn">)</span>
+</code></pre>
+<p>The <code>Validate</code> method accepts a callback to handle validation issues;
+passing <code>null</code> will turn validation errors into exceptions.
+There are overloads to allow other effects (for example setting default values
+by enabling the population of the XML tree with the post-schema-validation infoset;
+for details see the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.xml.schema.extensions.validate?view=netframework-4.7.2">documentation</a>).</p>
+<h3><a name="Remarks-on-using-a-schema" class="anchor" href="#Remarks-on-using-a-schema">Remarks on using a schema</a></h3>
+<p>The XML Type Provider supports most XSD features.
+Anyway the <a href="https://www.w3.org/XML/Schema">XML Schema</a> specification is rich and complex and also provides a
+fair degree of <a href="http://docstore.mik.ua/orelly/xml/schema/ch13_02.htm">openness</a>
+which may be <a href="https://link.springer.com/chapter/10.1007/978-3-540-76786-2_6">difficult to handle</a> in
+data binding tools; but in FSharp.Data, when providing typed views on elements becomes too challenging
+(take for example <a href="https://www.w3.org/TR/xmlschema11-1/#Wildcards">wildcards</a>) the underlying <code>XElement</code>
+is still available.</p>
+<p>An important design decision is to focus on elements and not on complex types; while the latter
+may be valuable in schema design, our goal is simply to obtain an easy and safe way to access xml data.
+In other words, the provided types are not intended for domain modeling (it's one of the very few cases
+where optional properties are preferred to sum types).
+Hence, we do not provide types corresponding to complex types in a schema but only corresponding
+to elements (of course, the underlying complex types still affect the shape of the provided types
+but this happens only implicitly).
+Focusing on element shapes lets us generate a type that should be essentially the same as one
+inferred from a significant set of valid samples. This allows a smooth transition (replacing <code>Sample</code> with <code>Schema</code>)
+when a schema becomes available.</p>
+<p>Note that inline schemas (values of the form <code>typeof{...}</code>) are not supported inside XSD documents.</p>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li><a href="JsonProvider.html#jsonlib">Using JSON provider in a library</a> also applies to XML type provider</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-xmlprovider.html">XmlProvider</a> type provider</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-xelementextensions.html">XElementExtensions</a></li>
+</ul>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">type Author = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs4">type XmlProvider<br /><em>&lt;summary&gt;Typed representation of a XML file.&lt;/summary&gt;
+           &lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document.&lt;/param&gt;
+           &lt;param name=&#39;SampleIsList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;
+           &lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name.&lt;/param&gt;                     
+           &lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;
+           &lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless &lt;c&gt;charset&lt;/c&gt; is specified in the &lt;c&gt;Content-Type&lt;/c&gt; response header.&lt;/param&gt;
+           &lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;
+           &lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource 
+              (e.g. &#39;MyCompany.MyAssembly, resource_name.xml&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;
+           &lt;param name=&#39;InferTypesFromValues&#39;&gt;
+              This parameter is deprecated. Please use InferenceMode instead.
+              If true, turns on additional type inference from values. 
+              (e.g. type inference infers string values such as &quot;123&quot; as ints and values constrained to 0 and 1 as booleans. The XmlProvider also infers string values as JSON.)&lt;/param&gt;
+           &lt;param name=&#39;Schema&#39;&gt;Location of a schema file or a string containing xsd.&lt;/param&gt;
+           &lt;param name=&#39;InferenceMode&#39;&gt;Possible values:
+              | NoInference -&gt; Inference is disabled. All values are inferred as the most basic type permitted for the value (usually string).
+              | ValuesOnly -&gt; Types of values are inferred from the Sample. Inline schema support is disabled. This is the default.
+              | ValuesAndInlineSchemasHints -&gt; Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&amp;lt;type&amp;gt; or typeof{type} or typeof&amp;lt;type&amp;lt;measure&amp;gt;&amp;gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are &lt;c&gt;int&lt;/c&gt;, &lt;c&gt;int64&lt;/c&gt;, &lt;c&gt;bool&lt;/c&gt;, &lt;c&gt;float&lt;/c&gt;, &lt;c&gt;decimal&lt;/c&gt;, &lt;c&gt;date&lt;/c&gt;, &lt;c&gt;datetimeoffset&lt;/c&gt;, &lt;c&gt;timespan&lt;/c&gt;, &lt;c&gt;guid&lt;/c&gt; and &lt;c&gt;string&lt;/c&gt;.
+              | ValuesAndInlineSchemasOverrides -&gt; Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
+              Note inline schemas are not used from Xsd documents.
+           &lt;/param&gt;
+           &lt;param name=&#39;PreferDateOnly&#39;&gt;When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.&lt;/param&gt;
+           &lt;param name=&#39;DtdProcessing&#39;&gt;Controls how DTD declarations in the XML are handled. Accepted values: &quot;Ignore&quot; (default, silently skips DTD processing, safe for most cases), &quot;Prohibit&quot; (throws on any DTD declaration), &quot;Parse&quot; (enables full DTD processing including entity expansion, use with caution).&lt;/param&gt;
+           &lt;param name=&#39;UseOriginalNames&#39;&gt;When true, XML element and attribute names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;PreferOptionals&#39;&gt;When set to true (default), inference will use the option type for missing or absent values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.&lt;/param&gt;
+           &lt;param name=&#39;UseSchemaTypeNames&#39;&gt;When true and a Schema is provided, the XSD complex type name is used for the generated F# type instead of the element name. This causes multiple elements that share the same XSD type to map to a single F# type. Defaults to false for backward compatibility.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateTimeOffset&#39;&gt;When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;ExceptionIfMissing&#39;&gt;When true, accessing a non-optional field that is missing in the XML data raises an exception instead of returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.&lt;/param&gt;</em></div>
+<div class="fsdocs-tip" id="fs5">val sample: XmlProvider&lt;...&gt;.Author</div>
+<div class="fsdocs-tip" id="fs6">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Author<br /><em>Parses the specified XML string</em></div>
+<div class="fsdocs-tip" id="fs7">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs8">property XmlProvider&lt;...&gt;.Author.Name: string with get</div>
+<div class="fsdocs-tip" id="fs9">property XmlProvider&lt;...&gt;.Author.Born: int with get</div>
+<div class="fsdocs-tip" id="fs10">type AuthorAlt = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs11">val doc: string</div>
+<div class="fsdocs-tip" id="fs12">val sampleAlt: XmlProvider&lt;...&gt;.Author</div>
+<div class="fsdocs-tip" id="fs13">type Detailed = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs14">val info: XmlProvider&lt;...&gt;.Author</div>
+<div class="fsdocs-tip" id="fs15">property XmlProvider&lt;...&gt;.Author.Name: XmlProvider&lt;...&gt;.Name with get</div>
+<div class="fsdocs-tip" id="fs16">property XmlProvider&lt;...&gt;.Name.Value: string with get</div>
+<div class="fsdocs-tip" id="fs17">property XmlProvider&lt;...&gt;.Name.Full: bool with get</div>
+<div class="fsdocs-tip" id="fs18">type Test = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs19">val v: int</div>
+<div class="fsdocs-tip" id="fs20">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs21">type AmbiguousEntity = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs22">val code: float</div>
+<div class="fsdocs-tip" id="fs23">XmlProvider&lt;...&gt;.GetSamples() : XmlProvider&lt;...&gt;.Entity array</div>
+<div class="fsdocs-tip" id="fs24">val length: decimal</div>
+<div class="fsdocs-tip" id="fs25">namespace FSharp.Data.Runtime</div>
+<div class="fsdocs-tip" id="fs26">type AmbiguousEntity2 = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs27">[&lt;Struct&gt;]
+type InferenceMode =
+  | BackwardCompatible = 0
+  | NoInference = 1
+  | ValuesOnly = 2
+  | ValuesAndInlineSchemasHints = 3
+  | ValuesAndInlineSchemasOverrides = 4<br /><em>&lt;summary&gt;
+ This is the public inference mode enum used when initializing a type provider,
+ with backward compatibility.
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs28">InferenceMode.ValuesAndInlineSchemasOverrides: InferenceMode = 4<br /><em>&lt;summary&gt;
+ Inline schemas types override value infered types. (Value infered types are ignored if an inline schema is present)
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs29">val code2: string</div>
+<div class="fsdocs-tip" id="fs30">val length2: float&lt;UnitSystems.SI.UnitNames.metre&gt;</div>
+<div class="fsdocs-tip" id="fs31">val authors: string</div>
+<div class="fsdocs-tip" id="fs32">Multiple items<br />type LiteralAttribute =
+  inherit Attribute
+  new: unit -&gt; LiteralAttribute<br /><br />--------------------<br />new: unit -&gt; LiteralAttribute</div>
+<div class="fsdocs-tip" id="fs33">[&lt;Literal&gt;]
+val ResolutionFolder: string = &quot;D:\a\FSharp.Data\FSharp.Data\docs\library&quot;</div>
+<div class="fsdocs-tip" id="fs34">type Authors = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs35">val topic: XmlProvider&lt;...&gt;.Authors</div>
+<div class="fsdocs-tip" id="fs36">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Authors<br /><em>Parses the specified XML string</em></div>
+<div class="fsdocs-tip" id="fs37">property XmlProvider&lt;...&gt;.Authors.Topic: string with get</div>
+<div class="fsdocs-tip" id="fs38">val author: XmlProvider&lt;...&gt;.Author</div>
+<div class="fsdocs-tip" id="fs39">property XmlProvider&lt;...&gt;.Authors.Authors: XmlProvider&lt;...&gt;.Author array with get</div>
+<div class="fsdocs-tip" id="fs40">val printf: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs41">property XmlProvider&lt;...&gt;.Author.Born: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs42">module Option
+
+from Microsoft.FSharp.Core</div>
+<div class="fsdocs-tip" id="fs43">val iter: action: (&#39;T -&gt; unit) -&gt; option: &#39;T option -&gt; unit</div>
+<div class="fsdocs-tip" id="fs44">type Html = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs45">val html: XmlProvider&lt;...&gt;.Div</div>
+<div class="fsdocs-tip" id="fs46">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Div</div>
+<div class="fsdocs-tip" id="fs47">val printDiv: div: XmlProvider&lt;...&gt;.Div -&gt; unit<br /><em>&#160;Prints the content of a &lt;div&gt; element</em></div>
+<div class="fsdocs-tip" id="fs48">val div: XmlProvider&lt;...&gt;.Div</div>
+<div class="fsdocs-tip" id="fs49">type Div =
+  inherit XmlElement
+  new: id: Option&lt;string&gt; * value: Option&lt;string&gt; * spans: string array * divs: Div array -&gt; Div + 1 overload
+  member Divs: Div array
+  member Id: Option&lt;string&gt;
+  member Spans: string array
+  member Value: Option&lt;string&gt;</div>
+<div class="fsdocs-tip" id="fs50">property XmlProvider&lt;...&gt;.Div.Spans: string array with get</div>
+<div class="fsdocs-tip" id="fs51">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs52">val iter: action: (&#39;T -&gt; unit) -&gt; source: &#39;T seq -&gt; unit</div>
+<div class="fsdocs-tip" id="fs53">property XmlProvider&lt;...&gt;.Div.Divs: XmlProvider&lt;...&gt;.Div array with get</div>
+<div class="fsdocs-tip" id="fs54">property System.Array.Length: int with get<br /><em>&lt;summary&gt;Gets the total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;.&lt;/summary&gt;<br />&lt;exception cref=&quot;T:System.OverflowException&quot;&gt;The array is multidimensional and contains more than &lt;see cref=&quot;F:System.Int32.MaxValue&quot;&gt;Int32.MaxValue&lt;/see&gt; elements.&lt;/exception&gt;<br />&lt;returns&gt;The total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;; zero if there are no elements in the array.&lt;/returns&gt;</em></div>
+<div class="fsdocs-tip" id="fs55">property XmlProvider&lt;...&gt;.Div.Value: Option&lt;string&gt; with get</div>
+<div class="fsdocs-tip" id="fs56">type Census = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs57">val data: XmlProvider&lt;...&gt;.CensusApi</div>
+<div class="fsdocs-tip" id="fs58">XmlProvider&lt;...&gt;.Load(uri: string) : XmlProvider&lt;...&gt;.CensusApi<br /><em>Loads XML from the specified uri</em><br />XmlProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : XmlProvider&lt;...&gt;.CensusApi<br /><em>Loads XML from the specified reader</em><br />XmlProvider&lt;...&gt;.Load(stream: System.IO.Stream) : XmlProvider&lt;...&gt;.CensusApi<br /><em>Loads XML from the specified stream</em></div>
+<div class="fsdocs-tip" id="fs59">val apiLinks: (string * string) array</div>
+<div class="fsdocs-tip" id="fs60">property XmlProvider&lt;...&gt;.CensusApi.Datasets: XmlProvider&lt;...&gt;.Dataset array with get</div>
+<div class="fsdocs-tip" id="fs61">module Array
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs62">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; array: &#39;T array -&gt; &#39;U array</div>
+<div class="fsdocs-tip" id="fs63">val ds: XmlProvider&lt;...&gt;.Dataset</div>
+<div class="fsdocs-tip" id="fs64">property XmlProvider&lt;...&gt;.Dataset.Title: string with get</div>
+<div class="fsdocs-tip" id="fs65">property XmlProvider&lt;...&gt;.Dataset.Distribution: XmlProvider&lt;...&gt;.Distribution with get</div>
+<div class="fsdocs-tip" id="fs66">property XmlProvider&lt;...&gt;.Distribution.AccessUrl: string with get</div>
+<div class="fsdocs-tip" id="fs67">val truncate: count: int -&gt; array: &#39;T array -&gt; &#39;T array</div>
+<div class="fsdocs-tip" id="fs68">val enqueue: title: string * apiUrl: string -&gt; unit</div>
+<div class="fsdocs-tip" id="fs69">val title: string</div>
+<div class="fsdocs-tip" id="fs70">val apiUrl: string</div>
+<div class="fsdocs-tip" id="fs71">val cacheJanitor: unit -&gt; Async&lt;unit&gt;</div>
+<div class="fsdocs-tip" id="fs72">val async: AsyncBuilder</div>
+<div class="fsdocs-tip" id="fs73">val reloadData: XmlProvider&lt;...&gt;.CensusApi</div>
+<div class="fsdocs-tip" id="fs74">XmlProvider&lt;...&gt;.AsyncLoad(uri: string) : Async&lt;XmlProvider&lt;...&gt;.CensusApi&gt;<br /><em>Loads XML from the specified uri</em></div>
+<div class="fsdocs-tip" id="fs75">val iter: action: (&#39;T -&gt; unit) -&gt; array: &#39;T array -&gt; unit</div>
+<div class="fsdocs-tip" id="fs76">type Rss = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs77">val blog: XmlProvider&lt;...&gt;.Rss</div>
+<div class="fsdocs-tip" id="fs78">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Rss</div>
+<div class="fsdocs-tip" id="fs79">property XmlProvider&lt;...&gt;.Rss.Channel: XmlProvider&lt;...&gt;.Channel with get</div>
+<div class="fsdocs-tip" id="fs80">property XmlProvider&lt;...&gt;.Channel.Title: string with get</div>
+<div class="fsdocs-tip" id="fs81">val item: XmlProvider&lt;...&gt;.Item</div>
+<div class="fsdocs-tip" id="fs82">property XmlProvider&lt;...&gt;.Channel.Items: XmlProvider&lt;...&gt;.Item array with get</div>
+<div class="fsdocs-tip" id="fs83">property XmlProvider&lt;...&gt;.Item.Title: string with get</div>
+<div class="fsdocs-tip" id="fs84">property XmlProvider&lt;...&gt;.Item.Link: string with get</div>
+<div class="fsdocs-tip" id="fs85">[&lt;Literal&gt;]
+val customersXmlSample: string = &quot;
+  &lt;Customers&gt;
+    &lt;Customer name=&quot;ACME&quot;&gt;
+      &lt;Order Number=&quot;A012345&quot;&gt;
+        &lt;OrderLine Item=&quot;widget&quot; Quantity=&quot;1&quot;/&gt;
+      &lt;/Order&gt;
+      &lt;Order Number=&quot;A012346&quot;&gt;
+        &lt;OrderLine Item=&quot;trinket&quot; Quantity=&quot;2&quot;/&gt;
+      &lt;/Order&gt;
+    &lt;/Customer&gt;
+    &lt;Customer name=&quot;Southwind&quot;&gt;
+      &lt;Order Number=&quot;A012347&quot;&gt;
+        &lt;OrderLine Item=&quot;skyhook&quot; Quantity=&quot;3&quot;/&gt;
+        &lt;OrderLine Item=&quot;gizmo&quot; Quantity=&quot;4&quot;/&gt;
+      &lt;/Order&gt;
+    &lt;/Customer&gt;
+  &lt;/Customers&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs86">[&lt;Literal&gt;]
+val orderLinesXmlSample: string = &quot;
+  &lt;OrderLines&gt;
+    &lt;OrderLine Customer=&quot;ACME&quot; Order=&quot;A012345&quot; Item=&quot;widget&quot; Quantity=&quot;1&quot;/&gt;
+    &lt;OrderLine Customer=&quot;ACME&quot; Order=&quot;A012346&quot; Item=&quot;trinket&quot; Quantity=&quot;2&quot;/&gt;
+    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;skyhook&quot; Quantity=&quot;3&quot;/&gt;
+    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;gizmo&quot; Quantity=&quot;4&quot;/&gt;
+  &lt;/OrderLines&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs87">type InputXml = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs88">type OutputXml = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs89">val orderLines: XmlProvider&lt;...&gt;.OrderLines</div>
+<div class="fsdocs-tip" id="fs90">type OrderLines =
+  inherit XmlElement
+  new: orderLines: OrderLine array -&gt; OrderLines + 1 overload
+  member OrderLines: OrderLine array</div>
+<div class="fsdocs-tip" id="fs91">val customer: XmlProvider&lt;...&gt;.Customer</div>
+<div class="fsdocs-tip" id="fs92">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Customers</div>
+<div class="fsdocs-tip" id="fs93">val order: XmlProvider&lt;...&gt;.Order</div>
+<div class="fsdocs-tip" id="fs94">property XmlProvider&lt;...&gt;.Customer.Orders: XmlProvider&lt;...&gt;.Order array with get</div>
+<div class="fsdocs-tip" id="fs95">val line: XmlProvider&lt;...&gt;.OrderLine</div>
+<div class="fsdocs-tip" id="fs96">property XmlProvider&lt;...&gt;.Order.OrderLines: XmlProvider&lt;...&gt;.OrderLine array with get</div>
+<div class="fsdocs-tip" id="fs97">type OrderLine =
+  inherit XmlElement
+  new: customer: string * order: string * item: string * quantity: int -&gt; OrderLine + 1 overload
+  member Customer: string
+  member Item: string
+  member Order: string
+  member Quantity: int</div>
+<div class="fsdocs-tip" id="fs98">property XmlProvider&lt;...&gt;.Customer.Name: string with get</div>
+<div class="fsdocs-tip" id="fs99">property XmlProvider&lt;...&gt;.Order.Number: string with get</div>
+<div class="fsdocs-tip" id="fs100">property XmlProvider&lt;...&gt;.OrderLine.Item: string with get</div>
+<div class="fsdocs-tip" id="fs101">property XmlProvider&lt;...&gt;.OrderLine.Quantity: int with get</div>
+<div class="fsdocs-tip" id="fs102">type Person = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs103">val turing: XmlProvider&lt;...&gt;.Person</div>
+<div class="fsdocs-tip" id="fs104">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Person<br /><em>Parses the specified XSD string</em></div>
+<div class="fsdocs-tip" id="fs105">property XmlProvider&lt;...&gt;.Person.Surname: string with get</div>
+<div class="fsdocs-tip" id="fs106">property XmlProvider&lt;...&gt;.Person.BirthDate: System.DateTime with get</div>
+<div class="fsdocs-tip" id="fs107">property System.DateTime.Year: int with get<br /><em>&lt;summary&gt;Gets the year component of the date represented by this instance.&lt;/summary&gt;<br />&lt;returns&gt;The year, between 1 and 9999.&lt;/returns&gt;</em></div>
+<div class="fsdocs-tip" id="fs108">type PurchaseOrder = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs109">type RssXsd = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs110">type TwoRoots = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs111">val e1: XmlProvider&lt;...&gt;.Choice</div>
+<div class="fsdocs-tip" id="fs112">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Choice<br /><em>Parses the specified XSD string</em></div>
+<div class="fsdocs-tip" id="fs113">property XmlProvider&lt;...&gt;.Choice.Root1: Option&lt;XmlProvider&lt;...&gt;.Root1&gt; with get</div>
+<div class="fsdocs-tip" id="fs114">property XmlProvider&lt;...&gt;.Choice.Root2: Option&lt;XmlProvider&lt;...&gt;.Root2&gt; with get</div>
+<div class="fsdocs-tip" id="fs115">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="fsdocs-tip" id="fs116">val x: XmlProvider&lt;...&gt;.Root1</div>
+<div class="fsdocs-tip" id="fs117">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="fsdocs-tip" id="fs118">property XmlProvider&lt;...&gt;.Root1.Foo: string with get</div>
+<div class="fsdocs-tip" id="fs119">property XmlProvider&lt;...&gt;.Root1.Fow: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs120">val failwith: message: string -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs121">val e2: XmlProvider&lt;...&gt;.Choice</div>
+<div class="fsdocs-tip" id="fs122">val x: XmlProvider&lt;...&gt;.Root2</div>
+<div class="fsdocs-tip" id="fs123">property XmlProvider&lt;...&gt;.Root2.Bar: string with get</div>
+<div class="fsdocs-tip" id="fs124">property XmlProvider&lt;...&gt;.Root2.Baz: System.DateTime with get</div>
+<div class="fsdocs-tip" id="fs125">type FooSequence = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs126">val fooSequence: XmlProvider&lt;...&gt;.Foo</div>
+<div class="fsdocs-tip" id="fs127">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Foo<br /><em>Parses the specified XSD string</em></div>
+<div class="fsdocs-tip" id="fs128">property XmlProvider&lt;...&gt;.Foo.Bars: int array with get</div>
+<div class="fsdocs-tip" id="fs129">property XmlProvider&lt;...&gt;.Foo.Baz: System.DateTime with get</div>
+<div class="fsdocs-tip" id="fs130">type FooChoice = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs131">val fooChoice: XmlProvider&lt;...&gt;.Foo</div>
+<div class="fsdocs-tip" id="fs132">property XmlProvider&lt;...&gt;.Foo.Baz: Option&lt;System.DateTime&gt; with get</div>
+<div class="fsdocs-tip" id="fs133">val date: System.DateTime</div>
+<div class="fsdocs-tip" id="fs134">type Prop = XmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs135">val formula: XmlProvider&lt;...&gt;.And</div>
+<div class="fsdocs-tip" id="fs136">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.And<br /><em>Parses the specified XSD string</em></div>
+<div class="fsdocs-tip" id="fs137">property XmlProvider&lt;...&gt;.And.Props: string array with get</div>
+<div class="fsdocs-tip" id="fs138">property XmlProvider&lt;...&gt;.And.Ands: XmlProvider&lt;...&gt;.And array with get</div>
+<div class="fsdocs-tip" id="fs139">namespace System</div>
+<div class="fsdocs-tip" id="fs140">namespace System.Xml</div>
+<div class="fsdocs-tip" id="fs141">namespace System.Xml.Schema</div>
+<div class="fsdocs-tip" id="fs142">val schema: XmlSchemaSet</div>
+<div class="fsdocs-tip" id="fs143">XmlProvider&lt;...&gt;.GetSchema() : XmlSchemaSet</div>
+<div class="fsdocs-tip" id="fs144">Runtime.BaseTypes.XmlElement.XElement: System.Xml.Linq.XElement</div>
+<div class="fsdocs-tip" id="fs145">(extension) System.Xml.Linq.XDocument.Validate(schemas: XmlSchemaSet, validationEventHandler: ValidationEventHandler) : unit<br />(extension) System.Xml.Linq.XDocument.Validate(schemas: XmlSchemaSet, validationEventHandler: ValidationEventHandler, addSchemaInfo: bool) : unit</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#XML-Type-Provider">
+      XML Type Provider
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Introducing-the-provider">
+      Introducing the provider
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Inferring-type-from-sample">
+      Inferring type from sample
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Types-for-more-complex-structure">
+      Types for more complex structure
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Types-for-multiple-simple-elements">
+      Types for multiple simple elements
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Type-inference-hints-inline-schemas">
+      Type inference hints / inline schemas
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Units-of-measure">
+      Units of measure
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Processing-philosophers">
+      Processing philosophers
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Global-inference-mode">
+      Global inference mode
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Inferring-date-types">
+      Inferring date types
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Loading-Directly-from-a-File-or-URL">
+      Loading Directly from a File or URL
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Bringing-in-Some-Async-Action">
+      Bringing in Some Async Action
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Reading-RSS-feeds">
+      Reading RSS feeds
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Transforming-XML">
+      Transforming XML
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-a-schema-XSD">
+      Using a schema (XSD)
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Common-XSD-constructs-sequence-and-choice">
+      Common XSD constructs: sequence and choice
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Advanced-schema-constructs">
+      Advanced schema constructs
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Validation">
+      Validation
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Remarks-on-using-a-schema">
+      Remarks on using a schema
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="Using JSON Schema with the JSON Type Provider
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="Using JSON Schema with the JSON Type Provider
+">
+    
+    <title>Using JSON Schema with the JSON Type Provider
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Other
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Other
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <h1><a name="Using-JSON-Schema-with-the-JSON-Type-Provider" class="anchor" href="#Using-JSON-Schema-with-the-JSON-Type-Provider">Using JSON Schema with the JSON Type Provider</a></h1>
+<p>The JSON Type Provider allows you to use <a href="https://json-schema.org/">JSON Schema</a> to provide statically typed
+access to JSON documents, similar to how the XML Type Provider supports XML Schema.</p>
+<h2><a name="Basic-Usage-with-JSON-Schema" class="anchor" href="#Basic-Usage-with-JSON-Schema">Basic Usage with JSON Schema</a></h2>
+<p>Let's start with a basic JSON Schema example:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="id">personSchema</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,</span>
+<span class="s">  &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">  &quot;properties&quot;: {</span>
+<span class="s">    &quot;firstName&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;description&quot;: &quot;The person&#39;s first name.&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;lastName&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;description&quot;: &quot;The person&#39;s last name.&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;age&quot;: {</span>
+<span class="s">      &quot;description&quot;: &quot;Age in years&quot;,</span>
+<span class="s">      &quot;type&quot;: &quot;integer&quot;,</span>
+<span class="s">      &quot;minimum&quot;: 0</span>
+<span class="s">    },</span>
+<span class="s">    &quot;email&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;format&quot;: &quot;email&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;phoneNumbers&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;array&quot;,</span>
+<span class="s">      &quot;items&quot;: {</span>
+<span class="s">        &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">        &quot;properties&quot;: {</span>
+<span class="s">          &quot;type&quot;: {</span>
+<span class="s">            &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">            &quot;enum&quot;: [&quot;home&quot;, &quot;work&quot;, &quot;mobile&quot;]</span>
+<span class="s">          },</span>
+<span class="s">          &quot;number&quot;: {</span>
+<span class="s">            &quot;type&quot;: &quot;string&quot;</span>
+<span class="s">          }</span>
+<span class="s">        },</span>
+<span class="s">        &quot;required&quot;: [&quot;type&quot;, &quot;number&quot;]</span>
+<span class="s">      }</span>
+<span class="s">    }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;required&quot;: [&quot;firstName&quot;, &quot;lastName&quot;]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="c">// Create a type based on the schema</span>
+<span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="prop">PersonSchemaLiteral</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,</span>
+<span class="s">  &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">  &quot;properties&quot;: {</span>
+<span class="s">    &quot;firstName&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;description&quot;: &quot;The person&#39;s first name.&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;lastName&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;description&quot;: &quot;The person&#39;s last name.&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;age&quot;: {</span>
+<span class="s">      &quot;description&quot;: &quot;Age in years&quot;,</span>
+<span class="s">      &quot;type&quot;: &quot;integer&quot;,</span>
+<span class="s">      &quot;minimum&quot;: 0</span>
+<span class="s">    },</span>
+<span class="s">    &quot;email&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;format&quot;: &quot;email&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;phoneNumbers&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;array&quot;,</span>
+<span class="s">      &quot;items&quot;: {</span>
+<span class="s">        &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">        &quot;properties&quot;: {</span>
+<span class="s">          &quot;type&quot;: {</span>
+<span class="s">            &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">            &quot;enum&quot;: [&quot;home&quot;, &quot;work&quot;, &quot;mobile&quot;]</span>
+<span class="s">          },</span>
+<span class="s">          &quot;number&quot;: {</span>
+<span class="s">            &quot;type&quot;: &quot;string&quot;</span>
+<span class="s">          }</span>
+<span class="s">        },</span>
+<span class="s">        &quot;required&quot;: [&quot;type&quot;, &quot;number&quot;]</span>
+<span class="s">      }</span>
+<span class="s">    }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;required&quot;: [&quot;firstName&quot;, &quot;lastName&quot;]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="rt">Person</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="fn">Schema</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs7', 11)" onmouseover="showTip(event, 'fs7', 11)" class="prop">PersonSchemaLiteral</span><span class="pn">&gt;</span>
+
+<span class="c">// Parse a JSON document that conforms to the schema</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="id">person</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="rt">Person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="id">Parse</span><span class="pn">(</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;firstName&quot;: &quot;John&quot;,</span>
+<span class="s">  &quot;lastName&quot;: &quot;Smith&quot;,</span>
+<span class="s">  &quot;age&quot;: 42,</span>
+<span class="s">  &quot;email&quot;: &quot;john.smith@example.com&quot;,</span>
+<span class="s">  &quot;phoneNumbers&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;type&quot;: &quot;home&quot;,</span>
+<span class="s">      &quot;number&quot;: &quot;555-1234&quot;</span>
+<span class="s">    },</span>
+<span class="s">    {</span>
+<span class="s">      &quot;type&quot;: &quot;mobile&quot;,</span>
+<span class="s">      &quot;number&quot;: &quot;555-6789&quot;</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="pn">)</span>
+
+<span class="c">// Access the strongly typed properties</span>
+<span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="fn">printfn</span> <span class="s">&quot;Name: </span><span class="pf">%s</span><span class="s"> </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="id">FirstName</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="id">LastName</span>
+<span onmouseout="hideTip(event, 'fs12', 20)" onmouseover="showTip(event, 'fs12', 20)" class="fn">printfn</span> <span class="s">&quot;Age: </span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs10', 21)" onmouseover="showTip(event, 'fs10', 21)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 22)" onmouseover="showTip(event, 'fs15', 22)" class="id">Age</span>
+<span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="fn">printfn</span> <span class="s">&quot;Email: </span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs10', 24)" onmouseover="showTip(event, 'fs10', 24)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 25)" onmouseover="showTip(event, 'fs16', 25)" class="id">Email</span>
+<span onmouseout="hideTip(event, 'fs12', 26)" onmouseover="showTip(event, 'fs12', 26)" class="fn">printfn</span> <span class="s">&quot;Phone: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs10', 27)" onmouseover="showTip(event, 'fs10', 27)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 28)" onmouseover="showTip(event, 'fs17', 28)" class="id">PhoneNumbers</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">Number</span>
+</code></pre>
+<h2><a name="Using-Schema-Files" class="anchor" href="#Using-Schema-Files">Using Schema Files</a></h2>
+<p>You can also load a JSON Schema from a file:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Assuming you have a schema file:</span>
+<span class="c">// type Product = JsonProvider&lt;Schema=&quot;schemas/product.json&quot;&gt;</span>
+</code></pre>
+<h2><a name="Validating-JSON-Against-Schema" class="anchor" href="#Validating-JSON-Against-Schema">Validating JSON Against Schema</a></h2>
+<p>When using the JSON Provider with the Schema parameter, data validation occurs automatically at parse time
+based on the schema rules:</p>
+<ul>
+<li>Properties are required according to the schema (firstName and lastName)</li>
+<li>Property types match those defined in the schema (age is a non-negative integer)</li>
+<li>Format constraints are checked (email is a valid email format)</li>
+<li>Pattern constraints are validated (orderId matches the pattern "^ORD-[0-9]{6}$")</li>
+<li>Numeric constraints are enforced (minimum/maximum values)</li>
+</ul>
+<p>Here's how validation works:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Valid JSON that conforms to the schema</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="id">validPerson</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs8', 30)" onmouseover="showTip(event, 'fs8', 30)" class="rt">Person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 31)" onmouseover="showTip(event, 'fs11', 31)" class="id">Parse</span><span class="pn">(</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;firstName&quot;: &quot;Jane&quot;,</span>
+<span class="s">  &quot;lastName&quot;: &quot;Doe&quot;,</span>
+<span class="s">  &quot;age&quot;: 35,</span>
+<span class="s">  &quot;email&quot;: &quot;jane.doe@example.com&quot;</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs12', 32)" onmouseover="showTip(event, 'fs12', 32)" class="fn">printfn</span> <span class="s">&quot;Valid JSON: </span><span class="pf">%s</span><span class="s"> </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs18', 33)" onmouseover="showTip(event, 'fs18', 33)" class="id">validPerson</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs13', 34)" onmouseover="showTip(event, 'fs13', 34)" class="id">FirstName</span> <span onmouseout="hideTip(event, 'fs18', 35)" onmouseover="showTip(event, 'fs18', 35)" class="id">validPerson</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 36)" onmouseover="showTip(event, 'fs14', 36)" class="id">LastName</span>
+
+<span class="c">// Invalid JSON that violates schema rules will cause an exception</span>
+<span class="c">// Let&#39;s use try-catch to demonstrate validation errors:</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs19', 37)" onmouseover="showTip(event, 'fs19', 37)" class="id">invalidJson</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;firstName&quot;: &quot;John&quot;,</span>
+<span class="s">  &quot;age&quot;: -5</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="c">// In a real project when using the Schema parameter, the JsonProvider would validate</span>
+<span class="c">// against the schema rules. For the purposes of this demonstration, let&#39;s manually</span>
+<span class="c">// validate the JSON against the schema:</span>
+
+<span class="c">// Create a JSON value from the invalid JSON</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="id">jsonValue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 39)" onmouseover="showTip(event, 'fs21', 39)" class="m">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs22', 40)" onmouseover="showTip(event, 'fs22', 40)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs19', 41)" onmouseover="showTip(event, 'fs19', 41)" class="id">invalidJson</span><span class="pn">)</span>
+
+<span class="c">// Check required fields from the schema</span>
+<span class="k">if</span> <span onmouseout="hideTip(event, 'fs20', 42)" onmouseover="showTip(event, 'fs20', 42)" class="id">jsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="id">TryGetProperty</span><span class="pn">(</span><span class="s">&quot;lastName&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="id">IsNone</span> <span class="k">then</span>
+    <span onmouseout="hideTip(event, 'fs12', 44)" onmouseover="showTip(event, 'fs12', 44)" class="fn">printfn</span> <span class="s">&quot;Schema validation failed: missing required property &#39;lastName&#39;&quot;</span>
+
+<span class="c">// Check numeric constraints from the schema</span>
+<span class="k">if</span> <span onmouseout="hideTip(event, 'fs20', 45)" onmouseover="showTip(event, 'fs20', 45)" class="id">jsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 46)" onmouseover="showTip(event, 'fs23', 46)" class="id">TryGetProperty</span><span class="pn">(</span><span class="s">&quot;age&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="id">IsSome</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs20', 47)" onmouseover="showTip(event, 'fs20', 47)" class="id">jsonValue</span><span class="pn">.</span><span class="pn">[</span><span class="s">&quot;age&quot;</span><span class="pn">]</span><span class="pn">.</span><span class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span> <span class="o">&lt;</span> <span class="n">0</span> <span class="k">then</span>
+    <span onmouseout="hideTip(event, 'fs12', 48)" onmouseover="showTip(event, 'fs12', 48)" class="fn">printfn</span> <span class="s">&quot;Schema validation failed: &#39;age&#39; must be non-negative&quot;</span>
+</code></pre>
+<h2><a name="Schema-Constraints-and-Validation" class="anchor" href="#Schema-Constraints-and-Validation">Schema Constraints and Validation</a></h2>
+<p>JSON Schema supports various constraints that are validated:</p>
+<h3><a name="String-Constraints" class="anchor" href="#String-Constraints">String Constraints</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="json">{
+  "type": "string",
+  "minLength": 3,
+  "maxLength": 50,
+  "pattern": "^[A-Z][a-z]+$"
+}
+</code></pre></td></tr></table>
+<h3><a name="Numeric-Constraints" class="anchor" href="#Numeric-Constraints">Numeric Constraints</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="json">{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 100
+}
+</code></pre></td></tr></table>
+<h3><a name="Array-Constraints" class="anchor" href="#Array-Constraints">Array Constraints</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="json">{
+  "type": "array",
+  "items": {
+    "type": "string"
+  },
+  "minItems": 1,
+  "maxItems": 10
+}
+</code></pre></td></tr></table>
+<h3><a name="Object-Constraints" class="anchor" href="#Object-Constraints">Object Constraints</a></h3>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="json">{
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": { "type": "integer" },
+    "name": { "type": "string" }
+  }
+}
+</code></pre></td></tr></table>
+<h2><a name="Working-with-Schema-References" class="anchor" href="#Working-with-Schema-References">Working with Schema References</a></h2>
+<p>JSON Schema allows references to reuse schema definitions:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip"><code lang="json">{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" },
+        "city": { "type": "string" },
+        "zipCode": { "type": "string" }
+      },
+      "required": ["street", "city", "zipCode"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "billingAddress": { "$ref": "#/definitions/address" },
+    "shippingAddress": { "$ref": "#/definitions/address" }
+  }
+}
+</code></pre></td></tr></table>
+<h2><a name="Advantages-of-Using-JSON-Schema" class="anchor" href="#Advantages-of-Using-JSON-Schema">Advantages of Using JSON Schema</a></h2>
+<ol>
+<li><strong>Documentation</strong>: Schema provides documentation on what properties are available.</li>
+<li><strong>Validation</strong>: Schema enforces constraints on data types, required properties, etc.</li>
+<li><strong>Type Safety</strong>: Strong typing to prevent errors when working with JSON data.</li>
+<li><strong>Discoverability</strong>: Better IntelliSense in your IDE.</li>
+<li><strong>Consistency</strong>: Ensure all documents follow the same structure.</li>
+<li><strong>Contract First Development</strong>: Define your data contract before implementation.</li>
+</ol>
+<h2><a name="JSON-Schema-Features-Supported" class="anchor" href="#JSON-Schema-Features-Supported">JSON Schema Features Supported</a></h2>
+<p>The JSON Schema support in FSharp.Data includes:</p>
+<ul>
+<li>Basic types (string, number, integer, boolean, object, array)</li>
+<li>Required properties</li>
+<li>Property format definitions (date-time, email, etc.)</li>
+<li>Enumerations</li>
+<li>Nested objects and arrays</li>
+<li>Minimum/maximum constraints</li>
+<li>String patterns and length constraints</li>
+<li>References ($ref) for reusing schema definitions</li>
+<li>Validation of documents against schema</li>
+</ul>
+<h2><a name="Requirements-and-Limitations" class="anchor" href="#Requirements-and-Limitations">Requirements and Limitations</a></h2>
+<ul>
+<li>When using the <code>Schema</code> parameter, you cannot use the <code>Sample</code> parameter</li>
+<li>Schema and SampleIsList parameters are mutually exclusive</li>
+<li>Currently supports JSON Schema Draft-07</li>
+<li>JSON Schema references ($ref) support is limited to local references within the schema</li>
+<li>Some advanced schema features like dependencies, conditionals, and unevaluatedProperties are not fully supported</li>
+</ul>
+<h2><a name="Using-JSON-Schema-in-Your-Project" class="anchor" href="#Using-JSON-Schema-in-Your-Project">Using JSON Schema in Your Project</a></h2>
+<p>To use JSON Schema with the JSON Type Provider:</p>
+<ol>
+<li>Define your schema (in a file or as a string)</li>
+<li>Create a type using <code>JsonProvider&lt;Schema="path-to-schema.json"&gt;</code> or <code>JsonProvider&lt;Schema=schemaString&gt;</code></li>
+<li>Use the generated type to parse and work with your JSON data</li>
+<li>Optionally use the validation functions for runtime validation</li>
+</ol>
+<h3><a name="Complete-Example-with-Nested-Objects" class="anchor" href="#Complete-Example-with-Nested-Objects">Complete Example with Nested Objects</a></h3>
+<p>Here's a more complex example with nested objects:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 49)" onmouseover="showTip(event, 'fs24', 49)" class="id">orderSchema</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,</span>
+<span class="s">  &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">  &quot;properties&quot;: {</span>
+<span class="s">    &quot;orderId&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;pattern&quot;: &quot;^ORD-[0-9]{6}$&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;customer&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">      &quot;properties&quot;: {</span>
+<span class="s">        &quot;id&quot;: { &quot;type&quot;: &quot;integer&quot; },</span>
+<span class="s">        &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">        &quot;email&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;email&quot; }</span>
+<span class="s">      },</span>
+<span class="s">      &quot;required&quot;: [&quot;id&quot;, &quot;name&quot;]</span>
+<span class="s">    },</span>
+<span class="s">    &quot;items&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;array&quot;,</span>
+<span class="s">      &quot;items&quot;: {</span>
+<span class="s">        &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">        &quot;properties&quot;: {</span>
+<span class="s">          &quot;productId&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">          &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">          &quot;quantity&quot;: { &quot;type&quot;: &quot;integer&quot;, &quot;minimum&quot;: 1 },</span>
+<span class="s">          &quot;price&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 }</span>
+<span class="s">        },</span>
+<span class="s">        &quot;required&quot;: [&quot;productId&quot;, &quot;quantity&quot;, &quot;price&quot;]</span>
+<span class="s">      },</span>
+<span class="s">      &quot;minItems&quot;: 1</span>
+<span class="s">    },</span>
+<span class="s">    &quot;totalAmount&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 },</span>
+<span class="s">    &quot;orderDate&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;date-time&quot; }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;required&quot;: [&quot;orderId&quot;, &quot;customer&quot;, &quot;items&quot;, &quot;totalAmount&quot;, &quot;orderDate&quot;]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="c">// Create a type based on the order schema</span>
+<span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs6', 50)" onmouseover="showTip(event, 'fs6', 50)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 51)" onmouseover="showTip(event, 'fs25', 51)" class="prop">OrderSchemaLiteral</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,</span>
+<span class="s">  &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">  &quot;properties&quot;: {</span>
+<span class="s">    &quot;orderId&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;string&quot;,</span>
+<span class="s">      &quot;pattern&quot;: &quot;^ORD-[0-9]{6}$&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;customer&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">      &quot;properties&quot;: {</span>
+<span class="s">        &quot;id&quot;: { &quot;type&quot;: &quot;integer&quot; },</span>
+<span class="s">        &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">        &quot;email&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;email&quot; }</span>
+<span class="s">      },</span>
+<span class="s">      &quot;required&quot;: [&quot;id&quot;, &quot;name&quot;]</span>
+<span class="s">    },</span>
+<span class="s">    &quot;items&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;array&quot;,</span>
+<span class="s">      &quot;items&quot;: {</span>
+<span class="s">        &quot;type&quot;: &quot;object&quot;,</span>
+<span class="s">        &quot;properties&quot;: {</span>
+<span class="s">          &quot;productId&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">          &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },</span>
+<span class="s">          &quot;quantity&quot;: { &quot;type&quot;: &quot;integer&quot;, &quot;minimum&quot;: 1 },</span>
+<span class="s">          &quot;price&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 }</span>
+<span class="s">        },</span>
+<span class="s">        &quot;required&quot;: [&quot;productId&quot;, &quot;quantity&quot;, &quot;price&quot;]</span>
+<span class="s">      },</span>
+<span class="s">      &quot;minItems&quot;: 1</span>
+<span class="s">    },</span>
+<span class="s">    &quot;totalAmount&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 },</span>
+<span class="s">    &quot;orderDate&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;date-time&quot; }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;required&quot;: [&quot;orderId&quot;, &quot;customer&quot;, &quot;items&quot;, &quot;totalAmount&quot;, &quot;orderDate&quot;]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs26', 52)" onmouseover="showTip(event, 'fs26', 52)" class="rt">Order</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 53)" onmouseover="showTip(event, 'fs9', 53)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="fn">Schema</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs25', 54)" onmouseover="showTip(event, 'fs25', 54)" class="prop">OrderSchemaLiteral</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 55)" onmouseover="showTip(event, 'fs27', 55)" class="id">order</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs26', 56)" onmouseover="showTip(event, 'fs26', 56)" class="rt">Order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 57)" onmouseover="showTip(event, 'fs11', 57)" class="id">Parse</span><span class="pn">(</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;orderId&quot;: &quot;ORD-123456&quot;,</span>
+<span class="s">  &quot;customer&quot;: {</span>
+<span class="s">    &quot;id&quot;: 1001,</span>
+<span class="s">    &quot;name&quot;: &quot;Alice Smith&quot;,</span>
+<span class="s">    &quot;email&quot;: &quot;alice@example.com&quot;</span>
+<span class="s">  },</span>
+<span class="s">  &quot;items&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;productId&quot;: &quot;PROD-001&quot;,</span>
+<span class="s">      &quot;name&quot;: &quot;Laptop&quot;,</span>
+<span class="s">      &quot;quantity&quot;: 1,</span>
+<span class="s">      &quot;price&quot;: 1299.99</span>
+<span class="s">    },</span>
+<span class="s">    {</span>
+<span class="s">      &quot;productId&quot;: &quot;PROD-002&quot;,</span>
+<span class="s">      &quot;name&quot;: &quot;Mouse&quot;,</span>
+<span class="s">      &quot;quantity&quot;: 2,</span>
+<span class="s">      &quot;price&quot;: 25.99</span>
+<span class="s">    }</span>
+<span class="s">  ],</span>
+<span class="s">  &quot;totalAmount&quot;: 1351.97,</span>
+<span class="s">  &quot;orderDate&quot;: &quot;2023-10-01T12:00:00Z&quot;</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs12', 58)" onmouseover="showTip(event, 'fs12', 58)" class="fn">printfn</span> <span class="s">&quot;Order: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 59)" onmouseover="showTip(event, 'fs27', 59)" class="id">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 60)" onmouseover="showTip(event, 'fs28', 60)" class="id">OrderId</span>
+<span onmouseout="hideTip(event, 'fs12', 61)" onmouseover="showTip(event, 'fs12', 61)" class="fn">printfn</span> <span class="s">&quot;Customer: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 62)" onmouseover="showTip(event, 'fs27', 62)" class="id">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs29', 63)" onmouseover="showTip(event, 'fs29', 63)" class="prop">Customer</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 64)" onmouseover="showTip(event, 'fs30', 64)" class="id">Name</span>
+<span onmouseout="hideTip(event, 'fs12', 65)" onmouseover="showTip(event, 'fs12', 65)" class="fn">printfn</span> <span class="s">&quot;Items: </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 66)" onmouseover="showTip(event, 'fs27', 66)" class="id">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="prop">Items</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs32', 68)" onmouseover="showTip(event, 'fs32', 68)" class="id">Length</span>
+<span onmouseout="hideTip(event, 'fs12', 69)" onmouseover="showTip(event, 'fs12', 69)" class="fn">printfn</span> <span class="s">&quot;Total: </span><span class="pf">%.2f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 70)" onmouseover="showTip(event, 'fs27', 70)" class="id">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs33', 71)" onmouseover="showTip(event, 'fs33', 71)" class="id">TotalAmount</span>
+<span onmouseout="hideTip(event, 'fs12', 72)" onmouseover="showTip(event, 'fs12', 72)" class="fn">printfn</span> <span class="s">&quot;Date: </span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 73)" onmouseover="showTip(event, 'fs27', 73)" class="id">order</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs34', 74)" onmouseover="showTip(event, 'fs34', 74)" class="id">OrderDate</span>
+</code></pre>
+<h2><a name="Summary" class="anchor" href="#Summary">Summary</a></h2>
+<p>The JSON Schema support in FSharp.Data provides a powerful way to work with strongly-typed JSON data based on schema definitions. It combines the benefits of static typing with the flexibility of JSON, making it an excellent choice for working with well-defined JSON APIs and data structures.</p>
+
+        <div class="fsdocs-tip" id="fs1">namespace System</div>
+<div class="fsdocs-tip" id="fs2">namespace System.IO</div>
+<div class="fsdocs-tip" id="fs3">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs4">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs5">val personSchema: string</div>
+<div class="fsdocs-tip" id="fs6">Multiple items<br />type LiteralAttribute =
+  inherit Attribute
+  new: unit -&gt; LiteralAttribute<br /><br />--------------------<br />new: unit -&gt; LiteralAttribute</div>
+<div class="fsdocs-tip" id="fs7">[&lt;Literal&gt;]
+val PersonSchemaLiteral: string = &quot;
+{
+  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;properties&quot;: {
+    &quot;firstName&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;description&quot;: &quot;The person&#39;s first name.&quot;
+    },
+    &quot;lastName&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;description&quot;: &quot;The person&#39;s last name.&quot;
+    },
+    &quot;age&quot;: {
+      &quot;description&quot;: &quot;Age in years&quot;,
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;minimum&quot;: 0
+    },
+    &quot;email&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;format&quot;: &quot;email&quot;
+    },
+    &quot;phoneNumbers&quot;: {
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;items&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+          &quot;type&quot;: {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;enum&quot;: [&quot;home&quot;, &quot;work&quot;, &quot;mobile&quot;]
+          },
+          &quot;number&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          }
+        },
+        &quot;required&quot;: [&quot;type&quot;, &quot;number&quot;]
+      }
+    }
+  },
+  &quot;required&quot;: [&quot;firstName&quot;, &quot;lastName&quot;]
+}
+&quot;</div>
+<div class="fsdocs-tip" id="fs8">type Person = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs9">type JsonProvider<br /><em>&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;
+           &lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;
+           &lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;
+           &lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;
+           &lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;
+           &lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.&lt;/param&gt;
+           &lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;
+           &lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource
+              (e.g. &#39;MyCompany.MyAssembly, resource_name.json&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;
+           &lt;param name=&#39;InferTypesFromValues&#39;&gt;
+              This parameter is deprecated. Please use InferenceMode instead.
+              If true, turns on additional type inference from values.
+              (e.g. type inference infers string values such as &quot;123&quot; as ints and values constrained to 0 and 1 as booleans.)&lt;/param&gt;
+           &lt;param name=&#39;PreferDictionaries&#39;&gt;If true, json records are interpreted as dictionaries when the names of all the fields are inferred (by type inference rules) into the same non-string primitive type.&lt;/param&gt;
+           &lt;param name=&#39;InferenceMode&#39;&gt;Possible values:
+              | NoInference -&gt; Inference is disabled. All values are inferred as the most basic type permitted for the value (i.e. string or number or bool).
+              | ValuesOnly -&gt; Types of values are inferred from the Sample. Inline schema support is disabled. This is the default.
+              | ValuesAndInlineSchemasHints -&gt; Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&amp;lt;type&amp;gt; or typeof{type} or typeof&amp;lt;type&amp;lt;measure&amp;gt;&amp;gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are &lt;c&gt;int&lt;/c&gt;, &lt;c&gt;int64&lt;/c&gt;, &lt;c&gt;bool&lt;/c&gt;, &lt;c&gt;float&lt;/c&gt;, &lt;c&gt;decimal&lt;/c&gt;, &lt;c&gt;date&lt;/c&gt;, &lt;c&gt;datetimeoffset&lt;/c&gt;, &lt;c&gt;timespan&lt;/c&gt;, &lt;c&gt;guid&lt;/c&gt; and &lt;c&gt;string&lt;/c&gt;.
+              | ValuesAndInlineSchemasOverrides -&gt; Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
+           &lt;/param&gt;
+           &lt;param name=&#39;Schema&#39;&gt;Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateOnly&#39;&gt;When true on .NET 6+, date-only strings (e.g. &quot;2023-01-15&quot;) are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.&lt;/param&gt;
+           &lt;param name=&#39;UseOriginalNames&#39;&gt;When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;OmitNullFields&#39;&gt;When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;PreferOptionals&#39;&gt;When set to true (default), inference will use the option type for missing or null values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateTimeOffset&#39;&gt;When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;ExceptionIfMissing&#39;&gt;When true, accessing a non-optional field that is missing in the JSON data raises an exception instead of returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.&lt;/param&gt;</em></div>
+<div class="fsdocs-tip" id="fs10">val person: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs11">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.Root<br /><em>Parses the specified JSON Schema string</em></div>
+<div class="fsdocs-tip" id="fs12">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs13">property JsonProvider&lt;...&gt;.Root.FirstName: string with get</div>
+<div class="fsdocs-tip" id="fs14">property JsonProvider&lt;...&gt;.Root.LastName: string with get</div>
+<div class="fsdocs-tip" id="fs15">property JsonProvider&lt;...&gt;.Root.Age: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs16">property JsonProvider&lt;...&gt;.Root.Email: Option&lt;string&gt; with get</div>
+<div class="fsdocs-tip" id="fs17">property JsonProvider&lt;...&gt;.Root.PhoneNumbers: JsonProvider&lt;...&gt;.Record array with get</div>
+<div class="fsdocs-tip" id="fs18">val validPerson: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs19">val invalidJson: string</div>
+<div class="fsdocs-tip" id="fs20">val jsonValue: JsonValue</div>
+<div class="fsdocs-tip" id="fs21">type JsonValue =
+  | String of string
+  | Number of decimal
+  | Float of float
+  | Record of properties: (string * JsonValue) array
+  | Array of elements: JsonValue array
+  | Boolean of bool
+  | Null
+  member Request: url: string * [&lt;Optional&gt;] ?httpMethod: string * [&lt;Optional&gt;] ?headers: (string * string) seq -&gt; HttpResponse
+  member RequestAsync: url: string * [&lt;Optional&gt;] ?httpMethod: string * [&lt;Optional&gt;] ?headers: (string * string) seq -&gt; Async&lt;HttpResponse&gt;
+  member ToString: saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; string + 2 overloads
+  member WriteTo: w: TextWriter * saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; unit
+  static member AsyncLoad: uri: string * [&lt;Optional&gt;] ?encoding: Encoding -&gt; Async&lt;JsonValue&gt;
+  static member Load: stream: Stream -&gt; JsonValue + 2 overloads
+  static member Parse: text: string -&gt; JsonValue
+  static member ParseMultiple: text: string -&gt; JsonValue seq
+  static member TryParse: text: string -&gt; JsonValue option<br /><em>&lt;summary&gt;
+ Represents a JSON value. Large numbers that do not fit in the
+ Decimal type are represented using the Float case, while
+ smaller numbers are represented as decimals to avoid precision loss.
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs22">static member JsonValue.Parse: text: string -&gt; JsonValue</div>
+<div class="fsdocs-tip" id="fs23">static member JsonExtensions.TryGetProperty: x: JsonValue * propertyName: string -&gt; JsonValue option</div>
+<div class="fsdocs-tip" id="fs24">val orderSchema: string</div>
+<div class="fsdocs-tip" id="fs25">[&lt;Literal&gt;]
+val OrderSchemaLiteral: string = &quot;
+{
+  &quot;$schema&quot;: &quot;http://json-schema.org/draft-07/schema#&quot;,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;properties&quot;: {
+    &quot;orderId&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;pattern&quot;: &quot;^ORD-[0-9]{6}$&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;properties&quot;: {
+        &quot;id&quot;: { &quot;type&quot;: &quot;integer&quot; },
+        &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },
+        &quot;email&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;email&quot; }
+      },
+      &quot;required&quot;: [&quot;id&quot;, &quot;name&quot;]
+    },
+    &quot;items&quot;: {
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;items&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+          &quot;productId&quot;: { &quot;type&quot;: &quot;string&quot; },
+          &quot;name&quot;: { &quot;type&quot;: &quot;string&quot; },
+          &quot;quantity&quot;: { &quot;type&quot;: &quot;integer&quot;, &quot;minimum&quot;: 1 },
+          &quot;price&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 }
+        },
+        &quot;required&quot;: [&quot;productId&quot;, &quot;quantity&quot;, &quot;price&quot;]
+      },
+      &quot;minItems&quot;: 1
+    },
+    &quot;totalAmount&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;minimum&quot;: 0 },
+    &quot;orderDate&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;date-time&quot; }
+  },
+  &quot;required&quot;: [&quot;orderId&quot;, &quot;customer&quot;, &quot;items&quot;, &quot;totalAmount&quot;, &quot;orderDate&quot;]
+}
+&quot;</div>
+<div class="fsdocs-tip" id="fs26">type Order = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs27">val order: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs28">property JsonProvider&lt;...&gt;.Root.OrderId: string with get</div>
+<div class="fsdocs-tip" id="fs29">property JsonProvider&lt;...&gt;.Root.Customer: JsonProvider&lt;...&gt;.Record with get</div>
+<div class="fsdocs-tip" id="fs30">property JsonProvider&lt;...&gt;.Record.Name: string with get</div>
+<div class="fsdocs-tip" id="fs31">property JsonProvider&lt;...&gt;.Root.Items: JsonProvider&lt;...&gt;.Record2 array with get</div>
+<div class="fsdocs-tip" id="fs32">property Array.Length: int with get<br /><em>&lt;summary&gt;Gets the total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;.&lt;/summary&gt;<br />&lt;exception cref=&quot;T:System.OverflowException&quot;&gt;The array is multidimensional and contains more than &lt;see cref=&quot;F:System.Int32.MaxValue&quot;&gt;Int32.MaxValue&lt;/see&gt; elements.&lt;/exception&gt;<br />&lt;returns&gt;The total number of elements in all the dimensions of the &lt;see cref=&quot;T:System.Array&quot; /&gt;; zero if there are no elements in the array.&lt;/returns&gt;</em></div>
+<div class="fsdocs-tip" id="fs33">property JsonProvider&lt;...&gt;.Root.TotalAmount: decimal with get</div>
+<div class="fsdocs-tip" id="fs34">property JsonProvider&lt;...&gt;.Root.OrderDate: DateTime with get</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Using-JSON-Schema-with-the-JSON-Type-Provider">
+      Using JSON Schema with the JSON Type Provider
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Basic-Usage-with-JSON-Schema">
+      Basic Usage with JSON Schema
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-Schema-Files">
+      Using Schema Files
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Validating-JSON-Against-Schema">
+      Validating JSON Against Schema
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Schema-Constraints-and-Validation">
+      Schema Constraints and Validation
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#String-Constraints">
+      String Constraints
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Numeric-Constraints">
+      Numeric Constraints
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Array-Constraints">
+      Array Constraints
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Object-Constraints">
+      Object Constraints
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Working-with-Schema-References">
+      Working with Schema References
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Advantages-of-Using-JSON-Schema">
+      Advantages of Using JSON Schema
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#JSON-Schema-Features-Supported">
+      JSON Schema Features Supported
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Requirements-and-Limitations">
+      Requirements and Limitations
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-JSON-Schema-in-Your-Project">
+      Using JSON Schema in Your Project
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Complete-Example-with-Nested-Objects">
+      Complete Example with Nested Objects
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Summary">
+      Summary
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

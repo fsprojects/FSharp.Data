@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="CSV Parser
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="CSV Parser
+">
+    
+    <title>CSV Parser
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/CsvFile.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/CsvFile.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/CsvFile.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="CSV-Parser" class="anchor" href="#CSV-Parser">CSV Parser</a></h1>
+<p>The F# <a href="CsvProvider.html">CSV Type Provider</a> is built on top of an efficient CSV parser written
+in F#. There's also a simple API that can be used to access values dynamically.</p>
+<p>When working with well-defined CSV documents, it is easier to use the
+<a href="CsvProvider.html">type provider</a>, but in a more dynamic scenario or when writing
+quick and simple scripts, the parser might be a simpler option.</p>
+<h2><a name="Loading-CSV-documents" class="anchor" href="#Loading-CSV-documents">Loading CSV documents</a></h2>
+<p>To load a sample CSV document, we first need to reference the <code>FSharp.Data</code> package.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<p>The <code>FSharp.Data</code> namespace contains the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a> type that provides two static methods
+for loading data. The <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html#Parse">CsvFile.Parse</a> method can be used if we have the data in a <code>string</code> value.
+The <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html#Load">CsvFile.Load</a> method allows reading the data from a file or from a web resource (and there's
+also an asynchronous <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html#AsyncLoad">CsvFile.AsyncLoad</a> version). The following sample calls <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html#Load">CsvFile.Load</a> with a URL that
+points to a live CSV file on the Yahoo finance web site:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Download the stock prices</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="d">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="d">CsvFile</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">Load</span><span class="pn">(</span><span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;/../data/MSFT.csv&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="id">Cache</span><span class="pn">(</span><span class="pn">)</span>
+
+<span class="c">// Print the prices in the HLOC format</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="d">msft</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="id">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="id">truncate</span> <span class="n">10</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="fn">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%s</span><span class="s">, </span><span class="pf">%s</span><span class="s">, </span><span class="pf">%s</span><span class="s">)&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 12)" onmouseover="showTip(event, 'fs6', 12)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="id">GetColumn</span> <span class="s">&quot;High&quot;</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 14)" onmouseover="showTip(event, 'fs6', 14)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="id">GetColumn</span> <span class="s">&quot;Low&quot;</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 16)" onmouseover="showTip(event, 'fs6', 16)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 17)" onmouseover="showTip(event, 'fs11', 17)" class="id">GetColumn</span> <span class="s">&quot;Date&quot;</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>HLOC: (76.55, 75.86, 9-Oct-17)
+HLOC: (76.03, 75.54, 6-Oct-17)
+HLOC: (76.12, 74.96, 5-Oct-17)
+HLOC: (74.72, 73.71, 4-Oct-17)
+HLOC: (74.88, 74.20, 3-Oct-17)
+HLOC: (75.01, 74.30, 2-Oct-17)
+HLOC: (74.54, 73.88, 29-Sep-17)
+HLOC: (73.97, 73.31, 28-Sep-17)
+HLOC: (74.17, 73.17, 27-Sep-17)
+HLOC: (73.81, 72.99, 26-Sep-17)
+val msft: Runtime.CsvFile&lt;CsvRow&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>Note that unlike <code>CsvProvider</code>, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a> works in streaming mode for performance reasons, which means
+that <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html#Rows">CsvFile.Rows</a> can only be iterated once. If you need to iterate multiple times, use the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html#Cache">CsvFile.Cache</a> method,
+but please note that this will increase memory usage and should not be used in large datasets.</p>
+<h2><a name="Using-CSV-extensions" class="anchor" href="#Using-CSV-extensions">Using CSV extensions</a></h2>
+<p>Now, we look at a number of extensions that become available after
+opening the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvextensionsmodule.html">CsvExtensions</a> namespace. Once opened, we can write:</p>
+<ul>
+<li>
+<code>row?column</code> uses the dynamic operator to obtain the column value named <code>column</code>;
+alternatively, you can also use an indexer <code>row.[column]</code>.
+</li>
+<li><code>value.AsBoolean()</code> returns the value as boolean if it is either <code>true</code> or <code>false</code> (see <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-stringextensions.html#AsBoolean">StringExtensions.AsBoolean</a>)</li>
+<li>
+<code>value.AsInteger()</code> returns the value as integer if it is numeric and can be
+converted to an integer; <code>value.AsInteger64()</code>, <code>value.AsDecimal()</code> and
+<code>value.AsFloat()</code> behave similarly.
+</li>
+<li>
+<code>value.AsDateTime()</code> returns the value as a <code>DateTime</code> value using either the
+<a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format, or using the
+<code>\/Date(...)\/</code> JSON format containing number of milliseconds since 1/1/1970.
+</li>
+<li>
+<code>value.AsDateTimeOffset()</code> parses the string as a <code>DateTimeOffset</code> value using either the
+<a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format, or using the
+<code>\/Date(...[+/-]offset)\/</code> JSON format containing number of milliseconds since 1/1/1970,
+[+/-] the 4 digit offset. Example- <code>\/Date(1231456+1000)\/</code>.
+</li>
+<li><code>value.AsTimeSpan()</code> parses the string as a <code>TimeSpan</code> value.</li>
+<li><code>value.AsGuid()</code> returns the value as a <code>Guid</code> value.</li>
+</ul>
+<p>Methods that may need to parse a numeric value or date (such as <code>AsFloat</code> and
+<code>AsDateTime</code>) receive an optional culture parameter.</p>
+<p>The following example shows how to process the sample previous CSV sample using these extensions:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 18)" onmouseover="showTip(event, 'fs1', 18)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 19)" onmouseover="showTip(event, 'fs2', 19)" class="id">Data</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs12', 20)" onmouseover="showTip(event, 'fs12', 20)" class="m">CsvExtensions</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs6', 21)" onmouseover="showTip(event, 'fs6', 21)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 22)" onmouseover="showTip(event, 'fs3', 22)" class="d">msft</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs7', 23)" onmouseover="showTip(event, 'fs7', 23)" class="id">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 24)" onmouseover="showTip(event, 'fs8', 24)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 25)" onmouseover="showTip(event, 'fs9', 25)" class="id">truncate</span> <span class="n">10</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs10', 26)" onmouseover="showTip(event, 'fs10', 26)" class="fn">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%f</span><span class="s">, </span><span class="pf">%M</span><span class="s">, </span><span class="pf">%O</span><span class="s">)&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 27)" onmouseover="showTip(event, 'fs6', 27)" class="fn">row</span><span class="pn">.</span><span class="pn">[</span><span class="s">&quot;High&quot;</span><span class="pn">]</span><span class="pn">.</span><span class="id">AsFloat</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 28)" onmouseover="showTip(event, 'fs6', 28)" class="fn">row</span><span class="o">?</span><span class="id">Low</span><span class="pn">.</span><span class="id">AsDecimal</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="fn">row</span><span class="o">?</span><span class="id">Date</span><span class="pn">.</span><span class="id">AsDateTime</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>HLOC: (76.550000, 75.86, 10/9/2017 12:00:00 AM)
+HLOC: (76.030000, 75.54, 10/6/2017 12:00:00 AM)
+HLOC: (76.120000, 74.96, 10/5/2017 12:00:00 AM)
+HLOC: (74.720000, 73.71, 10/4/2017 12:00:00 AM)
+HLOC: (74.880000, 74.20, 10/3/2017 12:00:00 AM)
+HLOC: (75.010000, 74.30, 10/2/2017 12:00:00 AM)
+HLOC: (74.540000, 73.88, 9/29/2017 12:00:00 AM)
+HLOC: (73.970000, 73.31, 9/28/2017 12:00:00 AM)
+HLOC: (74.170000, 73.17, 9/27/2017 12:00:00 AM)
+HLOC: (73.810000, 72.99, 9/26/2017 12:00:00 AM)
+val it: unit = ()</code></pre></td></tr></table>
+<h2><a name="Transforming-CSV-files" class="anchor" href="#Transforming-CSV-files">Transforming CSV files</a></h2>
+<p>In addition to reading, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a> also has support for transforming CSV files. The operations
+available are <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.Filter</a>, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.Take</a>, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.TakeWhile</a>, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.Skip</a>, <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.SkipWhile</a>, and <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile.Truncate</a>. After transforming
+you can save the results by using one of the overloads of the <code>Save</code> method. You can choose different
+separator and quote characters when saving.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:</span>
+<span onmouseout="hideTip(event, 'fs3', 30)" onmouseover="showTip(event, 'fs3', 30)" class="d">msft</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs13', 31)" onmouseover="showTip(event, 'fs13', 31)" class="id">Filter</span><span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs6', 32)" onmouseover="showTip(event, 'fs6', 32)" class="fn">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 33)" onmouseover="showTip(event, 'fs6', 33)" class="fn">row</span><span class="o">?</span><span class="id">Close</span><span class="pn">.</span><span class="id">AsFloat</span><span class="pn">(</span><span class="pn">)</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs6', 34)" onmouseover="showTip(event, 'fs6', 34)" class="fn">row</span><span class="o">?</span><span class="id">Open</span><span class="pn">.</span><span class="id">AsFloat</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span><span class="pn">.</span><span class="id">Truncate</span><span class="pn">(</span><span class="n">10</span><span class="pn">)</span><span class="pn">.</span><span class="id">SaveToString</span><span class="pn">(</span><span class="s">&#39;\t&#39;</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val it: string =
+  "Date	Open	High	Low	Close	Volume
+9-Oct-17	75.97	76.55	75.86	76.29	11386502
+6-Oct-17	75.67	76.03	75.54	76.00	13959814
+5-Oct-17	75.22	76.12	74.96	75.97	21195261
+4-Oct-17	74.09	74.72	73.71	74.69	13317681
+29-Sep-17	73.94	74.54	73.88	74.49	17079114
+28-Sep-17	73.54	73.97	73.31	73.87	10883787
+27-Sep-17	73.55	74.17	73.17	73.85	19375099
+22-Sep-17	73.99	74.51	73.85	74.41	14111365
+19-Sep-17	75.21	75.71	75.01	75.44	16093344
+15-Sep-17	74.83	75.39	74.07	75.31	38578441
+"</code></pre></td></tr></table>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li>
+<a href="CsvProvider.html">CSV Type Provider</a> - discusses F# type provider
+that provides type-safe access to CSV data
+</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvrow.html">CsvRow</a></li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvextensionsmodule.html">CsvExtensions</a></li>
+</ul>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">val msft: Runtime.CsvFile&lt;CsvRow&gt;</div>
+<div class="fsdocs-tip" id="fs4">type CsvFile =
+  inherit CsvFile&lt;CsvRow&gt;
+  member GetColumnIndex: columnName: string -&gt; int
+  member TryGetColumnIndex: columnName: string -&gt; int option
+  static member AsyncLoad: uri: string * [&lt;Optional&gt;] ?separators: string * [&lt;Optional&gt;] ?quote: char * [&lt;Optional&gt;] ?hasHeaders: bool * [&lt;Optional&gt;] ?ignoreErrors: bool * [&lt;Optional&gt;] ?skipRows: int * [&lt;Optional&gt;] ?encoding: Encoding -&gt; Async&lt;CsvFile&gt;
+  static member Load: stream: Stream * [&lt;Optional&gt;] ?separators: string * [&lt;Optional&gt;] ?quote: char * [&lt;Optional&gt;] ?hasHeaders: bool * [&lt;Optional&gt;] ?ignoreErrors: bool * [&lt;Optional&gt;] ?skipRows: int -&gt; CsvFile + 2 overloads
+  static member Parse: text: string * [&lt;Optional&gt;] ?separators: string * [&lt;Optional&gt;] ?quote: char * [&lt;Optional&gt;] ?hasHeaders: bool * [&lt;Optional&gt;] ?ignoreErrors: bool * [&lt;Optional&gt;] ?skipRows: int -&gt; CsvFile<br /><em>&lt;summary&gt;
+ Represents a CSV file. The lines are read on demand from &lt;c&gt;reader&lt;/c&gt;.
+ Columns are delimited by one of the chars passed by &lt;c&gt;separators&lt;/c&gt; (defaults to just &lt;c&gt;,&lt;/c&gt;), and
+ to escape the separator chars, the &lt;c&gt;quote&lt;/c&gt; character will be used (defaults to &lt;c&gt;&quot;&lt;/c&gt;).
+ If &lt;c&gt;hasHeaders&lt;/c&gt; is true (the default), the first line read by &lt;c&gt;reader&lt;/c&gt; will not be considered part of data.
+ If &lt;c&gt;ignoreErrors&lt;/c&gt; is true (the default is false), rows with a different number of columns from the header row
+ (or the first row if headers are not present) will be ignored.
+ The first &lt;c&gt;skipRows&lt;/c&gt; lines will be skipped.
+ &lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs5">static member CsvFile.Load: reader: System.IO.TextReader * [&lt;System.Runtime.InteropServices.Optional&gt;] ?separators: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?quote: char * [&lt;System.Runtime.InteropServices.Optional&gt;] ?hasHeaders: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?ignoreErrors: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?skipRows: int -&gt; CsvFile<br />static member CsvFile.Load: stream: System.IO.Stream * [&lt;System.Runtime.InteropServices.Optional&gt;] ?separators: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?quote: char * [&lt;System.Runtime.InteropServices.Optional&gt;] ?hasHeaders: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?ignoreErrors: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?skipRows: int -&gt; CsvFile<br />static member CsvFile.Load: uri: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?separators: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?quote: char * [&lt;System.Runtime.InteropServices.Optional&gt;] ?hasHeaders: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?ignoreErrors: bool * [&lt;System.Runtime.InteropServices.Optional&gt;] ?skipRows: int * [&lt;System.Runtime.InteropServices.Optional&gt;] ?encoding: System.Text.Encoding -&gt; CsvFile</div>
+<div class="fsdocs-tip" id="fs6">val row: CsvRow</div>
+<div class="fsdocs-tip" id="fs7">property Runtime.CsvFile.Rows: CsvRow seq with get<br /><em>&lt;summary&gt;
+ The rows with data
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs8">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs9">val truncate: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div class="fsdocs-tip" id="fs10">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs11">member CsvRow.GetColumn: columnName: string -&gt; string<br />member CsvRow.GetColumn: index: int -&gt; string</div>
+<div class="fsdocs-tip" id="fs12">module CsvExtensions
+
+from FSharp.Data<br /><em>&lt;summary&gt;
+ Provides the dynamic operator for getting column values by name from CSV rows
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs13">member Runtime.CsvFile.Filter: predicate: System.Func&lt;&#39;RowType,bool&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#CSV-Parser">
+      CSV Parser
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Loading-CSV-documents">
+      Loading CSV documents
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-CSV-extensions">
+      Using CSV extensions
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Transforming-CSV-files">
+      Transforming CSV files
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

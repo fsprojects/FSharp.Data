@@ -1,0 +1,839 @@
+(**
+
+*)
+#r "nuget: FSharp.Data,8.1.0-beta"
+#endif
+(**
+[![Binder](../img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects.github.io/FSharp.Data/main?filepath=library/XmlProvider.ipynb)&emsp;
+[![Script](../img/badge-script.svg)](https://fsprojects.github.io/FSharp.Data//library/XmlProvider.fsx)&emsp;
+[![Notebook](../img/badge-notebook.svg)](https://fsprojects.github.io/FSharp.Data//library/XmlProvider.ipynb)
+
+# XML Type Provider
+
+This article demonstrates how to use the XML Type Provider to access XML documents
+in a statically typed way. We first look at how the structure is inferred and then
+demonstrate the provider by parsing an RSS feed.
+
+The XML Type Provider provides statically typed access to XML documents.
+It takes a sample document as an input (or a document containing a root XML node with
+multiple child nodes that are used as samples). The generated type can then be used
+to read files with the same structure
+
+If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present)
+
+Starting from version 3.0.0 there is also the option of using a schema (XSD) instead of
+relying on samples.
+
+## Introducing the provider
+
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly
+is located in the `../../bin` directory, we can load it in F# Interactive as follows:
+(note we also need a reference to `System.Xml.Linq`, because the provider uses the
+`XDocument` type internally):
+
+*)
+#r "System.Xml.Linq.dll"
+
+open FSharp.Data
+(**
+### Inferring type from sample
+
+The `XmlProvider<...>` takes one static parameter of type `string`. The parameter can
+be **either** a sample XML string **or** a sample file (relative to the current folder or online
+accessible via `http` or `https`). It is not likely that this could lead to ambiguities.
+
+The following sample generates a type that can read simple XML documents with a root node
+containing two attributes:
+
+*)
+type Author = XmlProvider<"""<author name="Paul Feyerabend" born="1924" />""">
+let sample = Author.Parse("""<author name="Karl Popper" born="1902" />""")
+
+printfn "%s (%d)" sample.Name sample.Born
+(**
+The type provider generates a type `Author` that has properties corresponding to the
+attributes of the root element of the XML document. The types of the properties are
+inferred based on the values in the sample document. In this case, the `Name` property
+has a type `string` and `Born` is `int`.
+
+XML is a quite flexible format, so we could represent the same document differently.
+Instead of using attributes, we could use nested nodes (`<name>` and `<born>` nested
+under `<author>`) that directly contain the values:
+
+*)
+type AuthorAlt = XmlProvider<"<author><name>Karl Popper</name><born>1902</born></author>">
+let doc = "<author><name>Paul Feyerabend</name><born>1924</born></author>"
+let sampleAlt = AuthorAlt.Parse(doc)
+
+printfn "%s (%d)" sampleAlt.Name sampleAlt.Born(* output: 
+Paul Feyerabend (1924)
+type AuthorAlt = XmlProvider<...>
+val doc: string =
+  "<author><name>Paul Feyerabend</name><born>1924</born></author>"
+val sampleAlt: XmlProvider<...>.Author =
+  <author>
+  <name>Paul Feyerabend</name>
+  <born>1924</born>
+</author>
+val it: unit = ()*)
+(**
+The generated type provides exactly the same API for reading documents following this
+convention (Note that you cannot use `AuthorAlt` to parse samples that use the
+first style - the implementation of the types differs, they just provide the same public API.)
+
+The provider turns a node into a simply typed property only when the node contains just
+a primitive value and has no children or attributes.
+
+### Types for more complex structure
+
+Now let's look at a number of examples that have more interesting structure. First of
+all, what if a node contains some value, but also has some attributes?
+
+*)
+type Detailed = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
+
+let info =
+    Detailed.Parse("""<author><name full="false">Thomas Kuhn</name></author>""")
+
+printfn "%s (full=%b)" info.Name.Value info.Name.Full(* output: 
+Thomas Kuhn (full=false)
+type Detailed = XmlProvider<...>
+val info: XmlProvider<...>.Author =
+  <author>
+  <name full="false">Thomas Kuhn</name>
+</author>
+val it: unit = ()*)
+(**
+If the node cannot be represented as a simple type (like `string`) then the provider
+builds a new type with multiple properties. Here, it generates a property `Full`
+(based on the name of the attribute) and infers its type to be boolean. Then it
+adds a property with a (special) name `Value` that returns the content of the element.
+
+### Types for multiple simple elements
+
+Another interesting case is when there are multiple nodes that contain just a
+primitive value. The following example shows what happens when the root node
+contains multiple `<value>` nodes (note that if we leave out the parameter to the
+`Parse` method, the same text used for the schema will be used as the runtime value).
+
+*)
+type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
+
+for v in Test.GetSample().Values do
+    printfn "%d" v
+(**
+The type provider generates a property `Values` that returns an array with the
+values - as the `<value>` nodes do not contain any attributes or children, they
+are turned into `int` values and so the `Values` property returns just `int[]`!
+
+## Type inference hints / inline schemas
+
+Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)
+
+This feature is disabled by default and has to be explicitly enabled with the `InferenceMode`
+static parameter.
+
+Let's consider an example where this can be useful:
+
+*)
+type AmbiguousEntity =
+    XmlProvider<
+        Sample="""
+        <Entity Code="000" Length="0"/>
+        <Entity Code="123" Length="42"/>
+        <Entity Code="4E5" Length="1.83"/>
+        """,
+        SampleIsList=true
+     >
+
+let code = (AmbiguousEntity.GetSamples()[1]).Code
+let length = (AmbiguousEntity.GetSamples()[1]).Length(* output: 
+type AmbiguousEntity = XmlProvider<...>
+val code: float = 123.0
+val length: decimal = 42M*)
+(**
+In the previous example, `Code` is inferred as a `float`,
+even though it looks more like it should be a `string`.
+(`4E5` is interpreted as an exponential float notation instead of a string)
+
+Now let's enable inline schemas:
+
+*)
+open FSharp.Data.Runtime.StructuralInference
+
+type AmbiguousEntity2 =
+    XmlProvider<
+        Sample="""
+        <Entity Code="typeof{string}" Length="typeof{float{metre}}"/>
+        <Entity Code="123" Length="42"/>
+        <Entity Code="4E5" Length="1.83"/>
+        """,
+        SampleIsList=true,
+        InferenceMode=InferenceMode.ValuesAndInlineSchemasOverrides
+     >
+
+let code2 = (AmbiguousEntity2.GetSamples()[1]).Code
+let length2 = (AmbiguousEntity2.GetSamples()[1]).Length(* output: 
+type AmbiguousEntity2 = XmlProvider<...>
+val code2: string = "123"
+val length2: float<UnitSystems.SI.UnitNames.metre> = 42.0*)
+(**
+With the `ValuesAndInlineSchemasOverrides` inference mode, the `typeof{string}` inline schema
+takes priority over the type inferred from other values.
+`Code` is now a `string`, as we wanted it to be!
+
+Note that an alternative to obtain the same result would have been to replace all the `Code` values
+in the samples with unambiguous string values. (But this can be very cumbersome, especially with big samples)
+
+If we had used the `ValuesAndInlineSchemasHints` inference mode instead, our inline schema
+would have had the same precedence as the types inferred from other values, and `Code`
+would have been inferred as a choice between either a number or a string,
+exactly as if we had added another sample with an unambiguous string value for `Code`.
+
+### Units of measure
+
+Inline schemas also enable support for units of measure.
+
+In the previous example, the `Length` property is now inferred as a `float`
+with the `metre` unit of measure (from the default SI units).
+
+Warning: units of measures are discarded when merged with types without a unit or with a different unit.
+As mentioned previously, with the `ValuesAndInlineSchemasHints` inference mode,
+inline schemas types are merged with other inferred types with the same precedence.
+Since values-inferred types never have units, inline-schemas-inferred types will lose their
+unit if the sample contains other values...
+
+## Processing philosophers
+
+In this section, we look at an example that demonstrates how the type provider works
+on a simple document that lists authors who write about a specific topic. The
+sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
+
+    [lang=xml]
+    <authors topic="Philosophy of Science">
+      <author name="Paul Feyerabend" born="1924" />
+      <author name="Thomas Kuhn" />
+    </authors>
+
+At runtime, we use the generated type provider to parse the following string
+(which has the same structure as the sample document with the exception that
+one of the `author` nodes also contains a `died` attribute):
+
+*)
+let authors =
+    """
+  <authors topic="Philosophy of Mathematics">
+    <author name="Bertrand Russell" />
+    <author name="Ludwig Wittgenstein" born="1889" />
+    <author name="Alfred North Whitehead" died="1947" />
+  </authors> """
+(**
+When initializing the `XmlProvider`, we can pass it a file name or a web URL.
+The `Load` and `AsyncLoad` methods allow reading the data from a file or from a web resource. The
+`Parse` method takes the data as a string, so we can now print the information as follows:
+
+*)
+[<Literal>]
+let ResolutionFolder = __SOURCE_DIRECTORY__
+
+type Authors = XmlProvider<"../data/Writers.xml", ResolutionFolder=ResolutionFolder>
+let topic = Authors.Parse(authors)
+
+printfn "%s" topic.Topic
+
+for author in topic.Authors do
+    printf " - %s" author.Name
+    author.Born |> Option.iter (printf " (%d)")
+    printfn ""(* output: 
+Philosophy of Mathematics
+ - Bertrand Russell
+ - Ludwig Wittgenstein (1889)
+ - Alfred North Whitehead
+[<Literal>]
+val ResolutionFolder: string = "D:\a\FSharp.Data\FSharp.Data\docs\library"
+type Authors = XmlProvider<...>
+val topic: XmlProvider<...>.Authors =
+  <authors topic="Philosophy of Mathematics">
+    <author name="Bertrand Russell" />
+    <author name="Ludwig Wittgenstein" born="1889" />
+    <author name="Alfred North Whitehead" died="1947" />
+  </authors>
+val it: unit = ()*)
+(**
+The value `topic` has a property `Topic` (of type `string`), which returns the value
+of the attribute with the same name. It also has a property `Authors` that returns
+an array with all the authors. The `Born` property is missing for some authors,
+so it becomes `option<int>` and we need to print it using `Option.iter`.
+
+The `died` attribute was not present in the sample used for the inference, so we
+cannot obtain it in a statically typed way (although it can still be obtained
+dynamically using `author.XElement.Attribute(XName.Get("died"))`).
+
+## Global inference mode
+
+In the examples shown earlier, an element was never (recursively) contained in an
+element of the same name (for example `<author>` never contained another `<author>`).
+However, when we work with documents such as XHTML files, this can often be the case.
+Consider for example, the following sample (a simplified version of
+[`data/HtmlBody.xml`](../data/HtmlBody.xml)):
+
+    [lang=xml]
+    <div id="root">
+      <span>Main text</span>
+      <div id="first">
+        <div>Second text</div>
+      </div>
+    </div>
+
+Here, a `<div>` element can contain other `<div>` elements, and it is quite clear that
+they should all have the same type - we want to be able to write a recursive function
+that processes `<div>` elements. To make this possible, you need to set an optional
+parameter `Global` to `true`:
+
+*)
+type Html = XmlProvider<"../data/HtmlBody.xml", Global=true, ResolutionFolder=ResolutionFolder>
+let html = Html.GetSample()
+(**
+When the `Global` parameter is `true`, the type provider **unifies** all elements of the
+same name. This means that all `<div>` elements have the same type (with a union
+of all attributes and all possible child nodes that appear in the sample document).
+
+The type is located under a type `Html`, so we can write a `printDiv` function
+that takes `Html.Div` and acts as follows:
+
+*)
+/// Prints the content of a <div> element
+let rec printDiv (div: Html.Div) =
+    div.Spans |> Seq.iter (printfn "%s")
+    div.Divs |> Seq.iter printDiv
+
+    if div.Spans.Length = 0 && div.Divs.Length = 0 then
+        div.Value |> Option.iter (printfn "%s")
+
+// Print the root <div> element with all children
+printDiv html(* output: 
+Main text
+First text
+Another text
+Second text
+val printDiv: div: XmlProvider<...>.Div -> unit
+val it: unit = ()*)
+(**
+The function first prints all text included as `<span>` (the element never has any
+attributes in our sample, so it is inferred as `string`), and then it recursively prints
+the content of all `<div>` elements. If the element does not contain nested elements,
+then we print the `Value` (inner text).
+
+## Inferring date types
+
+Element and attribute values that look like dates are inferred as `DateTime` or `DateTimeOffset`.
+Values that already carry an explicit timezone offset (e.g. `"2023-06-15T12:00:00+02:00"`) are always
+inferred as `DateTimeOffset`.
+
+On .NET 6 and later, when you set `PreferDateOnly = true`, values that represent a date without a time
+component (e.g. `"2023-01-15"`) are inferred as `DateOnly`, and time-only values as `TimeOnly`.
+By default (`PreferDateOnly = false`), all date values are inferred as `DateTime` for backward compatibility.
+
+Set `PreferDateTimeOffset = true` to infer all date-time values (that would otherwise be `DateTime`) as
+`DateTimeOffset`. This is useful when you need timezone-aware values. `PreferDateTimeOffset` and
+`PreferDateOnly` are independent: `DateOnly` values stay as `DateOnly` even when `PreferDateTimeOffset=true`.
+
+## Loading Directly from a File or URL
+
+In many cases, we might want to define schema using a local sample file, but then directly
+load the data from disk or from a URL either synchronously (with `Load`) or asynchronously
+(with `AsyncLoad`).
+
+For this example, I am using the US Census data set from `https://api.census.gov/data.xml`, a sample of
+which I have used here for `../data/Census.xml`. This sample is greatly reduced from the live data, so
+that it contains only the elements and attributes relevant to us:
+
+    [lang=xml]
+    <census-api
+        xmlns="http://thedataweb.rm.census.gov/api/discovery/"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dct="http://purl.org/dc/terms/">
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>
+        <dct:dataset>
+            <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+            <dcat:distribution
+                dcat:accessURL="https://api.census.gov/data/2010/acs5">
+            </dcat:distribution>
+        </dct:dataset>
+    </census-api>
+
+When doing this for your scenario, be careful to ensure that enough data is given for the provider
+to infer the schema correctly. For example, the first level `<dct:dataset>` element must be included at
+least twice for the provider to infer the `Datasets` array rather than a single `Dataset` object.
+
+*)
+type Census = XmlProvider<"../data/Census.xml", ResolutionFolder=ResolutionFolder>
+
+let data = Census.Load("https://api.census.gov/data.xml")
+
+let apiLinks =
+    data.Datasets
+    |> Array.map (fun ds -> ds.Title, ds.Distribution.AccessUrl)
+    |> Array.truncate 10(* output: 
+type Census = XmlProvider<...>
+val data: XmlProvider<...>.CensusApi =
+  <census-api xmlns="http://thedataweb.rm.census.gov/api/discovery/" xmlns:dcat="http://www.w3.org/ns/dcat#" xmlns:dct="http://purl.org/dc/terms/" xmlns:pod="https://project-open-data.cio.gov/v1.1/schema/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:org="http://www.w3.org/ns/org#" xmlns:vcard="http://www.w3.org/2006/vcard/ns#">
+    <dct:dataset vintage="1990" geographyLink="http://api.census.gov/data/1990/cps/basic/jan/geography.xml" variablesLink="http://api.census.gov/data/1990/cps/basic/jan/variables...
+val apiLinks: (string * string) array =
+  [|("Jan 1990 Current Population Survey: Basic Monthly",
+     "http://api.census.gov/data/1990/cps/basic/jan");
+    ("1986 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1986/cbp");
+    ("1991 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1991/cbp");
+    ("1987 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1987/cbp");
+    ("1992 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1992/cbp");
+    ("1988 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1988/cbp");
+    ("1994 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1994/cbp");
+    ("Jul 1990 Current Population Survey: Basic Monthly",
+     "http://api.census.gov/data/1990/cps/basic/jul");
+    ("1989 County Business Patterns: Business Patterns",
+     "http://api.census.gov/data/1989/cbp");
+    ("Mar 1989 Current Population Survey: Basic Monthly",
+     "http://api.census.gov/data/1989/cps/basic/mar")|]*)
+(**
+This US Census data is an interesting dataset with this top level API returning hundreds of other
+datasets each with their own API. Here, we use the Census data to get a list of titles and URLs for
+the lower level APIs.
+
+## Bringing in Some Async Action
+
+Let's go one step further and assume here a slightly contrived but certainly plausible example where
+we cache the Census URLs and refresh once in a while. Perhaps we want to load this in the background
+and then post each link over (for example) a message queue.
+
+This is where `AsyncLoad` comes into play:
+
+*)
+let enqueue (title, apiUrl) =
+    // do the real message enqueueing here instead of
+    printfn "%s -> %s" title apiUrl
+
+// helper task which gets scheduled on some background thread somewhere...
+let cacheJanitor () =
+    async {
+        let! reloadData = Census.AsyncLoad("https://api.census.gov/data.xml")
+
+        reloadData.Datasets
+        |> Array.map (fun ds -> ds.Title, ds.Distribution.AccessUrl)
+        |> Array.iter enqueue
+    }(* output: 
+val enqueue: title: string * apiUrl: string -> unit
+val cacheJanitor: unit -> Async<unit>*)
+(**
+## Reading RSS feeds
+
+To conclude this introduction with a more interesting example, let's look at how to parse an
+RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
+the type provider:
+
+*)
+type Rss = XmlProvider<"https://tomasp.net/rss.xml">
+(**
+This code builds a type `Rss` that represents RSS feeds (with the features that are used
+on `https://tomasp.net`). The type `Rss` provides static methods `Parse`, `Load` and `AsyncLoad`
+to construct it - here, we just want to reuse the same URI of the schema, so we
+use the `GetSample` static method:
+
+*)
+let blog = Rss.GetSample()
+(**
+Printing the title of the RSS feed together with a list of recent posts is now quite
+easy - you can simply type `blog` followed by `.` and see what the autocompletion
+offers. The code looks like this:
+
+*)
+// Title is a property returning string
+printfn "%s" blog.Channel.Title
+
+// Get all item nodes and print title with link
+for item in blog.Channel.Items do
+    printfn " - %s (%s)" item.Title item.Link(* output: 
+Tomas Petricek - Languages and tools, open-source, philosophy of science and F# coding
+ - Choose Your Own Adventure Calculus (http://tomasp.net/blog/2025/adventure-calculus/)
+ - What can routers at Centre Pompidou teach us about software evolution? (http://tomasp.net/blog/2023/pompidou/)
+ - Where programs live? Vague spaces and software systems (http://tomasp.net/blog/2023/vague-spaces/)
+ - The Timeless Way of Programming (http://tomasp.net/blog/2022/timeless-way/)
+ - No-code, no thought? Substrates for simple programming for all (http://tomasp.net/blog/2022/no-code-substrates/)
+ - Pop-up from Hell: On the growing opacity of web programs (http://tomasp.net/blog/2021/popup-from-hell/)
+ - Software designers, not engineers: An interview from alternative universe (http://tomasp.net/blog/2021/software-designers/)
+ - Is deep learning a new kind of programming? Operationalistic look at programming (http://tomasp.net/blog/2020/learning-and-programming/)
+ - Creating interactive You Draw bar chart with Compost (http://tomasp.net/blog/2020/youdraw-compost-visualization/)
+ - Data exploration calculus: Capturing the essence of exploratory data scripting (http://tomasp.net/blog/2020/data-exploration-calculus/)
+ - On architecture, urban planning and software construction (http://tomasp.net/blog/2020/cities-and-programming/)
+ - What to teach as the first programming language and why (http://tomasp.net/blog/2019/first-language/)
+ - What should a Software Engineering course look like? (http://tomasp.net/blog/2019/software-engineering/)
+ - Write your own Excel in 100 lines of F# (http://tomasp.net/blog/2018/write-your-own-excel/)
+ - Programming as interaction: A new perspective for programming language research (http://tomasp.net/blog/2018/programming-interaction/)
+ - Would aliens understand lambda calculus? (http://tomasp.net/blog/2018/alien-lambda-calculus/)
+ - The design side of programming language design (http://tomasp.net/blog/2017/design-side-of-pl/)
+ - Getting started with The Gamma just got easier (http://tomasp.net/blog/2017/thegamma-getting-started/)
+ - Papers we Scrutinize: How to critically read papers (http://tomasp.net/blog/2017/papers-we-scrutinize/)
+ - The mythology of programming language ideas (http://tomasp.net/blog/2017/programming-mythology/)
+val it: unit = ()*)
+(**
+## Transforming XML
+
+In this example we will now also create XML in addition to consuming it.
+Consider the problem of flattening a data set. Let's say you have xml data that looks like this:
+
+*)
+[<Literal>]
+let customersXmlSample =
+    """
+  <Customers>
+    <Customer name="ACME">
+      <Order Number="A012345">
+        <OrderLine Item="widget" Quantity="1"/>
+      </Order>
+      <Order Number="A012346">
+        <OrderLine Item="trinket" Quantity="2"/>
+      </Order>
+    </Customer>
+    <Customer name="Southwind">
+      <Order Number="A012347">
+        <OrderLine Item="skyhook" Quantity="3"/>
+        <OrderLine Item="gizmo" Quantity="4"/>
+      </Order>
+    </Customer>
+  </Customers>"""
+(**
+and you want to transform it into something like this:
+
+*)
+[<Literal>]
+let orderLinesXmlSample =
+    """
+  <OrderLines>
+    <OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1"/>
+    <OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2"/>
+    <OrderLine Customer="Southwind" Order="A012347" Item="skyhook" Quantity="3"/>
+    <OrderLine Customer="Southwind" Order="A012347" Item="gizmo" Quantity="4"/>
+  </OrderLines>"""
+(**
+We'll create types from both the input and output samples and use the constructors on the types generated by the XmlProvider:
+
+*)
+type InputXml = XmlProvider<customersXmlSample>
+type OutputXml = XmlProvider<orderLinesXmlSample>
+
+let orderLines =
+    OutputXml.OrderLines
+        [| for customer in InputXml.GetSample().Customers do
+               for order in customer.Orders do
+                   for line in order.OrderLines do
+                       yield OutputXml.OrderLine(customer.Name, order.Number, line.Item, line.Quantity) |](* output: 
+type InputXml = XmlProvider<...>
+type OutputXml = XmlProvider<...>
+val orderLines: XmlProvider<...>.OrderLines =
+  <OrderLines>
+  <OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1" />
+  <OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2" />
+  <OrderLine Customer="Southwind" Order="A012347" Item="skyhook" Quantity="3" />
+  <OrderLine Customer="Southwind" Order="A012347" Item="gizmo" Quantity="4" />
+</OrderLines>*)
+(**
+## Using a schema (XSD)
+
+The `Schema` parameter can be used (instead of `Sample`) to specify an XML schema.
+The value of the parameter can be either the name of a schema file or plain text
+like in the following example:
+
+*)
+type Person =
+    XmlProvider<
+        Schema="""
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="person">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="surname" type="xs:string"/>
+          <xs:element name="birthDate" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>"""
+     >
+
+let turing =
+    Person.Parse
+        """
+  <person>
+    <surname>Turing</surname>
+    <birthDate>1912-06-23</birthDate>
+  </person>
+  """
+
+printfn "%s was born in %d" turing.Surname turing.BirthDate.Year
+(**
+The properties of the provided type are derived from the schema instead of being inferred from samples.
+
+Usually, a schema is not specified as plain text but stored in a file like
+[`data/po.xsd`](../data/po.xsd) and the uri is set in the `Schema` parameter:
+
+*)
+type PurchaseOrder = XmlProvider<Schema="../data/po.xsd">
+(**
+When the file includes other schema files, the `ResolutionFolder` parameter can help locating them.
+The uri may also refer to online resources:
+
+*)
+type RssXsd = XmlProvider<Schema="https://www.w3schools.com/xml/note.xsd">
+(**
+The schema is expected to define a root element (a global element with a complex type).
+In case of multiple root elements:
+
+*)
+type TwoRoots =
+    XmlProvider<
+        Schema="""
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="root1">
+      <xs:complexType>
+        <xs:attribute name="foo" type="xs:string" use="required" />
+        <xs:attribute name="fow" type="xs:int" />
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="root2">
+      <xs:complexType>
+        <xs:attribute name="bar" type="xs:string" use="required" />
+        <xs:attribute name="baz" type="xs:date" use="required" />
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+"""
+     >
+(**
+the provided type has an optional property for each alternative:
+
+*)
+let e1 = TwoRoots.Parse "<root1 foo='aa' fow='2' />"
+
+match e1.Root1, e1.Root2 with
+| Some x, None -> printfn "Foo = %s and Fow = %A" x.Foo x.Fow
+| _ -> failwith "Unexpected"
+
+let e2 = TwoRoots.Parse "<root2 bar='aa' baz='2017-12-22' />"
+
+match e2.Root1, e2.Root2 with
+| None, Some x -> printfn "Bar = %s and Baz = %O" x.Bar x.Baz
+| _ -> failwith "Unexpected"(* output: 
+Foo = aa and Fow = Some 2
+Bar = aa and Baz = 12/22/2017 12:00:00 AM
+val e1: XmlProvider<...>.Choice = <root1 foo="aa" fow="2" />
+val e2: XmlProvider<...>.Choice = <root2 bar="aa" baz="2017-12-22" />
+val it: unit = ()*)
+(**
+### Common XSD constructs: sequence and choice
+
+A `sequence` is the most common way of structuring elements in a schema.
+The following xsd defines `foo` as a sequence made of an arbitrary number
+of `bar` elements followed by a single `baz` element.
+
+*)
+type FooSequence =
+    XmlProvider<
+        Schema="""
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>"""
+     >
+(**
+here a valid xml element is parsed as an instance of the provided type, with two properties corresponding to `bar` and `baz` elements, where the former is an array in order to hold multiple elements:
+
+*)
+let fooSequence =
+    FooSequence.Parse
+        """
+<foo>
+    <bar>42</bar>
+    <bar>43</bar>
+    <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d" fooSequence.Bars.[0] // 42
+printfn "%d" fooSequence.Bars.[1] // 43
+printfn "%d" fooSequence.Baz.Year // 1957
+(**
+Instead of a sequence we may have a `choice`:
+
+*)
+type FooChoice =
+    XmlProvider<
+        Schema="""
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="foo">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="bar" type="xs:int" maxOccurs="unbounded" />
+              <xs:element name="baz" type="xs:date" minOccurs="1" />
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>"""
+     >
+(**
+although a choice is akin to a union type in F#, the provided type still has
+properties for `bar` and `baz` directly available on the `foo` object; in fact
+the properties representing alternatives in a choice are simply made optional
+(notice that for arrays this is not even necessary because an array can be empty).
+This decision is due to technical limitations (discriminated unions are not supported
+in type providers) but also preferred because it improves discoverability:
+intellisense can show both alternatives. There is a lack of precision but this is not the main goal.
+
+*)
+let fooChoice =
+    FooChoice.Parse
+        """
+<foo>
+  <baz>1957-08-13</baz>
+</foo>"""
+
+printfn "%d items" fooChoice.Bars.Length // 0 items
+
+match fooChoice.Baz with
+| Some date -> printfn "%d" date.Year // 1957
+| None -> ()(* output: 
+0 items
+1957
+val fooChoice: XmlProvider<...>.Foo = <foo>
+  <baz>1957-08-13</baz>
+</foo>
+val it: unit = ()*)
+(**
+Another xsd construct to model the content of an element is `all`, which is used less often and
+it's like a sequence where the order of elements does not matter. The corresponding provided type
+in fact is essentially the same as for a sequence.
+
+### Advanced schema constructs
+
+XML Schema provides various extensibility mechanisms. The following example
+is a terse summary mixing substitution groups with abstract recursive definitions.
+
+*)
+type Prop =
+    XmlProvider<
+        Schema="""
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      elementFormDefault="qualified" attributeFormDefault="unqualified">
+        <xs:element name="Formula" abstract="true"/>
+        <xs:element name="Prop" type="xs:string" substitutionGroup="Formula"/>
+        <xs:element name="And" substitutionGroup="Formula">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Formula" minOccurs="2" maxOccurs="2"/>
+              </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+    </xs:schema>"""
+     >
+
+let formula =
+    Prop.Parse
+        """
+    <And>
+        <Prop>p1</Prop>
+        <And>
+            <Prop>p2</Prop>
+            <Prop>p3</Prop>
+        </And>
+    </And>
+    """
+
+printfn "%s" formula.Props.[0] // p1
+printfn "%s" formula.Ands.[0].Props.[0] // p2
+printfn "%s" formula.Ands.[0].Props.[1] // p3(* output: 
+p1
+p2
+p3
+type Prop = XmlProvider<...>
+val formula: XmlProvider<...>.And =
+  <And>
+        <Prop>p1</Prop>
+        <And>
+            <Prop>p2</Prop>
+            <Prop>p3</Prop>
+        </And>
+    </And>
+val it: unit = ()*)
+(**
+Substitution groups are like choices, and the type provider produces an optional
+property for each alternative.
+
+### Validation
+
+The `GetSchema` method on the generated type returns an instance
+of `System.Xml.Schema.XmlSchemaSet` that can be used to validate documents:
+
+*)
+open System.Xml.Schema
+let schema = Person.GetSchema()
+turing.XElement.Document.Validate(schema, validationEventHandler = null)
+(**
+The `Validate` method accepts a callback to handle validation issues;
+passing `null` will turn validation errors into exceptions.
+There are overloads to allow other effects (for example setting default values
+by enabling the population of the XML tree with the post-schema-validation infoset;
+for details see the [documentation](https://docs.microsoft.com/en-us/dotnet/api/system.xml.schema.extensions.validate?view=netframework-4.7.2)).
+
+### Remarks on using a schema
+
+The XML Type Provider supports most XSD features.
+Anyway the [XML Schema](https://www.w3.org/XML/Schema) specification is rich and complex and also provides a
+fair degree of [openness](http://docstore.mik.ua/orelly/xml/schema/ch13_02.htm)
+which may be [difficult to handle](https://link.springer.com/chapter/10.1007/978-3-540-76786-2_6) in
+data binding tools; but in FSharp.Data, when providing typed views on elements becomes too challenging
+(take for example [wildcards](https://www.w3.org/TR/xmlschema11-1/#Wildcards)) the underlying `XElement`
+is still available.
+
+An important design decision is to focus on elements and not on complex types; while the latter
+may be valuable in schema design, our goal is simply to obtain an easy and safe way to access xml data.
+In other words, the provided types are not intended for domain modeling (it's one of the very few cases
+where optional properties are preferred to sum types).
+Hence, we do not provide types corresponding to complex types in a schema but only corresponding
+to elements (of course, the underlying complex types still affect the shape of the provided types
+but this happens only implicitly).
+Focusing on element shapes lets us generate a type that should be essentially the same as one
+inferred from a significant set of valid samples. This allows a smooth transition (replacing `Sample` with `Schema`)
+when a schema becomes available.
+
+Note that inline schemas (values of the form `typeof{...}`) are not supported inside XSD documents.
+
+## Related articles
+
+* [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to XML type provider
+
+* API Reference: [XmlProvider](https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-xmlprovider.html) type provider
+
+* API Reference: [XElementExtensions](https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-xelementextensions.html)
+
+*)
+
