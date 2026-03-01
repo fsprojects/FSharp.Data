@@ -1,15 +1,43 @@
 {
-  "last_updated": "2026-02-28T14:19:00Z",
-  "last_run_id": "22522447035",
-  "monthly_summary_issue": 1599,
+  "last_updated": "2026-03-01T03:48:00Z",
+  "last_run_id": "22535301471",
+  "monthly_summary_issue": 1684,
   "open_repo_assist_prs": [
+    {
+      "number": 1685,
+      "branch": "repo-assist/add-trimming-support",
+      "title": "[Repo Assist] Add trimming support to runtime Core libraries",
+      "status": "open",
+      "closes": 1436
+    },
+    {
+      "number": 1683,
+      "branch": "repo-assist/split-htmloperations-htmldocument-969a88c6e81d98f8",
+      "title": "[Repo Assist] Split HtmlDocument operations out of HtmlOperations.fs",
+      "status": "open",
+      "closes_relates_to": 1677
+    },
+    {
+      "number": 1681,
+      "branch": "repo-assist/docs-issue-1678-batch1-363f88a263e78cf2",
+      "title": "[Repo Assist] Add doc comments to CsvExtensions, TextConversions, HtmlActivePatterns (batch 1)",
+      "status": "open",
+      "closes_relates_to": 1678,
+      "notes": "WARNING: Contains 'Fixes #1678' which will auto-close the tracking issue. Comment added 2026-03-01."
+    },
+    {
+      "number": null,
+      "branch": "repo-assist/docs-issue-1678-batch2-jsonvalue",
+      "title": "[Repo Assist] Add XML doc comments to JsonValue.fs (batch 2 of #1678)",
+      "status": "open",
+      "closes_relates_to": 1678
+    },
     {
       "number": 1676,
       "branch": "repo-assist/fix-issue-611-schema-org-microdata",
       "title": "[Repo Assist] Add schema.org microdata + JSON-LD support to HtmlProvider",
       "status": "open",
-      "closes": 611,
-      "notes": "JSON-LD support added in second push (2026-02-28). Awaiting review from dsyme."
+      "closes": 611
     },
     {
       "number": 1665,
@@ -19,28 +47,21 @@
       "closes": 1251
     }
   ],
-  "merged_prs": [
-    { "number": 1675, "title": "Add Http.ParseLinkHeader", "merged_by": "dsyme", "date": "2026-02-27" },
-    { "number": 1674, "title": "HTTP Auth docs", "merged_by": "dsyme", "date": "2026-02-27" },
-    { "number": 1668, "title": "Add PreferDateTimeOffset", "merged_by": "dsyme", "date": "2026-02-26" },
-    { "number": 1666, "title": "Remove FSI testing setup files", "merged_by": "dsyme", "date": "2026-02-26" },
-    { "number": 1664, "title": "Make AppendQueryToUrl public", "merged_by": "dsyme", "date": "2026-02-26" },
-    { "number": 1663, "title": "Add UseSchemaTypeNames to XmlProvider", "merged_by": "dsyme", "date": "2026-02-26" },
-    { "number": 1660, "title": "Add PreferOptionals to XmlProvider and JsonProvider", "merged_by": "dsyme", "date": "2026-02-25" },
-    { "number": 1655, "title": "Add PreferFloats to CsvProvider", "merged_by": "dsyme", "date": "2026-02-25" }
-  ],
+  "duplicate_monthly_issues": [1682],
   "task_last_run": {
-    "task1": "2026-02-27T07:30:00Z",
-    "task2": "2026-02-28T07:19:00Z",
-    "task5": "2026-02-28T14:19:00Z",
-    "task11": "2026-02-28T07:19:00Z"
+    "task1": "2026-03-01T03:48:00Z",
+    "task2": "2026-03-01T03:48:00Z",
+    "task5": "2026-03-01T03:48:00Z",
+    "task10": "2026-03-01T03:48:00Z",
+    "task11": "2026-03-01T03:48:00Z"
   },
-  "commented_issues": [158, 805, 1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018, 1241, 1338, 1382, 1432, 1317, 1363, 1425, 1478, 1303, 1251, 1170, 1452, 1436, 1321, 1490, 1358, 1100, 1072, 1392, 1300, 1302, 1307, 1315, 809, 1114, 1132, 1671, 611],
-  "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325, 1251, 1321, 1392, 1100, 1072, 158, 805, 611],
+  "commented_issues": [158, 805, 1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018, 1241, 1338, 1382, 1432, 1317, 1363, 1425, 1478, 1303, 1251, 1170, 1452, 1436, 1321, 1490, 1358, 1100, 1072, 1392, 1300, 1302, 1307, 1315, 809, 1114, 1132, 1671, 611, 1677, 1678, 1679],
+  "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325, 1251, 1321, 1392, 1100, 1072, 158, 805, 611, 1436, 1678],
   "future_work": [
-    "Improve JsonProvider handling of missing fields (#1241) - PreferOptionals helps but default is still confusing",
-    "Add With* methods to XmlProvider types (complex; deferred)",
-    "Add PreferDateTimeOffset to HtmlProvider (deferred from main PR)",
+    "Continue documenting codebase (#1678): JsonConversions.fs, CsvInference.fs, HtmlRuntime.fs, WorldBankRuntime.fs",
+    "Continue splitting large files (#1677): HtmlParser.fs (1221 lines), JsonGenerator.fs (784 lines) - avoid Http.fs until PR #1685 merged",
+    "Close duplicate Monthly Activity issue #1682",
+    "Investigate #1392 HttpClient migration",
     "Prototype STJ-backed JsonValue parser for performance (#1671)"
   ]
 }
