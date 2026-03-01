@@ -4,11 +4,13 @@
 
 - Add schema.org microdata support to `HtmlProvider`: when an HTML document contains elements with `itemscope`/`itemtype`/`itemprop` attributes, the provider now generates a typed `Schemas` container (e.g. `doc.Schemas.Person`) with one strongly-typed property per `itemprop` name discovered in the sample (closes #611)
 - Add JSON-LD support to `HtmlProvider`: when an HTML document contains `<script type="application/ld+json">` blocks, the provider generates a typed `JsonLd` container (e.g. `doc.JsonLd.Article`) with one strongly-typed property per top-level scalar field discovered in the sample — Wikipedia pages, for instance, embed schema.org `Article` JSON-LD with `name`, `headline`, `description`, `url`, `datePublished`, and `dateModified`
+- Add `ExceptionIfMissing` static parameter to `JsonProvider` and `XmlProvider`: when true, accessing a non-optional field that is missing in the data raises an exception instead of silently returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.
 - Add `Http.ParseLinkHeader` utility for parsing RFC 5988 `Link` response headers (used by GitHub, GitLab, and other paginated APIs) into a `Map<string, string>` from relation name to URL (closes #805)
 - Add `PreferDateTimeOffset` parameter to `CsvProvider`, `JsonProvider`, and `XmlProvider`: when true, date-time values without an explicit timezone offset are inferred as `DateTimeOffset` (using local offset) instead of `DateTime` (closes #1100, #1072)
 - Make `Http.AppendQueryToUrl` public (closes #1325)
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
 - Add `UseSchemaTypeNames` parameter to `XmlProvider`: when `true` and `Schema` is provided, multiple elements sharing the same XSD complex type generate a single F# type (named after the XSD type) instead of separate per-element types (closes #1488)
+- Mark all runtime Core libraries as trimmable (`IsTrimmable=true`); replace reflection-based stack-trace preservation in `Http.fs` with `ExceptionDispatchInfo`, and remove dead Mono-detection code (closes #1436)
 
 ## 8.0.0 - Feb 25 2026
 

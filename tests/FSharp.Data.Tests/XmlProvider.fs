@@ -1417,3 +1417,19 @@ let ``XmlProvider UseSchemaTypeNames=true with shared-types.xsd: shipTo and bill
     order.Contact |> should equal None
     // Both elements share the same XSD AddressType, so the generated .NET types must match
     order.ShipTo.GetType() |> should equal (order.BillTo.GetType())
+
+
+// ExceptionIfMissing tests
+
+type XmlExceptionIfMissing = XmlProvider<"""<root name="Alice" age="30" />""", ExceptionIfMissing=true>
+type XmlExceptionIfMissingFalse = XmlProvider<"""<root name="Alice" age="30" />""", ExceptionIfMissing=false>
+
+[<Test>]
+let ``XmlProvider ExceptionIfMissing=true raises exception for missing attribute`` () =
+    let doc = XmlExceptionIfMissing.Parse("""<root age="30" />""")
+    (fun () -> doc.Name |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``XmlProvider ExceptionIfMissing=false returns empty string for missing attribute`` () =
+    let doc = XmlExceptionIfMissingFalse.Parse("""<root age="30" />""")
+    doc.Name |> should equal ""

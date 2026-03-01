@@ -1039,3 +1039,36 @@ let ``JsonProvider PreferOptionals=false uses empty string for missing string fi
     let doc = JsonPreferOptionalsFalse.Parse("""{"name": "Bob"}""")
     doc.Tag.GetType() |> should equal typeof<string>
     doc.Tag |> should equal ""
+
+// ExceptionIfMissing tests
+
+type JsonExceptionIfMissing = JsonProvider<"""{"name": "Alice", "age": 30}""", ExceptionIfMissing=true>
+type JsonExceptionIfMissingFalse = JsonProvider<"""{"name": "Alice", "age": 30}""", ExceptionIfMissing=false>
+// Use a value that exceeds decimal range to force float inference
+type JsonExceptionIfMissingFloat = JsonProvider<"""{"name": "Alice", "score": 9999999999999999999999999999999999.3}""", ExceptionIfMissing=true>
+type JsonExceptionIfMissingFloatFalse = JsonProvider<"""{"name": "Alice", "score": 9999999999999999999999999999999999.3}""", ExceptionIfMissing=false>
+
+[<Test>]
+let ``JsonProvider ExceptionIfMissing=true raises exception for missing string field`` () =
+    let doc = JsonExceptionIfMissing.Parse("""{"age": 30}""")
+    (fun () -> doc.Name |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``JsonProvider ExceptionIfMissing=true raises exception for missing int field`` () =
+    let doc = JsonExceptionIfMissing.Parse("""{"name": "Alice"}""")
+    (fun () -> doc.Age |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``JsonProvider ExceptionIfMissing=true raises exception for missing float field`` () =
+    let doc = JsonExceptionIfMissingFloat.Parse("""{"name": "Alice"}""")
+    (fun () -> doc.Score |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``JsonProvider ExceptionIfMissing=false returns default for missing string field`` () =
+    let doc = JsonExceptionIfMissingFalse.Parse("""{"age": 30}""")
+    doc.Name |> should equal ""
+
+[<Test>]
+let ``JsonProvider ExceptionIfMissing=false returns NaN for missing float field`` () =
+    let doc = JsonExceptionIfMissingFloatFalse.Parse("""{"name": "Alice"}""")
+    Double.IsNaN(doc.Score) |> should equal true

@@ -9,6 +9,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <!-- always have tailcalls on for design time compiler add-in to allow repo to compile in DEBUG, see https://github.com/fsprojects/FSharp.Data/issues/1410 -->
     <Tailcalls>true</Tailcalls>
+    <IsTrimmable>true</IsTrimmable>
     <DefineConstants>$(DefineConstants);HIDE_REPRESENTATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -17,6 +18,7 @@
     <Compile Include="HtmlNode.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
+    <Compile Include="HtmlDocumentOperations.fs" />
     <Compile Include="HtmlCssSelectorExtensions.fs" />
     <Compile Include="HtmlActivePatterns.fs" />
     <Compile Include="HtmlInference.fs" />

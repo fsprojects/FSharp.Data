@@ -38,6 +38,10 @@ network:
   - http://www.w3.org
   - http://schemas.microsoft.com
   - www.google.com
+  # wikipedia, ebay, imdb websites for HTML
+  - https://en.wikipedia.org
+  - https://www.ebay.com
+  - https://www.imdb.com
 
 safe-outputs:
   add-comment:
@@ -77,7 +81,7 @@ tools:
   bash: true
   repo-memory: true
 
-source: githubnext/agentics/workflows/repo-assist.md@afb00b92a9514fee9a14c583f059a03d05738f70
+source: githubnext/agentics/workflows/repo-assist.md@da02dddebe71d9a937665abdcd1f5214dab852a7
 ---
 
 # Repo Assist

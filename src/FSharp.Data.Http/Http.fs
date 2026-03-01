@@ -11,8 +11,8 @@ open System.Net
 open System.Text
 open System.Text.RegularExpressions
 open System.Threading
-open System.Reflection
 open System.Runtime.CompilerServices
+open System.Runtime.ExceptionServices
 open System.Runtime.InteropServices
 
 /// The method to use in an HTTP request
@@ -1607,12 +1607,6 @@ module internal HttpHelpers =
             source.Dispose()
         }
 
-    let runningOnMono =
-        try
-            not (isNull (System.Type.GetType "Mono.Runtime"))
-        with e ->
-            false
-
     let writeBody (req: HttpWebRequest) (data: Stream) =
         async {
             if data.CanSeek then
@@ -1624,16 +1618,8 @@ module internal HttpHelpers =
         }
 
     let reraisePreserveStackTrace (e: Exception) =
-        try
-            let remoteStackTraceString =
-                typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
-
-            if not (isNull remoteStackTraceString) then
-                remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
-        with _ ->
-            ()
-
-        raise e
+        ExceptionDispatchInfo.Capture(e).Throw()
+        raise e // unreachable; satisfies type checker
 
     let augmentWebExceptionsWithDetails f =
         async {
