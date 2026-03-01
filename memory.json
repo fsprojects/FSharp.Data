@@ -1,69 +1,57 @@
 {
-  "last_updated": "2026-03-01T01:28:25Z",
+  "last_updated": "2026-02-25T20:39:00Z",
   "monthly_activity_issue": 1599,
-  "new_monthly_activity_issue": "created_march_2026",
   "issue_triage_cursor": 1238,
   "open_repo_assist_prs": [
     {
-      "number": 1676,
-      "title": "Add schema.org microdata support to HtmlProvider",
-      "branch": "repo-assist/feature-html-schema-microdata",
-      "closes": [611],
+      "number": 1635,
+      "title": "Add DtdProcessing static parameter to XmlProvider",
+      "branch": "repo-assist/fix-issue-1632-dtd-processing-parameter-b6794c39a31ef477",
+      "closes": [1632, 1634],
       "status": "open"
     },
     {
-      "number": 1665,
-      "title": "Change HTTP response default encoding",
-      "closes": [1251],
+      "number": 1638,
+      "title": "Add OmitNullFields static parameter to JsonProvider",
+      "branch": "repo-assist/fix-issue-1245-omit-null-fields",
+      "closes": [1245],
       "status": "open"
     },
     {
       "number": null,
-      "title": "Add doc comments batch 1 (CsvExtensions, TextConversions, HtmlActivePatterns)",
-      "branch": "repo-assist/docs-issue-1678-batch1",
-      "closes": [],
-      "status": "created_this_run",
-      "notes": "Part of #1678"
+      "title": "Add YamlProvider type provider",
+      "branch": "repo-assist/feature-yaml-provider",
+      "closes": [1645],
+      "status": "open"
+    },
+    {
+      "number": null,
+      "title": "Add PreferOptionals parameter to XmlProvider and JsonProvider",
+      "branch": "repo-assist/fix-issue-649-prefer-optionals-xml-json",
+      "closes": [649],
+      "status": "created_this_run"
     }
   ],
   "issues_commented": [
     18, 37, 52, 110, 267, 334, 347, 419, 438, 439, 453, 503, 592, 610, 611, 633, 647, 649, 709, 742, 745, 759, 801,
     1031, 1159, 1170, 1187, 1188, 1191, 1194, 1203, 1218, 1220, 1236, 1237, 1241, 1245, 1246, 1251, 1256, 1257,
     1260, 1265, 1269, 1271, 1274, 1276, 1298, 1300, 1302, 1303, 1307, 1315, 1317, 1338, 1341, 1343, 1358, 1363,
-    1382, 1385, 1392, 1425, 1431, 1432, 1478, 1599, 1632, 1645, 1678
+    1382, 1385, 1392, 1425, 1431, 1432, 1478, 1599, 1632, 1645
   ],
   "fix_attempts": [
     { "issue": 1221, "pr": 1628, "outcome": "closed_by_maintainer_too_invasive" },
     { "issue": 1632, "pr": 1635, "outcome": "open" },
-    { "issue": 1245, "pr": 1638, "outcome": "merged" },
-    { "issue": 1645, "pr": null, "outcome": "closed_without_merge" },
-    { "issue": 649, "pr": 1660, "outcome": "merged" },
-    { "issue": 1241, "pr": 1680, "outcome": "merged" },
-    { "issue": 1678, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/docs-issue-1678-batch1", "notes": "Batch 1: CsvExtensions, TextConversions, HtmlActivePatterns" }
+    { "issue": 1245, "pr": 1638, "outcome": "open", "branch": "repo-assist/fix-issue-1245-omit-null-fields" },
+    { "issue": 1645, "pr": null, "outcome": "open", "branch": "repo-assist/feature-yaml-provider" },
+    { "issue": 649, "pr": null, "outcome": "created_this_run", "branch": "repo-assist/fix-issue-649-prefer-optionals-xml-json" }
   ],
   "tasks_last_run": {
-    "task2_fix_issues": "2026-03-01T01:28:25Z",
-    "task11_monthly_summary": "2026-03-01T01:28:25Z"
-  },
-  "documentation_progress": {
-    "issue": 1678,
-    "completed_files": [
-      "src/FSharp.Data.Csv.Core/CsvExtensions.fs",
-      "src/FSharp.Data.Runtime.Utilities/TextConversions.fs",
-      "src/FSharp.Data.Html.Core/HtmlActivePatterns.fs"
-    ],
-    "next_files": [
-      "src/FSharp.Data.Html.Core/HtmlOperations.fs (extension methods in HtmlNodeExtensions and HtmlDocumentExtensions)",
-      "src/FSharp.Data.Runtime.Utilities/IO.fs",
-      "src/FSharp.Data.Runtime.Utilities/Caching.fs",
-      "src/FSharp.Data.Runtime.Utilities/TextRuntime.fs",
-      "src/FSharp.Data.Json.Core/JsonRuntime.fs",
-      "src/FSharp.Data.Csv.Core/CsvRuntime.fs"
-    ]
+    "task2_fix_issues": "2026-02-25T20:39:00Z",
+    "task11_monthly_summary": "2026-02-25T20:39:00Z"
   },
   "future_work": [
-    "Continue documenting codebase (#1678) - next batch: HtmlOperations.fs, IO.fs, Caching.fs, JsonRuntime.fs, CsvRuntime.fs",
     "Add With* methods to XmlProvider (scoped out of PR for #1431 due to complex structure)",
+    "Investigate #1392 HttpClient migration",
     "Continue triaging issues from #1238 onwards"
   ]
 }
