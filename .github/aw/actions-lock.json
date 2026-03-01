@@ -1,54 +1,19 @@
 {
   "entries": {
-    "actions/checkout@v5": {
+    "actions/checkout@v6.0.2": {
       "repo": "actions/checkout",
-      "version": "v5",
-      "sha": "93cb6efe18208431cddfb8368fd83d5badbf9bfd"
+      "version": "v6.0.2",
+      "sha": "de0fac2e4500dabe0009e67214ff5f5447ce83dd"
     },
     "actions/github-script@v8": {
       "repo": "actions/github-script",
       "version": "v8",
       "sha": "ed597411d8f924073f98dfc5c65a23a2325f34cd"
     },
-    "github/gh-aw/actions/setup@v0.47.6": {
+    "github/gh-aw/actions/setup@v0.51.0": {
       "repo": "github/gh-aw/actions/setup",
-      "version": "v0.47.6",
-      "sha": "3b6ab5488e05abd34d6a599d61459477e45d5299"
-    },
-    "github/gh-aw/actions/setup@v0.48.1": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.48.1",
-      "sha": "26b6572ae210580303087bc3142fe58d140bf65c"
-    },
-    "github/gh-aw/actions/setup@v0.49.0": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.49.0",
-      "sha": "0eb518a648ba8178f4f42559a4c250d3e513acd1"
-    },
-    "github/gh-aw/actions/setup@v0.49.7": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.49.7",
-      "sha": "0ea0cf123dda697de607a0cd6e3315746680eb86"
-    },
-    "github/gh-aw/actions/setup@v0.50.0": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.50.0",
-      "sha": "8624e99d3979177875f082b4959b14da951d9ffe"
-    },
-    "github/gh-aw/actions/setup@v0.50.1": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.50.1",
-      "sha": "fad43e3c91a4e1d43e458f68e96574127934e7d1"
-    },
-    "github/gh-aw/actions/setup@v0.50.4": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.50.4",
-      "sha": "90ebf8057e8e005103b8d123732d2c64c30e9b27"
-    },
-    "github/gh-aw/actions/setup@v0.50.7": {
-      "repo": "github/gh-aw/actions/setup",
-      "version": "v0.50.7",
-      "sha": "9cbca3cd9be433a23a38e4da332635097fd40251"
+      "version": "v0.51.0",
+      "sha": "19c329d562f8cd58c3b6f07c7d9894c60bc609d2"
     }
   }
 }
