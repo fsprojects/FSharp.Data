@@ -8,6 +8,7 @@
 - Make `Http.AppendQueryToUrl` public (closes #1325)
 - Add `PreferOptionals` parameter to `JsonProvider` and `XmlProvider` (defaults to `true` to match existing behavior; set to `false` to use empty string or `NaN` for missing values, like the CsvProvider default) (closes #649)
 - Add `UseSchemaTypeNames` parameter to `XmlProvider`: when `true` and `Schema` is provided, multiple elements sharing the same XSD complex type generate a single F# type (named after the XSD type) instead of separate per-element types (closes #1488)
+- Mark all runtime Core libraries as trimmable (`IsTrimmable=true`); replace reflection-based stack-trace preservation in `Http.fs` with `ExceptionDispatchInfo`, and remove dead Mono-detection code (closes #1436)
 
 ## 8.0.0 - Feb 25 2026
 
