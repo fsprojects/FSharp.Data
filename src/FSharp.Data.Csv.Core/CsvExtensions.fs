@@ -13,6 +13,9 @@ open FSharp.Data.Runtime
 [<Extension>]
 type StringExtensions =
 
+    /// <summary>Converts the string to an integer. Fails if the value is not a valid integer.</summary>
+    /// <param name="x">The string to convert.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsInteger(x: String, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -21,6 +24,9 @@ type StringExtensions =
         | Some i -> i
         | _ -> failwithf "Not an int: %s" x
 
+    /// <summary>Converts the string to a 64-bit integer. Fails if the value is not a valid 64-bit integer.</summary>
+    /// <param name="x">The string to convert.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsInteger64(x: String, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -29,6 +35,9 @@ type StringExtensions =
         | Some i -> i
         | _ -> failwithf "Not an int64: %s" x
 
+    /// <summary>Converts the string to a decimal. Fails if the value is not a valid decimal.</summary>
+    /// <param name="x">The string to convert.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsDecimal(x: String, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -37,6 +46,10 @@ type StringExtensions =
         | Some d -> d
         | _ -> failwithf "Not a decimal: %s" x
 
+    /// <summary>Converts the string to a float. Fails if the value is not a valid float.</summary>
+    /// <param name="x">The string to convert.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
+    /// <param name="missingValues">Values to treat as missing (NaN). Defaults to standard missing value strings.</param>
     [<Extension>]
     static member AsFloat(x: String, [<Optional>] ?cultureInfo, [<Optional>] ?missingValues) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -46,12 +59,17 @@ type StringExtensions =
         | Some f -> f
         | _ -> failwithf "Not a float: %s" x
 
+    /// <summary>Converts the string to a boolean. Fails if the value is not a valid boolean.</summary>
+    /// <param name="x">The string to convert. Accepts "true", "false", "yes", "no", "1", "0" (case-insensitive).</param>
     [<Extension>]
     static member AsBoolean(x: String) =
         match TextConversions.AsBoolean x with
         | Some b -> b
         | _ -> failwithf "Not a boolean: %s" x
 
+    /// <summary>Converts the string to a DateTime. Fails if the value is not a valid date/time string.</summary>
+    /// <param name="x">The string to convert. Accepts ISO 8601 format or MSFT JSON date format.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsDateTime(x: String, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -60,6 +78,9 @@ type StringExtensions =
         | Some d -> d
         | _ -> failwithf "Not a datetime: %s" x
 
+    /// <summary>Converts the string to a DateTimeOffset. Fails if the value is not a valid date/time with offset string.</summary>
+    /// <param name="x">The string to convert. Accepts ISO 8601 format with timezone offset or MSFT JSON date with offset.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsDateTimeOffset(x, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -68,6 +89,9 @@ type StringExtensions =
         | Some d -> d
         | _ -> failwithf "Not a datetime offset: %s" <| x
 
+    /// <summary>Converts the string to a TimeSpan. Fails if the value is not a valid time span string.</summary>
+    /// <param name="x">The string to convert.</param>
+    /// <param name="cultureInfo">Optional culture info for parsing. Defaults to InvariantCulture.</param>
     [<Extension>]
     static member AsTimeSpan(x: String, [<Optional>] ?cultureInfo) =
         let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
@@ -76,6 +100,8 @@ type StringExtensions =
         | Some t -> t
         | _ -> failwithf "Not a time span: %s" x
 
+    /// <summary>Converts the string to a Guid. Fails if the value is not a valid GUID string.</summary>
+    /// <param name="x">The string to convert.</param>
     [<Extension>]
     static member AsGuid(x: String) =
         match x |> TextConversions.AsGuid with
