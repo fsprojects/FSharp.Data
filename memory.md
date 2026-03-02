@@ -1,35 +1,28 @@
 # Repo Assist Memory
 
 ## Last Updated
-2026-03-01
+2026-03-02
 
 ## Recent Actions
-- 2026-03-01: Created PR for doc batch 2 (JsonValue.fs doc comments). Commented on #1679 (transient failure), flagged "Fixes #1678" issue in PR #1681, updated monthly summary #1684.
-- 2026-03-01: Three PRs created in earlier runs: #1685 (trimming, closes #1436), #1683 (split HtmlDocument), #1681 (doc comments batch 1).
-- 2026-02-28: schema.org microdata+JSON-LD for HtmlProvider (issue #611). PR #1676 created.
+- 2026-03-02: Closed duplicate monthly activity issue #1682. Rebased PR #1665 onto main (resolved RELEASE_NOTES.md conflict: combined HTTP encoding + ExceptionIfMissing entries under ## 9.0.0). Updated monthly summary #1684.
+- 2026-03-01: #1681, #1685, #1683, #1686 all merged to main by dsyme. Issues #1677, #1678 closed as "completed" by dsyme.
+- 2026-03-01: Created PRs #1685 (trimming), #1681 (doc batch 1), #1683 (HtmlDocument split), #1686 (JsonValue docs).
 
-## Fix Attempts
-- issue #611: schema.org microdata implemented, PR #1676 open
-- issue #1251: HTTP encoding change, PR #1665 open
-- issue #1436: trimming support, PR #1685 open (just created)
-- issue #1678: doc batch 1 PR #1681 open, doc batch 2 (JsonValue.fs) PR pending
-- issue #1677: file split batch 1 PR #1683 open
+## Version Status
+- Current main RELEASE_NOTES.md version: `8.1.0-beta` 
+- PR #1665 branch version: `9.0.0` (per dsyme's request for major bump due to breaking encoding change)
+
+## Open Repo Assist PRs
+- #1676: schema.org microdata + JSON-LD for HtmlProvider — awaiting review from dsyme
+- #1665: HTTP encoding ISO-8859-1 → UTF-8 — version bumped to 9.0.0, rebased 2026-03-02
 
 ## Monthly Activity Issue
-- Issue #1684: [Repo Assist] Monthly Activity 2026-03 — updated this run
-- Issue #1682: DUPLICATE of #1684 — needs to be closed next run
-
-## Open Repo Assist PRs Needing Review
-- PR (new): JsonValue.fs doc comments (batch 2 of #1678) — just created
-- #1685: Trimming support — needs review
-- #1683: Split HtmlDocument — needs review
-- #1681: Doc comments batch 1 — needs review (WARNING: contains "Fixes #1678")
-- #1676: schema.org microdata — needs review
-- #1665: HTTP response default encoding — needs review
+- Issue #1684: [Repo Assist] Monthly Activity 2026-03 — updated 2026-03-02
+- Issue #1682: CLOSED (duplicate) 2026-03-02
 
 ## Notes
 - DesignTime signature tests (FSharp.Data.DesignTime.Tests) are pre-existing infrastructure failures
 - The full build (RunTests) sometimes fails with OOM (exit code 137) on this runner
-- dsyme has been actively merging PRs - 20+ merged this month
-- PR #1681 has "Fixes #1678" in body which would auto-close tracking issue - maintainer warned
-- Duplicate monthly issue #1682 needs to be closed (use update_issue next run)
+- dsyme has been very actively merging PRs - 25+ merged in Feb-Mar 2026
+- Issues #1677 (split large files) and #1678 (document codebase) are CLOSED by dsyme as "completed"
+- PR #1665 version is 9.0.0 - the encoding change is a breaking change per dsyme
