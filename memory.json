@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-03-04T03:38:00Z",
-  "last_run_id": "22653925150",
+  "last_updated": "2026-03-05T03:39:00Z",
+  "last_run_id": "22701093674",
   "monthly_summary_issue": 1684,
   "open_repo_assist_prs": [
     {
@@ -17,7 +17,7 @@
       "title": "[Repo Assist] Change HTTP response default encoding from ISO-8859-1 to UTF-8",
       "status": "open",
       "closes": 1251,
-      "notes": "Rebased 2026-03-04. RELEASE_NOTES.md conflict resolved: combined encoding change + ExceptionIfMissing both under 9.0.0."
+      "notes": "Rebased 2026-03-05: RELEASE_NOTES.md updated to 9.0.0 with ExceptionIfMissing and trimming entries added. Push succeeded."
     }
   ],
   "merged_prs": [1685, 1686, 1683, 1681, 1675, 1674, 1670, 1668, 1669, 1663, 1666, 1664],
@@ -25,10 +25,10 @@
   "task_last_run": {
     "task1": "2026-03-01T03:48:00Z",
     "task2": "2026-03-01T03:48:00Z",
-    "task5": "2026-03-04T03:38:00Z",
+    "task5": "2026-03-05T03:39:00Z",
     "task8": "2026-03-01T03:48:00Z",
     "task10": "2026-03-02T03:40:00Z",
-    "task11": "2026-03-04T03:38:00Z"
+    "task11": "2026-03-05T03:39:00Z"
   },
   "commented_issues": [158, 805, 1207, 1159, 900, 942, 1130, 953, 1080, 1220, 818, 1257, 1218, 1138, 649, 838, 1265, 1298, 1385, 1271, 1191, 1236, 1031, 1188, 1245, 1237, 1431, 1488, 1645, 1650, 1657, 1322, 1325, 1333, 1018, 1241, 1338, 1382, 1432, 1317, 1363, 1425, 1478, 1303, 1251, 1170, 1452, 1436, 1321, 1490, 1358, 1100, 1072, 1392, 1300, 1302, 1307, 1315, 809, 1114, 1132, 1671, 611, 1677, 1678, 1679, 1687],
   "tried_fixes": [953, 1488, 1645, 1650, 649, 838, 1431, 1245, 1657, 1325, 1251, 1321, 1392, 1100, 1072, 158, 805, 611, 1436, 1678],
