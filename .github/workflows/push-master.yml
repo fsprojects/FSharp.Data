@@ -20,6 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.400
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/paket.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
     - name: Restore .NET local tools
       run: dotnet tool restore
     - name: Restore packages
