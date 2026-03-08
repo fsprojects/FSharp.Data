@@ -1,5 +1,9 @@
 # Release Notes
 
+## 9.0.0
+
+- Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
 ## 8.1.0 - Mar 08 2026
 
 - Add schema.org microdata support to `HtmlProvider`: when an HTML document contains elements with `itemscope`/`itemtype`/`itemprop` attributes, the provider now generates a typed `Schemas` container (e.g. `doc.Schemas.Person`) with one strongly-typed property per `itemprop` name discovered in the sample (closes #611)
