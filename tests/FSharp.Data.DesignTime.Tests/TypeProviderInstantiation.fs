@@ -48,7 +48,8 @@ type internal XmlProviderArgs =
       UseOriginalNames : bool
       PreferOptionals : bool
       UseSchemaTypeNames : bool
-      PreferDateTimeOffset : bool }
+      PreferDateTimeOffset : bool
+      ExceptionIfMissing : bool }
 
 type internal JsonProviderArgs =
     { Sample : string
@@ -66,7 +67,8 @@ type internal JsonProviderArgs =
       UseOriginalNames : bool
       OmitNullFields : bool
       PreferOptionals : bool
-      PreferDateTimeOffset : bool }
+      PreferDateTimeOffset : bool
+      ExceptionIfMissing : bool }
 
 type internal HtmlProviderArgs =
     { Sample : string
@@ -133,7 +135,8 @@ type internal TypeProviderInstantiation =
                    box x.UseOriginalNames
                    box x.PreferOptionals
                    box x.UseSchemaTypeNames
-                   box x.PreferDateTimeOffset |]
+                   box x.PreferDateTimeOffset
+                   box x.ExceptionIfMissing |]
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -151,7 +154,8 @@ type internal TypeProviderInstantiation =
                    box x.UseOriginalNames
                    box x.OmitNullFields
                    box x.PreferOptionals
-                   box x.PreferDateTimeOffset |]
+                   box x.PreferDateTimeOffset
+                   box x.ExceptionIfMissing |]
             | Html x ->
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -279,7 +283,8 @@ type internal TypeProviderInstantiation =
                   UseOriginalNames = false
                   PreferOptionals = true
                   UseSchemaTypeNames = false
-                  PreferDateTimeOffset = false }
+                  PreferDateTimeOffset = false
+                  ExceptionIfMissing = false }
         | "Json" ->
             // Handle special case for Schema.json tests where some fields might be empty
             if args.Length > 5 && not (String.IsNullOrEmpty(args.[5])) then
@@ -298,7 +303,8 @@ type internal TypeProviderInstantiation =
                        UseOriginalNames = false
                        OmitNullFields = false
                        PreferOptionals = true
-                       PreferDateTimeOffset = false }
+                       PreferDateTimeOffset = false
+                       ExceptionIfMissing = false }
             else
                 // This is for schema-based tests in the format "Json,,,,,true,false,BackwardCompatible,SimpleSchema.json"
                 Json { Sample = args.[1]
@@ -316,7 +322,8 @@ type internal TypeProviderInstantiation =
                        UseOriginalNames = false
                        OmitNullFields = false
                        PreferOptionals = true
-                       PreferDateTimeOffset = false }
+                       PreferDateTimeOffset = false
+                       ExceptionIfMissing = false }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse

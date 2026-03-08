@@ -28,6 +28,9 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     static member Parse: text:string -> HtmlProvider
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
+    member Schemas: HtmlProvider+SchemasContainer with get
+    this
+
     member Tables: HtmlProvider+TablesContainer with get
     this
 
@@ -94,6 +97,11 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "See also")
 
 
+class HtmlProvider+SchemasContainer : FDR.BaseTypes.HtmlDocument
+    member SearchResultsPage: HtmlProvider+HtmlProvider+SearchResultsPage[] with get
+    this.GetSchema("SearchResultsPage").Items
+
+
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Additional site navigation``: HtmlProvider+AdditionalSiteNavigation with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -123,6 +131,15 @@ class HtmlProvider+Menu3 : FDR.BaseTypes.HtmlList<string>
 class HtmlProvider+Menu4 : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+Menu5 : FDR.BaseTypes.HtmlList<int>
+
+class HtmlProvider+SearchResultsPage : FDR.HtmlSchemaItem
+    member Html: HtmlNode with get
+    this.Html
+
+    member Offers: string with get
+    this.Properties |> (MapModule.TryFind "offers" table) |> let value = ""
+                                                             Lambda (option, Call (None, DefaultValue, [value, option]))
+
 
 class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlList<string>
 

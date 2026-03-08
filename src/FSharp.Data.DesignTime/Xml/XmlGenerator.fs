@@ -30,12 +30,15 @@ type internal XmlGenerationContext =
       UnifyGlobally: bool
       XmlTypeCache: Dictionary<InferedType, XmlGenerationResult>
       JsonTypeCache: Dictionary<InferedType, ProvidedTypeDefinition>
-      UseOriginalNames: bool }
+      UseOriginalNames: bool
+      ExceptionIfMissing: bool }
 
-    static member Create(unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally, useOriginalNames) =
+    static member Create
+        (unitsOfMeasureProvider, inferenceMode, cultureStr, tpType, unifyGlobally, useOriginalNames, ?exceptionIfMissing) =
         let niceName = if useOriginalNames then id else NameUtils.nicePascalName
         let uniqueNiceName = NameUtils.uniqueGenerator niceName
         uniqueNiceName "XElement" |> ignore
+        let exceptionIfMissing = defaultArg exceptionIfMissing false
 
         { CultureStr = cultureStr
           UnitsOfMeasureProvider = unitsOfMeasureProvider
@@ -45,15 +48,18 @@ type internal XmlGenerationContext =
           UnifyGlobally = unifyGlobally
           XmlTypeCache = Dictionary()
           JsonTypeCache = Dictionary()
-          UseOriginalNames = useOriginalNames }
+          UseOriginalNames = useOriginalNames
+          ExceptionIfMissing = exceptionIfMissing }
 
     member x.ConvertValue prop =
-        let typ, _, conv, _ = ConversionsGenerator.convertStringValue "" x.CultureStr prop
+        let typ, _, conv, _ =
+            ConversionsGenerator.convertStringValue "" x.CultureStr x.ExceptionIfMissing prop
+
         typ, conv
 
     member x.ConvertValueBack prop =
         let typ, _, _, convBack =
-            ConversionsGenerator.convertStringValue "" x.CultureStr prop
+            ConversionsGenerator.convertStringValue "" x.CultureStr x.ExceptionIfMissing prop
 
         typ, convBack
 
@@ -155,7 +161,8 @@ module internal XmlTypeBuilder =
                           ctx.UnitsOfMeasureProvider,
                           ctx.InferenceMode,
                           ctx.UniqueNiceName,
-                          ctx.JsonTypeCache
+                          ctx.JsonTypeCache,
+                          ?exceptionIfMissing = Some ctx.ExceptionIfMissing
                       )
 
                   let result = JsonTypeBuilder.generateJsonType ctx false true "" typ

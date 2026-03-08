@@ -33,7 +33,7 @@ module internal CsvTypeBuilder =
             inferredFields
             |> List.mapi (fun index field ->
                 let typ, typWithoutMeasure, conv, convBack =
-                    ConversionsGenerator.convertStringValue missingValuesStr cultureStr field
+                    ConversionsGenerator.convertStringValue missingValuesStr cultureStr false field
 
                 let propertyName =
                     if useOriginalNames then

@@ -62,6 +62,7 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
         let omitNullFields = args.[13] :?> bool
         let preferOptionals = args.[14] :?> bool
         let preferDateTimeOffset = args.[15] :?> bool
+        let exceptionIfMissing = args.[16] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -136,7 +137,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
                     inferenceMode,
                     ?preferDictionaries = Some preferDictionaries,
                     ?useOriginalNames = Some useOriginalNames,
-                    ?omitNullFields = Some omitNullFields
+                    ?omitNullFields = Some omitNullFields,
+                    ?exceptionIfMissing = Some exceptionIfMissing
                 )
 
             let result = JsonTypeBuilder.generateJsonType ctx false false rootName inferedType
@@ -187,7 +189,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("OmitNullFields", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = true)
-          ProvidedStaticParameter("PreferDateTimeOffset", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("PreferDateTimeOffset", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("ExceptionIfMissing", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a JSON document.</summary>
@@ -215,7 +218,8 @@ type public JsonProvider(cfg: TypeProviderConfig) as this =
            <param name='UseOriginalNames'>When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
            <param name='OmitNullFields'>When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.</param>
            <param name='PreferOptionals'>When set to true (default), inference will use the option type for missing or null values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.</param>
-           <param name='PreferDateTimeOffset'>When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.</param>"""
+           <param name='PreferDateTimeOffset'>When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.</param>
+           <param name='ExceptionIfMissing'>When true, accessing a non-optional field that is missing in the JSON data raises an exception instead of returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.</param>"""
 
     do jsonProvTy.AddXmlDoc helpText
     do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

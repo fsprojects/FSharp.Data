@@ -99,6 +99,27 @@ type JsonRuntime =
             failwithf "Expecting %s at '%s', got %s" (getTypeName ()) path
             <| x.ToString(JsonSaveOptions.DisableFormatting)
 
+    /// Operation that extracts the value from an option and always throws if the value is not present.
+    /// Used when ExceptionIfMissing=true to raise an exception for missing fields instead of returning defaults.
+    static member GetNonOptionalValueStrict<'T>(path: string, opt: option<'T>, originalValue) : 'T =
+        let getTypeName () =
+            let name = typeof<'T>.Name
+
+            if name.StartsWith("i", StringComparison.OrdinalIgnoreCase) then
+                "an " + name
+            else
+                "a " + name
+
+        match opt, originalValue with
+        | Some value, _ -> value
+        | None, Some((JsonValue.Array _ | JsonValue.Record _) as x) ->
+            failwithf "Expecting %s at '%s', got %s" (getTypeName ()) path
+            <| x.ToString(JsonSaveOptions.DisableFormatting)
+        | None, None -> failwithf "'%s' is missing" path
+        | None, Some x ->
+            failwithf "Expecting %s at '%s', got %s" (getTypeName ()) path
+            <| x.ToString(JsonSaveOptions.DisableFormatting)
+
     /// Converts JSON array to array of target types
     static member ConvertArray<'T>(doc: IJsonDocument, mapping: Func<IJsonDocument, 'T>) =
         match doc.JsonValue with

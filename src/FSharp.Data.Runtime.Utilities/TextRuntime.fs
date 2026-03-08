@@ -184,6 +184,14 @@ type TextRuntime =
         | None, None -> failwithf "%s is missing" name
         | None, Some originalValue -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name originalValue
 
+    /// Operation that extracts the value from an option and always throws if the value is not present.
+    /// Used when ExceptionIfMissing=true to raise an exception for missing fields instead of returning defaults.
+    static member GetNonOptionalValueStrict<'T>(name: string, opt: option<'T>, originalValue) : 'T =
+        match opt, originalValue with
+        | Some value, _ -> value
+        | None, None -> failwithf "%s is missing" name
+        | None, Some originalValue -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name originalValue
+
     /// Turn an F# option type Option<'T> containing a primitive
     /// value type into a .NET type Nullable<'T>
     static member OptionToNullable opt =

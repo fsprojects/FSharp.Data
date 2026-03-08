@@ -37,12 +37,19 @@ type JsonSaveOptions =
 [<RequireQualifiedAccess>]
 [<StructuredFormatDisplay("{_Print}")>]
 type JsonValue =
+    /// A JSON string value
     | String of string
+    /// A JSON number stored as a decimal (used for numbers that fit in the decimal range)
     | Number of decimal
+    /// A JSON number stored as a float (used for large numbers that do not fit in decimal)
     | Float of float
+    /// A JSON object, represented as an array of name-value pairs
     | Record of properties: (string * JsonValue)[]
+    /// A JSON array of values
     | Array of elements: JsonValue[]
+    /// A JSON boolean value
     | Boolean of bool
+    /// A JSON null value
     | Null
 
     /// <exclude />
@@ -59,7 +66,10 @@ type JsonValue =
         else
             str
 
-    /// Serializes the JsonValue to the specified System.IO.TextWriter.
+    /// <summary>Serializes the JsonValue to the specified System.IO.TextWriter.</summary>
+    /// <param name="w">The writer to serialize to.</param>
+    /// <param name="saveOptions">Controls formatting: indented, compact, or compact with spaces.</param>
+    /// <param name="indentationSpaces">Number of spaces per indentation level (default 2). Only used when saveOptions is <see cref="JsonSaveOptions.None"/>.</param>
     member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces: int) =
         let indentationSpaces = defaultArg indentationSpaces 2
 
@@ -179,11 +189,18 @@ type JsonValue =
             if lastWritePos < value.Length then
                 w.Write(value.Substring(lastWritePos))
 
+    /// <summary>Serializes this JsonValue to a string with the specified formatting options.</summary>
+    /// <param name="saveOptions">Controls formatting: indented, compact, or compact with spaces.</param>
+    /// <param name="indentationSpaces">Number of spaces per indentation level (default 2). Only used when saveOptions is <see cref="JsonSaveOptions.None"/>.</param>
+    /// <returns>The JSON string representation.</returns>
     member x.ToString(saveOptions, ?indentationSpaces: int) =
         let w = new StringWriter(CultureInfo.InvariantCulture)
         x.WriteTo(w, saveOptions, ?indentationSpaces = indentationSpaces)
         w.GetStringBuilder().ToString()
 
+    /// <summary>Serializes this JsonValue to a formatted (indented) string.</summary>
+    /// <param name="indentationSpaces">Number of spaces per indentation level (default 2).</param>
+    /// <returns>The formatted JSON string representation.</returns>
     member x.ToString(?indentationSpaces: int) =
         x.ToString(JsonSaveOptions.None, ?indentationSpaces = indentationSpaces)
 
@@ -482,28 +499,39 @@ type private JsonParser(jsonText: string) =
 
 type JsonValue with
 
-    /// Parses the specified JSON string
+    /// <summary>Parses the specified JSON string.</summary>
+    /// <param name="text">The JSON string to parse.</param>
+    /// <returns>A <see cref="JsonValue"/> representing the parsed JSON.</returns>
     static member Parse(text) = JsonParser(text).Parse()
 
-    /// Attempts to parse the specified JSON string
+    /// <summary>Attempts to parse the specified JSON string.</summary>
+    /// <param name="text">The JSON string to parse.</param>
+    /// <returns>Some <see cref="JsonValue"/> if parsing succeeds, or None if parsing fails.</returns>
     static member TryParse(text) =
         try
             Some <| JsonParser(text).Parse()
         with _ ->
             None
 
-    /// Loads JSON from the specified stream
+    /// <summary>Loads JSON from the specified stream.</summary>
+    /// <param name="stream">The stream to read JSON from.</param>
+    /// <returns>A <see cref="JsonValue"/> representing the parsed JSON.</returns>
     static member Load(stream: Stream) =
         use reader = new StreamReader(stream)
         let text = reader.ReadToEnd()
         JsonParser(text).Parse()
 
-    /// Loads JSON from the specified reader
+    /// <summary>Loads JSON from the specified reader.</summary>
+    /// <param name="reader">The text reader to read JSON from.</param>
+    /// <returns>A <see cref="JsonValue"/> representing the parsed JSON.</returns>
     static member Load(reader: TextReader) =
         let text = reader.ReadToEnd()
         JsonParser(text).Parse()
 
-    /// Loads JSON from the specified uri asynchronously
+    /// <summary>Loads JSON from the specified URI asynchronously.</summary>
+    /// <param name="uri">The URI to load JSON from (file path or URL).</param>
+    /// <param name="encoding">The text encoding to use (default: UTF-8).</param>
+    /// <returns>An async computation yielding a <see cref="JsonValue"/> representing the parsed JSON.</returns>
     static member AsyncLoad(uri: string, [<Optional>] ?encoding) =
         async {
             let encoding = defaultArg encoding Encoding.UTF8
@@ -512,11 +540,16 @@ type JsonValue with
             return JsonParser(text).Parse()
         }
 
-    /// Loads JSON from the specified uri
+    /// <summary>Loads JSON from the specified URI.</summary>
+    /// <param name="uri">The URI to load JSON from (file path or URL).</param>
+    /// <param name="encoding">The text encoding to use (default: UTF-8).</param>
+    /// <returns>A <see cref="JsonValue"/> representing the parsed JSON.</returns>
     static member Load(uri: string, [<Optional>] ?encoding) =
         JsonValue.AsyncLoad(uri, ?encoding = encoding) |> Async.RunSynchronously
 
-    /// Parses the specified string into multiple JSON values
+    /// <summary>Parses the specified string into multiple JSON values (e.g. newline-delimited JSON).</summary>
+    /// <param name="text">The string containing multiple JSON values.</param>
+    /// <returns>A sequence of <see cref="JsonValue"/> instances.</returns>
     static member ParseMultiple(text) = JsonParser(text).ParseMultiple()
 
     member private x.PrepareRequest(httpMethod, headers) =
@@ -535,12 +568,20 @@ type JsonValue with
 
         TextRequest(x.ToString(JsonSaveOptions.DisableFormatting)), headers, httpMethod
 
-    /// Sends the JSON to the specified URL synchronously. Defaults to a POST request.
+    /// <summary>Sends the JSON to the specified URL synchronously. Defaults to a POST request.</summary>
+    /// <param name="url">The URL to send the JSON to.</param>
+    /// <param name="httpMethod">The HTTP method to use (default: POST).</param>
+    /// <param name="headers">Additional HTTP headers to include.</param>
+    /// <returns>An <see cref="HttpResponse"/> containing the server's response.</returns>
     member x.Request(url: string, [<Optional>] ?httpMethod, [<Optional>] ?headers: seq<_>) =
         let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
         Http.Request(url, body = body, headers = headers, httpMethod = httpMethod)
 
-    /// Sends the JSON to the specified URL asynchronously. Defaults to a POST request.
+    /// <summary>Sends the JSON to the specified URL asynchronously. Defaults to a POST request.</summary>
+    /// <param name="url">The URL to send the JSON to.</param>
+    /// <param name="httpMethod">The HTTP method to use (default: POST).</param>
+    /// <param name="headers">Additional HTTP headers to include.</param>
+    /// <returns>An async computation yielding an <see cref="HttpResponse"/> containing the server's response.</returns>
     member x.RequestAsync(url: string, [<Optional>] ?httpMethod, [<Optional>] ?headers: seq<_>) =
         let body, headers, httpMethod = x.PrepareRequest(httpMethod, headers)
         Http.AsyncRequest(url, body = body, headers = headers, httpMethod = httpMethod)

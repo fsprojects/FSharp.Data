@@ -55,7 +55,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
         let useOriginalNames = args.[12] :?> bool
         let preferOptionals = args.[13] :?> bool
         let useSchemaTypeNames = args.[14] :?> bool
-        let preferDateTimeOffset = args.[14] :?> bool
+        let preferDateTimeOffset = args.[15] :?> bool
+        let exceptionIfMissing = args.[16] :?> bool
 
         let inferenceMode =
             InferenceMode'.FromPublicApi(inferenceMode, inferTypesFromValues)
@@ -110,7 +111,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         cultureStr,
                         tpType,
                         globalInference || schema <> "",
-                        useOriginalNames
+                        useOriginalNames,
+                        exceptionIfMissing
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -174,7 +176,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
                         cultureStr,
                         tpType,
                         globalInference || schema <> "",
-                        useOriginalNames
+                        useOriginalNames,
+                        exceptionIfMissing
                     )
 
                 let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -226,7 +229,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
           ProvidedStaticParameter("UseOriginalNames", typeof<bool>, parameterDefaultValue = false)
           ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = true)
           ProvidedStaticParameter("UseSchemaTypeNames", typeof<bool>, parameterDefaultValue = false)
-          ProvidedStaticParameter("PreferDateTimeOffset", typeof<bool>, parameterDefaultValue = false) ]
+          ProvidedStaticParameter("PreferDateTimeOffset", typeof<bool>, parameterDefaultValue = false)
+          ProvidedStaticParameter("ExceptionIfMissing", typeof<bool>, parameterDefaultValue = false) ]
 
     let helpText =
         """<summary>Typed representation of a XML file.</summary>
@@ -255,7 +259,8 @@ type public XmlProvider(cfg: TypeProviderConfig) as this =
            <param name='UseOriginalNames'>When true, XML element and attribute names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.</param>
            <param name='PreferOptionals'>When set to true (default), inference will use the option type for missing or absent values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.</param>
            <param name='UseSchemaTypeNames'>When true and a Schema is provided, the XSD complex type name is used for the generated F# type instead of the element name. This causes multiple elements that share the same XSD type to map to a single F# type. Defaults to false for backward compatibility.</param>
-           <param name='PreferDateTimeOffset'>When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.</param>"""
+           <param name='PreferDateTimeOffset'>When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.</param>
+           <param name='ExceptionIfMissing'>When true, accessing a non-optional field that is missing in the XML data raises an exception instead of returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.</param>"""
 
 
     do xmlProvTy.AddXmlDoc helpText

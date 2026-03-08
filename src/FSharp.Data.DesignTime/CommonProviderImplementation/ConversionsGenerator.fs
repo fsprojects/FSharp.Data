@@ -75,7 +75,7 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
 
 /// Creates a function that takes Expr<string option> and converts it to
 /// an expression of other type - the type is specified by `field`
-let internal convertStringValue missingValuesStr cultureStr (field: PrimitiveInferedProperty) =
+let internal convertStringValue missingValuesStr cultureStr exceptionIfMissing (field: PrimitiveInferedProperty) =
     let fieldName = field.Name
     let field = field.Value
 
@@ -95,6 +95,12 @@ let internal convertStringValue missingValuesStr cultureStr (field: PrimitiveInf
         let convert value =
             getConversionQuotation missingValuesStr cultureStr field.InferedType value
 
+        let getNonOptionalValueMethod =
+            if exceptionIfMissing then
+                nameof (TextRuntime.GetNonOptionalValueStrict)
+            else
+                nameof (TextRuntime.GetNonOptionalValue)
+
         match field.TypeWrapper with
         | TypeWrapper.None ->
             //prevent value being calculated twice
@@ -102,9 +108,7 @@ let internal convertStringValue missingValuesStr cultureStr (field: PrimitiveInf
             let varExpr = Expr.Cast<string option>(Expr.Var var)
 
             let body =
-                typeof<TextRuntime>?(nameof (TextRuntime.GetNonOptionalValue))
-                    field.RuntimeType
-                    (fieldName, convert varExpr, varExpr)
+                typeof<TextRuntime>?(getNonOptionalValueMethod) field.RuntimeType (fieldName, convert varExpr, varExpr)
 
             Expr.Let(var, value, body)
         | TypeWrapper.Option -> convert value
