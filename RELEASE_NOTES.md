@@ -1,6 +1,6 @@
 # Release Notes
 
-## 8.1.0-beta
+## 8.1.0 - Mar 08 2026
 
 - Add schema.org microdata support to `HtmlProvider`: when an HTML document contains elements with `itemscope`/`itemtype`/`itemprop` attributes, the provider now generates a typed `Schemas` container (e.g. `doc.Schemas.Person`) with one strongly-typed property per `itemprop` name discovered in the sample (closes #611)
 - Add JSON-LD support to `HtmlProvider`: when an HTML document contains `<script type="application/ld+json">` blocks, the provider generates a typed `JsonLd` container (e.g. `doc.JsonLd.Article`) with one strongly-typed property per top-level scalar field discovered in the sample — Wikipedia pages, for instance, embed schema.org `Article` JSON-LD with `name`, `headline`, `description`, `url`, `datePublished`, and `dateModified`
