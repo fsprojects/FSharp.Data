@@ -15,6 +15,7 @@
     </EmbeddedResource>
     <Compile Include="JsonBenchmarks.fs" />
     <Compile Include="HtmlBenchmarks.fs" />
+    <Compile Include="CsvBenchmarks.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -10,9 +10,13 @@ let main args =
     match args with
     | [| "json" |] -> BenchmarkRunner.Run<JsonBenchmarks>() |> ignore
     | [| "conversions" |] -> BenchmarkRunner.Run<JsonConversionBenchmarks>() |> ignore
-    | _ -> 
+    | [| "html" |] -> BenchmarkRunner.Run<HtmlBenchmarks>() |> ignore
+    | [| "csv" |] -> BenchmarkRunner.Run<CsvBenchmarks>() |> ignore
+    | _ ->
         printfn "Running all benchmarks..."
         BenchmarkRunner.Run<JsonBenchmarks>() |> ignore
         BenchmarkRunner.Run<JsonConversionBenchmarks>() |> ignore
+        BenchmarkRunner.Run<HtmlBenchmarks>() |> ignore
+        BenchmarkRunner.Run<CsvBenchmarks>() |> ignore
     
     0
