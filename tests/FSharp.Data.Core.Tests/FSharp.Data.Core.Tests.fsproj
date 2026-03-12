@@ -36,6 +36,7 @@
     <Compile Include="JsonSchema.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvFile.fs" />
+    <Compile Include="CsvParserProperties.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
