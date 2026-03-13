@@ -120,15 +120,34 @@ let unescape s =
     r.Replace(s, convert)
 
 [<Test>]
-let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
+let ``Parsing stringified JsonValue returns the same JsonValue`` () =
     Arb.register<Generators>() |> ignore
 
     let parseStringified (json: JsonValue) =
         json.ToString(JsonSaveOptions.DisableFormatting)
         |> JsonValue.Parse = json
 
-    Check.One ({Config.QuickThrowOnFailure with MaxTest = 1000},
-               parseStringified)
+    Check.One({Config.QuickThrowOnFailure with MaxTest = 1000}, parseStringified)
+
+[<Test>]
+let ``Parsing JsonValue formatted with None (indented) returns the same JsonValue`` () =
+    Arb.register<Generators>() |> ignore
+
+    let parseFormatted (json: JsonValue) =
+        json.ToString(JsonSaveOptions.None)
+        |> JsonValue.Parse = json
+
+    Check.One({Config.QuickThrowOnFailure with MaxTest = 500}, parseFormatted)
+
+[<Test>]
+let ``Parsing JsonValue formatted with CompactSpaceAfterComma returns the same JsonValue`` () =
+    Arb.register<Generators>() |> ignore
+
+    let parseCompact (json: JsonValue) =
+        json.ToString(JsonSaveOptions.CompactSpaceAfterComma)
+        |> JsonValue.Parse = json
+
+    Check.One({Config.QuickThrowOnFailure with MaxTest = 500}, parseCompact)
 
 [<Test>]
 let ``Stringifying parsed string returns the same string`` () =
