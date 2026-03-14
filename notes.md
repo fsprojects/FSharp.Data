@@ -1,1 +1,2 @@
-03-13: #1692 merged. New PR: JSON SaveOptions tests + STJ bench (#1671). #1665 open.
+03-14: PR: fix CombinedStream NotSupportedException + isText→isMimeTypeText.
+03-13: PR #1694 (STJ bench) merged. Issues: only 1665 open.
