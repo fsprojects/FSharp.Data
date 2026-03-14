@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="JSON Type Provider
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="JSON Type Provider
+">
+    
+    <title>JSON Type Provider
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonProvider.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/JsonProvider.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/JsonProvider.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="JSON-Type-Provider" class="anchor" href="#JSON-Type-Provider">JSON Type Provider</a></h1>
+<p>This article demonstrates how to use the JSON Type Provider to access JSON files
+in a statically typed way. We first look at how the structure is inferred and then
+demonstrate the provider by parsing data from WorldBank and Twitter.</p>
+<p>The JSON Type Provider provides statically typed access to JSON documents.
+It takes a sample document as an input (or a document containing a JSON array of samples).
+The generated type can then be used to read files with the same structure.</p>
+<p>If the loaded file does not match the structure of the sample, a runtime error may occur
+(but only when explicitly accessing an element incompatible with the original sample — e.g. if it is no longer present).</p>
+<h2><a name="Introducing-the-provider" class="anchor" href="#Introducing-the-provider">Introducing the provider</a></h2>
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <a id="lnk" href="../images/json.gif"><img id="anim" src="../images/json.gif" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+<p>The type provider is located in the <code>FSharp.Data.dll</code> assembly and namespace:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<h3><a name="Inferring-types-from-the-sample" class="anchor" href="#Inferring-types-from-the-sample">Inferring types from the sample</a></h3>
+<p>The <code>JsonProvider&lt;...&gt;</code> takes one static parameter of type <code>string</code>. The parameter can
+be <em>either</em> a sample string <em>or</em> a sample file (relative to the current folder or online
+accessible via <code>http</code> or <code>https</code>). It is not likely that this could lead to ambiguities.</p>
+<p>The following sample passes a small JSON string to the provider:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="rt">Simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot; { &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 } &quot;&quot;&quot;</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="rt">Simple</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot; { &quot;name&quot;:&quot;Tomas&quot;, &quot;age&quot;:4 } &quot;&quot;&quot;</span><span class="pn">)</span>
+<span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="id">simple</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="id">Age</span>
+<span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="id">simple</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="id">Name</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type Simple = JsonProvider&lt;...&gt;
+val simple: JsonProvider&lt;...&gt;.Root = {
+  "name": "Tomas",
+  "age": 4
+}
+val it: string = "Tomas"</code></pre></td></tr></table>
+<p>You can see that the generated type has two properties - <code>Age</code> of type <code>int</code> and <code>Name</code> of
+type <code>string</code>. The provider successfully infers the types from the sample and exposes the
+fields as properties (with PascalCase name to follow standard naming conventions).</p>
+<h3><a name="Inferring-numeric-types" class="anchor" href="#Inferring-numeric-types">Inferring numeric types</a></h3>
+<p>In the previous case, the sample document simply contained an integer and so the provider
+inferred the type <code>int</code>. Sometimes, the types in the sample document (or a list of samples)
+may not match exactly. For example, a list may mix integers and floats:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="rt">Numbers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 13)" onmouseover="showTip(event, 'fs4', 13)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, 3, 3.14] &quot;&quot;&quot;</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="id">nums</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="rt">Numbers</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot; [1.2, 45.1, 98.2, 5] &quot;&quot;&quot;</span><span class="pn">)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="id">total</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="id">nums</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 19)" onmouseover="showTip(event, 'fs13', 19)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 20)" onmouseover="showTip(event, 'fs14', 20)" class="id">sum</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type Numbers = JsonProvider&lt;...&gt;
+val nums: decimal array = [|1.2M; 45.1M; 98.2M; 5M|]
+val total: decimal = 149.5M</code></pre></td></tr></table>
+<p>When the sample is a collection, the type provider generates a type that can be used to store
+all values in the sample. In this case, the resulting type is <code>decimal</code>, because one
+of the values is not an integer. In general, the provider supports (and prefers them
+in this order): <code>int</code>, <code>int64</code>, <code>decimal</code> and <code>float</code>.</p>
+<p>Other primitive types cannot be combined into a single type. For example, if the list contains
+numbers <em>and</em> strings. In this case, the provider generates two methods that can be used
+to get values that match one of the types:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="rt">Mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, &quot;hello&quot;, &quot;world&quot;] &quot;&quot;&quot;</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="id">mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="rt">Mixed</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 25)" onmouseover="showTip(event, 'fs6', 25)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot; [4, 5, &quot;hello&quot;, &quot;world&quot; ] &quot;&quot;&quot;</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="id">mixed</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 27)" onmouseover="showTip(event, 'fs17', 27)" class="id">Numbers</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 29)" onmouseover="showTip(event, 'fs14', 29)" class="id">sum</span>
+<span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="id">mixed</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs18', 31)" onmouseover="showTip(event, 'fs18', 31)" class="id">Strings</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 32)" onmouseover="showTip(event, 'fs19', 32)" class="m">String</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs20', 33)" onmouseover="showTip(event, 'fs20', 33)" class="id">concat</span> <span class="s">&quot;, &quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type Mixed = JsonProvider&lt;...&gt;
+val mixed: JsonProvider&lt;...&gt;.Root = [
+  4,
+  5,
+  "hello",
+  "world"
+]
+val it: string = "4, 5, hello, world"</code></pre></td></tr></table>
+<p>As you can see, the <code>Mixed</code> type has properties <code>Numbers</code> and <code>Strings</code> that
+return only <code>int</code> and <code>string</code> values from the collection. This means that we get
+type-safe access to the values, but not in the original order (if order matters, then
+you can use the <code>mixed.JsonValue</code> property to get the underlying <code>JsonValue</code> and
+process it dynamically as described in <a href="JsonValue.html">the documentation for <code>JsonValue</code></a>.</p>
+<h3><a name="Inferring-date-types" class="anchor" href="#Inferring-date-types">Inferring date types</a></h3>
+<p>String values in JSON that look like dates are inferred as <code>DateTime</code> or <code>DateTimeOffset</code>.
+On .NET 6 and later, when you set <code>PreferDateOnly = true</code>, strings that represent a date without a time component (e.g. <code>"2023-01-15"</code>)
+are inferred as <code>DateOnly</code>, and time-only strings are inferred as <code>TimeOnly</code>. By default (<code>PreferDateOnly = false</code>),
+all dates are inferred as <code>DateTime</code> for backward compatibility.</p>
+<p>Set <code>PreferDateTimeOffset = true</code> to infer all date-time values (that would otherwise be <code>DateTime</code>) as <code>DateTimeOffset</code>.
+Values that already contain an explicit timezone offset (e.g. <code>"2023-06-15T10:30:00+05:30"</code>) are always inferred as
+<code>DateTimeOffset</code> regardless of this flag.</p>
+<h3><a name="Inferring-record-types" class="anchor" href="#Inferring-record-types">Inferring record types</a></h3>
+<p>Now let's look at a sample JSON document that contains a list of records. The
+following example uses two records - one with <code>name</code> and <code>age</code> and the second with just
+<code>name</code>. If a property is missing, then the provider infers it as optional.</p>
+<p>If we want to just use the same text used for the schema at runtime, we can use the <code>GetSamples</code> method:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="rt">People</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">  [ { &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 },</span>
+<span class="s">    { &quot;name&quot;:&quot;Tomas&quot; } ] &quot;&quot;&quot;</span><span class="pn">&gt;</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="fn">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs21', 37)" onmouseover="showTip(event, 'fs21', 37)" class="rt">People</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 38)" onmouseover="showTip(event, 'fs23', 38)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs24', 39)" onmouseover="showTip(event, 'fs24', 39)" class="fn">printf</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> &quot;</span> <span onmouseout="hideTip(event, 'fs22', 40)" onmouseover="showTip(event, 'fs22', 40)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="id">Name</span>
+    <span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs25', 43)" onmouseover="showTip(event, 'fs25', 43)" class="id">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 44)" onmouseover="showTip(event, 'fs26', 44)" class="m">Option</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs27', 45)" onmouseover="showTip(event, 'fs27', 45)" class="id">iter</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs24', 46)" onmouseover="showTip(event, 'fs24', 46)" class="fn">printf</span> <span class="s">&quot;(</span><span class="pf">%d</span><span class="s">)&quot;</span><span class="pn">)</span>
+    <span onmouseout="hideTip(event, 'fs28', 47)" onmouseover="showTip(event, 'fs28', 47)" class="fn">printfn</span> <span class="s">&quot;&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>John (94)
+Tomas 
+type People = JsonProvider&lt;...&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>The inferred type for <code>items</code> is a collection of (anonymous) JSON entities - each entity
+has properties <code>Name</code> and <code>Age</code>. As <code>Age</code> is unavailable for all records in the sample
+data set, it is inferred as <code>option&lt;int&gt;</code>. The above sample uses <code>Option.iter</code> to print
+the value only when it is available.</p>
+<p>In the previous case, the values of individual properties had common types - <code>string</code>
+for the <code>Name</code> property and numeric type for <code>Age</code>. However, what if the property of
+a record can have multiple different types? In that case, the type provider behaves
+as follows:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="rt">Values</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;&quot;&quot; [{&quot;value&quot;:94 }, {&quot;value&quot;:&quot;Tomas&quot; }] &quot;&quot;&quot;</span><span class="pn">&gt;</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 50)" onmouseover="showTip(event, 'fs22', 50)" class="fn">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs29', 51)" onmouseover="showTip(event, 'fs29', 51)" class="rt">Values</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 52)" onmouseover="showTip(event, 'fs23', 52)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span> <span class="k">do</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 54)" onmouseover="showTip(event, 'fs30', 54)" class="prop">Value</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs31', 55)" onmouseover="showTip(event, 'fs31', 55)" class="id">Number</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs22', 56)" onmouseover="showTip(event, 'fs22', 56)" class="fn">item</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 57)" onmouseover="showTip(event, 'fs30', 57)" class="prop">Value</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs32', 58)" onmouseover="showTip(event, 'fs32', 58)" class="id">String</span> <span class="k">with</span>
+    <span class="pn">|</span> <span onmouseout="hideTip(event, 'fs33', 59)" onmouseover="showTip(event, 'fs33', 59)" class="uc">Some</span> <span onmouseout="hideTip(event, 'fs34', 60)" onmouseover="showTip(event, 'fs34', 60)" class="fn">num</span><span class="pn">,</span> <span class="id">_</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 61)" onmouseover="showTip(event, 'fs28', 61)" class="fn">printfn</span> <span class="s">&quot;Numeric: </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs34', 62)" onmouseover="showTip(event, 'fs34', 62)" class="fn">num</span>
+    <span class="pn">|</span> <span class="id">_</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs33', 63)" onmouseover="showTip(event, 'fs33', 63)" class="uc">Some</span> <span onmouseout="hideTip(event, 'fs35', 64)" onmouseover="showTip(event, 'fs35', 64)" class="fn">str</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 65)" onmouseover="showTip(event, 'fs28', 65)" class="fn">printfn</span> <span class="s">&quot;Text: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs35', 66)" onmouseover="showTip(event, 'fs35', 66)" class="fn">str</span>
+    <span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 67)" onmouseover="showTip(event, 'fs28', 67)" class="fn">printfn</span> <span class="s">&quot;Some other value!&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Numeric: 94
+Text: Tomas
+type Values = JsonProvider&lt;...&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>Here, the <code>Value</code> property is either a number or a string, The type provider generates
+a type that has an optional property for each possible option, so we can use
+simple pattern matching on <code>option&lt;int&gt;</code> and <code>option&lt;string&gt;</code> values to distinguish
+between the two options. This is similar to the handling of heterogeneous arrays.</p>
+<p>Note that we have a <code>GetSamples</code> method because the sample is a JSON list. If it was a JSON
+object, we would have a <code>GetSample</code> method instead.</p>
+<h4><a name="More-complex-object-type-on-the-root-level" class="anchor" href="#More-complex-object-type-on-the-root-level">More complex object type on the root level</a></h4>
+<p>If you want the root type to be an object type, not an array, but
+you need more samples at the root level, you can use the <code>SampleIsList</code> parameter.
+Applied to the previous example, this would be:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="rt">People2</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="rt">JsonProvider</span><span class="pn">&lt;</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  [ { &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 },</span>
+<span class="s">    { &quot;name&quot;:&quot;Tomas&quot; } ] &quot;&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="id">person</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="rt">People2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 72)" onmouseover="showTip(event, 'fs6', 72)" class="id">Parse</span><span class="pn">(</span><span class="s">&quot;&quot;&quot;{ &quot;name&quot;:&quot;Gustavo&quot; }&quot;&quot;&quot;</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type People2 = JsonProvider&lt;...&gt;
+val person: JsonProvider&lt;...&gt;.Root = {
+  "name": "Gustavo"
+}</code></pre></td></tr></table>
+<p>Note that starting with version 4.2.9 of this package, JSON comments are supported
+(Comments are either single-line and start with <code>//</code> or multi-line when wrapped in <code>/*</code> and <code>*/</code>).
+This is not a standard feature of JSON, but it can be really convenient,
+e.g. to annotate each sample when using multiple ones.</p>
+<h2><a name="Type-inference-hints-inline-schemas" class="anchor" href="#Type-inference-hints-inline-schemas">Type inference hints / inline schemas</a></h2>
+<p>Starting with version 4.2.10 of this package, it's possible to enable basic type annotations
+directly in the sample used by the provider, to complete or to override type inference.
+(Only basic types are supported. See the reference documentation of the provider for the full list)</p>
+<p>This feature is disabled by default and has to be explicitly enabled with the <code>InferenceMode</code>
+static parameter.</p>
+<p>Let's consider an example where this can be useful:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs38', 73)" onmouseover="showTip(event, 'fs38', 73)" class="rt">AmbiguousEntity</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 74)" onmouseover="showTip(event, 'fs4', 74)" class="rt">JsonProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Sample</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        { &quot;code&quot;:&quot;000&quot;, &quot;length&quot;:&quot;0&quot; }</span>
+<span class="s">        { &quot;code&quot;:&quot;123&quot;, &quot;length&quot;:&quot;42&quot; }</span>
+<span class="s">        { &quot;code&quot;:&quot;4E5&quot;, &quot;length&quot;:&quot;1.83&quot; }</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 75)" onmouseover="showTip(event, 'fs39', 75)" class="id">code</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs38', 76)" onmouseover="showTip(event, 'fs38', 76)" class="rt">AmbiguousEntity</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 77)" onmouseover="showTip(event, 'fs23', 77)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Code</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 78)" onmouseover="showTip(event, 'fs40', 78)" class="id">length</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs38', 79)" onmouseover="showTip(event, 'fs38', 79)" class="rt">AmbiguousEntity</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 80)" onmouseover="showTip(event, 'fs23', 80)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Length</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type AmbiguousEntity = JsonProvider&lt;...&gt;
+val code: float = 123.0
+val length: decimal = 42M</code></pre></td></tr></table>
+<p>In the previous example, <code>Code</code> is inferred as a <code>float</code>,
+even though it looks more like it should be a <code>string</code>.
+(<code>4E5</code> is interpreted as an exponential float notation instead of a string)</p>
+<p>Now, let's enable inline schemas:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 81)" onmouseover="showTip(event, 'fs1', 81)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 82)" onmouseover="showTip(event, 'fs2', 82)" class="id">Data</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs41', 83)" onmouseover="showTip(event, 'fs41', 83)" class="id">Runtime</span><span class="pn">.</span><span class="m">StructuralInference</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs42', 84)" onmouseover="showTip(event, 'fs42', 84)" class="rt">AmbiguousEntity2</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 85)" onmouseover="showTip(event, 'fs4', 85)" class="rt">JsonProvider</span><span class="pn">&lt;</span>
+        <span class="fn">Sample</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        { &quot;code&quot;:&quot;typeof&lt;string&gt;&quot;, &quot;length&quot;:&quot;typeof&lt; float&lt;metre&gt; &gt;&quot; }</span>
+<span class="s">        { &quot;code&quot;:&quot;123&quot;, &quot;length&quot;:&quot;42&quot; }</span>
+<span class="s">        { &quot;code&quot;:&quot;4E5&quot;, &quot;length&quot;:&quot;1.83&quot; }</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="pn">,</span>
+        <span onmouseout="hideTip(event, 'fs43', 86)" onmouseover="showTip(event, 'fs43', 86)" class="fn">InferenceMode</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs43', 87)" onmouseover="showTip(event, 'fs43', 87)" class="en">InferenceMode</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 88)" onmouseover="showTip(event, 'fs44', 88)" class="id">ValuesAndInlineSchemasOverrides</span>
+     <span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs45', 89)" onmouseover="showTip(event, 'fs45', 89)" class="id">code2</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs42', 90)" onmouseover="showTip(event, 'fs42', 90)" class="rt">AmbiguousEntity2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 91)" onmouseover="showTip(event, 'fs23', 91)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">.</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Code</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs46', 92)" onmouseover="showTip(event, 'fs46', 92)" class="id">length2</span> <span class="o">=</span> <span class="prop">(</span><span onmouseout="hideTip(event, 'fs42', 93)" onmouseover="showTip(event, 'fs42', 93)" class="rt">AmbiguousEntity2</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 94)" onmouseover="showTip(event, 'fs23', 94)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span><span class="pn">.</span><span class="pn">[</span><span class="n">1</span><span class="pn">]</span><span class="pn">)</span><span class="pn">.</span><span class="id">Length</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type AmbiguousEntity2 = JsonProvider&lt;...&gt;
+val code2: string = "123"
+val length2: JsonProvider&lt;...&gt;.DecimalOrString = "42"</code></pre></td></tr></table>
+<p>With the <code>ValuesAndInlineSchemasOverrides</code> inference mode, the <code>typeof&lt;string&gt;</code> inline schema
+takes priority over the type inferred from other values.
+<code>Code</code> is now a <code>string</code>, as we wanted it to be!</p>
+<p>Note that an alternative to obtain the same result would have been to replace all the <code>Code</code> values
+in the samples with unambiguous string values. (But this can be very cumbersome, especially with big samples)</p>
+<p>If we had used the <code>ValuesAndInlineSchemasHints</code> inference mode instead, our inline schema
+would have had the same precedence as the types inferred from other values, and <code>Code</code>
+would have been inferred as a choice between either a number or a string,
+exactly as if we had added another sample with an unambiguous string value for <code>Code</code>.</p>
+<p>You can use either angle brackets <code>&lt;&gt;</code> or curly brackets <code>{}</code> when defining inline schemas.</p>
+<h3><a name="Units-of-measure" class="anchor" href="#Units-of-measure">Units of measure</a></h3>
+<p>Inline schemas also enable support for units of measure.</p>
+<p>In the previous example, the <code>Length</code> property is now inferred as a <code>float</code>
+with the <code>metre</code> unit of measure (from the default SI units).</p>
+<p>Warning: units of measures are discarded when merged with types without a unit or with a different unit.
+As mentioned previously, with the <code>ValuesAndInlineSchemasHints</code> inference mode,
+inline schemas types are merged with other inferred types with the same precedence.
+Since values-inferred types never have units, inline-schemas-inferred types will lose their
+unit if the sample contains other values...</p>
+<h2><a name="Loading-WorldBank-data" class="anchor" href="#Loading-WorldBank-data">Loading WorldBank data</a></h2>
+<p>Now, let's use the type provider to process some real data. We use a data set returned by
+<a href="https://data.worldbank.org">the WorldBank</a>, which has (roughly) the following structure:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="js">[ { <span class="s">"page"</span>: <span class="n">1</span>, <span class="s">"pages"</span>: <span class="n">1</span>, <span class="s">"total"</span>: <span class="n">53</span> },
+  [ { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="k">null</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2000"</span>},
+    { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="s">"16.6567773464055"</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2010"</span>} ] ]
+</code></pre></td></tr></table>
+<p>The response to a request contains an array of two items. The first item is a record
+with general information about the response (page, total pages, etc.) and the second item
+is another array which contains the actual data points. For every data point, we get
+some information and the actual <code>value</code>. Note that the <code>value</code> is passed as a string
+(for some unknown reason). It is wrapped in quotes, so the provider infers its type as
+<code>string</code> (and we need to convert it manually).</p>
+<p>The following sample generates type based on the <a href="../data/WorldBank.json"><code>data/WorldBank.json</code></a>
+file and loads it:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs47', 95)" onmouseover="showTip(event, 'fs47', 95)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 96)" onmouseover="showTip(event, 'fs48', 96)" class="prop">ResolutionFolder</span> <span class="o">=</span> <span class="k">__SOURCE_DIRECTORY__</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs49', 97)" onmouseover="showTip(event, 'fs49', 97)" class="rt">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 98)" onmouseover="showTip(event, 'fs4', 98)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/WorldBank.json&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs48', 99)" onmouseover="showTip(event, 'fs48', 99)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs48', 100)" onmouseover="showTip(event, 'fs48', 100)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 101)" onmouseover="showTip(event, 'fs50', 101)" class="id">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs49', 102)" onmouseover="showTip(event, 'fs49', 102)" class="rt">WorldBank</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs51', 103)" onmouseover="showTip(event, 'fs51', 103)" class="id">GetSample</span><span class="pn">(</span><span class="pn">)</span>
+</code></pre>
+<p>Note that we can also load the data directly from the web both in the <code>Load</code> method and in
+the type provider sample parameter, and there's an asynchronous <code>AsyncLoad</code> method available too:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 104)" onmouseover="showTip(event, 'fs52', 104)" class="id">wbReq</span> <span class="o">=</span>
+    <span class="s">&quot;https://api.worldbank.org/country/cz/indicator/&quot;</span>
+    <span class="o">+</span> <span class="s">&quot;GC.DOD.TOTL.GD.ZS?format=json&quot;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 105)" onmouseover="showTip(event, 'fs53', 105)" class="id">docAsync</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs49', 106)" onmouseover="showTip(event, 'fs49', 106)" class="rt">WorldBank</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs54', 107)" onmouseover="showTip(event, 'fs54', 107)" class="id">AsyncLoad</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs52', 108)" onmouseover="showTip(event, 'fs52', 108)" class="id">wbReq</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val wbReq: string =
+  "https://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD"+[15 chars]
+val docAsync: Async&lt;JsonProvider&lt;...&gt;.Root&gt;</code></pre></td></tr></table>
+<p>The <code>doc</code> is an array of heterogeneous types, so the provider generates a type
+that can be used to get the record and the array, respectively. Note that the
+provider infers that there is only one record and one array. We can print the data set as follows:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Print general information</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs55', 109)" onmouseover="showTip(event, 'fs55', 109)" class="id">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs50', 110)" onmouseover="showTip(event, 'fs50', 110)" class="id">doc</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs56', 111)" onmouseover="showTip(event, 'fs56', 111)" class="id">Record</span>
+<span onmouseout="hideTip(event, 'fs28', 112)" onmouseover="showTip(event, 'fs28', 112)" class="fn">printfn</span> <span class="s">&quot;Showing page </span><span class="pf">%d</span><span class="s"> of </span><span class="pf">%d</span><span class="s">. Total records </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs55', 113)" onmouseover="showTip(event, 'fs55', 113)" class="id">info</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs57', 114)" onmouseover="showTip(event, 'fs57', 114)" class="id">Page</span> <span onmouseout="hideTip(event, 'fs55', 115)" onmouseover="showTip(event, 'fs55', 115)" class="id">info</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs58', 116)" onmouseover="showTip(event, 'fs58', 116)" class="id">Pages</span> <span onmouseout="hideTip(event, 'fs55', 117)" onmouseover="showTip(event, 'fs55', 117)" class="id">info</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs59', 118)" onmouseover="showTip(event, 'fs59', 118)" class="id">Total</span>
+
+<span class="c">// Print all data points</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs60', 119)" onmouseover="showTip(event, 'fs60', 119)" class="fn">record</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs50', 120)" onmouseover="showTip(event, 'fs50', 120)" class="id">doc</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs61', 121)" onmouseover="showTip(event, 'fs61', 121)" class="id">Array</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs60', 122)" onmouseover="showTip(event, 'fs60', 122)" class="fn">record</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs62', 123)" onmouseover="showTip(event, 'fs62', 123)" class="id">Value</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 124)" onmouseover="showTip(event, 'fs26', 124)" class="m">Option</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs27', 125)" onmouseover="showTip(event, 'fs27', 125)" class="id">iter</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs63', 126)" onmouseover="showTip(event, 'fs63', 126)" class="fn">value</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 127)" onmouseover="showTip(event, 'fs28', 127)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">: </span><span class="pf">%f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs60', 128)" onmouseover="showTip(event, 'fs60', 128)" class="fn">record</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs64', 129)" onmouseover="showTip(event, 'fs64', 129)" class="id">Date</span> <span onmouseout="hideTip(event, 'fs63', 130)" onmouseover="showTip(event, 'fs63', 130)" class="fn">value</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Showing page 1 of 1. Total records 53
+2010: 35.142297
+2009: 31.034880
+2008: 25.475164
+2007: 24.193320
+2006: 23.708055
+2005: 22.033462
+2004: 20.108379
+2003: 18.267725
+2002: 15.425565
+2001: 14.874434
+2000: 13.218869
+1999: 11.356696
+1998: 10.178780
+1997: 10.153566
+1996: 10.520301
+1995: 12.707834
+1994: 14.781808
+1993: 16.656777
+val info: JsonProvider&lt;...&gt;.Record2 =
+  {
+  "page": 1,
+  "pages": 1,
+  "per_page": "1000",
+  "total": 53
+}
+val it: unit = ()</code></pre></td></tr></table>
+<p>When printing the data points, some of the values might be missing (in the input, the value
+is <code>null</code> instead of a valid number). This is another example of a heterogeneous type -
+the type is either <code>Number</code> or some other type (representing <code>null</code> value). This means
+that <code>record.Value</code> has a <code>Number</code> property (when the value is a number) and we can use
+it to print the result only when the data point is available.</p>
+<h2><a name="Parsing-Twitter-stream" class="anchor" href="#Parsing-Twitter-stream">Parsing Twitter stream</a></h2>
+<p>We now look at how to parse tweets returned by the <a href="http://dev.twitter.com/">Twitter API</a>.
+Tweets are quite heterogeneous, so we infer the structure from a <em>list</em> of inputs rather than from
+just a single input. To do that, we use the file <a href="../data/TwitterStream.json"><code>data/TwitterStream.json</code></a>
+(containing a list of tweets) and pass an optional parameter <code>SampleIsList=true</code> which tells the
+provider that the sample is actually a <em>list of samples</em>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs65', 131)" onmouseover="showTip(event, 'fs65', 131)" class="rt">Tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 132)" onmouseover="showTip(event, 'fs4', 132)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/TwitterStream.json&quot;</span><span class="pn">,</span> <span class="fn">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs48', 133)" onmouseover="showTip(event, 'fs48', 133)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs48', 134)" onmouseover="showTip(event, 'fs48', 134)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs66', 135)" onmouseover="showTip(event, 'fs66', 135)" class="id">text</span> <span class="o">=</span> <span id="fst67" onmouseout="hideTip(event, 'fs67', 136)" onmouseover="showTip(event, 'fs67', 136, document.getElementById('fst67'))" class="omitted">(omitted)</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 137)" onmouseover="showTip(event, 'fs68', 137)" class="id">tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs65', 138)" onmouseover="showTip(event, 'fs65', 138)" class="rt">Tweet</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 139)" onmouseover="showTip(event, 'fs6', 139)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs66', 140)" onmouseover="showTip(event, 'fs66', 140)" class="id">text</span><span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs28', 141)" onmouseover="showTip(event, 'fs28', 141)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (retweeted </span><span class="pf">%d</span><span class="s"> times)\n:</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs68', 142)" onmouseover="showTip(event, 'fs68', 142)" class="id">tweet</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs69', 143)" onmouseover="showTip(event, 'fs69', 143)" class="prop">User</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs70', 144)" onmouseover="showTip(event, 'fs70', 144)" class="prop">Value</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs71', 145)" onmouseover="showTip(event, 'fs71', 145)" class="id">Name</span> <span onmouseout="hideTip(event, 'fs68', 146)" onmouseover="showTip(event, 'fs68', 146)" class="id">tweet</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs72', 147)" onmouseover="showTip(event, 'fs72', 147)" class="prop">RetweetCount</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs73', 148)" onmouseover="showTip(event, 'fs73', 148)" class="id">Value</span> <span onmouseout="hideTip(event, 'fs68', 149)" onmouseover="showTip(event, 'fs68', 149)" class="id">tweet</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs74', 150)" onmouseover="showTip(event, 'fs74', 150)" class="prop">Text</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs75', 151)" onmouseover="showTip(event, 'fs75', 151)" class="id">Value</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<p>After creating the <code>Tweet</code> type, we parse a single sample tweet and print some details about the
+tweet. As you can see, the <code>tweet.User</code> property has been inferred as optional, and so are
+<code>RetweetCount</code> and <code>Text</code>. The reason is that <code>TwitterStream.json</code> contains not only tweet objects
+but also other event types (such as <code>delete</code> events) with a completely different schema. When the
+type provider merges multiple heterogeneous sample objects, any field that does not appear in all
+samples is inferred as optional. We unsafely get the values using the <code>Value</code> property since we
+know our input is a tweet.</p>
+<h2><a name="Getting-and-creating-GitHub-issues" class="anchor" href="#Getting-and-creating-GitHub-issues">Getting and creating GitHub issues</a></h2>
+<p>In this example we will now also create JSON in addition to consuming it.
+Let's start by listing the 5 most recently updated open issues in the FSharp.Data repository.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// GitHub.json downloaded from</span>
+<span class="c">// https://api.github.com/repos/fsharp/FSharp.Data/issues</span>
+<span class="c">// to prevent rate limit when generating these docs</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs76', 152)" onmouseover="showTip(event, 'fs76', 152)" class="rt">GitHub</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 153)" onmouseover="showTip(event, 'fs4', 153)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span class="s">&quot;../data/GitHub.json&quot;</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs48', 154)" onmouseover="showTip(event, 'fs48', 154)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs48', 155)" onmouseover="showTip(event, 'fs48', 155)" class="prop">ResolutionFolder</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs77', 156)" onmouseover="showTip(event, 'fs77', 156)" class="id">topRecentlyUpdatedIssues</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs76', 157)" onmouseover="showTip(event, 'fs76', 157)" class="rt">GitHub</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 158)" onmouseover="showTip(event, 'fs23', 158)" class="id">GetSamples</span><span class="pn">(</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 159)" onmouseover="showTip(event, 'fs13', 159)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs78', 160)" onmouseover="showTip(event, 'fs78', 160)" class="id">filter</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs79', 161)" onmouseover="showTip(event, 'fs79', 161)" class="fn">issue</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs79', 162)" onmouseover="showTip(event, 'fs79', 162)" class="fn">issue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 163)" onmouseover="showTip(event, 'fs80', 163)" class="id">State</span> <span class="o">=</span> <span class="s">&quot;open&quot;</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 164)" onmouseover="showTip(event, 'fs13', 164)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs81', 165)" onmouseover="showTip(event, 'fs81', 165)" class="id">sortBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs79', 166)" onmouseover="showTip(event, 'fs79', 166)" class="fn">issue</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs82', 167)" onmouseover="showTip(event, 'fs82', 167)" class="id">System</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs83', 168)" onmouseover="showTip(event, 'fs83', 168)" class="vt">DateTimeOffset</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 169)" onmouseover="showTip(event, 'fs84', 169)" class="id">Now</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs79', 170)" onmouseover="showTip(event, 'fs79', 170)" class="fn">issue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs85', 171)" onmouseover="showTip(event, 'fs85', 171)" class="id">UpdatedAt</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 172)" onmouseover="showTip(event, 'fs13', 172)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs86', 173)" onmouseover="showTip(event, 'fs86', 173)" class="id">truncate</span> <span class="n">5</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs79', 174)" onmouseover="showTip(event, 'fs79', 174)" class="fn">issue</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs77', 175)" onmouseover="showTip(event, 'fs77', 175)" class="id">topRecentlyUpdatedIssues</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs28', 176)" onmouseover="showTip(event, 'fs28', 176)" class="fn">printfn</span> <span class="s">&quot;#</span><span class="pf">%d</span><span class="s"> </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs79', 177)" onmouseover="showTip(event, 'fs79', 177)" class="fn">issue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs87', 178)" onmouseover="showTip(event, 'fs87', 178)" class="id">Number</span> <span onmouseout="hideTip(event, 'fs79', 179)" onmouseover="showTip(event, 'fs79', 179)" class="fn">issue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs88', 180)" onmouseover="showTip(event, 'fs88', 180)" class="id">Title</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>#879 Bug when call request from Http module
+#867 XmlProvider in 2.2.5 on F# 4 project causes multiple FSharp.Core assembly references
+#877 Header being considered as data row in HTMLProvider
+#878 Replace GitHub JsonProvider example with something else in ConsoleTests because of rate limit
+#873 Fix HtmlInference inferListType when passing an empty seq
+type GitHub = JsonProvider&lt;...&gt;
+val topRecentlyUpdatedIssues: JsonProvider&lt;...&gt;.Root seq
+val it: unit = ()</code></pre></td></tr></table>
+<p>And now let's create a new issue. We look into the documentation at <a href="http://developer.github.com/v3/issues/#create-an-issue">http://developer.github.com/v3/issues/#create-an-issue</a> and we see that
+we need to post a JSON value similar to this:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs47', 181)" onmouseover="showTip(event, 'fs47', 181)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs89', 182)" onmouseover="showTip(event, 'fs89', 182)" class="prop">issueSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  &quot;title&quot;: &quot;Found a bug&quot;,</span>
+<span class="s">  &quot;body&quot;: &quot;I&#39;m having a problem with this.&quot;,</span>
+<span class="s">  &quot;assignee&quot;: &quot;octocat&quot;,</span>
+<span class="s">  &quot;milestone&quot;: 1,</span>
+<span class="s">  &quot;labels&quot;: [</span>
+<span class="s">    &quot;Label1&quot;,</span>
+<span class="s">    &quot;Label2&quot;</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span>
+</code></pre>
+<p>This JSON is different from what we got for each issue in the previous API call, so we'll define a new type based on this sample,
+create an instance, and send a POST request:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs90', 183)" onmouseover="showTip(event, 'fs90', 183)" class="rt">GitHubIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 184)" onmouseover="showTip(event, 'fs4', 184)" class="rt">JsonProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs89', 185)" onmouseover="showTip(event, 'fs89', 185)" class="prop">issueSample</span><span class="pn">,</span> <span class="fn">RootName</span><span class="o">=</span><span class="s">&quot;issue&quot;</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs91', 186)" onmouseover="showTip(event, 'fs91', 186)" class="id">newIssue</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs90', 187)" onmouseover="showTip(event, 'fs90', 187)" class="rt">GitHubIssue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 188)" onmouseover="showTip(event, 'fs92', 188)" class="id">Issue</span><span class="pn">(</span>
+        <span class="s">&quot;Test issue&quot;</span><span class="pn">,</span>
+        <span class="s">&quot;This is a test issue created in FSharp.Data documentation&quot;</span><span class="pn">,</span>
+        <span class="fn">assignee</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="pn">,</span>
+        <span class="fn">labels</span> <span class="o">=</span> <span class="pn">[|</span><span class="pn">|]</span><span class="pn">,</span>
+        <span class="fn">milestone</span> <span class="o">=</span> <span class="n">0</span>
+    <span class="pn">)</span>
+
+<span onmouseout="hideTip(event, 'fs91', 189)" onmouseover="showTip(event, 'fs91', 189)" class="id">newIssue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs93', 190)" onmouseover="showTip(event, 'fs93', 190)" class="prop">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs94', 191)" onmouseover="showTip(event, 'fs94', 191)" class="id">Request</span> <span class="s">&quot;https://api.github.com/repos/fsharp/FSharp.Data/issues&quot;</span>
+</code></pre>
+<a name="jsonlib"></a>
+<h2><a name="Using-JSON-provider-in-a-library" class="anchor" href="#Using-JSON-provider-in-a-library">Using JSON provider in a library</a></h2>
+<p>You can use the types created by JSON type provider in a public API of a library that you are building,
+but there is one important thing to keep in mind - when the user references your library, the type
+provider will be loaded, and the types will be generated at that time (the JSON provider is not
+currently a <em>generative</em> type provider). This means that the type provider will need to be able to
+access the sample JSON. This works fine when the sample is specified inline, but it won't work when
+the sample is specified as a local file (unless you distribute the samples with your library).</p>
+<p>For this reason, the JSON provider lets you specify samples as embedded resources using the
+static parameter <code>EmbeddedResource</code>. When this parameter is set, the type provider at design time
+reads the sample from the local path, but at runtime (when the library is loaded by a consumer)
+it reads the sample from the embedded resource in the compiled assembly.</p>
+<h3><a name="Step-by-step-guide" class="anchor" href="#Step-by-step-guide">Step-by-step guide</a></h3>
+<p><strong>Step 1</strong>: Mark your sample file as an embedded resource in the <code>.fsproj</code> file:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">ItemGroup</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">EmbeddedResource</span> <span class="o">Include</span><span class="k">="data/worldbank.json"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">ItemGroup</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p><strong>Step 2</strong>: Use the <code>EmbeddedResource</code> static parameter. The value must be
+<code>"AssemblyName, AssemblyName.dotted.path.to.file.json"</code> where:
+- <code>AssemblyName</code> is the name of your library assembly (without <code>.dll</code>)
+- The file path uses <strong>dots</strong> (not slashes) as separators, prefixed with <code>AssemblyName</code></p>
+<p>So for a file <code>data/worldbank.json</code> in a library <code>MyLib</code>, the value is:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs95', 192)" onmouseover="showTip(event, 'fs95', 192)" class="rt">WB</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 193)" onmouseover="showTip(event, 'fs4', 193)" class="rt">JsonProvider</span><span class="pn">&lt;</span>
+        <span class="s">&quot;../data/WorldBank.json&quot;</span><span class="pn">,</span>
+        <span class="fn">EmbeddedResource</span><span class="o">=</span><span class="s">&quot;MyLib, MyLib.data.worldbank.json&quot;</span><span class="pn">,</span>
+        <span onmouseout="hideTip(event, 'fs48', 194)" onmouseover="showTip(event, 'fs48', 194)" class="fn">ResolutionFolder</span><span class="o">=</span><span onmouseout="hideTip(event, 'fs48', 195)" onmouseover="showTip(event, 'fs48', 195)" class="prop">ResolutionFolder</span>
+     <span class="pn">&gt;</span>
+</code></pre>
+<p>You still need to specify the local path, but this is only used when compiling <code>MyLib.dll</code>.
+When a user of your library references <code>MyLib.dll</code> later, the JSON Type Provider will be able
+to load <code>MyLib.dll</code> and locate the sample <code>worldbank.json</code> as a resource of the library. When
+this succeeds, it does not attempt to find the local file and so your library can be used
+without providing a local copy of the sample JSON files.</p>
+<blockquote>
+<p><strong>Common pitfall</strong>: If you get a cryptic error where the type provider interprets the file path
+as the CSV/JSON content itself (resulting in a single-column type named after the path), you
+have likely forgotten to add the <code>EmbeddedResource</code> parameter, or the assembly name or resource
+path in the parameter value is incorrect.</p>
+<p>To verify the embedded resource name, you can inspect the compiled <code>.dll</code> using a tool such as
+<code>ildasm</code>, <code>dotnet-ildasm</code>, or ILSpy and look at the <code>.mresource</code> entries.</p>
+</blockquote>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li>
+<a href="JsonValue.html">JSON Parser</a> - provides more information about
+working with JSON values dynamically.
+</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonprovider.html">JsonProvider</a></li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a></li>
+</ul>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">type Simple = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs4">type JsonProvider<br /><em>&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;
+           &lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;
+           &lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;
+           &lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;
+           &lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;
+           &lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.&lt;/param&gt;
+           &lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;
+           &lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource
+              (e.g. &#39;MyCompany.MyAssembly, resource_name.json&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;
+           &lt;param name=&#39;InferTypesFromValues&#39;&gt;
+              This parameter is deprecated. Please use InferenceMode instead.
+              If true, turns on additional type inference from values.
+              (e.g. type inference infers string values such as &quot;123&quot; as ints and values constrained to 0 and 1 as booleans.)&lt;/param&gt;
+           &lt;param name=&#39;PreferDictionaries&#39;&gt;If true, json records are interpreted as dictionaries when the names of all the fields are inferred (by type inference rules) into the same non-string primitive type.&lt;/param&gt;
+           &lt;param name=&#39;InferenceMode&#39;&gt;Possible values:
+              | NoInference -&gt; Inference is disabled. All values are inferred as the most basic type permitted for the value (i.e. string or number or bool).
+              | ValuesOnly -&gt; Types of values are inferred from the Sample. Inline schema support is disabled. This is the default.
+              | ValuesAndInlineSchemasHints -&gt; Types of values are inferred from both values and inline schemas. Inline schemas are special string values that can define a type and/or unit of measure. Supported syntax: typeof&amp;lt;type&amp;gt; or typeof{type} or typeof&amp;lt;type&amp;lt;measure&amp;gt;&amp;gt; or typeof{type{measure}}. Valid measures are the default SI units, and valid types are &lt;c&gt;int&lt;/c&gt;, &lt;c&gt;int64&lt;/c&gt;, &lt;c&gt;bool&lt;/c&gt;, &lt;c&gt;float&lt;/c&gt;, &lt;c&gt;decimal&lt;/c&gt;, &lt;c&gt;date&lt;/c&gt;, &lt;c&gt;datetimeoffset&lt;/c&gt;, &lt;c&gt;timespan&lt;/c&gt;, &lt;c&gt;guid&lt;/c&gt; and &lt;c&gt;string&lt;/c&gt;.
+              | ValuesAndInlineSchemasOverrides -&gt; Same as ValuesAndInlineSchemasHints, but value inferred types are ignored when an inline schema is present.
+           &lt;/param&gt;
+           &lt;param name=&#39;Schema&#39;&gt;Location of a JSON Schema file or a string containing a JSON Schema document. When specified, Sample and SampleIsList must not be used.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateOnly&#39;&gt;When true on .NET 6+, date-only strings (e.g. &quot;2023-01-15&quot;) are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.&lt;/param&gt;
+           &lt;param name=&#39;UseOriginalNames&#39;&gt;When true, JSON property names are used as-is for generated property names instead of being normalized to PascalCase. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;OmitNullFields&#39;&gt;When true, optional fields with value None are omitted from the generated JSON rather than serialized as null. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;PreferOptionals&#39;&gt;When set to true (default), inference will use the option type for missing or null values. When false, inference will prefer to use empty string or double.NaN for missing values where possible, matching the default CsvProvider behavior.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateTimeOffset&#39;&gt;When true, date-time strings without an explicit timezone offset are inferred as DateTimeOffset (using the local offset) instead of DateTime. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;ExceptionIfMissing&#39;&gt;When true, accessing a non-optional field that is missing in the JSON data raises an exception instead of returning a default value (empty string for string, NaN for float). Defaults to false for backward compatibility.&lt;/param&gt;</em></div>
+<div class="fsdocs-tip" id="fs5">val simple: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.Root<br /><em>Parses the specified JSON string</em></div>
+<div class="fsdocs-tip" id="fs7">property JsonProvider&lt;...&gt;.Root.Age: int with get</div>
+<div class="fsdocs-tip" id="fs8">property JsonProvider&lt;...&gt;.Root.Name: string with get</div>
+<div class="fsdocs-tip" id="fs9">type Numbers = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs10">val nums: decimal array</div>
+<div class="fsdocs-tip" id="fs11">JsonProvider&lt;...&gt;.Parse(text: string) : decimal array<br /><em>Parses the specified JSON string</em></div>
+<div class="fsdocs-tip" id="fs12">val total: decimal</div>
+<div class="fsdocs-tip" id="fs13">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs14">val sum: source: &#39;T seq -&gt; &#39;T (requires member (+) and member Zero)</div>
+<div class="fsdocs-tip" id="fs15">type Mixed = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs16">val mixed: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs17">property JsonProvider&lt;...&gt;.Root.Numbers: int array with get</div>
+<div class="fsdocs-tip" id="fs18">property JsonProvider&lt;...&gt;.Root.Strings: string array with get</div>
+<div class="fsdocs-tip" id="fs19">module String
+
+from Microsoft.FSharp.Core</div>
+<div class="fsdocs-tip" id="fs20">val concat: sep: string -&gt; strings: string seq -&gt; string</div>
+<div class="fsdocs-tip" id="fs21">type People = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs22">val item: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs23">JsonProvider&lt;...&gt;.GetSamples() : JsonProvider&lt;...&gt;.Root array</div>
+<div class="fsdocs-tip" id="fs24">val printf: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs25">property JsonProvider&lt;...&gt;.Root.Age: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs26">module Option
+
+from Microsoft.FSharp.Core</div>
+<div class="fsdocs-tip" id="fs27">val iter: action: (&#39;T -&gt; unit) -&gt; option: &#39;T option -&gt; unit</div>
+<div class="fsdocs-tip" id="fs28">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs29">type Values = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs30">property JsonProvider&lt;...&gt;.Root.Value: JsonProvider&lt;...&gt;.IntOrString with get</div>
+<div class="fsdocs-tip" id="fs31">property JsonProvider&lt;...&gt;.IntOrString.Number: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs32">property JsonProvider&lt;...&gt;.IntOrString.String: Option&lt;string&gt; with get</div>
+<div class="fsdocs-tip" id="fs33">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="fsdocs-tip" id="fs34">val num: int</div>
+<div class="fsdocs-tip" id="fs35">val str: string</div>
+<div class="fsdocs-tip" id="fs36">type People2 = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs37">val person: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs38">type AmbiguousEntity = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs39">val code: float</div>
+<div class="fsdocs-tip" id="fs40">val length: decimal</div>
+<div class="fsdocs-tip" id="fs41">namespace FSharp.Data.Runtime</div>
+<div class="fsdocs-tip" id="fs42">type AmbiguousEntity2 = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs43">[&lt;Struct&gt;]
+type InferenceMode =
+  | BackwardCompatible = 0
+  | NoInference = 1
+  | ValuesOnly = 2
+  | ValuesAndInlineSchemasHints = 3
+  | ValuesAndInlineSchemasOverrides = 4<br /><em>&lt;summary&gt;
+ This is the public inference mode enum used when initializing a type provider,
+ with backward compatibility.
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs44">InferenceMode.ValuesAndInlineSchemasOverrides: InferenceMode = 4<br /><em>&lt;summary&gt;
+ Inline schemas types override value infered types. (Value infered types are ignored if an inline schema is present)
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs45">val code2: string</div>
+<div class="fsdocs-tip" id="fs46">val length2: JsonProvider&lt;...&gt;.DecimalOrString</div>
+<div class="fsdocs-tip" id="fs47">Multiple items<br />type LiteralAttribute =
+  inherit Attribute
+  new: unit -&gt; LiteralAttribute<br /><br />--------------------<br />new: unit -&gt; LiteralAttribute</div>
+<div class="fsdocs-tip" id="fs48">[&lt;Literal&gt;]
+val ResolutionFolder: string = &quot;D:\a\FSharp.Data\FSharp.Data\docs\library&quot;</div>
+<div class="fsdocs-tip" id="fs49">type WorldBank = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs50">val doc: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs51">JsonProvider&lt;...&gt;.GetSample() : JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs52">val wbReq: string</div>
+<div class="fsdocs-tip" id="fs53">val docAsync: Async&lt;JsonProvider&lt;...&gt;.Root&gt;</div>
+<div class="fsdocs-tip" id="fs54">JsonProvider&lt;...&gt;.AsyncLoad(uri: string) : Async&lt;JsonProvider&lt;...&gt;.Root&gt;<br /><em>Loads JSON from the specified uri</em></div>
+<div class="fsdocs-tip" id="fs55">val info: JsonProvider&lt;...&gt;.Record2</div>
+<div class="fsdocs-tip" id="fs56">property JsonProvider&lt;...&gt;.Root.Record: JsonProvider&lt;...&gt;.Record2 with get</div>
+<div class="fsdocs-tip" id="fs57">property JsonProvider&lt;...&gt;.Record2.Page: int with get</div>
+<div class="fsdocs-tip" id="fs58">property JsonProvider&lt;...&gt;.Record2.Pages: int with get</div>
+<div class="fsdocs-tip" id="fs59">property JsonProvider&lt;...&gt;.Record2.Total: int with get</div>
+<div class="fsdocs-tip" id="fs60">val record: JsonProvider&lt;...&gt;.Record</div>
+<div class="fsdocs-tip" id="fs61">property JsonProvider&lt;...&gt;.Root.Array: JsonProvider&lt;...&gt;.Record array with get</div>
+<div class="fsdocs-tip" id="fs62">property JsonProvider&lt;...&gt;.Record.Value: Option&lt;decimal&gt; with get</div>
+<div class="fsdocs-tip" id="fs63">val value: decimal</div>
+<div class="fsdocs-tip" id="fs64">property JsonProvider&lt;...&gt;.Record.Date: int with get</div>
+<div class="fsdocs-tip" id="fs65">type Tweet = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs66">val text: string</div>
+<div class="fsdocs-tip" id="fs67">&quot;&quot;&quot; {&quot;in_reply_to_status_id_str&quot;:null,&quot;text&quot;:&quot;\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002&quot;,&quot;in_reply_to_user_id_str&quot;:null,&quot;retweet_count&quot;:0,&quot;geo&quot;:null,&quot;source&quot;:&quot;web&quot;,&quot;retweeted&quot;:false,&quot;truncated&quot;:false,&quot;id_str&quot;:&quot;263290764686155776&quot;,&quot;entities&quot;:{&quot;user_mentions&quot;:[],&quot;hashtags&quot;:[],&quot;urls&quot;:[]},&quot;in_reply_to_user_id&quot;:null,&quot;in_reply_to_status_id&quot;:null,&quot;place&quot;:null,&quot;coordinates&quot;:null,&quot;in_reply_to_screen_name&quot;:null,&quot;created_at&quot;:&quot;Tue Oct 30 14:46:24 +0000 2012&quot;,&quot;user&quot;:{&quot;notifications&quot;:null,&quot;contributors_enabled&quot;:false,&quot;time_zone&quot;:&quot;Tokyo&quot;,&quot;profile_background_color&quot;:&quot;FFFFFF&quot;,&quot;location&quot;:&quot;Kodaira Tokyo Japan&quot;,&quot;profile_background_tile&quot;:false,&quot;profile_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;default_profile_image&quot;:false,&quot;follow_request_sent&quot;:null,&quot;profile_sidebar_fill_color&quot;:&quot;17451B&quot;,&quot;description&quot;:&quot;KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a&quot;,&quot;favourites_count&quot;:17,&quot;screen_name&quot;:&quot;Merlin_wand&quot;,&quot;profile_sidebar_border_color&quot;:&quot;000000&quot;,&quot;id_str&quot;:&quot;94788486&quot;,&quot;verified&quot;:false,&quot;lang&quot;:&quot;ja&quot;,&quot;statuses_count&quot;:8641,&quot;profile_use_background_image&quot;:true,&quot;protected&quot;:false,&quot;profile_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;listed_count&quot;:31,&quot;geo_enabled&quot;:true,&quot;created_at&quot;:&quot;Sat Dec 05 13:07:32 +0000 2009&quot;,&quot;profile_text_color&quot;:&quot;000000&quot;,&quot;name&quot;:&quot;Marin&quot;,&quot;profile_background_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;friends_count&quot;:629,&quot;url&quot;:null,&quot;id&quot;:94788486,&quot;is_translator&quot;:false,&quot;default_profile&quot;:false,&quot;following&quot;:null,&quot;profile_background_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;utc_offset&quot;:32400,&quot;profile_link_color&quot;:&quot;ADADAD&quot;,&quot;followers_count&quot;:426},&quot;id&quot;:263290764686155776,&quot;contributors&quot;:null,&quot;favorited&quot;:false} &quot;&quot;&quot;</div>
+<div class="fsdocs-tip" id="fs68">val tweet: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs69">property JsonProvider&lt;...&gt;.Root.User: Option&lt;JsonProvider&lt;...&gt;.User&gt; with get</div>
+<div class="fsdocs-tip" id="fs70">property Option.Value: JsonProvider&lt;...&gt;.User with get</div>
+<div class="fsdocs-tip" id="fs71">property JsonProvider&lt;...&gt;.User.Name: string with get</div>
+<div class="fsdocs-tip" id="fs72">property JsonProvider&lt;...&gt;.Root.RetweetCount: Option&lt;int&gt; with get</div>
+<div class="fsdocs-tip" id="fs73">property Option.Value: int with get</div>
+<div class="fsdocs-tip" id="fs74">property JsonProvider&lt;...&gt;.Root.Text: Option&lt;string&gt; with get</div>
+<div class="fsdocs-tip" id="fs75">property Option.Value: string with get</div>
+<div class="fsdocs-tip" id="fs76">type GitHub = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs77">val topRecentlyUpdatedIssues: JsonProvider&lt;...&gt;.Root seq</div>
+<div class="fsdocs-tip" id="fs78">val filter: predicate: (&#39;T -&gt; bool) -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div class="fsdocs-tip" id="fs79">val issue: JsonProvider&lt;...&gt;.Root</div>
+<div class="fsdocs-tip" id="fs80">property JsonProvider&lt;...&gt;.Root.State: string with get</div>
+<div class="fsdocs-tip" id="fs81">val sortBy: projection: (&#39;T -&gt; &#39;Key) -&gt; source: &#39;T seq -&gt; &#39;T seq (requires comparison)</div>
+<div class="fsdocs-tip" id="fs82">namespace System</div>
+<div class="fsdocs-tip" id="fs83">Multiple items<br />[&lt;Struct&gt;]
+type DateTimeOffset =
+  new: dateTime: DateTime -&gt; unit + 8 overloads
+  member Add: timeSpan: TimeSpan -&gt; DateTimeOffset
+  member AddDays: days: float -&gt; DateTimeOffset
+  member AddHours: hours: float -&gt; DateTimeOffset
+  member AddMicroseconds: microseconds: float -&gt; DateTimeOffset
+  member AddMilliseconds: milliseconds: float -&gt; DateTimeOffset
+  member AddMinutes: minutes: float -&gt; DateTimeOffset
+  member AddMonths: months: int -&gt; DateTimeOffset
+  member AddSeconds: seconds: float -&gt; DateTimeOffset
+  member AddTicks: ticks: int64 -&gt; DateTimeOffset
+  ...<br /><em>&lt;summary&gt;Represents a point in time, typically expressed as a date and time of day, relative to Coordinated Universal Time (UTC).&lt;/summary&gt;</em><br /><br />--------------------<br />System.DateTimeOffset ()<br />System.DateTimeOffset(dateTime: System.DateTime) : System.DateTimeOffset<br />System.DateTimeOffset(dateTime: System.DateTime, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(ticks: int64, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(date: System.DateOnly, time: System.TimeOnly, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, calendar: System.Globalization.Calendar, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, microsecond: int, offset: System.TimeSpan) : System.DateTimeOffset<br />System.DateTimeOffset(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, microsecond: int, calendar: System.Globalization.Calendar, offset: System.TimeSpan) : System.DateTimeOffset</div>
+<div class="fsdocs-tip" id="fs84">property System.DateTimeOffset.Now: System.DateTimeOffset with get<br /><em>&lt;summary&gt;Gets a &lt;see cref=&quot;T:System.DateTimeOffset&quot; /&gt; object that is set to the current date and time on the current computer, with the offset set to the local time&#39;s offset from Coordinated Universal Time (UTC).&lt;/summary&gt;<br />&lt;returns&gt;A &lt;see cref=&quot;T:System.DateTimeOffset&quot; /&gt; object whose date and time is the current local time and whose offset is the local time zone&#39;s offset from Coordinated Universal Time (UTC).&lt;/returns&gt;</em></div>
+<div class="fsdocs-tip" id="fs85">property JsonProvider&lt;...&gt;.Root.UpdatedAt: System.DateTimeOffset with get</div>
+<div class="fsdocs-tip" id="fs86">val truncate: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div class="fsdocs-tip" id="fs87">property JsonProvider&lt;...&gt;.Root.Number: int with get</div>
+<div class="fsdocs-tip" id="fs88">property JsonProvider&lt;...&gt;.Root.Title: string with get</div>
+<div class="fsdocs-tip" id="fs89">[&lt;Literal&gt;]
+val issueSample: string = &quot;
+{
+  &quot;title&quot;: &quot;Found a bug&quot;,
+  &quot;body&quot;: &quot;I&#39;m having a problem with this.&quot;,
+  &quot;assignee&quot;: &quot;octocat&quot;,
+  &quot;milestone&quot;: 1,
+  &quot;labels&quot;: [
+    &quot;Label1&quot;,
+    &quot;Label2&quot;
+  ]
+}
+&quot;</div>
+<div class="fsdocs-tip" id="fs90">type GitHubIssue = JsonProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs91">val newIssue: JsonProvider&lt;...&gt;.Issue</div>
+<div class="fsdocs-tip" id="fs92">type Issue =
+  inherit IJsonDocument
+  new: title: string * body: string * assignee: string * milestone: int * labels: string array -&gt; Issue + 1 overload
+  member WithAssignee: assignee: string -&gt; Issue
+  member WithBody: body: string -&gt; Issue
+  member WithLabels: labels: string array -&gt; Issue
+  member WithMilestone: milestone: int -&gt; Issue
+  member WithTitle: title: string -&gt; Issue
+  member Assignee: string
+  member Body: string
+  member Labels: string array
+  ...</div>
+<div class="fsdocs-tip" id="fs93">property Runtime.BaseTypes.IJsonDocument.JsonValue: JsonValue with get</div>
+<div class="fsdocs-tip" id="fs94">member JsonValue.Request: url: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?httpMethod: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?headers: (string * string) seq -&gt; HttpResponse</div>
+<div class="fsdocs-tip" id="fs95">type WB = JsonProvider&lt;...&gt;</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#JSON-Type-Provider">
+      JSON Type Provider
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Introducing-the-provider">
+      Introducing the provider
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Inferring-types-from-the-sample">
+      Inferring types from the sample
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Inferring-numeric-types">
+      Inferring numeric types
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Inferring-date-types">
+      Inferring date types
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Inferring-record-types">
+      Inferring record types
+    </a>
+  </li>
+  <li class="level-4">
+    <a href="#More-complex-object-type-on-the-root-level">
+      More complex object type on the root level
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Type-inference-hints-inline-schemas">
+      Type inference hints / inline schemas
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Units-of-measure">
+      Units of measure
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Loading-WorldBank-data">
+      Loading WorldBank data
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Parsing-Twitter-stream">
+      Parsing Twitter stream
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Getting-and-creating-GitHub-issues">
+      Getting and creating GitHub issues
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-JSON-provider-in-a-library">
+      Using JSON provider in a library
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Step-by-step-guide">
+      Step-by-step guide
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>

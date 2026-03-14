@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="HTML Type Provider
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="HTML Type Provider
+">
+    
+    <title>HTML Type Provider
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header active">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/HtmlProvider.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/HtmlProvider.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/HtmlProvider.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="HTML-Type-Provider" class="anchor" href="#HTML-Type-Provider">HTML Type Provider</a></h1>
+<p>This article demonstrates how to use the HTML type provider to read HTML pages in a
+statically typed way. The provider is useful for extracting data from pages that expose
+information as HTML tables or via <a href="https://schema.org/">schema.org microdata</a> markup.</p>
+<p>The HTML Type Provider takes a sample HTML document as input — either a URL, a local file
+path, or an inline HTML string — and generates F# types for the tables and microdata found
+in that document. You can then load live data using the same or a different URL at runtime.</p>
+<h2><a name="Parsing-HTML-Tables" class="anchor" href="#Parsing-HTML-Tables">Parsing HTML Tables</a></h2>
+<p>HTML tables (<code>&lt;table&gt;</code> elements) are the primary target of the HTML Type Provider.
+Each discovered table becomes a typed property on the generated <code>.Tables</code> container.</p>
+<p><strong>Table naming</strong>: Table properties are named after the nearest preceding heading element
+(<code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, etc.), the <code>&lt;caption&gt;</code> element, or the table's <code>id</code>, <code>name</code>, <code>title</code>,
+<code>summary</code>, or <code>aria-label</code> attribute — whichever is found first. If none are found the
+table is named <code>Table1</code>, <code>Table2</code>, etc. by position.</p>
+<p><strong>Column types</strong>: The provider infers column types (<code>int</code>, <code>float</code>, <code>DateTime</code>, <code>string</code>,
+etc.) from the values in the sample document. Columns that cannot be fully inferred
+default to <code>string</code>.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<h3><a name="Formula-1-Race-Calendar-Wikipedia" class="anchor" href="#Formula-1-Race-Calendar-Wikipedia">Formula 1 Race Calendar (Wikipedia)</a></h3>
+<p>This example extracts the 2017 Formula 1 race calendar from Wikipedia. The page has
+multiple tables; we access the one whose nearest preceding heading is "Calendar".</p>
+<p>The provider infers that <code>Round</code> is an integer and <code>Date</code> is a <code>DateTime</code> based on the
+sample data.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="prop">F1_2017_URL</span> <span class="o">=</span>
+    <span class="s">&quot;https://en.wikipedia.org/wiki/2017_FIA_Formula_One_World_Championship&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="rt">F1_2017</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs4', 7)" onmouseover="showTip(event, 'fs4', 7)" class="prop">F1_2017_URL</span><span class="pn">&gt;</span>
+
+<span class="c">// Download the table for the 2017 F1 calendar from Wikipedia</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="id">f1Calendar</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="rt">F1_2017</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="id">Load</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs4', 11)" onmouseover="showTip(event, 'fs4', 11)" class="prop">F1_2017_URL</span><span class="pn">)</span><span class="pn">.</span><span class="prop">Tables</span><span class="pn">.</span><span class="id">Calendar</span>
+
+<span class="c">// Look at the top row, being the first race of the calendar</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="id">firstRow</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 13)" onmouseover="showTip(event, 'fs7', 13)" class="id">f1Calendar</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="id">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="id">head</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="id">round</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 18)" onmouseover="showTip(event, 'fs9', 18)" class="id">firstRow</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="id">Round</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 20)" onmouseover="showTip(event, 'fs15', 20)" class="id">grandPrix</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="id">firstRow</span><span class="pn">.</span><span class="id">``Grand Prix``</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="id">date</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 23)" onmouseover="showTip(event, 'fs9', 23)" class="id">firstRow</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="id">Date</span>
+
+<span class="c">// Print the round, location and date for each race</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs18', 25)" onmouseover="showTip(event, 'fs18', 25)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs7', 26)" onmouseover="showTip(event, 'fs7', 26)" class="id">f1Calendar</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs10', 27)" onmouseover="showTip(event, 'fs10', 27)" class="id">Rows</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 28)" onmouseover="showTip(event, 'fs19', 28)" class="fn">printfn</span> <span class="s">&quot;Race, round </span><span class="pf">%A</span><span class="s"> is hosted at </span><span class="pf">%A</span><span class="s"> on </span><span class="pf">%A</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs18', 29)" onmouseover="showTip(event, 'fs18', 29)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 30)" onmouseover="showTip(event, 'fs14', 30)" class="id">Round</span> <span onmouseout="hideTip(event, 'fs18', 31)" onmouseover="showTip(event, 'fs18', 31)" class="fn">row</span><span class="pn">.</span><span class="id">``Grand Prix``</span> <span onmouseout="hideTip(event, 'fs18', 32)" onmouseover="showTip(event, 'fs18', 32)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs17', 33)" onmouseover="showTip(event, 'fs17', 33)" class="id">Date</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Race, round "1" is hosted at "Australian Grand Prix" on "26 March"
+Race, round "2" is hosted at "Chinese Grand Prix" on "9 April"
+Race, round "3" is hosted at "Bahrain Grand Prix" on "16 April"
+Race, round "4" is hosted at "Russian Grand Prix" on "30 April"
+Race, round "5" is hosted at "Spanish Grand Prix" on "14 May"
+Race, round "6" is hosted at "Monaco Grand Prix" on "28 May"
+Race, round "7" is hosted at "Canadian Grand Prix" on "11 June"
+Race, round "8" is hosted at "Azerbaijan Grand Prix" on "25 June"
+Race, round "9" is hosted at "Austrian Grand Prix" on "9 July"
+Race, round "10" is hosted at "British Grand Prix" on "16 July"
+Race, round "11" is hosted at "Hungarian Grand Prix" on "30 July"
+Race, round "12" is hosted at "Belgian Grand Prix" on "27 August"
+Race, round "13" is hosted at "Italian Grand Prix" on "3 September"
+Race, round "14" is hosted at "Singapore Grand Prix" on "17 September"
+Race, round "15" is hosted at "Malaysian Grand Prix" on "1 October"
+Race, round "16" is hosted at "Japanese Grand Prix" on "8 October"
+Race, round "17" is hosted at "United States Grand Prix" on "22 October"
+Race, round "18" is hosted at "Mexican Grand Prix" on "29 October"
+Race, round "19" is hosted at "Brazilian Grand Prix" on "12 November"
+Race, round "20" is hosted at "Abu Dhabi Grand Prix" on "26 November"
+Race, round "Source: [65]" is hosted at "Source: [65]" on "Source: [65]"
+[&lt;Literal&gt;]
+val F1_2017_URL: string
+  = "https://en.wikipedia.org/wiki/2017_FIA_Formula_One_World_Championship"
+type F1_2017 = HtmlProvider&lt;...&gt;
+val f1Calendar: HtmlProvider&lt;...&gt;.Calendar
+val firstRow: HtmlProvider&lt;...&gt;.Calendar.Row =
+  ("1", "Australian Grand Prix", "Albert Park Circuit, Melbourne", "26 March")
+val round: string = "1"
+val grandPrix: string = "Australian Grand Prix"
+val date: string = "26 March"
+val it: unit = ()</code></pre></td></tr></table>
+<p>The generated type has a property <code>Rows</code> that returns the data from the HTML page as a
+collection of rows. We iterate over the rows using a <code>for</code> loop. The row type has
+properties such as <code>Grand Prix</code>, <code>Circuit</code>, <code>Round</code> and <code>Date</code> that correspond to the
+columns in the HTML table.</p>
+<p>The <code>Load</code> method accepts any URL, file path, or HTML string — we could load a different
+season's page at runtime while still using the 2017 page for type inference at compile time.</p>
+<h3><a name="Wikipedia-S-amp-P-500-Components" class="anchor" href="#Wikipedia-S-amp-P-500-Components">Wikipedia S&amp;P 500 Components</a></h3>
+<p>This example queries the Wikipedia list of S&amp;P 500 companies, which exposes symbol,
+sector, and founding year for each constituent. Note that the table has no heading or
+caption, so the provider names it <code>Table1</code> by position.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 34)" onmouseover="showTip(event, 'fs3', 34)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs20', 35)" onmouseover="showTip(event, 'fs20', 35)" class="prop">SP500_URL</span> <span class="o">=</span>
+    <span class="s">&quot;https://en.wikipedia.org/wiki/List_of_S%26P_500_companies&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="rt">SP500</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 37)" onmouseover="showTip(event, 'fs6', 37)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="prop">SP500_URL</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 39)" onmouseover="showTip(event, 'fs22', 39)" class="id">sp500</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs21', 40)" onmouseover="showTip(event, 'fs21', 40)" class="rt">SP500</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="id">Load</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs20', 42)" onmouseover="showTip(event, 'fs20', 42)" class="prop">SP500_URL</span><span class="pn">)</span>
+
+<span class="c">// Table1 is the main constituents table (no caption on the Wikipedia page)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 43)" onmouseover="showTip(event, 'fs23', 43)" class="id">companies</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="id">sp500</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="prop">Tables</span><span class="pn">.</span><span class="id">Table1</span>
+
+<span class="c">// Show the first five companies with their sector</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs25', 46)" onmouseover="showTip(event, 'fs25', 46)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs23', 47)" onmouseover="showTip(event, 'fs23', 47)" class="id">companies</span><span class="pn">.</span><span class="id">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 48)" onmouseover="showTip(event, 'fs11', 48)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="id">truncate</span> <span class="n">5</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 50)" onmouseover="showTip(event, 'fs19', 50)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%s</span><span class="s">) — </span><span class="pf">%s</span><span class="s">, founded </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs25', 51)" onmouseover="showTip(event, 'fs25', 51)" class="fn">row</span><span class="pn">.</span><span class="id">Symbol</span> <span onmouseout="hideTip(event, 'fs25', 52)" onmouseover="showTip(event, 'fs25', 52)" class="fn">row</span><span class="pn">.</span><span class="id">Security</span> <span onmouseout="hideTip(event, 'fs25', 53)" onmouseover="showTip(event, 'fs25', 53)" class="fn">row</span><span class="pn">.</span><span class="id">``GICS Sector``</span> <span onmouseout="hideTip(event, 'fs25', 54)" onmouseover="showTip(event, 'fs25', 54)" class="fn">row</span><span class="pn">.</span><span class="id">Founded</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<p>We can also use standard F# collection functions to analyse the data — for example,
+grouping companies by sector to see how many are in each:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 55)" onmouseover="showTip(event, 'fs27', 55)" class="id">bySector</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs23', 56)" onmouseover="showTip(event, 'fs23', 56)" class="id">companies</span><span class="pn">.</span><span class="id">Rows</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 57)" onmouseover="showTip(event, 'fs11', 57)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 58)" onmouseover="showTip(event, 'fs28', 58)" class="id">groupBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs29', 59)" onmouseover="showTip(event, 'fs29', 59)" class="fn">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 60)" onmouseover="showTip(event, 'fs29', 60)" class="fn">r</span><span class="pn">.</span><span class="id">``GICS Sector``</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 61)" onmouseover="showTip(event, 'fs11', 61)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 62)" onmouseover="showTip(event, 'fs30', 62)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs31', 63)" onmouseover="showTip(event, 'fs31', 63)" class="fn">sector</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs32', 64)" onmouseover="showTip(event, 'fs32', 64)" class="fn">rows</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs31', 65)" onmouseover="showTip(event, 'fs31', 65)" class="fn">sector</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs11', 66)" onmouseover="showTip(event, 'fs11', 66)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs33', 67)" onmouseover="showTip(event, 'fs33', 67)" class="id">length</span> <span onmouseout="hideTip(event, 'fs32', 68)" onmouseover="showTip(event, 'fs32', 68)" class="fn">rows</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 69)" onmouseover="showTip(event, 'fs11', 69)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs34', 70)" onmouseover="showTip(event, 'fs34', 70)" class="id">sortByDescending</span> <span onmouseout="hideTip(event, 'fs35', 71)" onmouseover="showTip(event, 'fs35', 71)" class="fn">snd</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 72)" onmouseover="showTip(event, 'fs11', 72)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs36', 73)" onmouseover="showTip(event, 'fs36', 73)" class="id">toArray</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
+<h3><a name="NuGet-Package-Statistics" class="anchor" href="#NuGet-Package-Statistics">NuGet Package Statistics</a></h3>
+<p>This example uses the HTML Type Provider to scrape download statistics for the
+<code>FSharp.Data</code> package from NuGet. Because we pass the live URL as the type parameter,
+the default constructor loads the same live page at runtime.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs37', 74)" onmouseover="showTip(event, 'fs37', 74)" class="rt">NugetStats</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 75)" onmouseover="showTip(event, 'fs6', 75)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span class="s">&quot;https://www.nuget.org/packages/FSharp.Data&quot;</span><span class="pn">&gt;</span>
+
+<span class="c">// Load the live package stats for FSharp.Data</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 76)" onmouseover="showTip(event, 'fs38', 76)" class="id">rawStats</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 77)" onmouseover="showTip(event, 'fs37', 77)" class="fn">NugetStats</span><span class="pn">(</span><span class="pn">)</span><span class="pn">.</span><span class="prop">Tables</span><span class="pn">.</span><span class="id">``Version History of FSharp.Data``</span>
+
+<span class="c">// Helper to extract the minor version string (e.g. &quot;6.4&quot; from &quot;6.4.0&quot;)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 78)" onmouseover="showTip(event, 'fs39', 78)" class="fn">getMinorVersion</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs40', 79)" onmouseover="showTip(event, 'fs40', 79)" class="fn">v</span><span class="pn">:</span> <span onmouseout="hideTip(event, 'fs41', 80)" onmouseover="showTip(event, 'fs41', 80)" class="rt">string</span><span class="pn">)</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs42', 81)" onmouseover="showTip(event, 'fs42', 81)" class="id">System</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs43', 82)" onmouseover="showTip(event, 'fs43', 82)" class="id">Text</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs44', 83)" onmouseover="showTip(event, 'fs44', 83)" class="id">RegularExpressions</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs45', 84)" onmouseover="showTip(event, 'fs45', 84)" class="id">Regex</span><span class="pn">(</span><span class="s">@&quot;\d+\.\d+&quot;</span><span class="pn">)</span><span class="pn">.</span><span class="id">Match</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs40', 85)" onmouseover="showTip(event, 'fs40', 85)" class="fn">v</span><span class="pn">)</span><span class="pn">.</span><span class="id">Value</span>
+
+<span class="c">// Group downloads by minor version</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs46', 86)" onmouseover="showTip(event, 'fs46', 86)" class="id">downloadsByMinorVersion</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs38', 87)" onmouseover="showTip(event, 'fs38', 87)" class="id">rawStats</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs47', 88)" onmouseover="showTip(event, 'fs47', 88)" class="id">Rows</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 89)" onmouseover="showTip(event, 'fs11', 89)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 90)" onmouseover="showTip(event, 'fs28', 90)" class="id">groupBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs48', 91)" onmouseover="showTip(event, 'fs48', 91)" class="fn">r</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs39', 92)" onmouseover="showTip(event, 'fs39', 92)" class="fn">getMinorVersion</span> <span onmouseout="hideTip(event, 'fs48', 93)" onmouseover="showTip(event, 'fs48', 93)" class="fn">r</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs49', 94)" onmouseover="showTip(event, 'fs49', 94)" class="id">Version</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 95)" onmouseover="showTip(event, 'fs11', 95)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 96)" onmouseover="showTip(event, 'fs30', 96)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs50', 97)" onmouseover="showTip(event, 'fs50', 97)" class="fn">k</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs51', 98)" onmouseover="showTip(event, 'fs51', 98)" class="fn">xs</span><span class="pn">)</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs50', 99)" onmouseover="showTip(event, 'fs50', 99)" class="fn">k</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs51', 100)" onmouseover="showTip(event, 'fs51', 100)" class="fn">xs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 101)" onmouseover="showTip(event, 'fs11', 101)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs52', 102)" onmouseover="showTip(event, 'fs52', 102)" class="id">sumBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs53', 103)" onmouseover="showTip(event, 'fs53', 103)" class="fn">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs53', 104)" onmouseover="showTip(event, 'fs53', 104)" class="fn">x</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs54', 105)" onmouseover="showTip(event, 'fs54', 105)" class="id">Downloads</span><span class="pn">)</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 106)" onmouseover="showTip(event, 'fs11', 106)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs36', 107)" onmouseover="showTip(event, 'fs36', 107)" class="id">toArray</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>type NugetStats = HtmlProvider&lt;...&gt;
+val rawStats: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData
+val getMinorVersion: v: string -&gt; string
+val downloadsByMinorVersion: (string * decimal) array =
+  [|("8.1", 3009M); ("8.0", 5980M); ("7.0", 2832M); ("6.7", 833M);
+    ("6.6", 435939M); ("6.5", 4365M); ("6.4", 784969M); ("6.3", 451838M);
+    ("6.2", 174000M); ("6.1", 3417M); ("6.0", 19573M); ("5.0", 545772M);
+    ("4.2", 251846M)|]</code></pre></td></tr></table>
+<h3><a name="Getting-Statistics-on-Doctor-Who-Multiple-Tables" class="anchor" href="#Getting-Statistics-on-Doctor-Who-Multiple-Tables">Getting Statistics on Doctor Who (Multiple Tables)</a></h3>
+<p>Wikipedia pages often contain many tables. This example loads the Doctor Who episode
+guide and aggregates viewing figures by director across the first series.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 108)" onmouseover="showTip(event, 'fs3', 108)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs55', 109)" onmouseover="showTip(event, 'fs55', 109)" class="prop">DrWho</span> <span class="o">=</span>
+    <span class="s">&quot;https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)&quot;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs56', 110)" onmouseover="showTip(event, 'fs56', 110)" class="id">doctorWho</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs6', 111)" onmouseover="showTip(event, 'fs6', 111)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs55', 112)" onmouseover="showTip(event, 'fs55', 112)" class="prop">DrWho</span><span class="pn">&gt;</span><span class="pn">(</span><span class="pn">)</span>
+
+<span class="c">// Get the average number of viewers for each director in Series 1</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 113)" onmouseover="showTip(event, 'fs57', 113)" class="id">viewersByDirector</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs56', 114)" onmouseover="showTip(event, 'fs56', 114)" class="id">doctorWho</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 115)" onmouseover="showTip(event, 'fs24', 115)" class="prop">Tables</span><span class="pn">.</span><span class="prop">``Season 1 (1963-1964)``</span><span class="pn">.</span><span class="id">Rows</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 116)" onmouseover="showTip(event, 'fs11', 116)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs28', 117)" onmouseover="showTip(event, 'fs28', 117)" class="id">groupBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs58', 118)" onmouseover="showTip(event, 'fs58', 118)" class="fn">episode</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs58', 119)" onmouseover="showTip(event, 'fs58', 119)" class="fn">episode</span><span class="pn">.</span><span class="id">``Directed by``</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 120)" onmouseover="showTip(event, 'fs11', 120)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs30', 121)" onmouseover="showTip(event, 'fs30', 121)" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs59', 122)" onmouseover="showTip(event, 'fs59', 122)" class="fn">director</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs60', 123)" onmouseover="showTip(event, 'fs60', 123)" class="fn">episodes</span><span class="pn">)</span> <span class="k">-&gt;</span>
+        <span class="k">let</span> <span onmouseout="hideTip(event, 'fs61', 124)" onmouseover="showTip(event, 'fs61', 124)" class="fn">avgViewers</span> <span class="o">=</span>
+            <span onmouseout="hideTip(event, 'fs60', 125)" onmouseover="showTip(event, 'fs60', 125)" class="fn">episodes</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 126)" onmouseover="showTip(event, 'fs11', 126)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs62', 127)" onmouseover="showTip(event, 'fs62', 127)" class="id">averageBy</span> <span class="pn">(</span><span class="k">fun</span> <span onmouseout="hideTip(event, 'fs63', 128)" onmouseover="showTip(event, 'fs63', 128)" class="fn">e</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs63', 129)" onmouseover="showTip(event, 'fs63', 129)" class="fn">e</span><span class="pn">.</span><span class="id">``UK viewers (millions)``</span><span class="pn">)</span>
+
+        <span onmouseout="hideTip(event, 'fs59', 130)" onmouseover="showTip(event, 'fs59', 130)" class="fn">director</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs61', 131)" onmouseover="showTip(event, 'fs61', 131)" class="fn">avgViewers</span><span class="pn">)</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 132)" onmouseover="showTip(event, 'fs11', 132)" class="m">Seq</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs36', 133)" onmouseover="showTip(event, 'fs36', 133)" class="id">toArray</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>[&lt;Literal&gt;]
+val DrWho: string
+  =
+  "https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)"
+val doctorWho: HtmlProvider&lt;...&gt;
+val viewersByDirector: (string * float) array =
+  [|("Waris Hussein", 8.0); ("", nan); ("Christopher Barry", 8.275);
+    ("Richard Martin", 10.025); ("Frank Cox", 7.9); ("John Crockett", 8.0);
+    ("John Gorrie", 9.066666667); ("Mervyn Pinfield", 6.925);
+    ("Henric Hirsch", 6.733333333)|]</code></pre></td></tr></table>
+<h2><a name="Schema-org-Microdata" class="anchor" href="#Schema-org-Microdata">Schema.org Microdata</a></h2>
+<p>In addition to HTML tables, the provider also understands
+<a href="https://html.spec.whatwg.org/multipage/microdata.html">HTML microdata</a> — the
+<code>itemscope</code> / <code>itemtype</code> / <code>itemprop</code> attributes defined by the
+<a href="https://schema.org/">schema.org</a> vocabulary.  When the sample document contains
+<code>itemscope</code> elements, the provider generates a <code>.Schemas</code> container with one typed
+property per schema type found.</p>
+<p>The example below uses an inline HTML string as the type parameter sample.  At runtime
+you can call <code>.Load(url)</code> to parse any live page that uses the same schema types.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 134)" onmouseover="showTip(event, 'fs3', 134)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs64', 135)" onmouseover="showTip(event, 'fs64', 135)" class="prop">ProductCatalogSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;&lt;html&gt;&lt;body&gt;</span>
+<span class="s">  &lt;div itemscope itemtype=&quot;http://schema.org/Product&quot;&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;name&quot;&gt;FSharp.Data&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;description&quot;&gt;F# data-access library&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;brand&quot;&gt;F# Foundation&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;sku&quot;&gt;FSHARP-DATA&lt;/span&gt;</span>
+<span class="s">  &lt;/div&gt;</span>
+<span class="s">  &lt;div itemscope itemtype=&quot;http://schema.org/Product&quot;&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;name&quot;&gt;Newtonsoft.Json&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;description&quot;&gt;Popular high-performance JSON framework for .NET&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;brand&quot;&gt;James Newton-King&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;sku&quot;&gt;NEWTONSOFT-JSON&lt;/span&gt;</span>
+<span class="s">  &lt;/div&gt;</span>
+<span class="s">&lt;/body&gt;&lt;/html&gt;&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs65', 136)" onmouseover="showTip(event, 'fs65', 136)" class="rt">ProductCatalog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 137)" onmouseover="showTip(event, 'fs6', 137)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs64', 138)" onmouseover="showTip(event, 'fs64', 138)" class="prop">ProductCatalogSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs66', 139)" onmouseover="showTip(event, 'fs66', 139)" class="id">catalog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs65', 140)" onmouseover="showTip(event, 'fs65', 140)" class="rt">ProductCatalog</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 141)" onmouseover="showTip(event, 'fs67', 141)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs64', 142)" onmouseover="showTip(event, 'fs64', 142)" class="prop">ProductCatalogSample</span><span class="pn">)</span>
+
+<span class="c">// Schemas.Product returns an array of typed Product items</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs68', 143)" onmouseover="showTip(event, 'fs68', 143)" class="fn">product</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs66', 144)" onmouseover="showTip(event, 'fs66', 144)" class="id">catalog</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs69', 145)" onmouseover="showTip(event, 'fs69', 145)" class="prop">Schemas</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs70', 146)" onmouseover="showTip(event, 'fs70', 146)" class="id">Product</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 147)" onmouseover="showTip(event, 'fs19', 147)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> — </span><span class="pf">%s</span><span class="s"> (SKU: </span><span class="pf">%s</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs68', 148)" onmouseover="showTip(event, 'fs68', 148)" class="fn">product</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs71', 149)" onmouseover="showTip(event, 'fs71', 149)" class="id">Name</span> <span onmouseout="hideTip(event, 'fs68', 150)" onmouseover="showTip(event, 'fs68', 150)" class="fn">product</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs72', 151)" onmouseover="showTip(event, 'fs72', 151)" class="id">Brand</span> <span onmouseout="hideTip(event, 'fs68', 152)" onmouseover="showTip(event, 'fs68', 152)" class="fn">product</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs73', 153)" onmouseover="showTip(event, 'fs73', 153)" class="id">Sku</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>FSharp.Data — F# Foundation (SKU: FSHARP-DATA)
+Newtonsoft.Json — James Newton-King (SKU: NEWTONSOFT-JSON)
+[&lt;Literal&gt;]
+val ProductCatalogSample: string
+  =
+  "&lt;html&gt;&lt;body&gt;
+  &lt;div itemscope itemtype="http://schema.org/Product"&gt;
+    &lt;span itemprop="name"&gt;FSharp.Data&lt;/span&gt;
+    &lt;span itemprop="description"&gt;F# data-access library&lt;/span&gt;
+    &lt;span itemprop="brand"&gt;F# Foundation&lt;/span&gt;
+    &lt;span itemprop="sku"&gt;FSHARP-DATA&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div itemscope itemtype="http://schema.org/Product"&gt;
+    &lt;span itemprop="name"&gt;Newtonsoft.Json&lt;/span&gt;
+    &lt;span itemprop="description"&gt;Popular high-performance JSON framework for .NET&lt;/span&gt;
+    &lt;span itemprop="brand"&gt;James Newton-King&lt;/span&gt;
+    &lt;span itemprop="sku"&gt;NEWTONSOFT-JSON&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;"
+type ProductCatalog = HtmlProvider&lt;...&gt;
+val catalog: HtmlProvider&lt;...&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<p>Each item in <code>Schemas.Product</code> has one string property per <code>itemprop</code> name discovered in
+the sample, with names Pascal-cased for F# convention.  The <code>.Html</code> property gives
+access to the underlying <code>HtmlNode</code> for cases where you need to traverse sub-elements.</p>
+<p>You can mix microdata and table extraction in the same type:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 154)" onmouseover="showTip(event, 'fs3', 154)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs74', 155)" onmouseover="showTip(event, 'fs74', 155)" class="prop">MixedPageSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;&lt;html&gt;&lt;body&gt;</span>
+<span class="s">  &lt;div itemscope itemtype=&quot;http://schema.org/Person&quot;&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;name&quot;&gt;Grace Hopper&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;jobTitle&quot;&gt;Rear Admiral&lt;/span&gt;</span>
+<span class="s">    &lt;span itemprop=&quot;alumniOf&quot;&gt;Yale University&lt;/span&gt;</span>
+<span class="s">  &lt;/div&gt;</span>
+<span class="s">  &lt;table&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1944&lt;/td&gt;&lt;td&gt;Debugged the Harvard Mark II&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1952&lt;/td&gt;&lt;td&gt;First compiler (A-0 System)&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1959&lt;/td&gt;&lt;td&gt;Co-designed COBOL&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">  &lt;/table&gt;</span>
+<span class="s">&lt;/body&gt;&lt;/html&gt;&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs75', 156)" onmouseover="showTip(event, 'fs75', 156)" class="rt">PersonPage</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 157)" onmouseover="showTip(event, 'fs6', 157)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs74', 158)" onmouseover="showTip(event, 'fs74', 158)" class="prop">MixedPageSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs76', 159)" onmouseover="showTip(event, 'fs76', 159)" class="id">page</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs75', 160)" onmouseover="showTip(event, 'fs75', 160)" class="rt">PersonPage</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 161)" onmouseover="showTip(event, 'fs67', 161)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs74', 162)" onmouseover="showTip(event, 'fs74', 162)" class="prop">MixedPageSample</span><span class="pn">)</span>
+
+<span class="c">// Access the microdata</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs77', 163)" onmouseover="showTip(event, 'fs77', 163)" class="id">person</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs76', 164)" onmouseover="showTip(event, 'fs76', 164)" class="id">page</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs69', 165)" onmouseover="showTip(event, 'fs69', 165)" class="prop">Schemas</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs78', 166)" onmouseover="showTip(event, 'fs78', 166)" class="id">Person</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs79', 167)" onmouseover="showTip(event, 'fs79', 167)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 168)" onmouseover="showTip(event, 'fs80', 168)" class="id">head</span>
+<span onmouseout="hideTip(event, 'fs19', 169)" onmouseover="showTip(event, 'fs19', 169)" class="fn">printfn</span> <span class="s">&quot;Name: </span><span class="pf">%s</span><span class="s">, Title: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs77', 170)" onmouseover="showTip(event, 'fs77', 170)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs81', 171)" onmouseover="showTip(event, 'fs81', 171)" class="id">Name</span> <span onmouseout="hideTip(event, 'fs77', 172)" onmouseover="showTip(event, 'fs77', 172)" class="id">person</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs82', 173)" onmouseover="showTip(event, 'fs82', 173)" class="id">JobTitle</span>
+
+<span class="c">// Access the table</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs83', 174)" onmouseover="showTip(event, 'fs83', 174)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs76', 175)" onmouseover="showTip(event, 'fs76', 175)" class="id">page</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 176)" onmouseover="showTip(event, 'fs24', 176)" class="prop">Tables</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 177)" onmouseover="showTip(event, 'fs84', 177)" class="prop">Table1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs85', 178)" onmouseover="showTip(event, 'fs85', 178)" class="id">Rows</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 179)" onmouseover="showTip(event, 'fs19', 179)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs83', 180)" onmouseover="showTip(event, 'fs83', 180)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs86', 181)" onmouseover="showTip(event, 'fs86', 181)" class="id">Year</span> <span onmouseout="hideTip(event, 'fs83', 182)" onmouseover="showTip(event, 'fs83', 182)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs87', 183)" onmouseover="showTip(event, 'fs87', 183)" class="id">Achievement</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Name: Grace Hopper, Title: Rear Admiral
+1944: Debugged the Harvard Mark II
+1952: First compiler (A-0 System)
+1959: Co-designed COBOL
+[&lt;Literal&gt;]
+val MixedPageSample: string
+  =
+  "&lt;html&gt;&lt;body&gt;
+  &lt;div itemscope itemtype="http://schema.org/Person"&gt;
+    &lt;span itemprop="name"&gt;Grace Hopper&lt;/span&gt;
+    &lt;span itemprop="jobTitle"&gt;Rear Admiral&lt;/span&gt;
+    &lt;span itemprop="alumniOf"&gt;Yale University&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1944&lt;/td&gt;&lt;td&gt;Debugged the Harvard Mark II&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1952&lt;/td&gt;&lt;td&gt;First compiler (A-0 System)&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1959&lt;/td&gt;&lt;td&gt;Co-designed COBOL&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;"
+type PersonPage = HtmlProvider&lt;...&gt;
+val page: HtmlProvider&lt;...&gt;
+val person: HtmlProvider&lt;...&gt;.Person =
+  { Properties =
+     map
+       [("alumniOf", "Yale University"); ("jobTitle", "Rear Admiral");
+        ("name", "Grace Hopper")]
+    Html =
+     &lt;div itemscope="" itemtype="http://schema.org/Person"&gt;
+  &lt;span itemprop="name"&gt;Grace Hopper&lt;/span&gt; &lt;span itemprop="jobTitle"&gt;Rear Admiral&lt;/span&gt; &lt;span itemprop="alumniOf"&gt;Yale University&lt;/span&gt;
+&lt;/div&gt;}
+val it: unit = ()</code></pre></td></tr></table>
+<h2><a name="JSON-LD-Structured-Data" class="anchor" href="#JSON-LD-Structured-Data">JSON-LD Structured Data</a></h2>
+<p>Many modern websites — including <strong>Wikipedia</strong> — embed structured metadata as
+<a href="https://json-ld.org/">JSON-LD</a> inside <code>&lt;script type="application/ld+json"&gt;</code> elements in
+the page <code>&lt;head&gt;</code>.  <code>HtmlProvider</code> now parses these blocks automatically and exposes them
+via a typed <code>.JsonLd</code> container, exactly like the <code>.Schemas</code> container for microdata.</p>
+<h3><a name="What-Wikipedia-exposes-via-JSON-LD" class="anchor" href="#What-Wikipedia-exposes-via-JSON-LD">What Wikipedia exposes via JSON-LD</a></h3>
+<p>Wikipedia embeds a JSON-LD block on every article page that describes the article using
+the <a href="https://schema.org/Article">schema.org <code>Article</code> type</a>.  The block includes:</p>
+<table>
+<thead>
+<tr class="header">
+<th><p>Property</p></th>
+<th><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>name</code></p></td>
+<td><p>Article title</p></td>
+</tr>
+<tr class="even">
+<td><p><code>headline</code></p></td>
+<td><p>Short headline</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>description</code></p></td>
+<td><p>Brief description</p></td>
+</tr>
+<tr class="even">
+<td><p><code>url</code></p></td>
+<td><p>Canonical URL</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>datePublished</code></p></td>
+<td><p>First published date</p></td>
+</tr>
+<tr class="even">
+<td><p><code>dateModified</code></p></td>
+<td><p>Last modified date</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Wikipedia also has pages about specific entities (people, places, organisations, events)
+that carry a <code>mainEntity</code> link back to the corresponding <a href="https://www.wikidata.org/">Wikidata</a>
+item, and article categories encoded as <code>about</code> objects.</p>
+<p>The sample HTML below mirrors the structure Wikipedia actually serves:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 184)" onmouseover="showTip(event, 'fs3', 184)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs88', 185)" onmouseover="showTip(event, 'fs88', 185)" class="prop">WikipediaArticleSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;&lt;html&gt;</span>
+<span class="s">&lt;head&gt;</span>
+<span class="s">  &lt;script type=&quot;application/ld+json&quot;&gt;</span>
+<span class="s">  {</span>
+<span class="s">    &quot;@context&quot;: &quot;https://schema.org&quot;,</span>
+<span class="s">    &quot;@type&quot;: &quot;Article&quot;,</span>
+<span class="s">    &quot;name&quot;: &quot;F Sharp (programming language)&quot;,</span>
+<span class="s">    &quot;headline&quot;: &quot;Functional-first programming language for .NET&quot;,</span>
+<span class="s">    &quot;description&quot;: &quot;F# is a strongly typed, multi-paradigm programming language.&quot;,</span>
+<span class="s">    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,</span>
+<span class="s">    &quot;datePublished&quot;: &quot;2003-01-01&quot;,</span>
+<span class="s">    &quot;dateModified&quot;: &quot;2024-06-15&quot;,</span>
+<span class="s">    &quot;license&quot;: &quot;https://creativecommons.org/licenses/by-sa/4.0/&quot;,</span>
+<span class="s">    &quot;inLanguage&quot;: &quot;en&quot;</span>
+<span class="s">  }</span>
+<span class="s">  &lt;/script&gt;</span>
+<span class="s">&lt;/head&gt;</span>
+<span class="s">&lt;body&gt;</span>
+<span class="s">  &lt;table&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Event&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;2002&lt;/td&gt;&lt;td&gt;F# created by Don Syme at Microsoft Research Cambridge&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;2005&lt;/td&gt;&lt;td&gt;First public release of F#&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;2010&lt;/td&gt;&lt;td&gt;F# ships with Visual Studio 2010&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;2020&lt;/td&gt;&lt;td&gt;F# 5.0 released&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">  &lt;/table&gt;</span>
+<span class="s">&lt;/body&gt;</span>
+<span class="s">&lt;/html&gt;&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs89', 186)" onmouseover="showTip(event, 'fs89', 186)" class="rt">WikipediaArticle</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 187)" onmouseover="showTip(event, 'fs6', 187)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs88', 188)" onmouseover="showTip(event, 'fs88', 188)" class="prop">WikipediaArticleSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs90', 189)" onmouseover="showTip(event, 'fs90', 189)" class="id">wiki</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs89', 190)" onmouseover="showTip(event, 'fs89', 190)" class="rt">WikipediaArticle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 191)" onmouseover="showTip(event, 'fs67', 191)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs88', 192)" onmouseover="showTip(event, 'fs88', 192)" class="prop">WikipediaArticleSample</span><span class="pn">)</span>
+
+<span class="c">// Access the JSON-LD Article metadata</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs91', 193)" onmouseover="showTip(event, 'fs91', 193)" class="id">article</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs90', 194)" onmouseover="showTip(event, 'fs90', 194)" class="id">wiki</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 195)" onmouseover="showTip(event, 'fs92', 195)" class="prop">JsonLd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs93', 196)" onmouseover="showTip(event, 'fs93', 196)" class="id">Article</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs79', 197)" onmouseover="showTip(event, 'fs79', 197)" class="m">Array</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs80', 198)" onmouseover="showTip(event, 'fs80', 198)" class="id">head</span>
+<span onmouseout="hideTip(event, 'fs19', 199)" onmouseover="showTip(event, 'fs19', 199)" class="fn">printfn</span> <span class="s">&quot;Title: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs91', 200)" onmouseover="showTip(event, 'fs91', 200)" class="id">article</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs94', 201)" onmouseover="showTip(event, 'fs94', 201)" class="id">Name</span>
+<span onmouseout="hideTip(event, 'fs19', 202)" onmouseover="showTip(event, 'fs19', 202)" class="fn">printfn</span> <span class="s">&quot;Description: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs91', 203)" onmouseover="showTip(event, 'fs91', 203)" class="id">article</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs95', 204)" onmouseover="showTip(event, 'fs95', 204)" class="id">Description</span>
+<span onmouseout="hideTip(event, 'fs19', 205)" onmouseover="showTip(event, 'fs19', 205)" class="fn">printfn</span> <span class="s">&quot;Published: </span><span class="pf">%s</span><span class="s">  |  Modified: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs91', 206)" onmouseover="showTip(event, 'fs91', 206)" class="id">article</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs96', 207)" onmouseover="showTip(event, 'fs96', 207)" class="id">DatePublished</span> <span onmouseout="hideTip(event, 'fs91', 208)" onmouseover="showTip(event, 'fs91', 208)" class="id">article</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs97', 209)" onmouseover="showTip(event, 'fs97', 209)" class="id">DateModified</span>
+<span onmouseout="hideTip(event, 'fs19', 210)" onmouseover="showTip(event, 'fs19', 210)" class="fn">printfn</span> <span class="s">&quot;URL: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs91', 211)" onmouseover="showTip(event, 'fs91', 211)" class="id">article</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs98', 212)" onmouseover="showTip(event, 'fs98', 212)" class="id">Url</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Title: F Sharp (programming language)
+Description: F# is a strongly typed, multi-paradigm programming language.
+Published: 2003-01-01  |  Modified: 2024-06-15
+URL: https://en.wikipedia.org/wiki/F_Sharp_(programming_language)
+[&lt;Literal&gt;]
+val WikipediaArticleSample: string
+  =
+  "&lt;html&gt;
+&lt;head&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "F Sharp (programming language)",
+    "headline": "Functional-first programming language for .NET",
+    "description": "F# is a strongly typed, multi-paradigm programming language.",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "datePublished": "2003-01-01",
+    "dateModified": "2024-06-15",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "inLanguage": "en"
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Event&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2002&lt;/td&gt;&lt;td&gt;F# created by Don Syme at Microsoft Research Cambridge&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2005&lt;/td&gt;&lt;td&gt;First public release of F#&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2010&lt;/td&gt;&lt;td&gt;F# ships with Visual Studio 2010&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2020&lt;/td&gt;&lt;td&gt;F# 5.0 released&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;"
+type WikipediaArticle = HtmlProvider&lt;...&gt;
+val wiki: HtmlProvider&lt;...&gt;
+val article: HtmlProvider&lt;...&gt;.Article =
+  { Properties =
+     map
+       [("dateModified", "2024-06-15"); ("datePublished", "2003-01-01");
+        ("description",
+         "F# is a strongly typed, multi-paradigm programming language.");
+        ("headline", "Functional-first programming language for .NET");
+        ("inLanguage", "en");
+        ("license", "https://creativecommons.org/licenses/by-sa/4.0/");
+        ("name", "F Sharp (programming language)");
+        ("url", "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)")]
+    Raw =
+     "{
+  "@context": "https://schema.org",
+  "@type": "Article","+[423 chars] }
+val it: unit = ()</code></pre></td></tr></table>
+<p>The <code>.JsonLd</code> container has one property per <code>@type</code> found in the JSON-LD blocks.  Each
+property returns an array of items — so <code>wiki.JsonLd.Article</code> is an
+<code>WikipediaArticle+Article[]</code>.  Each item has one <code>string</code> property per top-level scalar
+field (strings, numbers, booleans), with names Pascal-cased for F# convention.  A <code>.Raw</code>
+property gives the original JSON text if you need to access complex nested values.</p>
+<h3><a name="Wikipedia-timeline-article-tables-JSON-LD-metadata" class="anchor" href="#Wikipedia-timeline-article-tables-JSON-LD-metadata">Wikipedia timeline article: tables + JSON-LD metadata</a></h3>
+<p>The next example shows combining the Wikipedia HTML table (a timeline of events) with the
+JSON-LD article metadata, all via a single provider type:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Access the events table in the same page</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs83', 213)" onmouseover="showTip(event, 'fs83', 213)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs90', 214)" onmouseover="showTip(event, 'fs90', 214)" class="id">wiki</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 215)" onmouseover="showTip(event, 'fs24', 215)" class="prop">Tables</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 216)" onmouseover="showTip(event, 'fs84', 216)" class="prop">Table1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs85', 217)" onmouseover="showTip(event, 'fs85', 217)" class="id">Rows</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 218)" onmouseover="showTip(event, 'fs19', 218)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs83', 219)" onmouseover="showTip(event, 'fs83', 219)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs86', 220)" onmouseover="showTip(event, 'fs86', 220)" class="id">Year</span> <span onmouseout="hideTip(event, 'fs83', 221)" onmouseover="showTip(event, 'fs83', 221)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs99', 222)" onmouseover="showTip(event, 'fs99', 222)" class="id">Event</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>2002: F# created by Don Syme at Microsoft Research Cambridge
+2005: First public release of F#
+2010: F# ships with Visual Studio 2010
+2020: F# 5.0 released
+val it: unit = ()</code></pre></td></tr></table>
+<h3><a name="Multiple-JSON-LD-types-on-one-page" class="anchor" href="#Multiple-JSON-LD-types-on-one-page">Multiple JSON-LD types on one page</a></h3>
+<p>Some pages include multiple JSON-LD blocks, e.g. a <code>WebPage</code> descriptor alongside the
+<code>Article</code>.  The provider generates separate typed properties for each <code>@type</code>:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 223)" onmouseover="showTip(event, 'fs3', 223)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs100', 224)" onmouseover="showTip(event, 'fs100', 224)" class="prop">WikipediaWithWebPageSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;&lt;html&gt;</span>
+<span class="s">&lt;head&gt;</span>
+<span class="s">  &lt;script type=&quot;application/ld+json&quot;&gt;</span>
+<span class="s">  {</span>
+<span class="s">    &quot;@context&quot;: &quot;https://schema.org&quot;,</span>
+<span class="s">    &quot;@type&quot;: &quot;WebPage&quot;,</span>
+<span class="s">    &quot;name&quot;: &quot;F Sharp — Wikipedia&quot;,</span>
+<span class="s">    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,</span>
+<span class="s">    &quot;inLanguage&quot;: &quot;en&quot;,</span>
+<span class="s">    &quot;isPartOf&quot;: &quot;https://en.wikipedia.org/&quot;</span>
+<span class="s">  }</span>
+<span class="s">  &lt;/script&gt;</span>
+<span class="s">  &lt;script type=&quot;application/ld+json&quot;&gt;</span>
+<span class="s">  {</span>
+<span class="s">    &quot;@context&quot;: &quot;https://schema.org&quot;,</span>
+<span class="s">    &quot;@type&quot;: &quot;Article&quot;,</span>
+<span class="s">    &quot;name&quot;: &quot;F Sharp (programming language)&quot;,</span>
+<span class="s">    &quot;headline&quot;: &quot;Functional-first programming language for .NET&quot;,</span>
+<span class="s">    &quot;description&quot;: &quot;F# is a strongly typed, multi-paradigm programming language.&quot;,</span>
+<span class="s">    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,</span>
+<span class="s">    &quot;datePublished&quot;: &quot;2003-01-01&quot;,</span>
+<span class="s">    &quot;dateModified&quot;: &quot;2024-06-15&quot;</span>
+<span class="s">  }</span>
+<span class="s">  &lt;/script&gt;</span>
+<span class="s">&lt;/head&gt;</span>
+<span class="s">&lt;body&gt;&lt;/body&gt;</span>
+<span class="s">&lt;/html&gt;&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs101', 225)" onmouseover="showTip(event, 'fs101', 225)" class="rt">WikipediaWithWebPage</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 226)" onmouseover="showTip(event, 'fs6', 226)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs100', 227)" onmouseover="showTip(event, 'fs100', 227)" class="prop">WikipediaWithWebPageSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs102', 228)" onmouseover="showTip(event, 'fs102', 228)" class="id">wikiMulti</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs101', 229)" onmouseover="showTip(event, 'fs101', 229)" class="rt">WikipediaWithWebPage</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 230)" onmouseover="showTip(event, 'fs67', 230)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs100', 231)" onmouseover="showTip(event, 'fs100', 231)" class="prop">WikipediaWithWebPageSample</span><span class="pn">)</span>
+
+<span class="c">// Both JsonLd types are available as separate typed properties</span>
+<span onmouseout="hideTip(event, 'fs19', 232)" onmouseover="showTip(event, 'fs19', 232)" class="fn">printfn</span> <span class="s">&quot;WebPage name: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs102', 233)" onmouseover="showTip(event, 'fs102', 233)" class="id">wikiMulti</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 234)" onmouseover="showTip(event, 'fs92', 234)" class="prop">JsonLd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs103', 235)" onmouseover="showTip(event, 'fs103', 235)" class="id">WebPage</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">Name</span>
+<span onmouseout="hideTip(event, 'fs19', 236)" onmouseover="showTip(event, 'fs19', 236)" class="fn">printfn</span> <span class="s">&quot;Article name: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs102', 237)" onmouseover="showTip(event, 'fs102', 237)" class="id">wikiMulti</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 238)" onmouseover="showTip(event, 'fs92', 238)" class="prop">JsonLd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs93', 239)" onmouseover="showTip(event, 'fs93', 239)" class="id">Article</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">Name</span>
+<span onmouseout="hideTip(event, 'fs19', 240)" onmouseover="showTip(event, 'fs19', 240)" class="fn">printfn</span> <span class="s">&quot;Article published: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs102', 241)" onmouseover="showTip(event, 'fs102', 241)" class="id">wikiMulti</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 242)" onmouseover="showTip(event, 'fs92', 242)" class="prop">JsonLd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs93', 243)" onmouseover="showTip(event, 'fs93', 243)" class="id">Article</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span><span class="pn">.</span><span class="id">DatePublished</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>WebPage name: F Sharp — Wikipedia
+Article name: F Sharp (programming language)
+Article published: 2003-01-01
+[&lt;Literal&gt;]
+val WikipediaWithWebPageSample: string
+  =
+  "&lt;html&gt;
+&lt;head&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "F Sharp — Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "inLanguage": "en",
+    "isPartOf": "https://en.wikipedia.org/"
+  }
+  &lt;/script&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "F Sharp (programming language)",
+    "headline": "Functional-first programming language for .NET",
+    "description": "F# is a strongly typed, multi-paradigm programming language.",
+    "url": "https://en.wikipedia.org/wiki/F_Sharp_(programming_language)",
+    "datePublished": "2003-01-01",
+    "dateModified": "2024-06-15"
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;"
+type WikipediaWithWebPage = HtmlProvider&lt;...&gt;
+val wikiMulti: HtmlProvider&lt;...&gt;
+val it: unit = ()</code></pre></td></tr></table>
+<h3><a name="Accessing-raw-JSON-for-complex-properties" class="anchor" href="#Accessing-raw-JSON-for-complex-properties">Accessing raw JSON for complex properties</a></h3>
+<p>For properties with nested object values (such as <code>image</code>, <code>author</code>, or <code>publisher</code>
+in a Wikipedia article), only scalar top-level fields are reflected as typed properties.
+Use the <code>.Raw</code> property to access the full original JSON and parse it further with
+<code>JsonProvider</code> or <code>JsonValue.Parse</code> if needed:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pn">[&lt;</span><span onmouseout="hideTip(event, 'fs3', 244)" onmouseover="showTip(event, 'fs3', 244)" class="rt">Literal</span><span class="pn">&gt;]</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs104', 245)" onmouseover="showTip(event, 'fs104', 245)" class="prop">WikipediaPersonSample</span> <span class="o">=</span>
+    <span class="s">&quot;&quot;&quot;&lt;html&gt;</span>
+<span class="s">&lt;head&gt;</span>
+<span class="s">  &lt;script type=&quot;application/ld+json&quot;&gt;</span>
+<span class="s">  {</span>
+<span class="s">    &quot;@context&quot;: &quot;https://schema.org&quot;,</span>
+<span class="s">    &quot;@type&quot;: &quot;Article&quot;,</span>
+<span class="s">    &quot;name&quot;: &quot;Alan Turing&quot;,</span>
+<span class="s">    &quot;headline&quot;: &quot;British mathematician and computer scientist&quot;,</span>
+<span class="s">    &quot;description&quot;: &quot;Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst, philosopher, and theoretical biologist.&quot;,</span>
+<span class="s">    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/Alan_Turing&quot;,</span>
+<span class="s">    &quot;datePublished&quot;: &quot;2001-10-13&quot;,</span>
+<span class="s">    &quot;dateModified&quot;: &quot;2024-09-10&quot;,</span>
+<span class="s">    &quot;license&quot;: &quot;https://creativecommons.org/licenses/by-sa/4.0/&quot;,</span>
+<span class="s">    &quot;inLanguage&quot;: &quot;en&quot;</span>
+<span class="s">  }</span>
+<span class="s">  &lt;/script&gt;</span>
+<span class="s">&lt;/head&gt;</span>
+<span class="s">&lt;body&gt;</span>
+<span class="s">  &lt;table&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1936&lt;/td&gt;&lt;td&gt;Turing machine concept published&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1939&lt;/td&gt;&lt;td&gt;Bombe code-breaking machine&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;td&gt;1950&lt;/td&gt;&lt;td&gt;Turing Test proposed&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">  &lt;/table&gt;</span>
+<span class="s">&lt;/body&gt;</span>
+<span class="s">&lt;/html&gt;&quot;&quot;&quot;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs105', 246)" onmouseover="showTip(event, 'fs105', 246)" class="rt">WikipediaPerson</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 247)" onmouseover="showTip(event, 'fs6', 247)" class="rt">HtmlProvider</span><span class="pn">&lt;</span><span onmouseout="hideTip(event, 'fs104', 248)" onmouseover="showTip(event, 'fs104', 248)" class="prop">WikipediaPersonSample</span><span class="pn">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs106', 249)" onmouseover="showTip(event, 'fs106', 249)" class="id">turingPage</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs105', 250)" onmouseover="showTip(event, 'fs105', 250)" class="rt">WikipediaPerson</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs67', 251)" onmouseover="showTip(event, 'fs67', 251)" class="id">Parse</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs104', 252)" onmouseover="showTip(event, 'fs104', 252)" class="prop">WikipediaPersonSample</span><span class="pn">)</span>
+
+<span class="c">// JSON-LD article metadata</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs107', 253)" onmouseover="showTip(event, 'fs107', 253)" class="id">turingArticle</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs106', 254)" onmouseover="showTip(event, 'fs106', 254)" class="id">turingPage</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs92', 255)" onmouseover="showTip(event, 'fs92', 255)" class="prop">JsonLd</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs93', 256)" onmouseover="showTip(event, 'fs93', 256)" class="id">Article</span><span class="pn">.</span><span class="pn">[</span><span class="n">0</span><span class="pn">]</span>
+<span onmouseout="hideTip(event, 'fs19', 257)" onmouseover="showTip(event, 'fs19', 257)" class="fn">printfn</span> <span class="s">&quot;Subject: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs107', 258)" onmouseover="showTip(event, 'fs107', 258)" class="id">turingArticle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs94', 259)" onmouseover="showTip(event, 'fs94', 259)" class="id">Name</span>
+<span onmouseout="hideTip(event, 'fs19', 260)" onmouseover="showTip(event, 'fs19', 260)" class="fn">printfn</span> <span class="s">&quot;Published: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs107', 261)" onmouseover="showTip(event, 'fs107', 261)" class="id">turingArticle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs96', 262)" onmouseover="showTip(event, 'fs96', 262)" class="id">DatePublished</span>
+<span onmouseout="hideTip(event, 'fs19', 263)" onmouseover="showTip(event, 'fs19', 263)" class="fn">printfn</span> <span class="s">&quot;License: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs107', 264)" onmouseover="showTip(event, 'fs107', 264)" class="id">turingArticle</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs108', 265)" onmouseover="showTip(event, 'fs108', 265)" class="id">License</span>
+
+<span class="c">// Timeline table from the article body</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs83', 266)" onmouseover="showTip(event, 'fs83', 266)" class="fn">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs106', 267)" onmouseover="showTip(event, 'fs106', 267)" class="id">turingPage</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 268)" onmouseover="showTip(event, 'fs24', 268)" class="prop">Tables</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs84', 269)" onmouseover="showTip(event, 'fs84', 269)" class="prop">Table1</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs85', 270)" onmouseover="showTip(event, 'fs85', 270)" class="id">Rows</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs19', 271)" onmouseover="showTip(event, 'fs19', 271)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s"> — </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs83', 272)" onmouseover="showTip(event, 'fs83', 272)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs86', 273)" onmouseover="showTip(event, 'fs86', 273)" class="id">Year</span> <span onmouseout="hideTip(event, 'fs83', 274)" onmouseover="showTip(event, 'fs83', 274)" class="fn">row</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs87', 275)" onmouseover="showTip(event, 'fs87', 275)" class="id">Achievement</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Subject: Alan Turing
+Published: 2001-10-13
+License: https://creativecommons.org/licenses/by-sa/4.0/
+1936 — Turing machine concept published
+1939 — Bombe code-breaking machine
+1950 — Turing Test proposed
+[&lt;Literal&gt;]
+val WikipediaPersonSample: string
+  =
+  "&lt;html&gt;
+&lt;head&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "name": "Alan Turing",
+    "headline": "British mathematician and computer scientist",
+    "description": "Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst, philosopher, and theoretical biologist.",
+    "url": "https://en.wikipedia.org/wiki/Alan_Turing",
+    "datePublished": "2001-10-13",
+    "dateModified": "2024-09-10",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "inLanguage": "en"
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1936&lt;/td&gt;&lt;td&gt;Turing machine concept published&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1939&lt;/td&gt;&lt;td&gt;Bombe code-breaking machine&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1950&lt;/td&gt;&lt;td&gt;Turing Test proposed&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;"
+type WikipediaPerson = HtmlProvider&lt;...&gt;
+val turingPage: HtmlProvider&lt;...&gt;
+val turingArticle: HtmlProvider&lt;...&gt;.Article =
+  { Properties =
+     map
+       [("dateModified", "2024-09-10"); ("datePublished", "2001-10-13");
+        ("description",
+         "Alan Mathison Turing was an English mathematician, computer s"+[73 chars]);
+        ("headline", "British mathematician and computer scientist");
+        ("inLanguage", "en");
+        ("license", "https://creativecommons.org/licenses/by-sa/4.0/");
+        ("name", "Alan Turing");
+        ("url", "https://en.wikipedia.org/wiki/Alan_Turing")]
+    Raw =
+     "{
+  "@context": "https://schema.org",
+  "@type": "Article","+[457 chars] }
+val it: unit = ()</code></pre></td></tr></table>
+<h2><a name="Summary-of-structured-data-formats" class="anchor" href="#Summary-of-structured-data-formats">Summary of structured data formats</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th><p>Format</p></th>
+<th><p>HTML mechanism</p></th>
+<th><p>Provider access</p></th>
+<th><p>Typical use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Tables</p></td>
+<td><p><code>&lt;table&gt;</code> elements</p></td>
+<td><p><code>.Tables.TableName</code></p></td>
+<td><p>Tabular data, statistics</p></td>
+</tr>
+<tr class="even">
+<td><p>Microdata</p></td>
+<td><p><code>itemscope</code>/<code>itemprop</code> attributes</p></td>
+<td><p><code>.Schemas.TypeName</code></p></td>
+<td><p>Inline product/event/person markup</p></td>
+</tr>
+<tr class="odd">
+<td><p>JSON-LD</p></td>
+<td><p><code>&lt;script type="application/ld+json"&gt;</code></p></td>
+<td><p><code>.JsonLd.TypeName</code></p></td>
+<td><p>Article/page metadata, SEO</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>All three formats can coexist in the same <code>HtmlProvider</code> type.</p>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li>
+<a href="HtmlParser.html">HTML Parser</a> - provides more information about
+working with HTML documents dynamically.
+</li>
+</ul>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">Multiple items<br />type LiteralAttribute =
+  inherit Attribute
+  new: unit -&gt; LiteralAttribute<br /><br />--------------------<br />new: unit -&gt; LiteralAttribute</div>
+<div class="fsdocs-tip" id="fs4">[&lt;Literal&gt;]
+val F1_2017_URL: string = &quot;https://en.wikipedia.org/wiki/2017_FIA_Formula_One_World_Championship&quot;</div>
+<div class="fsdocs-tip" id="fs5">type F1_2017 = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs6">type HtmlProvider<br /><em>&lt;summary&gt;Typed representation of an HTML file.&lt;/summary&gt;
+           &lt;param name=&#39;Sample&#39;&gt;Location of an HTML sample file or a string containing a sample HTML document.&lt;/param&gt;
+           &lt;param name=&#39;PreferOptionals&#39;&gt;When set to true, inference will prefer to use the option type instead of nullable types, &lt;c&gt;double.NaN&lt;/c&gt; or &lt;c&gt;&quot;&quot;&lt;/c&gt; for missing values. Defaults to false.&lt;/param&gt;
+           &lt;param name=&#39;IncludeLayoutTables&#39;&gt;Includes tables that are potentially layout tables (with cellpadding=0 and cellspacing=0 attributes)&lt;/param&gt;
+           &lt;param name=&#39;MissingValues&#39;&gt;The set of strings recognized as missing values. Defaults to &lt;c&gt;NaN,NA,N/A,#N/A,:,-,TBA,TBD&lt;/c&gt;.&lt;/param&gt;
+           &lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;
+           &lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless &lt;c&gt;charset&lt;/c&gt; is specified in the &lt;c&gt;Content-Type&lt;/c&gt; response header.&lt;/param&gt;
+           &lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;
+           &lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource 
+              (e.g. &#39;MyCompany.MyAssembly, resource_name.html&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;
+           &lt;param name=&#39;PreferDateOnly&#39;&gt;When true on .NET 6+, date-only strings are inferred as DateOnly and time-only strings as TimeOnly. Defaults to false for backward compatibility.&lt;/param&gt;
+        </em></div>
+<div class="fsdocs-tip" id="fs7">val f1Calendar: HtmlProvider&lt;...&gt;.Calendar</div>
+<div class="fsdocs-tip" id="fs8">HtmlProvider&lt;...&gt;.Load(uri: string) : HtmlProvider&lt;...&gt;<br /><em>Loads HTML from the specified uri</em><br />HtmlProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : HtmlProvider&lt;...&gt;<br /><em>Loads HTML from the specified reader</em><br />HtmlProvider&lt;...&gt;.Load(stream: System.IO.Stream) : HtmlProvider&lt;...&gt;<br /><em>Loads HTML from the specified stream</em></div>
+<div class="fsdocs-tip" id="fs9">val firstRow: HtmlProvider&lt;...&gt;.Calendar.Row</div>
+<div class="fsdocs-tip" id="fs10">property Runtime.BaseTypes.HtmlTable.Rows: HtmlProvider&lt;...&gt;.Calendar.Row array with get</div>
+<div class="fsdocs-tip" id="fs11">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs12">val head: source: &#39;T seq -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs13">val round: string</div>
+<div class="fsdocs-tip" id="fs14">property HtmlProvider&lt;...&gt;.Calendar.Row.Round: string with get</div>
+<div class="fsdocs-tip" id="fs15">val grandPrix: string</div>
+<div class="fsdocs-tip" id="fs16">val date: string</div>
+<div class="fsdocs-tip" id="fs17">property HtmlProvider&lt;...&gt;.Calendar.Row.Date: string with get</div>
+<div class="fsdocs-tip" id="fs18">val row: HtmlProvider&lt;...&gt;.Calendar.Row</div>
+<div class="fsdocs-tip" id="fs19">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs20">[&lt;Literal&gt;]
+val SP500_URL: string = &quot;https://en.wikipedia.org/wiki/List_of_S%26P_500_companies&quot;</div>
+<div class="fsdocs-tip" id="fs21">type SP500 = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs22">val sp500: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs23">val companies: obj</div>
+<div class="fsdocs-tip" id="fs24">property HtmlProvider&lt;...&gt;.Tables: HtmlProvider&lt;...&gt;.TablesContainer with get</div>
+<div class="fsdocs-tip" id="fs25">val row: obj</div>
+<div class="fsdocs-tip" id="fs26">val truncate: count: int -&gt; source: &#39;T seq -&gt; &#39;T seq</div>
+<div class="fsdocs-tip" id="fs27">val bySector: (obj * int) array</div>
+<div class="fsdocs-tip" id="fs28">val groupBy: projection: (&#39;T -&gt; &#39;Key) -&gt; source: &#39;T seq -&gt; (&#39;Key * &#39;T seq) seq (requires equality)</div>
+<div class="fsdocs-tip" id="fs29">val r: obj</div>
+<div class="fsdocs-tip" id="fs30">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; source: &#39;T seq -&gt; &#39;U seq</div>
+<div class="fsdocs-tip" id="fs31">val sector: obj</div>
+<div class="fsdocs-tip" id="fs32">val rows: obj seq</div>
+<div class="fsdocs-tip" id="fs33">val length: source: &#39;T seq -&gt; int</div>
+<div class="fsdocs-tip" id="fs34">val sortByDescending: projection: (&#39;T -&gt; &#39;Key) -&gt; source: &#39;T seq -&gt; &#39;T seq (requires comparison)</div>
+<div class="fsdocs-tip" id="fs35">val snd: tuple: (&#39;T1 * &#39;T2) -&gt; &#39;T2</div>
+<div class="fsdocs-tip" id="fs36">val toArray: source: &#39;T seq -&gt; &#39;T array</div>
+<div class="fsdocs-tip" id="fs37">type NugetStats = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs38">val rawStats: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData</div>
+<div class="fsdocs-tip" id="fs39">val getMinorVersion: v: string -&gt; string</div>
+<div class="fsdocs-tip" id="fs40">val v: string</div>
+<div class="fsdocs-tip" id="fs41">Multiple items<br />val string: value: &#39;T -&gt; string<br /><br />--------------------<br />type string = System.String</div>
+<div class="fsdocs-tip" id="fs42">namespace System</div>
+<div class="fsdocs-tip" id="fs43">namespace System.Text</div>
+<div class="fsdocs-tip" id="fs44">namespace System.Text.RegularExpressions</div>
+<div class="fsdocs-tip" id="fs45">Multiple items<br />type Regex =
+  interface ISerializable
+  new: pattern: string -&gt; unit + 2 overloads
+  member Count: input: string -&gt; int + 8 overloads
+  member EnumerateMatches: input: ReadOnlySpan&lt;char&gt; -&gt; ValueMatchEnumerator + 4 overloads
+  member GetGroupNames: unit -&gt; string array
+  member GetGroupNumbers: unit -&gt; int array
+  member GroupNameFromNumber: i: int -&gt; string
+  member GroupNumberFromName: name: string -&gt; int
+  member IsMatch: input: ReadOnlySpan&lt;char&gt; -&gt; bool + 9 overloads
+  member Match: input: string -&gt; Match + 5 overloads
+  ...<br /><em>&lt;summary&gt;Represents an immutable regular expression.&lt;/summary&gt;</em><br /><br />--------------------<br />System.Text.RegularExpressions.Regex(pattern: string) : System.Text.RegularExpressions.Regex<br />System.Text.RegularExpressions.Regex(pattern: string, options: System.Text.RegularExpressions.RegexOptions) : System.Text.RegularExpressions.Regex<br />System.Text.RegularExpressions.Regex(pattern: string, options: System.Text.RegularExpressions.RegexOptions, matchTimeout: System.TimeSpan) : System.Text.RegularExpressions.Regex</div>
+<div class="fsdocs-tip" id="fs46">val downloadsByMinorVersion: (string * decimal) array</div>
+<div class="fsdocs-tip" id="fs47">property Runtime.BaseTypes.HtmlTable.Rows: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row array with get</div>
+<div class="fsdocs-tip" id="fs48">val r: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row</div>
+<div class="fsdocs-tip" id="fs49">property HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row.Version: string with get</div>
+<div class="fsdocs-tip" id="fs50">val k: string</div>
+<div class="fsdocs-tip" id="fs51">val xs: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row seq</div>
+<div class="fsdocs-tip" id="fs52">val sumBy: projection: (&#39;T -&gt; &#39;U) -&gt; source: &#39;T seq -&gt; &#39;U (requires member (+) and member Zero)</div>
+<div class="fsdocs-tip" id="fs53">val x: HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row</div>
+<div class="fsdocs-tip" id="fs54">property HtmlProvider&lt;...&gt;.VersionHistoryOfFSharpData.Row.Downloads: decimal with get</div>
+<div class="fsdocs-tip" id="fs55">[&lt;Literal&gt;]
+val DrWho: string = &quot;https://en.wikipedia.org/wiki/List_of_Doctor_Who_episodes_(1963%E2%80%931989)&quot;</div>
+<div class="fsdocs-tip" id="fs56">val doctorWho: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs57">val viewersByDirector: (string * float) array</div>
+<div class="fsdocs-tip" id="fs58">val episode: HtmlProvider&lt;...&gt;.Season119631964.Row</div>
+<div class="fsdocs-tip" id="fs59">val director: string</div>
+<div class="fsdocs-tip" id="fs60">val episodes: HtmlProvider&lt;...&gt;.Season119631964.Row seq</div>
+<div class="fsdocs-tip" id="fs61">val avgViewers: float</div>
+<div class="fsdocs-tip" id="fs62">val averageBy: projection: (&#39;T -&gt; &#39;U) -&gt; source: &#39;T seq -&gt; &#39;U (requires member (+) and member DivideByInt and member Zero)</div>
+<div class="fsdocs-tip" id="fs63">val e: HtmlProvider&lt;...&gt;.Season119631964.Row</div>
+<div class="fsdocs-tip" id="fs64">[&lt;Literal&gt;]
+val ProductCatalogSample: string = &quot;&lt;html&gt;&lt;body&gt;
+  &lt;div itemscope itemtype=&quot;http://schema.org/Product&quot;&gt;
+    &lt;span itemprop=&quot;name&quot;&gt;FSharp.Data&lt;/span&gt;
+    &lt;span itemprop=&quot;description&quot;&gt;F# data-access library&lt;/span&gt;
+    &lt;span itemprop=&quot;brand&quot;&gt;F# Foundation&lt;/span&gt;
+    &lt;span itemprop=&quot;sku&quot;&gt;FSHARP-DATA&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div itemscope itemtype=&quot;http://schema.org/Product&quot;&gt;
+    &lt;span itemprop=&quot;name&quot;&gt;Newtonsoft.Json&lt;/span&gt;
+    &lt;span itemprop=&quot;description&quot;&gt;Popular high-performance JSON framework for .NET&lt;/span&gt;
+    &lt;span itemprop=&quot;brand&quot;&gt;James Newton-King&lt;/span&gt;
+    &lt;span itemprop=&quot;sku&quot;&gt;NEWTONSOFT-JSON&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs65">type ProductCatalog = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs66">val catalog: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs67">HtmlProvider&lt;...&gt;.Parse(text: string) : HtmlProvider&lt;...&gt;<br /><em>Parses the specified HTML string</em></div>
+<div class="fsdocs-tip" id="fs68">val product: HtmlProvider&lt;...&gt;.Product</div>
+<div class="fsdocs-tip" id="fs69">property HtmlProvider&lt;...&gt;.Schemas: HtmlProvider&lt;...&gt;.SchemasContainer with get</div>
+<div class="fsdocs-tip" id="fs70">property HtmlProvider&lt;...&gt;.SchemasContainer.Product: HtmlProvider&lt;...&gt;.Product array with get</div>
+<div class="fsdocs-tip" id="fs71">property HtmlProvider&lt;...&gt;.Product.Name: string with get<br /><em>Gets the &#39;name&#39; itemprop value.</em></div>
+<div class="fsdocs-tip" id="fs72">property HtmlProvider&lt;...&gt;.Product.Brand: string with get<br /><em>Gets the &#39;brand&#39; itemprop value.</em></div>
+<div class="fsdocs-tip" id="fs73">property HtmlProvider&lt;...&gt;.Product.Sku: string with get<br /><em>Gets the &#39;sku&#39; itemprop value.</em></div>
+<div class="fsdocs-tip" id="fs74">[&lt;Literal&gt;]
+val MixedPageSample: string = &quot;&lt;html&gt;&lt;body&gt;
+  &lt;div itemscope itemtype=&quot;http://schema.org/Person&quot;&gt;
+    &lt;span itemprop=&quot;name&quot;&gt;Grace Hopper&lt;/span&gt;
+    &lt;span itemprop=&quot;jobTitle&quot;&gt;Rear Admiral&lt;/span&gt;
+    &lt;span itemprop=&quot;alumniOf&quot;&gt;Yale University&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1944&lt;/td&gt;&lt;td&gt;Debugged the Harvard Mark II&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1952&lt;/td&gt;&lt;td&gt;First compiler (A-0 System)&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1959&lt;/td&gt;&lt;td&gt;Co-designed COBOL&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs75">type PersonPage = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs76">val page: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs77">val person: HtmlProvider&lt;...&gt;.Person</div>
+<div class="fsdocs-tip" id="fs78">property HtmlProvider&lt;...&gt;.SchemasContainer.Person: HtmlProvider&lt;...&gt;.Person array with get</div>
+<div class="fsdocs-tip" id="fs79">module Array
+
+from Microsoft.FSharp.Collections</div>
+<div class="fsdocs-tip" id="fs80">val head: array: &#39;T array -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs81">property HtmlProvider&lt;...&gt;.Person.Name: string with get<br /><em>Gets the &#39;name&#39; itemprop value.</em></div>
+<div class="fsdocs-tip" id="fs82">property HtmlProvider&lt;...&gt;.Person.JobTitle: string with get<br /><em>Gets the &#39;jobTitle&#39; itemprop value.</em></div>
+<div class="fsdocs-tip" id="fs83">val row: HtmlProvider&lt;...&gt;.Table1.Row</div>
+<div class="fsdocs-tip" id="fs84">property HtmlProvider&lt;...&gt;.TablesContainer.Table1: HtmlProvider&lt;...&gt;.Table1 with get</div>
+<div class="fsdocs-tip" id="fs85">property Runtime.BaseTypes.HtmlTable.Rows: HtmlProvider&lt;...&gt;.Table1.Row array with get</div>
+<div class="fsdocs-tip" id="fs86">property HtmlProvider&lt;...&gt;.Table1.Row.Year: int with get</div>
+<div class="fsdocs-tip" id="fs87">property HtmlProvider&lt;...&gt;.Table1.Row.Achievement: string with get</div>
+<div class="fsdocs-tip" id="fs88">[&lt;Literal&gt;]
+val WikipediaArticleSample: string = &quot;&lt;html&gt;
+&lt;head&gt;
+  &lt;script type=&quot;application/ld+json&quot;&gt;
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;Article&quot;,
+    &quot;name&quot;: &quot;F Sharp (programming language)&quot;,
+    &quot;headline&quot;: &quot;Functional-first programming language for .NET&quot;,
+    &quot;description&quot;: &quot;F# is a strongly typed, multi-paradigm programming language.&quot;,
+    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,
+    &quot;datePublished&quot;: &quot;2003-01-01&quot;,
+    &quot;dateModified&quot;: &quot;2024-06-15&quot;,
+    &quot;license&quot;: &quot;https://creativecommons.org/licenses/by-sa/4.0/&quot;,
+    &quot;inLanguage&quot;: &quot;en&quot;
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Event&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2002&lt;/td&gt;&lt;td&gt;F# created by Don Syme at Microsoft Research Cambridge&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2005&lt;/td&gt;&lt;td&gt;First public release of F#&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2010&lt;/td&gt;&lt;td&gt;F# ships with Visual Studio 2010&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;2020&lt;/td&gt;&lt;td&gt;F# 5.0 released&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs89">type WikipediaArticle = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs90">val wiki: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs91">val article: HtmlProvider&lt;...&gt;.Article</div>
+<div class="fsdocs-tip" id="fs92">property HtmlProvider&lt;...&gt;.JsonLd: HtmlProvider&lt;...&gt;.JsonLdContainer with get</div>
+<div class="fsdocs-tip" id="fs93">property HtmlProvider&lt;...&gt;.JsonLdContainer.Article: HtmlProvider&lt;...&gt;.Article array with get</div>
+<div class="fsdocs-tip" id="fs94">property HtmlProvider&lt;...&gt;.Article.Name: string with get<br /><em>Gets the &#39;name&#39; JSON-LD property value.</em></div>
+<div class="fsdocs-tip" id="fs95">property HtmlProvider&lt;...&gt;.Article.Description: string with get<br /><em>Gets the &#39;description&#39; JSON-LD property value.</em></div>
+<div class="fsdocs-tip" id="fs96">property HtmlProvider&lt;...&gt;.Article.DatePublished: string with get<br /><em>Gets the &#39;datePublished&#39; JSON-LD property value.</em></div>
+<div class="fsdocs-tip" id="fs97">property HtmlProvider&lt;...&gt;.Article.DateModified: string with get<br /><em>Gets the &#39;dateModified&#39; JSON-LD property value.</em></div>
+<div class="fsdocs-tip" id="fs98">property HtmlProvider&lt;...&gt;.Article.Url: string with get<br /><em>Gets the &#39;url&#39; JSON-LD property value.</em></div>
+<div class="fsdocs-tip" id="fs99">property HtmlProvider&lt;...&gt;.Table1.Row.Event: string with get</div>
+<div class="fsdocs-tip" id="fs100">[&lt;Literal&gt;]
+val WikipediaWithWebPageSample: string = &quot;&lt;html&gt;
+&lt;head&gt;
+  &lt;script type=&quot;application/ld+json&quot;&gt;
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;WebPage&quot;,
+    &quot;name&quot;: &quot;F Sharp — Wikipedia&quot;,
+    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,
+    &quot;inLanguage&quot;: &quot;en&quot;,
+    &quot;isPartOf&quot;: &quot;https://en.wikipedia.org/&quot;
+  }
+  &lt;/script&gt;
+  &lt;script type=&quot;application/ld+json&quot;&gt;
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;Article&quot;,
+    &quot;name&quot;: &quot;F Sharp (programming language)&quot;,
+    &quot;headline&quot;: &quot;Functional-first programming language for .NET&quot;,
+    &quot;description&quot;: &quot;F# is a strongly typed, multi-paradigm programming language.&quot;,
+    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/F_Sharp_(programming_language)&quot;,
+    &quot;datePublished&quot;: &quot;2003-01-01&quot;,
+    &quot;dateModified&quot;: &quot;2024-06-15&quot;
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs101">type WikipediaWithWebPage = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs102">val wikiMulti: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs103">property HtmlProvider&lt;...&gt;.JsonLdContainer.WebPage: HtmlProvider&lt;...&gt;.WebPage array with get</div>
+<div class="fsdocs-tip" id="fs104">[&lt;Literal&gt;]
+val WikipediaPersonSample: string = &quot;&lt;html&gt;
+&lt;head&gt;
+  &lt;script type=&quot;application/ld+json&quot;&gt;
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;Article&quot;,
+    &quot;name&quot;: &quot;Alan Turing&quot;,
+    &quot;headline&quot;: &quot;British mathematician and computer scientist&quot;,
+    &quot;description&quot;: &quot;Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst, philosopher, and theoretical biologist.&quot;,
+    &quot;url&quot;: &quot;https://en.wikipedia.org/wiki/Alan_Turing&quot;,
+    &quot;datePublished&quot;: &quot;2001-10-13&quot;,
+    &quot;dateModified&quot;: &quot;2024-09-10&quot;,
+    &quot;license&quot;: &quot;https://creativecommons.org/licenses/by-sa/4.0/&quot;,
+    &quot;inLanguage&quot;: &quot;en&quot;
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Achievement&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1936&lt;/td&gt;&lt;td&gt;Turing machine concept published&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1939&lt;/td&gt;&lt;td&gt;Bombe code-breaking machine&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;1950&lt;/td&gt;&lt;td&gt;Turing Test proposed&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;&quot;</div>
+<div class="fsdocs-tip" id="fs105">type WikipediaPerson = HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs106">val turingPage: HtmlProvider&lt;...&gt;</div>
+<div class="fsdocs-tip" id="fs107">val turingArticle: HtmlProvider&lt;...&gt;.Article</div>
+<div class="fsdocs-tip" id="fs108">property HtmlProvider&lt;...&gt;.Article.License: string with get<br /><em>Gets the &#39;license&#39; JSON-LD property value.</em></div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#HTML-Type-Provider">
+      HTML Type Provider
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Parsing-HTML-Tables">
+      Parsing HTML Tables
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Formula-1-Race-Calendar-Wikipedia">
+      Formula 1 Race Calendar (Wikipedia)
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Wikipedia-S-amp-P-500-Components">
+      Wikipedia S&amp;P 500 Components
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#NuGet-Package-Statistics">
+      NuGet Package Statistics
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Getting-Statistics-on-Doctor-Who-Multiple-Tables">
+      Getting Statistics on Doctor Who (Multiple Tables)
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Schema-org-Microdata">
+      Schema.org Microdata
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#JSON-LD-Structured-Data">
+      JSON-LD Structured Data
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#What-Wikipedia-exposes-via-JSON-LD">
+      What Wikipedia exposes via JSON-LD
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Wikipedia-timeline-article-tables-JSON-LD-metadata">
+      Wikipedia timeline article: tables + JSON-LD metadata
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Multiple-JSON-LD-types-on-one-page">
+      Multiple JSON-LD types on one page
+    </a>
+  </li>
+  <li class="level-3">
+    <a href="#Accessing-raw-JSON-for-complex-properties">
+      Accessing raw JSON for complex properties
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Summary-of-structured-data-formats">
+      Summary of structured data formats
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>
