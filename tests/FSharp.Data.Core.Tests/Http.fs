@@ -366,7 +366,7 @@ let ``CombinedStream can seek with Some length`` () =
 [<Test>]
 let ``CombinedStream length throws with None length`` () =
     use combinedStream = new HttpHelpers.CombinedStream(None, [])
-    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<Exception>
+    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<NotSupportedException>
     
 [<Test>]
 let ``CombinedStream cannot seek with None length`` () =
@@ -383,7 +383,7 @@ let ``Non-seekable streams create non-seekable CombinedStream`` () =
     use nonSeekms = new nonSeekableStream(Array.zeroCreate 10)
     let multiparts = [MultipartItem("","", nonSeekms)]
     let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
-    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<Exception>
+    (fun () -> combinedStream.Length |> ignore) |> should throw typeof<NotSupportedException>
     combinedStream.CanSeek |> should equal false
     
 [<Test>]

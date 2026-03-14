@@ -1499,18 +1499,31 @@ module internal HttpHelpers =
         override x.Length =
             length
             |> Option.defaultWith (fun () ->
-                failwith "One or more of the encompassed streams are not seekable and the length cannot be determine")
+                raise (
+                    NotSupportedException(
+                        "One or more of the encompassed streams are not seekable and the length cannot be determined"
+                    )
+                ))
 
         override x.Position
             with get () = v
-            and set (_) = failwith "no position setting"
+            and set (_) = raise (NotSupportedException("CombinedStream does not support seeking"))
 
         override x.Flush() = ()
         override x.CanTimeout = false
-        override x.Seek(_, _) = failwith "no seeking"
-        override x.SetLength(_) = failwith "no setting length"
-        override x.Write(_, _, _) = failwith "no writing"
-        override x.WriteByte(_) = failwith "seriously, no writing"
+
+        override x.Seek(_, _) =
+            raise (NotSupportedException("CombinedStream does not support seeking"))
+
+        override x.SetLength(_) =
+            raise (NotSupportedException("CombinedStream does not support setting length"))
+
+        override x.Write(_, _, _) =
+            raise (NotSupportedException("CombinedStream is read-only"))
+
+        override x.WriteByte(_) =
+            raise (NotSupportedException("CombinedStream is read-only"))
+
         override x.Read(buffer, offset, count) = readFromStream buffer offset count
 
         interface IDisposable with
@@ -1804,7 +1817,7 @@ module internal HttpHelpers =
         async {
 
             let isText (mimeType: string) =
-                let isText (mimeType: string) =
+                let isMimeTypeText (mimeType: string) =
                     let mimeType = mimeType.Trim()
 
                     mimeType.StartsWith("text/", StringComparison.Ordinal)
@@ -1819,8 +1832,9 @@ module internal HttpHelpers =
                     || mimeType.StartsWith("application/", StringComparison.Ordinal)
                        && mimeType.EndsWith("+json", StringComparison.Ordinal)
 
+                // Split on ';' to ignore MIME type parameters (e.g. "text/html; charset=utf-8")
                 mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
-                |> Array.exists isText
+                |> Array.exists isMimeTypeText
 
             let! memoryStream = asyncRead stream
 
