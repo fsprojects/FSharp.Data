@@ -1,5 +1,10 @@
 # Release Notes
 
+## 8.1.1 - Mar 14 2026
+
+- Fix `CombinedStream` to throw `NotSupportedException` (instead of `Exception`) for unsupported operations (write, seek, set length); fixes a typo in the length error message
+- Rename shadowed inner `isText` helper to `isMimeTypeText` for code clarity; add explanatory comment
+
 ## 8.1.0 - Mar 08 2026
 
 - Add schema.org microdata support to `HtmlProvider`: when an HTML document contains elements with `itemscope`/`itemtype`/`itemprop` attributes, the provider now generates a typed `Schemas` container (e.g. `doc.Schemas.Person`) with one strongly-typed property per `itemprop` name discovered in the sample (closes #611)
