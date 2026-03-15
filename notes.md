@@ -1,2 +1,3 @@
-03-14: PR: fix CombinedStream NotSupportedException + isText→isMimeTypeText.
-03-13: PR #1694 (STJ bench) merged. Issues: only 1665 open.
+03-15: NameUtils property tests PR.
+03-14: #1695 merged.
+03-13: #1694 merged.
