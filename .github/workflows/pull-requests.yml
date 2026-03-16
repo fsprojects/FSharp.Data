@@ -10,6 +10,7 @@ jobs:
   build-windows:
 
     runs-on: windows-latest
+    timeout-minutes: 40
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET Core 8
@@ -35,6 +36,7 @@ jobs:
   build-ubuntu:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET Core 8
