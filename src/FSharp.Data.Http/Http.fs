@@ -1745,7 +1745,7 @@ module internal HttpHelpers =
                 let bytes = value.Substring("bytes=".Length).Split('-')
 
                 if bytes.Length <> 2 then
-                    failwithf "Invalid value for the Range header (%O)" bytes
+                    failwithf "Invalid value for the Range header (%s)" value
 
                 req.AddRange(int64 bytes.[0], int64 bytes.[1])
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value

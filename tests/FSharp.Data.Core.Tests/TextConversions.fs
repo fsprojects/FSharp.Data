@@ -163,6 +163,10 @@ let ``DateTime conversions with various formats``() =
   TextConversions.AsDateTime culture "/Date(1577836800000)/" |> Option.isSome |> should equal true
   TextConversions.AsDateTime culture "/Date(1577836800000+0000)/" |> Option.isSome |> should equal true
   
+  // Overflow-safe: astronomically large ms-Date values should return None rather than throwing
+  TextConversions.AsDateTime culture ("/Date(" + System.String('9', 500) + ")/") |> should equal None
+  TextConversions.AsDateTime culture ("/Date(-" + System.String('9', 500) + ")/") |> should equal None
+  
   // Invalid values
   TextConversions.AsDateTime culture "not-a-date" |> should equal None
   TextConversions.AsDateTime culture "" |> should equal None
@@ -189,6 +193,9 @@ let ``DateTimeOffset conversions with additional formats``() =
   // More timezone formats
   TextConversions.AsDateTimeOffset culture "2020-01-01T12:00:00+05:30" |> Option.isSome |> should equal true
   TextConversions.AsDateTimeOffset culture "2020-01-01T12:00:00-08:00" |> Option.isSome |> should equal true
+  
+  // Overflow-safe: astronomically large ms-Date+offset values should return None rather than throwing
+  TextConversions.AsDateTimeOffset culture ("/Date(" + System.String('9', 500) + "+0000)/") |> should equal None
   
   // Invalid values
   TextConversions.AsDateTimeOffset culture "2020-01-01" |> should equal None
