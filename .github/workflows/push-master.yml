@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 60
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup .NET Core 8
       uses: actions/setup-dotnet@v4
       with:
