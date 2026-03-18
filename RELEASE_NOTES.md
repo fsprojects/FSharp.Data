@@ -1,5 +1,10 @@
 # Release Notes
 
+## 8.1.2 - Mar 17 2026
+
+- Fix `TextConversions.AsDateTime` and `TextConversions.AsDateTimeOffset` to return `None` (instead of throwing `ArgumentOutOfRangeException`) when a `/Date(...)/` value overflows the valid `DateTime`/`DateTimeOffset` range; use `InvariantCulture` explicitly when parsing the milliseconds value
+- Fix error message in Range header validation: show the original header value (not the internal byte array representation) when the range format is invalid
+
 ## 8.1.1 - Mar 14 2026
 
 - Fix `CombinedStream` to throw `NotSupportedException` (instead of `Exception`) for unsupported operations (write, seek, set length); fixes a typo in the length error message

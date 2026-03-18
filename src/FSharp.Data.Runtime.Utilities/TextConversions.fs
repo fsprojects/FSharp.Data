@@ -171,10 +171,19 @@ type TextConversions private () =
         let matchesMS = msDateRegex.Value.Match(text.Trim())
 
         if matchesMS.Success then
-            matchesMS.Groups.[1].Value
-            |> Double.Parse
-            |> DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds
-            |> Some
+            match
+                Double.TryParse(
+                    matchesMS.Groups.[1].Value,
+                    Globalization.NumberStyles.Integer,
+                    Globalization.CultureInfo.InvariantCulture
+                )
+            with
+            | true, ms when not (Double.IsInfinity ms) ->
+                try
+                    DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds ms |> Some
+                with :? ArgumentOutOfRangeException ->
+                    None
+            | _ -> None
         else
             // Parse ISO 8601 format, fixing time zone if needed
             match ParseISO8601FormattedDateTime text cultureInfo with
@@ -208,10 +217,19 @@ type TextConversions private () =
             // e.g. 1231456+1000, 123123+0000, 123123-0500, etc.
             match offset matchesMS.Groups.[2].Value with
             | ValueSome ofst ->
-                matchesMS.Groups.[1].Value
-                |> Double.Parse
-                |> DateTimeOffset(1970, 1, 1, 0, 0, 0, ofst).AddMilliseconds
-                |> Some
+                match
+                    Double.TryParse(
+                        matchesMS.Groups.[1].Value,
+                        Globalization.NumberStyles.Integer,
+                        Globalization.CultureInfo.InvariantCulture
+                    )
+                with
+                | true, ms when not (Double.IsInfinity ms) ->
+                    try
+                        DateTimeOffset(1970, 1, 1, 0, 0, 0, ofst).AddMilliseconds ms |> Some
+                    with :? ArgumentOutOfRangeException ->
+                        None
+                | _ -> None
             | ValueNone -> None
         else
             match ParseISO8601FormattedDateTime text cultureInfo with
