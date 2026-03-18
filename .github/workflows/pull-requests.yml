@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET Core 8
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.400
     - name: Cache NuGet packages
@@ -40,7 +40,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET Core 8
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.400
     - name: Cache NuGet packages
