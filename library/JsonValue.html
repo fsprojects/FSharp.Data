@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="JSON Parser
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="JSON Parser
+">
+    
+    <title>JSON Parser
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Header menu logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=library/JsonValue.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/JsonValue.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//library/JsonValue.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<h1><a name="JSON-Parser" class="anchor" href="#JSON-Parser">JSON Parser</a></h1>
+<p>The F# <a href="JsonProvider.html">JSON Type Provider</a> is built on top of an efficient JSON parser written
+in F#.</p>
+<p>When working with well-defined JSON documents, it is easier to use the
+<a href="JsonProvider.html">type provider</a>, but in a more dynamic scenario or when writing
+quick and simple scripts, the parser might be a simpler option.</p>
+<h2><a name="Loading-JSON-documents" class="anchor" href="#Loading-JSON-documents">Loading JSON documents</a></h2>
+<p>To load a sample JSON document, we first need to reference the <code>FSharp.Data</code> package.</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="id">Data</span>
+</code></pre>
+<p>The <code>FSharp.Data</code> namespace contains the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> type that can be used
+to parse strings formatted using JSON as follows:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="id">info</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="m">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="id">Parse</span><span class="pn">(</span>
+        <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    { &quot;name&quot;: &quot;Tomas&quot;, &quot;born&quot;: 1985,</span>
+<span class="s">      &quot;siblings&quot;: [ &quot;Jan&quot;, &quot;Alexander&quot; ] } &quot;&quot;&quot;</span>
+    <span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val info: JsonValue =
+  {
+  "name": "Tomas",
+  "born": 1985,
+  "siblings": [
+    "Jan",
+    "Alexander"
+  ]
+}</code></pre></td></tr></table>
+<p>The parsed value can be processed using pattern matching - the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> type
+is a discriminated union with cases such as <code>Record</code>, <code>Collection</code> and others that
+can be used to examine the structure.</p>
+<h2><a name="Using-JSON-extensions" class="anchor" href="#Using-JSON-extensions">Using JSON extensions</a></h2>
+<p>We do not cover this technique in this introduction. Instead, we look at a number
+of extensions that become available after opening the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonextensionsmodule.html">JsonExtensions</a>
+module. Once opened, we can write:</p>
+<ul>
+<li><code>value.AsBoolean()</code> returns the value as boolean if it is either <code>true</code> or <code>false</code>.</li>
+<li>
+<code>value.AsInteger()</code> returns the value as an integer if it is numeric and can be
+converted to an integer; <code>value.AsInteger64()</code>, <code>value.AsDecimal()</code> and
+<code>value.AsFloat()</code> behave similarly.
+</li>
+<li><code>value.AsString()</code> returns the value as a string.</li>
+<li>
+<code>value.AsDateTime()</code> parses the string as a <code>DateTime</code> value using either the
+<a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format, or using the
+<code>\/Date(...)\/</code> JSON format containing number of milliseconds since 1/1/1970.
+</li>
+<li>
+<code>value.AsDateTimeOffset()</code> parses the string as a <code>DateTimeOffset</code> value using either the
+<a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format, or using the
+<code>\/Date(...[+/-]offset)\/</code> JSON format containing number of milliseconds since 1/1/1970,
+[+/-] the 4 digit offset. Example- <code>\/Date(1231456+1000)\/</code>.
+</li>
+<li><code>value.AsTimeSpan()</code> parses the string as a <code>TimeSpan</code> value.</li>
+<li><code>value.AsGuid()</code> parses the string as a <code>Guid</code> value.</li>
+<li>
+<code>value?child</code> uses the dynamic operator to obtain a record member named <code>child</code>;
+alternatively, you can also use <code>value.GetProperty(child)</code> or an indexer
+<code>value.[child]</code>.
+</li>
+<li>
+<code>value.TryGetProperty(child)</code> can be used to safely obtain a record member
+(if the member is missing or the value is not a record then, <code>TryGetProperty</code>
+returns <code>None</code>).
+</li>
+<li>
+<code>[ for v in value -&gt; v ]</code> treats <code>value</code> as a collection and iterates over it;
+alternatively, it is possible to obtain all elements as an array using
+<code>value.AsArray()</code>.
+</li>
+<li><code>value.Properties()</code> returns a list of all properties of a record node.</li>
+<li>
+<code>value.InnerText()</code> concatenates all text or text in an array
+(representing e.g. multi-line string).
+</li>
+</ul>
+<p>Methods that may need to parse a numeric value or date (such as <code>AsFloat</code> and
+<code>AsDateTime</code>) receive an optional culture parameter.</p>
+<p>The following example shows how to process the sample JSON value:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 6)" onmouseover="showTip(event, 'fs1', 6)" class="id">FSharp</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 7)" onmouseover="showTip(event, 'fs2', 7)" class="id">Data</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="m">JsonExtensions</span>
+
+<span class="c">// Print name and birth year</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="id">n</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 10)" onmouseover="showTip(event, 'fs3', 10)" class="id">info</span><span class="o">?</span><span class="id">name</span>
+<span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="id">info</span><span class="o">?</span><span class="id">name</span><span class="pn">.</span><span class="id">AsString</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs3', 13)" onmouseover="showTip(event, 'fs3', 13)" class="id">info</span><span class="o">?</span><span class="id">born</span><span class="pn">.</span><span class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+
+<span class="c">// Print names of all siblings</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs9', 14)" onmouseover="showTip(event, 'fs9', 14)" class="fn">sib</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 15)" onmouseover="showTip(event, 'fs3', 15)" class="id">info</span><span class="o">?</span><span class="id">siblings</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs8', 16)" onmouseover="showTip(event, 'fs8', 16)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs9', 17)" onmouseover="showTip(event, 'fs9', 17)" class="fn">sib</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="id">AsString</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Tomas (1985)
+Jan
+Alexander
+val n: JsonValue = "Tomas"
+val it: unit = ()</code></pre></td></tr></table>
+<p>Note that the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> type does not actually implement the <code>IEnumerable&lt;'T&gt;</code>
+interface (meaning that it cannot be passed to <code>Seq.xyz</code> functions). It only has
+the <code>GetEnumerator</code> method, which makes it possible to use it in sequence expressions
+and with the <code>for</code> loop.</p>
+<h2><a name="Parsing-WorldBank-response" class="anchor" href="#Parsing-WorldBank-response">Parsing WorldBank response</a></h2>
+<p>To look at a more complex example, consider a sample document
+<a href="../data/WorldBank.json"><code>data/WorldBank.json</code></a> which was obtained as a response to
+a WorldBank request (you can access the WorldBank data more conveniently using
+<a href="WorldBank.html">a type provider</a>). The document looks as follows:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="js">[ { <span class="s">"page"</span>: <span class="n">1</span>, <span class="s">"pages"</span>: <span class="n">1</span>, <span class="s">"total"</span>: <span class="n">53</span> },
+  [ { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="k">null</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2000"</span>},
+    { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="s">"16.6567773464055"</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2010"</span>} ] ]
+</code></pre></td></tr></table>
+<p>The document is formed by an array that contains a record as the first element
+and a collection of data points as the second element. The following code
+reads the document and parses it:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="id">value</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 20)" onmouseover="showTip(event, 'fs4', 20)" class="m">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs12', 21)" onmouseover="showTip(event, 'fs12', 21)" class="id">Load</span><span class="pn">(</span><span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;../../data/WorldBank.json&quot;</span><span class="pn">)</span>
+</code></pre>
+<p>Note that we can also load the data directly from the web, and there's an
+asynchronous version available too:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 22)" onmouseover="showTip(event, 'fs13', 22)" class="id">wbReq</span> <span class="o">=</span>
+    <span class="s">&quot;https://api.worldbank.org/country/cz/indicator/&quot;</span>
+    <span class="o">+</span> <span class="s">&quot;GC.DOD.TOTL.GD.ZS?format=json&quot;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 23)" onmouseover="showTip(event, 'fs14', 23)" class="id">valueAsync</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 24)" onmouseover="showTip(event, 'fs4', 24)" class="m">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="id">AsyncLoad</span><span class="pn">(</span><span onmouseout="hideTip(event, 'fs13', 26)" onmouseover="showTip(event, 'fs13', 26)" class="id">wbReq</span><span class="pn">)</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>val wbReq: string =
+  "https://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD"+[15 chars]
+val valueAsync: Async&lt;JsonValue&gt;</code></pre></td></tr></table>
+<p>To split the top-level array into the first record (with overall information)
+and the collection of data points, we use pattern matching and match the <code>value</code>
+against the <code>JsonValue.Array</code> constructor:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="k">match</span> <span onmouseout="hideTip(event, 'fs11', 27)" onmouseover="showTip(event, 'fs11', 27)" class="id">value</span> <span class="k">with</span>
+<span class="pn">|</span> <span onmouseout="hideTip(event, 'fs4', 28)" onmouseover="showTip(event, 'fs4', 28)" class="rt">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 29)" onmouseover="showTip(event, 'fs16', 29)" class="id">Array</span> <span class="pn">[|</span> <span onmouseout="hideTip(event, 'fs3', 30)" onmouseover="showTip(event, 'fs3', 30)" class="fn">info</span><span class="pn">;</span> <span onmouseout="hideTip(event, 'fs17', 31)" onmouseover="showTip(event, 'fs17', 31)" class="fn">data</span> <span class="pn">|]</span> <span class="k">-&gt;</span>
+    <span class="c">// Print overall information</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 32)" onmouseover="showTip(event, 'fs18', 32)" class="fn">page</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="fn">pages</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs20', 34)" onmouseover="showTip(event, 'fs20', 34)" class="fn">total</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 35)" onmouseover="showTip(event, 'fs3', 35)" class="fn">info</span><span class="o">?</span><span class="id">page</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 36)" onmouseover="showTip(event, 'fs3', 36)" class="fn">info</span><span class="o">?</span><span class="id">pages</span><span class="pn">,</span> <span onmouseout="hideTip(event, 'fs3', 37)" onmouseover="showTip(event, 'fs3', 37)" class="fn">info</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="id">total</span>
+    <span onmouseout="hideTip(event, 'fs8', 39)" onmouseover="showTip(event, 'fs8', 39)" class="fn">printfn</span> <span class="s">&quot;Showing page </span><span class="pf">%d</span><span class="s"> of </span><span class="pf">%d</span><span class="s">. Total records </span><span class="pf">%d</span><span class="s">&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs18', 40)" onmouseover="showTip(event, 'fs18', 40)" class="fn">page</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs21', 41)" onmouseover="showTip(event, 'fs21', 41)" class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs19', 42)" onmouseover="showTip(event, 'fs19', 42)" class="fn">pages</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs21', 43)" onmouseover="showTip(event, 'fs21', 43)" class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs20', 44)" onmouseover="showTip(event, 'fs20', 44)" class="fn">total</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs21', 45)" onmouseover="showTip(event, 'fs21', 45)" class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+
+    <span class="c">// Print every non-null data point</span>
+    <span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 46)" onmouseover="showTip(event, 'fs22', 46)" class="fn">record</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs17', 47)" onmouseover="showTip(event, 'fs17', 47)" class="fn">data</span> <span class="k">do</span>
+        <span class="k">if</span> <span onmouseout="hideTip(event, 'fs22', 48)" onmouseover="showTip(event, 'fs22', 48)" class="fn">record</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs11', 49)" onmouseover="showTip(event, 'fs11', 49)" class="id">value</span> <span class="o">&lt;&gt;</span> <span onmouseout="hideTip(event, 'fs4', 50)" onmouseover="showTip(event, 'fs4', 50)" class="m">JsonValue</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs23', 51)" onmouseover="showTip(event, 'fs23', 51)" class="id">Null</span> <span class="k">then</span>
+            <span onmouseout="hideTip(event, 'fs8', 52)" onmouseover="showTip(event, 'fs8', 52)" class="fn">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">: </span><span class="pf">%f</span><span class="s">&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="fn">record</span><span class="o">?</span><span class="id">date</span><span class="pn">.</span><span class="id">AsInteger</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs22', 54)" onmouseover="showTip(event, 'fs22', 54)" class="fn">record</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs11', 55)" onmouseover="showTip(event, 'fs11', 55)" class="id">value</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs24', 56)" onmouseover="showTip(event, 'fs24', 56)" class="id">AsFloat</span><span class="pn">(</span><span class="pn">)</span><span class="pn">)</span>
+<span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 57)" onmouseover="showTip(event, 'fs8', 57)" class="fn">printfn</span> <span class="s">&quot;failed&quot;</span>
+</code></pre>
+<table class="pre"><tr><td><pre><code>Showing page 1 of 1. Total records 53
+2010: 35.142297
+2009: 31.034880
+2008: 25.475164
+2007: 24.193320
+2006: 23.708055
+2005: 22.033462
+2004: 20.108379
+2003: 18.267725
+2002: 15.425565
+2001: 14.874434
+2000: 13.218869
+1999: 11.356696
+1998: 10.178780
+1997: 10.153566
+1996: 10.520301
+1995: 12.707834
+1994: 14.781808
+1993: 16.656777
+val it: unit = ()</code></pre></td></tr></table>
+<p>The <code>value</code> property of a data point is not always available - as demonstrated
+above, the value may be <code>null</code>. In that case, we want to skip the data point.
+To check whether the property is <code>null</code> we simply compare it with <code>JsonValue.Null</code>.</p>
+<p>The <code>date</code> values will be parsed as <code>DateTimeOffset</code> if there is an offset present.
+However, for a mixed collection of <code>DateTime</code> (that is, without the offset) and
+<code>DateTimeOffset</code> values, the type of the collection will be collection of <code>DateTime</code>
+after parsing. Also note that the <code>date</code> and <code>value</code> properties are formatted as strings
+in the source file (e.g. <code>"1990"</code>) instead of numbers (e.g. <code>1990</code>). When you try
+accessing the value as an integer or float, the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> automatically parses
+the string into the desired format. In general, the API attempts to be as tolerant
+as possible when parsing the file.</p>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a></li>
+<li>
+<a href="JsonProvider.html">JSON Type Provider</a> - discusses a F# type provider
+that provides type-safe access to JSON data
+</li>
+<li>
+<a href="WorldBank.html">WorldBank Provider</a> - the WorldBank type provider
+can be used to easily access data from the WorldBank
+</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a></li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonextensions.html">JsonExtensions</a> type</li>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonextensionsmodule.html">JsonExtensions</a> module</li>
+</ul>
+
+        <div class="fsdocs-tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div class="fsdocs-tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div class="fsdocs-tip" id="fs3">val info: JsonValue</div>
+<div class="fsdocs-tip" id="fs4">type JsonValue =
+  | String of string
+  | Number of decimal
+  | Float of float
+  | Record of properties: (string * JsonValue) array
+  | Array of elements: JsonValue array
+  | Boolean of bool
+  | Null
+  member Request: url: string * [&lt;Optional&gt;] ?httpMethod: string * [&lt;Optional&gt;] ?headers: (string * string) seq -&gt; HttpResponse
+  member RequestAsync: url: string * [&lt;Optional&gt;] ?httpMethod: string * [&lt;Optional&gt;] ?headers: (string * string) seq -&gt; Async&lt;HttpResponse&gt;
+  member ToString: saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; string + 2 overloads
+  member WriteTo: w: TextWriter * saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; unit
+  static member AsyncLoad: uri: string * [&lt;Optional&gt;] ?encoding: Encoding -&gt; Async&lt;JsonValue&gt;
+  static member Load: stream: Stream -&gt; JsonValue + 2 overloads
+  static member Parse: text: string -&gt; JsonValue
+  static member ParseMultiple: text: string -&gt; JsonValue seq
+  static member TryParse: text: string -&gt; JsonValue option<br /><em>&lt;summary&gt;
+ Represents a JSON value. Large numbers that do not fit in the
+ Decimal type are represented using the Float case, while
+ smaller numbers are represented as decimals to avoid precision loss.
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs5">static member JsonValue.Parse: text: string -&gt; JsonValue</div>
+<div class="fsdocs-tip" id="fs6">Multiple items<br />module JsonExtensions
+
+from FSharp.Data<br /><em>&lt;summary&gt;
+ Provides the dynamic operator for getting a property of a JSON object
+&lt;/summary&gt;</em><br /><br />--------------------<br />type JsonExtensions =
+  static member AsArray: x: JsonValue -&gt; JsonValue array
+  static member AsBoolean: x: JsonValue -&gt; bool
+  static member AsDateTime: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; DateTime
+  static member AsDateTimeOffset: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; DateTimeOffset
+  static member AsDecimal: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; decimal
+  static member AsFloat: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo * [&lt;Optional&gt;] ?missingValues: string array -&gt; float
+  static member AsGuid: x: JsonValue -&gt; Guid
+  static member AsInteger: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; int
+  static member AsInteger64: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; int64
+  static member AsString: x: JsonValue * [&lt;Optional&gt;] ?cultureInfo: CultureInfo -&gt; string
+  ...<br /><em>&lt;summary&gt;
+ Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
+ This module also provides the dynamic operator.
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs7">val n: JsonValue</div>
+<div class="fsdocs-tip" id="fs8">val printfn: format: Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="fsdocs-tip" id="fs9">val sib: JsonValue</div>
+<div class="fsdocs-tip" id="fs10">static member JsonExtensions.AsString: x: JsonValue * [&lt;System.Runtime.InteropServices.Optional&gt;] ?cultureInfo: System.Globalization.CultureInfo -&gt; string</div>
+<div class="fsdocs-tip" id="fs11">val value: JsonValue</div>
+<div class="fsdocs-tip" id="fs12">static member JsonValue.Load: reader: System.IO.TextReader -&gt; JsonValue<br />static member JsonValue.Load: stream: System.IO.Stream -&gt; JsonValue<br />static member JsonValue.Load: uri: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?encoding: System.Text.Encoding -&gt; JsonValue</div>
+<div class="fsdocs-tip" id="fs13">val wbReq: string</div>
+<div class="fsdocs-tip" id="fs14">val valueAsync: Async&lt;JsonValue&gt;</div>
+<div class="fsdocs-tip" id="fs15">static member JsonValue.AsyncLoad: uri: string * [&lt;System.Runtime.InteropServices.Optional&gt;] ?encoding: System.Text.Encoding -&gt; Async&lt;JsonValue&gt;</div>
+<div class="fsdocs-tip" id="fs16">union case JsonValue.Array: elements: JsonValue array -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON array of values
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs17">val data: JsonValue</div>
+<div class="fsdocs-tip" id="fs18">val page: JsonValue</div>
+<div class="fsdocs-tip" id="fs19">val pages: JsonValue</div>
+<div class="fsdocs-tip" id="fs20">val total: JsonValue</div>
+<div class="fsdocs-tip" id="fs21">static member JsonExtensions.AsInteger: x: JsonValue * [&lt;System.Runtime.InteropServices.Optional&gt;] ?cultureInfo: System.Globalization.CultureInfo -&gt; int</div>
+<div class="fsdocs-tip" id="fs22">val record: JsonValue</div>
+<div class="fsdocs-tip" id="fs23">union case JsonValue.Null: JsonValue<br /><em>&lt;summary&gt;
+ A JSON null value
+&lt;/summary&gt;</em></div>
+<div class="fsdocs-tip" id="fs24">static member JsonExtensions.AsFloat: x: JsonValue * [&lt;System.Runtime.InteropServices.Optional&gt;] ?cultureInfo: System.Globalization.CultureInfo * [&lt;System.Runtime.InteropServices.Optional&gt;] ?missingValues: string array -&gt; float</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#JSON-Parser">
+      JSON Parser
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Loading-JSON-documents">
+      Loading JSON documents
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Using-JSON-extensions">
+      Using JSON extensions
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Parsing-WorldBank-response">
+      Parsing WorldBank response
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+
+</body>
+</html>
