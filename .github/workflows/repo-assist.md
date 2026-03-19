@@ -1,6 +1,6 @@
 ---
 description: |
-  A friendly repository assistant that runs 4 times a day to support contributors and maintainers.
+  A friendly repository assistant that runs 2 times a day to support contributors and maintainers.
   Can also be triggered on-demand via '/repo-assist <instructions>' to perform specific tasks.
   - Labels and triages open issues
   - Comments helpfully on open issues to unblock contributors and onboard newcomers
@@ -175,7 +175,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@346204513ecfa08b81566450d7d599556807389f
+source: githubnext/agentics/workflows/repo-assist.md@d7e73661688ef2fdea152135a791e28008f73ebd
 ---
 
 # Repo Assist
