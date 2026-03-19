@@ -43,6 +43,10 @@ network:
   - https://www.ebay.com
   - https://www.imdb.com
 
+checkout:
+  fetch: ["*"]     # fetch all remote branches to allow working on PR branches
+  fetch-depth: 0   # fetch full history
+
 tools:
   web-fetch:
   github:
@@ -177,7 +181,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@4d3e9114a41286c2ccaae143f2ac542470e9686e
+source: githubnext/agentics/workflows/repo-assist.md@d1d884596e62351dd652ae78465885dd32f0dd7d
 ---
 
 # Repo Assist
