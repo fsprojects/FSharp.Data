@@ -52,7 +52,7 @@ If the loaded file does not match the structure of the sample, a runtime error m
     </div>
 </div>
 
-The type provider is located in the `FSharp.Data.dll` assembly and namespace:
+To use this type provider, reference the `FSharp.Data` NuGet package. Open the namespace:
 *)
 
 open FSharp.Data
