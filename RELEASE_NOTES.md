@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.3 - Mar 23 2026
+
+- Fix JSON `/* ... */` comment parser: `*` or `/` characters inside the comment body no longer cause premature termination and parse failure
+
 ## 8.1.2 - Mar 17 2026
 
 - Fix `TextConversions.AsDateTime` and `TextConversions.AsDateTimeOffset` to return `None` (instead of throwing `ArgumentOutOfRangeException`) when a `/Date(...)/` value overflows the valid `DateTime`/`DateTimeOffset` range; use `InvariantCulture` explicitly when parsing the milliseconds value

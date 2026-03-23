@@ -273,7 +273,7 @@ type private JsonParser(jsonText: string) =
                 else if i < s.Length && s.[i] = '*' then
                     i <- i + 1
 
-                    while i + 1 < s.Length && s.[i] <> '*' && s.[i + 1] <> '/' do
+                    while i + 1 < s.Length && (s.[i] <> '*' || s.[i + 1] <> '/') do
                         i <- i + 1
 
                     ensure (i + 1 < s.Length && s.[i] = '*' && s.[i + 1] = '/')
