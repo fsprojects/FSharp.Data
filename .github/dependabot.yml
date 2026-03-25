@@ -13,6 +13,10 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    ignore:
+      # ignore updates to gh-aw-actions, which only appears in auto-generated *.lock.yml
+      # files managed by 'gh aw compile' and should not be touched by dependabot
+      - dependency-name: "github/gh-aw-actions"
     schedule:
       interval: weekly
     labels:
