@@ -603,6 +603,26 @@ let ``JsonValue parsing with multi-line comments`` () =
     result?data.AsString() |> should equal "valid"
 
 [<Test>]
+let ``JsonValue parsing with multi-line comment containing asterisk`` () =
+    // Bug: old code used '&&' so a '*' anywhere inside stopped scanning too early
+    let json = """{ /* a * b */ "x": 1 }"""
+    let result = JsonValue.Parse json
+    result?x.AsInteger() |> should equal 1
+
+[<Test>]
+let ``JsonValue parsing with multi-line comment containing slash`` () =
+    // Bug: old code used '&&' so a '/' anywhere inside stopped scanning too early
+    let json = """{ /* path/to/file */ "x": 2 }"""
+    let result = JsonValue.Parse json
+    result?x.AsInteger() |> should equal 2
+
+[<Test>]
+let ``JsonValue parsing with multi-line comment containing both asterisk and slash`` () =
+    let json = "{ /* a/b * c */ \"x\": 3 }"
+    let result = JsonValue.Parse json
+    result?x.AsInteger() |> should equal 3
+
+[<Test>]
 let ``JsonValue parsing with mixed whitespace and comments`` () =
     let jsonWithCommentsAndWhitespace = """  
         {
