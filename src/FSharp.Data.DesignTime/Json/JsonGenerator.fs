@@ -632,7 +632,12 @@ module JsonTypeBuilder =
 
                                       match propResult.OptionalConverter with
                                       | Some _ ->
-                                          //TODO: not covered in tests
+                                          // Reached when a property is optional (IsOptional=true) but its
+                                          // ConversionCallingType is JsonDocument (optionalityHandledByProperty=false),
+                                          // meaning the property type has a converter but optionality is not handled
+                                          // by the conversion calling type alone. In practice this requires an
+                                          // InferedType.Json(optional=true) property, which the JSON provider does
+                                          // not currently produce.
                                           ctx.JsonRuntimeType?(nameof (JsonRuntime.ConvertOptionalProperty))
                                               (propResult.ConvertedTypeErased ctx)
                                               (jDoc, propName, propResult.ConverterFunc ctx)
