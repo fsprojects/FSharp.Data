@@ -124,6 +124,32 @@ let buildscript () =
         "FSharp.Data.sln" |> DotNet.test setParams)
 
     // --------------------------------------------------------------------------------------
+    // Run tests with code coverage (uses Coverlet collector already present in test projects)
+
+    Target.create "Coverage" (fun _ ->
+        let setParams (o: DotNet.TestOptions) =
+            { o with
+                Configuration = DotNet.BuildConfiguration.Release
+                Collect = Some "XPlat Code Coverage"
+                ResultsDirectory = Some "coverage-results"
+                MSBuildParams =
+                    { o.MSBuildParams with
+                        DisableInternalBinLog = true }
+                Logger = if isCI then Some "GitHubActions" else None }
+
+        "FSharp.Data.sln" |> DotNet.test setParams
+
+        Trace.log ""
+        Trace.log "Coverage results written to ./coverage-results/"
+        Trace.log "To generate an HTML report, install dotnet-reportgenerator-globaltool:"
+        Trace.log "  dotnet tool install -g dotnet-reportgenerator-globaltool"
+
+        Trace.log
+            "  reportgenerator -reports:coverage-results/**/coverage.cobertura.xml -targetdir:coverage-report -reporttypes:Html"
+
+        Trace.log "")
+
+    // --------------------------------------------------------------------------------------
     // Build packages
 
     Target.create "Pack" (fun _ ->
@@ -179,6 +205,7 @@ let buildscript () =
         printfn "  Targets for building:"
         printfn "  * Build"
         printfn "  * RunTests"
+        printfn "  * Coverage (run tests with Coverlet code coverage; results in ./coverage-results/)"
         printfn "  * GenerateDocs"
         printfn "  * Pack (creates package only, doesn't publish)"
         printfn "  * All (calls previous 5)"
@@ -247,6 +274,7 @@ let buildscript () =
     "Build" ==> "Pack" ==> "All"
     "Build" ==> "All"
     "Build" ==> "RunTests" ==> "All"
+    "Build" ==> "Coverage"
     "Build" ==> "RunBenchmarks"
 
 [<EntryPoint>]
