@@ -100,15 +100,19 @@ let internal convertJsonValue
                     (<@ (%varExpr).Path() @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>))
         | TypeWrapper.Option, true -> convert <@ (%%value: JsonValue option) @>
         | TypeWrapper.Option, false ->
-            //TODO: not covered in tests
+            // Reached when canPassAllConversionCallingTypes=false (e.g. for array element types or
+            // heterogeneous type variants). The caller passes an IJsonDocument; we extract its
+            // JsonValue and wrap it in Some before handing it to the conversion quotation.
             convert <@ Some (%%value: IJsonDocument).JsonValue @>
         | TypeWrapper.Nullable, true ->
-            //TODO: not covered in tests
+            // TypeWrapper.Nullable is never produced by JSON inference (which only emits None or Option).
+            // This branch exists for structural completeness and potential future extensibility.
             typeof<TextRuntime>?(nameof (TextRuntime.OptionToNullable))
                 (field.RuntimeType)
                 (convert <@ (%%value: JsonValue option) @>)
         | TypeWrapper.Nullable, false ->
-            //TODO: not covered in tests
+            // TypeWrapper.Nullable is never produced by JSON inference (which only emits None or Option).
+            // This branch exists for structural completeness and potential future extensibility.
             typeof<TextRuntime>?(nameof (TextRuntime.OptionToNullable))
                 (field.RuntimeType)
                 (convert <@ Some (%%value: IJsonDocument).JsonValue @>)
