@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.4 - Apr 01 2026
+
+- Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
 ## 8.1.3 - Mar 23 2026
 
 - Fix JSON `/* ... */` comment parser: `*` or `/` characters inside the comment body no longer cause premature termination and parse failure
