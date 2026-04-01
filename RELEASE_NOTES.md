@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.4 - Mar 30 2026
+
+- Performance: `JsonValue.Parse` now copies unescaped string runs in bulk instead of appending character-by-character, reducing `StringBuilder.Append` calls for strings with few or no escape sequences
+
 ## 8.1.3 - Mar 23 2026
 
 - Fix JSON `/* ... */` comment parser: `*` or `/` characters inside the comment body no longer cause premature termination and parse failure

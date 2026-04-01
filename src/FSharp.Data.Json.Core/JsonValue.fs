@@ -315,8 +315,18 @@ type private JsonParser(jsonText: string) =
         ensure (i < s.Length && s.[i] = '"')
         i <- i + 1
 
+        // Track start of current unescaped run; flush as a bulk chunk when an escape or end is hit.
+        // This avoids per-character StringBuilder.Append calls for strings with few/no escapes,
+        // which is the common case in real-world JSON.
+        let mutable chunkStart = i
+
+        let inline flushChunk upTo =
+            if upTo > chunkStart then
+                buf.Append(s, chunkStart, upTo - chunkStart) |> ignore
+
         while i < s.Length && s.[i] <> '"' do
             if s.[i] = '\\' then
+                flushChunk i
                 ensure (i + 1 < s.Length)
 
                 match s.[i + 1] with
@@ -371,10 +381,12 @@ type private JsonParser(jsonText: string) =
                 | _ -> throw ()
 
                 i <- i + 2 // skip past \ and next char
+                chunkStart <- i
             else
-                buf.Append(s.[i]) |> ignore
                 i <- i + 1
 
+        // Flush any remaining unescaped characters
+        flushChunk i
         ensure (i < s.Length && s.[i] = '"')
         i <- i + 1
         let str = buf.ToString()
