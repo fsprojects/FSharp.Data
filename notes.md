@@ -1,27 +1,24 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-01 (run 23832103853)
+## Last run: 2026-04-02 (run 23883818139)
 
 ### Open PRs
-- #1665: HTTP encoding ISO-8859-1 → UTF-8 (SUPERSEDED by new PR from this run, should be closed)
-- #1714: Coverage FAKE target (open since Mar 26)
-- #1715: perf: parseString bulk-append JSON optimization (from Mar 30)
-- #1716: docs: clarify dead code branches in JsonConversionsGenerator.fs (from Mar 30)
-- New (this run): fix: change HTTP encoding ISO-8859-1 → UTF-8 (rebase of #1665, Closes #1251); branch repo-assist/fix-issue-1251-http-response-default-utf8-rebase
-- New (this run): test: fix missing [<Test>] on Multiline comment test + 3 new comment parser tests; branch repo-assist/test-fix-missing-test-attrs
+- #1717: HTTP encoding ISO-8859-1 → UTF-8 (rebased, version bumped to 8.1.5 this run)
+- New (this run): ci: update .NET SDK from 8.0.418 to 8.0.419 (branch repo-assist/eng-sdk-update-8.0.419-2026-04-02)
+
+### Closed this run context
+- March 2026 Monthly Summary (#1684): closed
+- PR #1665: closed by dsyme on Apr 1 (superseded by #1717)
+- Issue #1707: closed by dsyme on Apr 1 (workflow failure, expired)
 
 ### Open Issues
-- New: April 2026 Monthly Activity Summary (just created this run)
-- #1707: Expired workflow failure (should be closed by maintainer)
-- #1671: STJ consideration (active)
+- April 2026 Monthly Activity Summary: just created (this run)
+- #1671: STJ consideration (active, enhancement)
 
 ### Test suite
-- 2900 tests as of this run (was 2896 before; 4 new tests added this run)
-- `Multiline comment is skipped` test was missing [<Test>] - now fixed
+- 2896 tests as of this run
 
 ### Backlog
-- Monitor PRs #1714, #1715, #1716 for merge
-- The new PRs from this run (HTTP encoding rebase, test fix) need review
-- PR #1665 should be closed (superseded)
-- Issue #1707 should be closed (expired)
-- Further JSON parser performance (STJ as backing parser discussion in #1671)
+- Monitor PR #1717 for merge (HTTP encoding fix, endorsed by @dsyme)
+- Monitor SDK update PR (new) for merge
+- Consider STJ investigation from #1671
