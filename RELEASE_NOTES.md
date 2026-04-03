@@ -1,8 +1,12 @@
 # Release Notes
 
-## 8.1.4 - Apr 01 2026
+## 9.0.0 - Apr 01 2026
 
 - Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
+## 8.1.4 - Mar 30 2026
+
+- Performance: `JsonValue.Parse` now copies unescaped string runs in bulk instead of appending character-by-character, reducing `StringBuilder.Append` calls for strings with few or no escape sequences
 
 ## 8.1.3 - Mar 23 2026
 
