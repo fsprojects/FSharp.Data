@@ -5,6 +5,7 @@
 namespace FSharp.Data
 
 open System
+open System.Collections.Generic
 open System.Globalization
 open System.Text.RegularExpressions
 
@@ -85,21 +86,21 @@ type TextConversions private () =
         |> Set.ofArray
 
     static member val private DefaultRemovableAdornerCharacters =
-        Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners
+        // HashSet<char> for O(1) membership testing (vs O(log n) for F# Set)
+        HashSet<char>(Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners)
 
     //This removes any adorners that might otherwise cause the inference to infer string. A notable a change is
     //Currency Symbols are now treated as an Adorner like a '%' sign thus are now independent
     //of the culture. Which is probably better since we have lots of scenarios where we want to
     //consume values prefixed with € or $ but in a different culture.
     static member private RemoveAdorners(value: string) =
-        // Fast path: check if any adorners exist before doing expensive operations
-        let mutable hasAdorners = false
-
-        for i = 0 to value.Length - 1 do
-            if TextConversions.DefaultRemovableAdornerCharacters.Contains(value.[i]) then
-                hasAdorners <- true
-
-        if not hasAdorners then
+        // Fast path: short-circuit on first adorner found (String.exists stops early)
+        if
+            not (
+                value
+                |> String.exists (fun c -> TextConversions.DefaultRemovableAdornerCharacters.Contains(c))
+            )
+        then
             // No adorners found, return original string to avoid allocation
             value
         else
