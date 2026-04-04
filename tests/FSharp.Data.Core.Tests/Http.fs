@@ -11,7 +11,7 @@ open System.Text
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
-open System.Net.NetworkInformation
+open System.Net.Sockets
 
 type ITestHttpServer =
     inherit IDisposable
@@ -47,14 +47,14 @@ let startHttpLocalServer() =
         } |> Async.StartAsTask :> Task
         )) |> ignore
 
+    // Use TcpListener(0) to ask the OS for a free port, then release it.
+    // The TOCTOU window (between Stop and Kestrel's bind) is microseconds,
+    // far more reliable than the previous random-port-then-check approach.
     let freePort =
-        let random = new System.Random()
-        let mutable port = random.Next(10000, 65000) // Use a random high port instead of a fixed port
-        while
-            IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
-            |> Array.map (fun x -> x.Port)
-            |> Array.contains port do
-                port <- random.Next(10000, 65000)
+        let listener = new TcpListener(System.Net.IPAddress.Loopback, 0)
+        listener.Start()
+        let port = (listener.LocalEndpoint :?> System.Net.IPEndPoint).Port
+        listener.Stop()
         port
 
     let baseAddress = $"http://127.0.0.1:{freePort}"
@@ -64,7 +64,7 @@ let startHttpLocalServer() =
 
     { new ITestHttpServer with
         member this.Dispose() =
-            app.StopAsync() |> Async.AwaitTask |> ignore
+            app.StopAsync() |> Async.AwaitTask |> Async.RunSynchronously
             printfn $"Stopped local http server with address {baseAddress}"
         member this.WorkerTask = workerTask
         member this.BaseAddress = baseAddress }
@@ -294,22 +294,12 @@ let testFormDataBodySize (size: int) =
 
 [<Test; TestCaseSource("testFormDataSizesInBytes")>]
 let testMultipartFormDataBodySize (size: int) =
-    // Skip this test on Windows when running in CI because of flaky port binding behavior on some Windows CI agents.
-    let isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
-    let inCi =
-        let env v = Environment.GetEnvironmentVariable v
-        [ "CI"; "GITHUB_ACTIONS"; "TF_BUILD"; "APPVEYOR"; "GITLAB_CI"; "JENKINS_URL" ]
-        |> List.exists (fun e -> not (String.IsNullOrEmpty (env e)))
+    use localServer = startHttpLocalServer()
+    let bodyString = seq {for _i in 0..size -> "x\n"} |> String.concat ""
+    let multipartItem = [ MultipartItem("input", "input.txt", new MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> Stream) ]
+    let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
 
-    if isWindows && inCi then
-        Assert.Ignore("Skipping test on Windows in CI")
-    else
-        use localServer = startHttpLocalServer()
-        let bodyString = seq {for _i in 0..size -> "x\n"} |> String.concat ""
-        let multipartItem = [ MultipartItem("input", "input.txt", new MemoryStream(Encoding.UTF8.GetBytes(bodyString)) :> Stream) ]
-        let body = Multipart(Guid.NewGuid().ToString(), multipartItem)
-
-        Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url= localServer.BaseAddress + "/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
+    Assert.DoesNotThrowAsync(fun () -> Http.AsyncRequest (url= localServer.BaseAddress + "/200", httpMethod="POST", body=body, timeout = 10000) |> Async.Ignore |> Async.StartAsTask :> _)
 
 [<Test>]
 let ``escaping of url parameters`` () =
