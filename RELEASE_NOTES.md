@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.5 - Apr 4 2026
+
+- Performance: CSV parser now reuses a single `StringBuilder` and `ResizeArray` across all fields in a file, eliminating per-field allocations and the list-reversal step; reduces GC pressure when parsing large CSV files with many columns
+
 ## 8.1.4 - Mar 30 2026
 
 - Performance: `JsonValue.Parse` now copies unescaped string runs in bulk instead of appending character-by-character, reducing `StringBuilder.Append` calls for strings with few or no escape sequences
