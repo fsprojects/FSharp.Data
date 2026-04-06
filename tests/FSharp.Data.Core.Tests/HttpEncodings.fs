@@ -10,8 +10,8 @@ let ``HttpEncodings.PostDefaultEncoding returns ISO-8859-1`` () =
     HttpEncodings.PostDefaultEncoding.WebName |> should equal "iso-8859-1"
 
 [<Test>]
-let ``HttpEncodings.ResponseDefaultEncoding returns ISO-8859-1`` () =
-    HttpEncodings.ResponseDefaultEncoding.WebName |> should equal "iso-8859-1"
+let ``HttpEncodings.ResponseDefaultEncoding returns UTF-8`` () =
+    HttpEncodings.ResponseDefaultEncoding.WebName |> should equal "utf-8"
 
 [<Test>]
 let ``HttpEncodings.getEncoding with valid encoding name works`` () =

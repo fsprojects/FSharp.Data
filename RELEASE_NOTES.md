@@ -1,5 +1,9 @@
 # Release Notes
 
+## 9.0.0 - Apr 01 2026
+
+- Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
 ## 8.1.6 - Apr 5 2026
 
 - Performance: `NameUtils.nicePascalName` now writes directly to a `StringBuilder` instead of using lazy sequences and intermediate string allocations per segment; also removes a redundant per-segment `ToCharArray()` call. `NameUtils.trimHtml` no longer allocates an intermediate `char[]` for string iteration.
