@@ -7,6 +7,30 @@ on:
 
 
 jobs:
+  check-format:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.201
+    - name: Cache NuGet packages
+      uses: actions/cache@v5
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/paket.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Restore .NET local tools
+      run: dotnet tool restore
+    - name: Restore packages
+      run: dotnet paket restore
+    - name: Check formatting
+      run: dotnet run --project build/build.fsproj -- -t CheckFormat
+
   build-windows:
 
     runs-on: windows-latest

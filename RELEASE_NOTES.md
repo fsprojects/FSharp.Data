@@ -4,6 +4,14 @@
 
 - Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
 
+## 8.1.6 - Apr 5 2026
+
+- Performance: `NameUtils.nicePascalName` now writes directly to a `StringBuilder` instead of using lazy sequences and intermediate string allocations per segment; also removes a redundant per-segment `ToCharArray()` call. `NameUtils.trimHtml` no longer allocates an intermediate `char[]` for string iteration.
+
+## 8.1.5 - Apr 4 2026
+
+- Performance: CSV parser now reuses a single `StringBuilder` and `ResizeArray` across all fields in a file, eliminating per-field allocations and the list-reversal step; reduces GC pressure when parsing large CSV files with many columns
+
 ## 8.1.4 - Mar 30 2026
 
 - Performance: `JsonValue.Parse` now copies unescaped string runs in bulk instead of appending character-by-character, reducing `StringBuilder.Append` calls for strings with few or no escape sequences

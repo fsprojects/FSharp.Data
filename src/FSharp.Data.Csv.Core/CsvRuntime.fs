@@ -36,31 +36,44 @@ module internal CsvReader =
             else
                 None
 
+        // Shared buffer reused across all fields in the entire file to reduce GC allocation.
+        let sb = StringBuilder()
+
         /// Read quoted string value until the end (ends with end of stream or
-        /// the " character, which can be encoded using double ")
-        let rec readString (chars: StringBuilder) =
+        /// the " character, which can be encoded using double ").
+        /// Appends characters directly to the shared buffer `sb`.
+        let rec readString () =
             match reader.Read() with
-            | -1 -> chars
+            | -1 -> ()
             | Quote when reader.Peek() = int quote ->
                 reader.Read() |> ignore
-                readString (chars.Append quote)
-            | Quote -> chars
-            | Char c -> readString (chars.Append c)
+                sb.Append quote |> ignore
+                readString ()
+            | Quote -> ()
+            | Char c ->
+                sb.Append c |> ignore
+                readString ()
 
         /// Reads a line with data that are separated using specified separators
         /// and may be quoted. Ends with newline or end of input.
-        let rec readLine data (chars: StringBuilder) current =
+        /// Accumulates fields into `fields` (a ResizeArray) using the shared `sb`.
+        let rec readLine (fields: ResizeArray<string>) current =
             match current with
             | -1
             | Char '\r'
             | Char '\n' ->
-                let item = chars.ToString()
-                item :: data
+                fields.Add(sb.ToString())
+                sb.Clear() |> ignore
             | Separator ->
-                let item = chars.ToString()
-                readLine (item :: data) (StringBuilder()) (reader.Read())
-            | Quote -> readLine data (readString chars) (reader.Read())
-            | Char c -> readLine data (chars.Append c) (reader.Read())
+                fields.Add(sb.ToString())
+                sb.Clear() |> ignore
+                readLine fields (reader.Read())
+            | Quote ->
+                readString ()
+                readLine fields (reader.Read())
+            | Char c ->
+                sb.Append c |> ignore
+                readLine fields (reader.Read())
 
         /// Reads multiple lines from the input, skipping newline characters
         let rec readLines lineNumber =
@@ -70,7 +83,9 @@ module internal CsvReader =
             | Char '\n' -> readLines lineNumber
             | current ->
                 seq {
-                    yield readLine [] (StringBuilder()) current |> List.rev |> Array.ofList, lineNumber
+                    let fields = ResizeArray<string>()
+                    readLine fields current
+                    yield fields.ToArray(), lineNumber
 
                     yield! readLines (lineNumber + 1)
                 }

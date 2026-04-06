@@ -6,81 +6,62 @@ open System.Collections.Generic
 open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
-// Active patterns & operators for parsing strings
-
-let private tryAt (s: string) i =
-    if i >= s.Length then ValueNone else ValueSome s.[i]
-
-let private sat f (c: voption<char>) =
-    match c with
-    | ValueSome c when f c -> ValueSome c
-    | _ -> ValueNone
-
-[<return: Struct>]
-let private (|EOF|_|) c =
-    match c with
-    | ValueSome _ -> ValueNone
-    | _ -> ValueSome()
-
-[<return: Struct>]
-let private (|LetterDigit|_|) = sat Char.IsLetterOrDigit
-
-[<return: Struct>]
-let private (|Upper|_|) = sat (fun c -> Char.IsUpper c || Char.IsDigit c)
-
-[<return: Struct>]
-let private (|Lower|_|) = sat (fun c -> Char.IsLower c || Char.IsDigit c)
-
-
-// --------------------------------------------------------------------------------------
 
 /// Turns a given non-empty string into a nice 'PascalCase' identifier
 let nicePascalName (s: string) =
     if s.Length = 1 then
         s.ToUpperInvariant()
     else
+        let sb = Text.StringBuilder(s.Length)
+
+        // Append s.[from..i-1] as a PascalCase segment: first char upper, rest lower.
+        let appendSegment (from: int) (i: int) =
+            if i > from then
+                sb.Append(Char.ToUpperInvariant(s.[from])) |> ignore
+
+                for k in from + 1 .. i - 1 do
+                    sb.Append(Char.ToLowerInvariant(s.[k])) |> ignore
+
         // Starting to parse a new segment
         let rec restart i =
-            match tryAt s i with
-            | EOF -> Seq.empty
-            | LetterDigit _ & Upper _ -> upperStart i (i + 1)
-            | LetterDigit _ -> consume i false (i + 1)
-            | _ -> restart (i + 1)
-        // Parsed first upper case letter, continue either all lower or all upper
+            if i < s.Length then
+                if Char.IsLetterOrDigit(s.[i]) then
+                    if Char.IsUpper(s.[i]) || Char.IsDigit(s.[i]) then
+                        upperStart i (i + 1)
+                    else
+                        consume i false (i + 1)
+                else
+                    restart (i + 1)
+
+        // Parsed first upper-case/digit letter; continue either all-lower or all-upper
         and upperStart from i =
-            match tryAt s i with
-            | Upper _ -> consume from true (i + 1)
-            | Lower _ -> consume from false (i + 1)
-            | _ ->
-                seq {
-                    yield struct (from, i)
-                    yield! restart (i + 1)
-                }
-        // Consume are letters of the same kind (either all lower or all upper)
+            if i >= s.Length then
+                appendSegment from i
+            elif Char.IsUpper(s.[i]) || Char.IsDigit(s.[i]) then
+                consume from true (i + 1)
+            elif Char.IsLower(s.[i]) then
+                consume from false (i + 1)
+            else
+                appendSegment from i
+                restart (i + 1)
+
+        // Consume letters of the same kind (all-lower or all-upper/digit)
         and consume from takeUpper i =
-            match takeUpper, tryAt s i with
-            | false, Lower _ -> consume from takeUpper (i + 1)
-            | true, Upper _ -> consume from takeUpper (i + 1)
-            | true, Lower _ ->
-                seq {
-                    yield struct (from, (i - 1))
-                    yield! restart (i - 1)
-                }
-            | _ ->
-                seq {
-                    yield struct (from, i)
-                    yield! restart i
-                }
+            if i >= s.Length then
+                appendSegment from i
+            elif not takeUpper && (Char.IsLower(s.[i]) || Char.IsDigit(s.[i])) then
+                consume from false (i + 1)
+            elif takeUpper && (Char.IsUpper(s.[i]) || Char.IsDigit(s.[i])) then
+                consume from true (i + 1)
+            elif takeUpper && Char.IsLower(s.[i]) then
+                appendSegment from (i - 1)
+                restart (i - 1)
+            else
+                appendSegment from i
+                restart i
 
-        // Split string into segments and turn them to PascalCase
-        seq {
-            for i1, i2 in restart 0 do
-                let sub = s.Substring(i1, i2 - i1)
-
-                if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-                    yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1)
-        }
-        |> String.Concat
+        restart 0
+        sb.ToString()
 
 /// Turns a given non-empty string into a nice 'camelCase' identifier
 let niceCamelName (s: string) =
@@ -141,15 +122,14 @@ let capitalizeFirstLetter (s: string) =
 /// Multiple tags are replaced with just a single space. (This is a recursive
 /// implementation that is somewhat faster than regular expression.)
 let trimHtml (s: string) =
-    let chars = s.ToCharArray()
     let res = new Text.StringBuilder()
 
     // Loop and keep track of whether we're inside a tag or not
     let rec loop i emitSpace inside =
-        if i >= chars.Length then
+        if i >= s.Length then
             ()
         else
-            let c = chars.[i]
+            let c = s.[i]
 
             match inside, c with
             | true, '>' -> loop (i + 1) false false
