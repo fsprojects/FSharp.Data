@@ -99,7 +99,74 @@ let ``Unique generator works on single letter names`` () =
 
 [<Test>]
 let ``Trims HTML tags from string`` () =
-  trimHtml "<b>hello</b><em>world</em>" |> should equal "hello world"
+    trimHtml "<b>hello</b><em>world</em>" |> should equal "hello world"
+
+[<Test>]
+let ``trimHtml empty string returns empty string`` () =
+    trimHtml "" |> should equal ""
+
+[<Test>]
+let ``trimHtml plain text with no tags is returned as-is (trailing spaces trimmed)`` () =
+    trimHtml "hello world" |> should equal "hello world"
+    trimHtml "hello world   " |> should equal "hello world"
+
+[<Test>]
+let ``trimHtml tag with attributes strips all tag content including attributes`` () =
+    trimHtml """<a href="http://example.com">link text</a>""" |> should equal "link text"
+
+[<Test>]
+let ``trimHtml multiple consecutive tags collapse to a single space`` () =
+    trimHtml "<b></b><i></i>text" |> should equal "text"
+    trimHtml "before<br/><br/>after" |> should equal "before after"
+
+[<Test>]
+let ``trimHtml stray closing angle bracket is passed through`` () =
+    // A '>' without a matching '<' is not inside a tag, so it appears in output
+    trimHtml "a > b" |> should equal "a > b"
+
+[<Test>]
+let ``trimHtml content surrounding tags is preserved`` () =
+    // Each tag boundary where emitSpace=true inserts one space, including closing tags.
+    // "a<b>B</b>c" → space before <b> and space before </b>
+    trimHtml "a<b>B</b>c" |> should equal "a B c"
+    // Two consecutive tags: only the first triggers a space (second tag sees emitSpace=false)
+    trimHtml "before<br/><br/>after" |> should equal "before after"
+
+[<Test>]
+let ``capitalizeFirstLetter empty string returns empty string`` () =
+    capitalizeFirstLetter "" |> should equal ""
+
+[<Test>]
+let ``capitalizeFirstLetter single lowercase letter is uppercased`` () =
+    capitalizeFirstLetter "a" |> should equal "A"
+
+[<Test>]
+let ``capitalizeFirstLetter single uppercase letter is unchanged`` () =
+    capitalizeFirstLetter "A" |> should equal "A"
+
+[<Test>]
+let ``capitalizeFirstLetter multi-char lowercase string has first char uppercased`` () =
+    capitalizeFirstLetter "hello" |> should equal "Hello"
+    capitalizeFirstLetter "world" |> should equal "World"
+
+[<Test>]
+let ``capitalizeFirstLetter already-PascalCase string is unchanged`` () =
+    capitalizeFirstLetter "Hello" |> should equal "Hello"
+    capitalizeFirstLetter "FSharp" |> should equal "FSharp"
+
+[<Test>]
+let ``capitalizeFirstLetter preserves non-letter first character`` () =
+    // Digits and non-letter characters: the function applies ToUpperInvariant which is a no-op for non-letters
+    capitalizeFirstLetter "123abc" |> should equal "123abc"
+
+[<Test>]
+let ``uniqueGenerator deduplicates names containing spaces`` () =
+    let gen = uniqueGenerator nicePascalName
+    // The nicePascalName of "hello world" strips spaces; deduplication appends "2" without space
+    let name1 = gen "hello world"
+    let name2 = gen "hello world"
+    name1 |> should not' (equal name2)
+    name2 |> should not' (be null)
 
 [<Test>]
 let ``Can pluralize names``() =
