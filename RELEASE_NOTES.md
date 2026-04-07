@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.7 - Apr 7 2026
+
+- Performance: HTML parser avoids `ToCharArray()` allocations in several code paths: `EmitToAttributeValue` now iterates the substituted string directly; `Cons(char[])` and `Cons(string)` use `StringBuilder.Append` directly; `Pop(count)` uses `Array.init` instead of creating an integer range array; CDATA opening marker no longer creates a temporary `char[]`.
+
 ## 8.1.6 - Apr 5 2026
 
 - Performance: `NameUtils.nicePascalName` now writes directly to a `StringBuilder` instead of using lazy sequences and intermediate string allocations per segment; also removes a redundant per-segment `ToCharArray()` call. `NameUtils.trimHtml` no longer allocates an intermediate `char[]` for string iteration.
