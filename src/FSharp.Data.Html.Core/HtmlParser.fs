@@ -128,7 +128,7 @@ module internal HtmlParser =
         member x.Peek() = x.Reader.PeekChar()
 
         member x.Pop(count) =
-            [| 0 .. (count - 1) |] |> Array.map (fun _ -> x.Reader.ReadChar())
+            Array.init count (fun _ -> x.Reader.ReadChar())
 
         member x.Contents = x.Content.ToString()
         member x.ContentLength = x.Content.Length
@@ -221,7 +221,7 @@ module internal HtmlParser =
             assert (x.InsertionMode = InsertionMode.CharRefMode)
             let content = x.Content.ToString() |> HtmlCharRefs.substitute
 
-            for c in content.ToCharArray() do
+            for c in content do
                 x.ConsAttrValue c
 
             x.Content <- { Contents = StringBuilder() }
@@ -257,8 +257,12 @@ module internal HtmlParser =
 
         member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
         member x.Cons(char: char) = x.Content.Cons(char)
-        member x.Cons(chars: char array) = Array.iter (x.Content.Cons) chars
-        member x.Cons(chars: string) = x.Cons(chars.ToCharArray())
+
+        member x.Cons(chars: char array) =
+            x.Content.Contents.Append(chars) |> ignore
+
+        member x.Cons(chars: string) =
+            x.Content.Contents.Append(chars) |> ignore
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
@@ -666,7 +670,7 @@ module internal HtmlParser =
                 match new String(Array.append current (state.Pop(5))) with
                 | "DOCTYPE" -> docType state
                 | "[CDATA[" ->
-                    state.Cons("<![CDATA[".ToCharArray())
+                    state.Cons("<![CDATA[")
                     cData 0 state
                 | _ -> bogusComment state
 
