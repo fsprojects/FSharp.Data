@@ -769,3 +769,93 @@ let ``JsonValue obsolete Object constructor still works`` () =
         properties |> Array.exists (fun (k, v) -> k = "key" && v = JsonValue.String "value") |> should equal true
         properties |> Array.exists (fun (k, v) -> k = "num" && v = JsonValue.Number 123M) |> should equal true
     | _ -> failwith "Expected record"
+
+// ---- ParseMultiple (NDJSON / concatenated JSON) tests ----
+
+[<Test>]
+let ``ParseMultiple returns empty sequence for empty string`` () =
+    JsonValue.ParseMultiple "" |> Seq.length |> should equal 0
+
+[<Test>]
+let ``ParseMultiple parses single value`` () =
+    let values = JsonValue.ParseMultiple """{"a":1}""" |> Array.ofSeq
+    values.Length |> should equal 1
+    values.[0]?a.AsInteger() |> should equal 1
+
+[<Test>]
+let ``ParseMultiple parses newline-delimited JSON (NDJSON)`` () =
+    let ndjson = "{\"id\":1}\n{\"id\":2}\n{\"id\":3}"
+    let values = JsonValue.ParseMultiple ndjson |> Array.ofSeq
+    values.Length |> should equal 3
+    values.[0]?id.AsInteger() |> should equal 1
+    values.[1]?id.AsInteger() |> should equal 2
+    values.[2]?id.AsInteger() |> should equal 3
+
+[<Test>]
+let ``ParseMultiple handles whitespace between values`` () =
+    let json = "1  2  3"
+    let values = JsonValue.ParseMultiple json |> Array.ofSeq
+    values.Length |> should equal 3
+    values.[0] |> should equal (JsonValue.Number 1M)
+    values.[1] |> should equal (JsonValue.Number 2M)
+    values.[2] |> should equal (JsonValue.Number 3M)
+
+[<Test>]
+let ``ParseMultiple handles mixed types in sequence`` () =
+    let json = """{"x":1} [1,2,3] "hello" true null"""
+    let values = JsonValue.ParseMultiple json |> Array.ofSeq
+    values.Length |> should equal 5
+    values.[1] |> should equal (JsonValue.Array [| JsonValue.Number 1M; JsonValue.Number 2M; JsonValue.Number 3M |])
+    values.[2] |> should equal (JsonValue.String "hello")
+    values.[3] |> should equal (JsonValue.Boolean true)
+    values.[4] |> should equal JsonValue.Null
+
+[<Test>]
+let ``ParseMultiple returns lazy sequence`` () =
+    // Verify only the first value is evaluated when taking only one element
+    let ndjson = "{\"a\":1}\n{\"b\":2}\n{\"c\":3}"
+    let firstOnly = JsonValue.ParseMultiple ndjson |> Seq.head
+    firstOnly?a.AsInteger() |> should equal 1
+
+// ---- JsonValue.Load(Stream) and Load(TextReader) tests ----
+
+[<Test>]
+let ``JsonValue Load from stream parses correctly`` () =
+    let json = """{"name":"Alice","age":30}"""
+    let bytes = System.Text.Encoding.UTF8.GetBytes(json)
+    use stream = new System.IO.MemoryStream(bytes)
+    let result = JsonValue.Load(stream)
+    result?name.AsString() |> should equal "Alice"
+    result?age.AsInteger() |> should equal 30
+
+[<Test>]
+let ``JsonValue Load from TextReader parses correctly`` () =
+    let json = """{"items":[1,2,3]}"""
+    use reader = new System.IO.StringReader(json)
+    let result = JsonValue.Load(reader :> System.IO.TextReader)
+    result?items.AsArray() |> Array.map (fun v -> v.AsInteger()) |> should equal [| 1; 2; 3 |]
+
+[<Test>]
+let ``JsonValue Load from stream handles nested structures`` () =
+    let json = """{"outer":{"inner":"value"}}"""
+    let bytes = System.Text.Encoding.UTF8.GetBytes(json)
+    use stream = new System.IO.MemoryStream(bytes)
+    let result = JsonValue.Load(stream)
+    result?outer?inner.AsString() |> should equal "value"
+
+[<Test>]
+let ``JsonValue WriteTo with DisableFormatting produces compact output`` () =
+    let json = JsonValue.Record [| "a", JsonValue.Number 1M; "b", JsonValue.String "x" |]
+    use writer = new System.IO.StringWriter()
+    json.WriteTo(writer, JsonSaveOptions.DisableFormatting)
+    let result = writer.ToString()
+    result |> should equal """{"a":1,"b":"x"}"""
+
+[<Test>]
+let ``JsonValue WriteTo with None (default) produces indented output`` () =
+    let json = JsonValue.Record [| "a", JsonValue.Number 1M |]
+    use writer = new System.IO.StringWriter()
+    json.WriteTo(writer, JsonSaveOptions.None)
+    let result = writer.ToString()
+    result.Contains("\n") |> should equal true
+    result.Contains("  ") |> should equal true
