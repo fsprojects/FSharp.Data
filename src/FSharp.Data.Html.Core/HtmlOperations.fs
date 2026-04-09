@@ -367,7 +367,7 @@ module HtmlNode =
                     let selectedNodes =
                         filterByAttr level acc name (fun v ->
                             let chars =
-                                v.ToCharArray()
+                                v
                                 |> Seq.skipWhile (fun c -> c = '\'')
                                 |> Seq.takeWhile Char.IsLetter
                                 |> Seq.toArray

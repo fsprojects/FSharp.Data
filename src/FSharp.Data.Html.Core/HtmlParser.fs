@@ -1113,7 +1113,10 @@ module internal HtmlParser =
                 parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
             | TagEnd name :: rest when
                 name <> expectedTagEnd
-                && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev)))
+                && (name
+                    <> (new String(
+                        Array.init expectedTagEnd.Length (fun i -> expectedTagEnd.[expectedTagEnd.Length - 1 - i])
+                    )))
                 ->
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd parentTagName rest
