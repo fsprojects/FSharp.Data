@@ -1,10 +1,11 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-08 (run 24117725711)
+## Last run: 2026-04-09 (run 24172391552)
 
 ### Open PRs
 - #1717: HTTP encoding ISO-8859-1 → UTF-8 (Closes #1251; endorsed by dsyme; all CI checks pass; ready for merge)
-- Pending (branch repo-assist/test-jsonvalue-parsemultiple-load-2026-04-08): test: JsonValue.ParseMultiple, Load(Stream), Load(TextReader), WriteTo (11 new tests; 2920 total pass)
+- #1734: test: JsonValue.ParseMultiple, Load(Stream), Load(TextReader), WriteTo (11 new tests; 2920 total pass)
+- #1735: perf: avoid ToCharArray allocations in TextConversions, HtmlParser, HtmlCssSelectors, HtmlOperations (2909 tests pass)
 
 ### Open Issues  
 - #1730: CI format check issue (can be closed now - PR #1732 was merged)
@@ -22,10 +23,11 @@
 - #1723: fsdocs 22.0.0-alpha.3 + SDK 10.0.201 (merged 2026-04-03)
 
 ### Test suite
-- 2920 tests as of this run
+- 2909 tests as of this run (on main; PR #1734 has 2920)
 
 ### Backlog
 - Monitor PR #1717 for merge (HTTP encoding fix, endorsed by @dsyme, all CI ✅)
-- Monitor new test PR (branch repo-assist/test-jsonvalue-parsemultiple-load-2026-04-08)
+- Monitor PR #1734 (JsonValue tests)
+- Monitor PR #1735 (ToCharArray perf: TextConversions, HtmlParser, HtmlCssSelectors, HtmlOperations)
 - Close issue #1730 (CI format check - now resolved)
 - Consider STJ investigation from #1671
