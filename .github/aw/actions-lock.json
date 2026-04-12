@@ -5,20 +5,20 @@
       "version": "v6.0.2",
       "sha": "de0fac2e4500dabe0009e67214ff5f5447ce83dd"
     },
-    "actions/github-script@v8": {
+    "actions/github-script@v9.0.0": {
       "repo": "actions/github-script",
-      "version": "v8",
-      "sha": "ed597411d8f924073f98dfc5c65a23a2325f34cd"
+      "version": "v9.0.0",
+      "sha": "d746ffe35508b1917358783b479e04febd2b8f71"
     },
-    "github/gh-aw-actions/setup@v0.66.1": {
+    "github/gh-aw-actions/setup@v0.68.1": {
       "repo": "github/gh-aw-actions/setup",
-      "version": "v0.66.1",
-      "sha": "73ae9ce231580f337133352d321d42b6bf54b6a9"
+      "version": "v0.68.1",
+      "sha": "2fe53acc038ba01c3bbdc767d4b25df31ca5bdfc"
     },
-    "github/gh-aw/actions/setup@v0.66.1": {
+    "github/gh-aw/actions/setup@v0.68.1": {
       "repo": "github/gh-aw/actions/setup",
-      "version": "v0.66.1",
-      "sha": "d688a4a5fa8aa96ad18fa13f0b187c38548a275c"
+      "version": "v0.68.1",
+      "sha": "5a06d310cf45161bde77d070065a1e1489fc411c"
     }
   }
 }
