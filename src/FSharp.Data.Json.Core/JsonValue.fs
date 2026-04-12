@@ -165,9 +165,13 @@ type JsonValue =
                     || c = '\\'
 
                 if needsEscaping then
-                    // Write all accumulated unescaped characters in one operation using Substring
+                    // Write all accumulated unescaped characters in one operation
                     if i > lastWritePos then
+#if NETSTANDARD2_0
                         w.Write(value.Substring(lastWritePos, i - lastWritePos))
+#else
+                        w.Write(value.AsSpan(lastWritePos, i - lastWritePos))
+#endif
 
                     // Write the escaped character
                     if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
@@ -187,7 +191,11 @@ type JsonValue =
 
             // Write any remaining unescaped characters
             if lastWritePos < value.Length then
+#if NETSTANDARD2_0
                 w.Write(value.Substring(lastWritePos))
+#else
+                w.Write(value.AsSpan(lastWritePos))
+#endif
 
     /// <summary>Serializes this JsonValue to a string with the specified formatting options.</summary>
     /// <param name="saveOptions">Controls formatting: indented, compact, or compact with spaces.</param>
