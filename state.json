@@ -1,1 +1,10 @@
-{"v":"2026-04-11","r":"24274612549","open_prs":[1717,1734,1735,"new-readstring-asspan"],"pending_branches":[],"summary_issue_month":"2026-04","notes":"2026-04-11: Task8 - created PR (branch repo-assist/perf-readstring-sb-json-asspan-2026-04-11): readString StringBuilder O(n²)→O(n), JsonStringEncodeTo AsSpan on NET6+. 3692 tests pass. Task11 - updated monthly summary #1726."}
+{
+  "v": "2026-04-12",
+  "r": "24298725681",
+  "open_prs": [1717, 1734, 1735],
+  "pending_branches": ["repo-assist/perf-css-readstring-json-asspan-2026-04-12"],
+  "summary_issue_month": "2026-04",
+  "mcp_blocked": true,
+  "mcp_blocked_reason": "MCP registry policy check fails with 401 Bad credentials on api.github.com/copilot/mcp_registry - blocks github and safeoutputs MCP servers",
+  "notes": "2026-04-12: MCP servers blocked by policy (401 on mcp_registry). Prepared perf PR (branch repo-assist/perf-css-readstring-json-asspan-2026-04-12) with changes to HtmlCssSelectors readString (StringBuilder) and JsonValue.JsonStringEncodeTo (AsSpan). Build+tests pass. Cannot push or create PR without safeoutputs tools. 2026-04-11: Run 24274612549 also failed same way. Root cause: copilot CLI 1.0.24 new MCP registry policy check failing with 401."
+}

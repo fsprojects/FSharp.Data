@@ -1,0 +1,80 @@
+diff --git a/src/FSharp.Data.Html.Core/HtmlCssSelectors.fs b/src/FSharp.Data.Html.Core/HtmlCssSelectors.fs
+index ff8e9cea..15749d7f 100644
+--- a/src/FSharp.Data.Html.Core/HtmlCssSelectors.fs
++++ b/src/FSharp.Data.Html.Core/HtmlCssSelectors.fs
+@@ -59,7 +59,7 @@ module internal HtmlCssSelectors =
+ 
+             (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r') |> not
+ 
+-        let rec readString acc =
++        let rec readStringIntoSb (acc: System.Text.StringBuilder) =
+             function
+             | c :: t when
+                 Char.IsLetterOrDigit(c)
+@@ -68,20 +68,28 @@ module internal HtmlCssSelectors =
+                 || c.Equals('+')
+                 || c.Equals('/')
+                 ->
+-                readString (acc + (c.ToString())) t
++                acc.Append(c) |> ignore
++                readStringIntoSb acc t
+             | '\'' :: t ->
+                 if inQuotes then
+                     inQuotes <- false
+-                    acc, t
++                    acc.ToString(), t
+                 else
+                     inQuotes <- true
+-                    readString acc t
+-            | '\\' :: c :: t when isCharacterEscapable c -> readString (acc + (c.ToString())) t
+-            | c :: t when inQuotes -> readString (acc + (c.ToString())) t
+-            | c :: t -> acc, c :: t
+-            | [] -> acc, []
++                    readStringIntoSb acc t
++            | '\\' :: c :: t when isCharacterEscapable c ->
++                acc.Append(c) |> ignore
++                readStringIntoSb acc t
++            | c :: t when inQuotes ->
++                acc.Append(c) |> ignore
++                readStringIntoSb acc t
++            | c :: t -> acc.ToString(), c :: t
++            | [] -> acc.ToString(), []
+             | c -> failwithf "Invalid css selector syntax at: %s" (new String(Array.ofList c))
+ 
++        let readString (initial: string) chars =
++            readStringIntoSb (System.Text.StringBuilder(initial)) chars
++
+         let (|StartsWith|_|) (s: string) (items: char list) =
+             let candidates = s.ToCharArray()
+ 
+diff --git a/src/FSharp.Data.Json.Core/JsonValue.fs b/src/FSharp.Data.Json.Core/JsonValue.fs
+index 21be4f00..0ae39038 100644
+--- a/src/FSharp.Data.Json.Core/JsonValue.fs
++++ b/src/FSharp.Data.Json.Core/JsonValue.fs
+@@ -165,9 +165,13 @@ type JsonValue =
+                     || c = '\\'
+ 
+                 if needsEscaping then
+-                    // Write all accumulated unescaped characters in one operation using Substring
++                    // Write all accumulated unescaped characters in one operation
+                     if i > lastWritePos then
++#if NETSTANDARD2_0
+                         w.Write(value.Substring(lastWritePos, i - lastWritePos))
++#else
++                        w.Write(value.AsSpan(lastWritePos, i - lastWritePos))
++#endif
+ 
+                     // Write the escaped character
+                     if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
+@@ -187,7 +191,11 @@ type JsonValue =
+ 
+             // Write any remaining unescaped characters
+             if lastWritePos < value.Length then
++#if NETSTANDARD2_0
+                 w.Write(value.Substring(lastWritePos))
++#else
++                w.Write(value.AsSpan(lastWritePos))
++#endif
+ 
+     /// <summary>Serializes this JsonValue to a string with the specified formatting options.</summary>
+     /// <param name="saveOptions">Controls formatting: indented, compact, or compact with spaces.</param>
