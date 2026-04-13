@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.8 - Apr 13 2026
+
+- Code: `NameUtils.niceCamelName` now short-circuits with zero allocations when the result already starts with a lower-case letter; the general case now uses `StringBuilder.Append(string, int, int)` to avoid creating an intermediate `Substring`. `capitalizeFirstLetter` similarly short-circuits when the first letter is already upper-case. Also fixes `Pluralizer` to avoid `Substring(0,1)` in its capitalize path.
+
 ## 8.1.7 - Apr 7 2026
 
 - Performance: HTML parser avoids `ToCharArray()` allocations in several code paths: `EmitToAttributeValue` now iterates the substituted string directly; `Cons(char[])` and `Cons(string)` use `StringBuilder.Append` directly; `Pop(count)` uses `Array.init` instead of creating an integer range array; CDATA opening marker no longer creates a temporary `char[]`.
