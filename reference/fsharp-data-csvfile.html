@@ -1,0 +1,2842 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data.Csv.Core" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="CsvFile (FSharp.Data)" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/{{fsdocs-source-basename}}.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="CsvFile (FSharp.Data)">
+    
+    <title>CsvFile (FSharp.Data) | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-details-set-expanded.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="api-docs">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        <div>
+  <h2>
+    CsvFile Type
+  </h2>
+  <dl class="fsdocs-metadata">
+    <dt>
+      Namespace: 
+      <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data.html">
+        FSharp.Data
+      </a>
+    </dt>
+    <dt>
+      Assembly: FSharp.Data.Csv.Core.dll
+    </dt>
+    <dt>
+      Base Type: 
+      <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;<a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvrow.html">CsvRow</a>&gt;</span></code>
+    </dt>
+    <dt>
+      All Interfaces: 
+      <code><a href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></code>
+    </dt>
+  </dl>
+  <div class="fsdocs-xmldoc">
+    <div>
+      <div class="fsdocs-summary-contents">
+        <p class="fsdocs-summary">
+          
+ Represents a CSV file. The lines are read on demand from <code>reader</code>.
+ Columns are delimited by one of the chars passed by <code>separators</code> (defaults to just <code>,</code>), and
+ to escape the separator chars, the <code>quote</code> character will be used (defaults to <code>&quot;</code>).
+ If <code>hasHeaders</code> is true (the default), the first line read by <code>reader</code> will not be considered part of data.
+ If <code>ignoreErrors</code> is true (the default is false), rows with a different number of columns from the header row
+ (or the first row if headers are not present) will be ignored.
+ The first <code>skipRows</code> lines will be skipped.
+ 
+        </p>
+      </div>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div>
+    <h3>
+      Instance members
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Instance member
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="504" data-fsdocs-tip-unique="504">
+                <p>
+                  <a id="Append">
+                    <a href="#Append">
+                      <code><span>this.Append</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="504">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Append</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        rows
+                      </b>
+                      :
+                      <code><span>'RowType&#32;seq</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a csv with the same rows as the original plus the provided rows appended
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L557-557" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Append\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Append``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    rows
+                  </span>
+                  :
+                  <code><span>'RowType&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="505" data-fsdocs-tip-unique="505">
+                <p>
+                  <a id="Cache">
+                    <a href="#Cache">
+                      <code><span>this.Cache</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="505">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Cache</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a new csv with the same rows as the original but which guarantees
+ that each row will be only be read and parsed from the input at most once.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L528-528" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Cache\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Cache``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="506" data-fsdocs-tip-unique="506">
+                <p>
+                  <a id="Filter">
+                    <a href="#Filter">
+                      <code><span>this.Filter</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="506">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Filter</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        predicate
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a new csv containing only the rows for which the given predicate returns "true".
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L534-534" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Filter\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Filter``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    predicate
+                  </span>
+                  :
+                  <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="507" data-fsdocs-tip-unique="507">
+                <p>
+                  <a id="GetColumnIndex">
+                    <a href="#GetColumnIndex">
+                      <code><span>this.GetColumnIndex</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="507">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.GetColumnIndex</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        columnName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>int</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns the index of the column with the given name
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L74-74" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.GetColumnIndex\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.GetColumnIndex`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    columnName
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="508" data-fsdocs-tip-unique="508">
+                <p>
+                  <a id="Headers">
+                    <a href="#Headers">
+                      <code><span>this.Headers</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="508">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Headers</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><span>string[]</span>&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       The names of the columns
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L270-270" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Data.Runtime.CsvFile`1.Headers\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:P:FSharp.Data.Runtime.CsvFile`1.Headers``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><span>string[]</span>&#32;option</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="509" data-fsdocs-tip-unique="509">
+                <p>
+                  <a id="Map">
+                    <a href="#Map">
+                      <code><span>this.Map</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="509">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Map</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        mapping
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;'RowType</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a new csv where every row has been transformed by the provided mapping function.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L531-531" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Map\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Map``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    mapping
+                  </span>
+                  :
+                  <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;'RowType</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="510" data-fsdocs-tip-unique="510">
+                <p>
+                  <a id="NumberOfColumns">
+                    <a href="#NumberOfColumns">
+                      <code><span>this.NumberOfColumns</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="510">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.NumberOfColumns</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>int</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       The number of columns
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L273-273" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Data.Runtime.CsvFile`1.NumberOfColumns\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:P:FSharp.Data.Runtime.CsvFile`1.NumberOfColumns``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="511" data-fsdocs-tip-unique="511">
+                <p>
+                  <a id="Quote">
+                    <a href="#Quote">
+                      <code><span>this.Quote</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="511">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Quote</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>char</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       The quotation mark use for surrounding values containing separator chars
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L279-279" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Data.Runtime.CsvFile`1.Quote\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:P:FSharp.Data.Runtime.CsvFile`1.Quote``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="512" data-fsdocs-tip-unique="512">
+                <p>
+                  <a id="Rows">
+                    <a href="#Rows">
+                      <code><span>this.Rows</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="512">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Rows</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span>'RowType&#32;seq</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       The rows with data
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L267-267" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Data.Runtime.CsvFile`1.Rows\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:P:FSharp.Data.Runtime.CsvFile`1.Rows``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span>'RowType&#32;seq</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="513" data-fsdocs-tip-unique="513">
+                <p>
+                  <a id="Save">
+                    <a href="#Save">
+                      <code><span>this.Save</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="513">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Save</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        path
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Saves CSV to the specified file
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L511-511" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Save\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Save``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    path
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="514" data-fsdocs-tip-unique="514">
+                <p>
+                  <a id="Save">
+                    <a href="#Save">
+                      <code><span>this.Save</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="514">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Save</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        stream
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Saves CSV to the specified stream
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L504-504" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Save\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Save``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    stream
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="515" data-fsdocs-tip-unique="515">
+                <p>
+                  <a id="Save">
+                    <a href="#Save">
+                      <code><span>this.Save</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="515">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Save</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        writer
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Saves CSV to the specified writer
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L456-456" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Save\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Save``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    writer
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="516" data-fsdocs-tip-unique="516">
+                <p>
+                  <a id="SaveToString">
+                    <a href="#SaveToString">
+                      <code><span>this.SaveToString</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="516">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SaveToString</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        ?separator
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>string</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Saves CSV to a string
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L516-516" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.SaveToString\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.SaveToString``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separator
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="517" data-fsdocs-tip-unique="517">
+                <p>
+                  <a id="Separators">
+                    <a href="#Separators">
+                      <code><span>this.Separators</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="517">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Separators</span></code>
+                  <br/>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code>string</code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       The character(s) used as column separator(s)
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L276-276" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'P:FSharp.Data.Runtime.CsvFile`1.Separators\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:P:FSharp.Data.Runtime.CsvFile`1.Separators``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="518" data-fsdocs-tip-unique="518">
+                <p>
+                  <a id="Skip">
+                    <a href="#Skip">
+                      <code><span>this.Skip</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="518">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Skip</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        count
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a csv that skips N rows and then yields the remaining rows.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L546-546" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Skip\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Skip``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    count
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="519" data-fsdocs-tip-unique="519">
+                <p>
+                  <a id="SkipWhile">
+                    <a href="#SkipWhile">
+                      <code><span>this.SkipWhile</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="519">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.SkipWhile</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        predicate
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a csv that, when iterated, skips rows while the given predicate returns
+ <c>true</c>, and then yields the remaining rows.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L550-550" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.SkipWhile\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.SkipWhile``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    predicate
+                  </span>
+                  :
+                  <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="520" data-fsdocs-tip-unique="520">
+                <p>
+                  <a id="Take">
+                    <a href="#Take">
+                      <code><span>this.Take</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="520">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Take</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        count
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a new csv with only the first N rows of the underlying csv.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L538-538" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Take\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Take``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    count
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="521" data-fsdocs-tip-unique="521">
+                <p>
+                  <a id="TakeWhile">
+                    <a href="#TakeWhile">
+                      <code><span>this.TakeWhile</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="521">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TakeWhile</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        predicate
+                      </b>
+                      :
+                      <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a csv that, when iterated, yields rows while the given predicate
+ returns <c>true</c>, and then returns no further rows.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L542-542" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.TakeWhile\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.TakeWhile``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    predicate
+                  </span>
+                  :
+                  <code><span><a href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<span>'RowType,&#32;bool</span>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="522" data-fsdocs-tip-unique="522">
+                <p>
+                  <a id="Truncate">
+                    <a href="#Truncate">
+                      <code><span>this.Truncate</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="522">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.Truncate</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        count
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns a csv that when enumerated returns at most N rows.
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvRuntime.fs#L554-554" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.Runtime.CsvFile`1.Truncate\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('``cref:M:FSharp.Data.Runtime.CsvFile`1.Truncate``')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    count
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-runtime-csvfile-1.html">CsvFile</a>&lt;'RowType&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="523" data-fsdocs-tip-unique="523">
+                <p>
+                  <a id="TryGetColumnIndex">
+                    <a href="#TryGetColumnIndex">
+                      <code><span>this.TryGetColumnIndex</span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="523">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>this.TryGetColumnIndex</span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        columnName
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span>int&#32;option</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Returns the index of the column with the given name, or returns None if no column is found
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L77-77" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.TryGetColumnIndex\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.TryGetColumnIndex`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    columnName
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span>int&#32;option</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3>
+      Static members
+    </h3>
+    <table class="table outer-list fsdocs-member-list">
+      <thead>
+        <tr>
+          <td class="fsdocs-member-list-header">
+            Static member
+          </td>
+          <td class="fsdocs-member-list-header">
+            Description
+            <fsdocs-details-toggle></fsdocs-details-toggle>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="524" data-fsdocs-tip-unique="524">
+                <p>
+                  <a id="AsyncLoad">
+                    <a href="#AsyncLoad">
+                      <code><span>CsvFile.AsyncLoad<span><span>(<span>uri,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows,&#32;?encoding</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="524">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>CsvFile.AsyncLoad<span><span>(<span>uri,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows,&#32;?encoding</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        uri
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ignoreErrors
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?skipRows
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?encoding
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-control-fsharpasync-1">Async</a>&lt;<a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a>&gt;</span></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Loads CSV from the specified uri asynchronously
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L190-190" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.AsyncLoad\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.AsyncLoad`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    uri
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?ignoreErrors
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?skipRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?encoding
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><span><a href="https://fsharp.github.io/fsharp-core-docs/reference/fsharp-control-fsharpasync-1">Async</a>&lt;<a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a>&gt;</span></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="525" data-fsdocs-tip-unique="525">
+                <p>
+                  <a id="Load">
+                    <a href="#Load">
+                      <code><span>CsvFile.Load<span><span>(<span>uri,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows,&#32;?encoding</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="525">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>CsvFile.Load<span><span>(<span>uri,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows,&#32;?encoding</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        uri
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ignoreErrors
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?skipRows
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?encoding
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Loads CSV from the specified uri
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L168-168" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.Load\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.Load`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    uri
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?ignoreErrors
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?skipRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?encoding
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="526" data-fsdocs-tip-unique="526">
+                <p>
+                  <a id="Load">
+                    <a href="#Load">
+                      <code><span>CsvFile.Load<span><span>(<span>reader,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="526">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>CsvFile.Load<span><span>(<span>reader,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        reader
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textreader">TextReader</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ignoreErrors
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?skipRows
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Loads CSV from the specified reader
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L134-134" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.Load\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.Load`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    reader
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.textreader">TextReader</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?ignoreErrors
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?skipRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="527" data-fsdocs-tip-unique="527">
+                <p>
+                  <a id="Load">
+                    <a href="#Load">
+                      <code><span>CsvFile.Load<span><span>(<span>stream,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="527">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>CsvFile.Load<span><span>(<span>stream,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        stream
+                      </b>
+                      :
+                      <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ignoreErrors
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?skipRows
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Loads CSV from the specified stream
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L104-104" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.Load\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.Load`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    stream
+                  </span>
+                  :
+                  <code><a href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?ignoreErrors
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?skipRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+        <tr>
+          <td class="fsdocs-member-usage">
+            <div>
+              <code data-fsdocs-tip="528" data-fsdocs-tip-unique="528">
+                <p>
+                  <a id="Parse">
+                    <a href="#Parse">
+                      <code><span>CsvFile.Parse<span><span>(<span>text,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                    </a>
+                  </a>
+                </p>
+              </code>
+              <div popover="" class="fsdocs-tip" id="528">
+                <div class="member-tooltip">
+                  Full Usage: 
+                  <code><span>CsvFile.Parse<span><span>(<span>text,&#32;?separators,&#32;?quote,&#32;?hasHeaders,&#32;?ignoreErrors,&#32;?skipRows</span>)</span></span></span></code>
+                  <br/>
+                  <br/>
+                  Parameters: 
+                  <ul>
+                    <span>
+                      <b>
+                        text
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?separators
+                      </b>
+                      :
+                      <code>string</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?quote
+                      </b>
+                      :
+                      <code>char</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?hasHeaders
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?ignoreErrors
+                      </b>
+                      :
+                      <code>bool</code>
+                    </span>
+                    <br/>
+                    <span>
+                      <b>
+                        ?skipRows
+                      </b>
+                      :
+                      <code>int</code>
+                    </span>
+                    <br/>
+                  </ul>
+                  <br/>
+                  <span>
+                    Returns: 
+                    <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                  </span>
+                  <br/>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="fsdocs-member-xmldoc">
+            <details>
+              <summary>
+                <div class="fsdocs-summary">
+                  <div class="fsdocs-summary-contents">
+                    <p class="fsdocs-summary">
+                       Parses the specified CSV content
+                    </p>
+                  </div>
+                  <div class="icon-button-row">
+                    <a href="https://github.com/fsprojects/FSharp.Data/tree/master/src/FSharp.Data.Csv.Core/CsvFile.fs#L83-83" class="fsdocs-source-link" title="Source on GitHub">
+                      <iconify-icon icon="ri:github-fill" height="24" width="24"></iconify-icon>
+                    </a>
+                    <div class="fsdocs-source-link" title="Copy signature (XML)" onclick="Clipboard_CopyTo('<see cref=\'M:FSharp.Data.CsvFile.Parse\'/>')">
+                      <iconify-icon icon="bi:filetype-xml" height="24" width="24"></iconify-icon>
+                    </div>
+                    <div class="fsdocs-source-link" title="Copy signature (Markdown)" onclick="Clipboard_CopyTo('`cref:M:FSharp.Data.CsvFile.Parse`')">
+                      <iconify-icon icon="bi:filetype-md" height="24" width="24"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </summary>
+              <dl class="fsdocs-params">
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    text
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?separators
+                  </span>
+                  :
+                  <code>string</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?quote
+                  </span>
+                  :
+                  <code>char</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?hasHeaders
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?ignoreErrors
+                  </span>
+                  :
+                  <code>bool</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+                <dt class="fsdocs-param">
+                  <span class="fsdocs-param-name">
+                    ?skipRows
+                  </span>
+                  :
+                  <code>int</code>
+                </dt>
+                <dd class="fsdocs-param-docs"></dd>
+              </dl>
+              <dl class="fsdocs-returns">
+                <dt>
+                  <span class="fsdocs-return-name">
+                    Returns: 
+                  </span>
+                  <code><a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-csvfile.html">CsvFile</a></code>
+                </dt>
+                <dd class="fsdocs-return-docs"></dd>
+              </dl>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+        
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <div class="empty"></div>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>

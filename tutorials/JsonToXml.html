@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en" data-root="https://fsprojects.github.io/FSharp.Data/">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="FSharp.Data" name="author">
+    <!-- Opengraph properties (https://ogp.me/) -->
+    <meta property="og:site_name" content="FSharp.Data">
+    <meta property="og:title" content="Converting between JSON and XML
+" />
+    <meta property="og:url" content="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    <meta property="og:type" content="website" />
+    <!-- Twitter cards (https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="https://fsprojects.github.io/FSharp.Data/">
+    <meta name="twitter:title" content="Converting between JSON and XML
+">
+    
+    <title>Converting between JSON and XML
+ | FSharp.Data</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/img/favicon.ico" rel="icon" sizes="32x32" type="image/png"/>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-set-dark.js"></script>
+    <script type="application/javascript" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-details-set-expanded.js"></script>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-default.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.css" rel="stylesheet" type="text/css"/>
+    
+    
+</head>
+<body class="content">
+<header>
+    <div class="start">
+        <div id="menu-toggle">
+            <iconify-icon class="icon closed" height="22" icon="eva:menu-fill" width="22"></iconify-icon>
+            <iconify-icon class="icon open" height="22" icon="mi:close" width="22"></iconify-icon>
+            <input type="checkbox" name="mobile-menu" />
+            <ul class="menu">
+                <li class="nav-header">Links</li>
+                <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+                </li>
+                <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                        href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+                    Notes</a></li>
+                <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+                    Repository</a></li>
+                <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+                <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+            </ul>
+        </div>
+        <a href="https://fsprojects.github.io/FSharp.Data/">
+            <img alt="Logo" src="https://fsprojects.github.io/FSharp.Data/img/logo.png">
+            <strong>FSharp.Data</strong>
+        </a>
+    </div>
+    <div class="end">
+        <a href="https://github.com/fsprojects/FSharp.Data/" target="_blank">
+            <iconify-icon icon="uil:github" width="26" height="26"></iconify-icon>
+        </a>
+        <iconify-icon id="search-btn" icon="carbon:search" class="search" width="24" height="24"></iconify-icon>
+        <fsdocs-theme-toggle></fsdocs-theme-toggle>
+    </div>
+</header>
+<aside id="fsdocs-main-menu">
+    <ul class="menu">
+        <li class="nav-header">Links</li>
+        <li class="license-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/blob/master/LICENSE.md">License</a>
+        </li>
+        <li class="release-notes-menu-item builtin-menu-item nav-item"><a class="nav-link"
+                                href="https://github.com/fsprojects/FSharp.Data/blob/master/RELEASE_NOTES.md">Release
+            Notes</a></li>
+        <li class="repository-menu-item builtin-menu-item nav-item"><a class="nav-link" href="https://github.com/fsprojects/FSharp.Data/">Source
+            Repository</a></li>
+        <li class="nav-header ">
+  Type Providers
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvProvider.html">
+    CSV Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlProvider.html">
+    HTML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonProvider.html">
+    JSON Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/XmlProvider.html">
+    XML Type Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/WorldBank.html">
+    WorldBank Provider
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/TypeInference.html">
+    Type Inference and Missing Values
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Utilities
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/Http.html">
+    HTTP Utilities
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/CsvFile.html">
+    CSV Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlParser.html">
+    HTML Parser
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/HtmlCssSelectors.html">
+    HTML CSS selectors
+
+  </a>
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonValue.html">
+    JSON Parser
+
+  </a>
+</li>             
+<li class="nav-header active">
+  Tutorials
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonAnonymizer.html">
+    Anonymizing JSON
+
+  </a>
+</li>             
+<li class="nav-item active">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/tutorials/JsonToXml.html">
+    Converting between JSON and XML
+
+  </a>
+</li>             
+<li class="nav-header ">
+  Other
+</li>             
+<li class="nav-item ">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/library/JsonSchema.html">
+    Using JSON Schema with the JSON Type Provider
+
+  </a>
+</li>
+        <li class="nav-header">
+  API Reference
+</li>             
+<li class="nav-item">
+  <a class="nav-link" href="https://fsprojects.github.io/FSharp.Data/reference/index.html">
+    All Namespaces
+  </a>
+</li>
+    </ul>
+</aside>
+<main>
+    <div id="content">
+        
+<h1><a name="Converting-between-JSON-and-XML" class="anchor" href="#Converting-between-JSON-and-XML">Converting between JSON and XML</a></h1>
+<p><a href="https://mybinder.org/v2/gh/fsprojects/FSharp.Data/gh-pages?filepath=tutorials/JsonToXml.ipynb"><img src="../img/badge-binder.svg" alt="Binder" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//tutorials/JsonToXml.fsx"><img src="../img/badge-script.svg" alt="Script" /></a>&emsp;
+<a href="https://fsprojects.github.io/FSharp.Data//tutorials/JsonToXml.ipynb"><img src="../img/badge-notebook.svg" alt="Notebook" /></a></p>
+<p>This tutorial shows how to implement convert JSON document (represented using
+the <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> type discussed in <a href="JsonValue.html">JSON parser article</a>) to an
+XML document (represented as <code>XElement</code>) and the other way round.
+This functionality is not directly available in the FSharp.Data package, but it can
+be very easily implemented by recursively walking over the JSON (or XML) document.</p>
+<p>If you want to use the JSON to/from XML conversion in your code, you can copy the
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonToXml.fsx">source from GitHub</a> and just include it in your project. If you use these
+functions often and would like to see them in the FSharp.Data package, please submit
+a <a href="https://github.com/fsharp/FSharp.Data/issues">feature request</a>.</p>
+<h2><a name="Initialization" class="anchor" href="#Initialization">Initialization</a></h2>
+<p>We will be using the LINQ to XML API (available in <code>System.Xml.Linq.dll</code>) and the
+<a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a> which is available in the <code>FSharp.Data</code> namespace:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;System.Xml.Linq.dll&quot;</span>
+
+<span class="k">open</span> <span data-fsdocs-tip="fs1" data-fsdocs-tip-unique="1" class="id">System</span><span class="pn">.</span><span data-fsdocs-tip="fs2" data-fsdocs-tip-unique="2" class="id">Xml</span><span class="pn">.</span><span data-fsdocs-tip="fs3" data-fsdocs-tip-unique="3" class="id">Linq</span>
+<span class="k">open</span> <span data-fsdocs-tip="fs4" data-fsdocs-tip-unique="4" class="id">FSharp</span><span class="pn">.</span><span data-fsdocs-tip="fs5" data-fsdocs-tip-unique="5" class="id">Data</span>
+</code></pre>
+<p>In this script, we create a conversion that returns an easy to process value, but the
+conversion is not reversible (e.g. converting JSON to XML and then back to JSON will
+produce a different value).</p>
+<h2><a name="Converting-XML-to-JSON" class="anchor" href="#Converting-XML-to-JSON">Converting XML to JSON</a></h2>
+<p>Although XML and JSON are quite similar formats, there are a number of subtle differences.
+In particular, XML distinguishes between <em>attributes</em> and <em>child elements</em>. Moreover,
+all XML elements have a name, while JSON arrays or records are anonymous (but records
+have named fields). Consider, for example, the following XML:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">title</span> <span class="o">text</span><span class="k">="Sample input"</span> <span class="k">/&gt;</span>
+  <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="First"</span> <span class="k">/&gt;</span>
+  <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="Second"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">channel</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p>The JSON that we produce will ignore the top-level element name (<code>channel</code>). It produces
+a record that contains a unique field for every attribute and the name of a child element.
+If an element appears multiple times, it is turned into an array:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
+  <span class="s">"title"</span>: { <span class="s">"text"</span>: <span class="s">"Sample input"</span> },
+  <span class="s">"items"</span>: [ { <span class="s">"value"</span>: <span class="s">"First"</span> },
+             { <span class="s">"value"</span>: <span class="s">"Second"</span> } ]  }
+</code></pre></td></tr></table>
+<p>As you can see, the <code>item</code> element has been automatically pluralized to <code>items</code> and the
+array contains two record values that consist of the <code>value</code> attribute.</p>
+<p>The conversion function is a recursive function that takes an <code>XElement</code> and produces
+<a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a>. It builds JSON records (using <code>JsonValue.Record</code>) and arrays (using
+<code>JsonValue.Array</code>). All attribute values are turned into <code>JsonValue.String</code> - the
+sample does not implement a more sophisticated conversion that would turn numeric
+attributes to a corresponding JSON type:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">/// Creates a JSON representation of a XML element</span>
+<span class="k">let</span> <span class="k">rec</span> <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="6" class="fn">fromXml</span> <span class="pn">(</span><span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="7" class="fn">xml</span><span class="pn">:</span> <span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="8" class="rt">XElement</span><span class="pn">)</span> <span class="o">=</span>
+
+    <span class="c">// Create a collection of key/value pairs for all attributes</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="9" class="fn">attrs</span> <span class="o">=</span>
+        <span class="pn">[</span> <span class="k">for</span> <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="10" class="fn">attr</span> <span class="k">in</span> <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="11" class="fn">xml</span><span class="pn">.</span><span data-fsdocs-tip="fs11" data-fsdocs-tip-unique="12" class="id">Attributes</span><span class="pn">(</span><span class="pn">)</span> <span class="k">-&gt;</span> <span class="pn">(</span><span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="13" class="fn">attr</span><span class="pn">.</span><span data-fsdocs-tip="fs12" data-fsdocs-tip-unique="14" class="prop">Name</span><span class="pn">.</span><span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="15" class="id">LocalName</span><span class="pn">,</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="16" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="17" class="id">String</span> <span data-fsdocs-tip="fs10" data-fsdocs-tip-unique="18" class="fn">attr</span><span class="pn">.</span><span data-fsdocs-tip="fs16" data-fsdocs-tip-unique="19" class="id">Value</span><span class="pn">)</span> <span class="pn">]</span>
+
+    <span class="c">// Function that turns a collection of XElement values</span>
+    <span class="c">// into an array of JsonValue (using fromXml recursively)</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="20" class="fn">createArray</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="21" class="fn">xelems</span> <span class="o">=</span>
+        <span class="pn">[|</span> <span class="k">for</span> <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="22" class="fn">xelem</span> <span class="k">in</span> <span data-fsdocs-tip="fs18" data-fsdocs-tip-unique="23" class="fn">xelems</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="24" class="fn">fromXml</span> <span data-fsdocs-tip="fs19" data-fsdocs-tip-unique="25" class="fn">xelem</span> <span class="pn">|]</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="26" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="27" class="id">Array</span>
+
+    <span class="c">// Group child elements by their name and then turn all single-</span>
+    <span class="c">// element groups into a record (recursively) and all multi-</span>
+    <span class="c">// element groups into a JSON array using createArray</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="28" class="fn">children</span> <span class="o">=</span>
+        <span data-fsdocs-tip="fs7" data-fsdocs-tip-unique="29" class="fn">xml</span><span class="pn">.</span><span data-fsdocs-tip="fs22" data-fsdocs-tip-unique="30" class="id">Elements</span><span class="pn">(</span><span class="pn">)</span>
+        <span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="31" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs24" data-fsdocs-tip-unique="32" class="id">groupBy</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="33" class="fn">x</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs25" data-fsdocs-tip-unique="34" class="fn">x</span><span class="pn">.</span><span data-fsdocs-tip="fs26" data-fsdocs-tip-unique="35" class="prop">Name</span><span class="pn">.</span><span data-fsdocs-tip="fs13" data-fsdocs-tip-unique="36" class="id">LocalName</span><span class="pn">)</span>
+        <span class="o">|&gt;</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="37" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs27" data-fsdocs-tip-unique="38" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="39" class="fn">key</span><span class="pn">,</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="40" class="fn">childs</span><span class="pn">)</span> <span class="k">-&gt;</span>
+            <span class="k">match</span> <span data-fsdocs-tip="fs23" data-fsdocs-tip-unique="41" class="m">Seq</span><span class="pn">.</span><span data-fsdocs-tip="fs30" data-fsdocs-tip-unique="42" class="id">toList</span> <span data-fsdocs-tip="fs29" data-fsdocs-tip-unique="43" class="fn">childs</span> <span class="k">with</span>
+            <span class="pn">|</span> <span class="pn">[</span> <span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="44" class="fn">child</span> <span class="pn">]</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="45" class="fn">key</span><span class="pn">,</span> <span data-fsdocs-tip="fs6" data-fsdocs-tip-unique="46" class="fn">fromXml</span> <span data-fsdocs-tip="fs31" data-fsdocs-tip-unique="47" class="fn">child</span>
+            <span class="pn">|</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="48" class="fn">children</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="49" class="fn">key</span> <span class="o">+</span> <span class="s">&quot;s&quot;</span><span class="pn">,</span> <span data-fsdocs-tip="fs17" data-fsdocs-tip-unique="50" class="fn">createArray</span> <span data-fsdocs-tip="fs32" data-fsdocs-tip-unique="51" class="fn">children</span><span class="pn">)</span>
+
+    <span class="c">// Concatenate elements produced for child elements &amp; attributes</span>
+    <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="52" class="m">Array</span><span class="pn">.</span><span data-fsdocs-tip="fs34" data-fsdocs-tip-unique="53" class="id">append</span> <span class="pn">(</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="54" class="m">Array</span><span class="pn">.</span><span data-fsdocs-tip="fs35" data-fsdocs-tip-unique="55" class="id">ofList</span> <span data-fsdocs-tip="fs9" data-fsdocs-tip-unique="56" class="fn">attrs</span><span class="pn">)</span> <span class="pn">(</span><span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="57" class="m">Array</span><span class="pn">.</span><span data-fsdocs-tip="fs36" data-fsdocs-tip-unique="58" class="id">ofSeq</span> <span data-fsdocs-tip="fs21" data-fsdocs-tip-unique="59" class="fn">children</span><span class="pn">)</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="60" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="61" class="id">Record</span>
+</code></pre>
+<h2><a name="Converting-JSON-to-XML" class="anchor" href="#Converting-JSON-to-XML">Converting JSON to XML</a></h2>
+<p>When converting JSON value to XML, we fact the same mismatch. Consider the following JSON value:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
+  <span class="s">"paging"</span> : { <span class="s">"current"</span>: <span class="n">1</span> },
+  <span class="s">"items"</span> : [ <span class="s">"First"</span>, <span class="s">"Second"</span> ] }
+</code></pre></td></tr></table>
+<p>The top-level record does not have a name, so our conversion produces a list of <code>XObject</code>
+values that can be wrapped into an <code>XElement</code> by the user (who has to specify the root
+name). Record fields that are a primitive value are turned into attributes, while
+complex values (array or record) become objects:</p>
+<table class="pre"><tr><td class="snippet"><pre class="fssnip highlighted"><code lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">items</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>First<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>Second<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
+  <span class="k">&lt;/</span><span class="i">items</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">paging</span> <span class="o">current</span><span class="k">="1"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">root</span><span class="k">&gt;</span>
+</code></pre></td></tr></table>
+<p>The conversion function is, again, implemented as a recursive function. This time, we use
+pattern matching to distinguish between the different possible cases of <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a>.
+The cases representing a primitive value simply return the value as <code>obj</code>, while array
+and record construct nested element(s) or attribute:</p>
+<pre class="fssnip highlighted"><code lang="fsharp"><span class="c">/// Creates an XML representation of a JSON value (works</span>
+<span class="c">/// only when the top-level value is an object or an array)</span>
+<span class="k">let</span> <span data-fsdocs-tip="fs38" data-fsdocs-tip-unique="62" class="fn">toXml</span> <span class="pn">(</span><span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="63" class="fn">x</span><span class="pn">:</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="64" class="rt">JsonValue</span><span class="pn">)</span> <span class="o">=</span>
+    <span class="c">// Helper functions for constructing XML</span>
+    <span class="c">// attributes and XML elements</span>
+    <span class="k">let</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="65" class="fn">attr</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="66" class="fn">name</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="67" class="fn">value</span> <span class="o">=</span>
+        <span data-fsdocs-tip="fs43" data-fsdocs-tip-unique="68" class="fn">XAttribute</span><span class="pn">(</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="69" class="rt">XName</span><span class="pn">.</span><span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="70" class="id">Get</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="71" class="fn">name</span><span class="pn">,</span> <span data-fsdocs-tip="fs42" data-fsdocs-tip-unique="72" class="fn">value</span><span class="pn">)</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="73" class="rt">XObject</span>
+
+    <span class="k">let</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="74" class="fn">elem</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="75" class="fn">name</span> <span class="pn">(</span><span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="76" class="fn">value</span><span class="pn">:</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="77" class="rt">obj</span><span class="pn">)</span> <span class="o">=</span>
+        <span data-fsdocs-tip="fs8" data-fsdocs-tip-unique="78" class="fn">XElement</span><span class="pn">(</span><span data-fsdocs-tip="fs44" data-fsdocs-tip-unique="79" class="rt">XName</span><span class="pn">.</span><span data-fsdocs-tip="fs45" data-fsdocs-tip-unique="80" class="id">Get</span> <span data-fsdocs-tip="fs41" data-fsdocs-tip-unique="81" class="fn">name</span><span class="pn">,</span> <span data-fsdocs-tip="fs48" data-fsdocs-tip-unique="82" class="fn">value</span><span class="pn">)</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="83" class="rt">XObject</span>
+
+    <span class="c">// Inner recursive function that implements the conversion</span>
+    <span class="k">let</span> <span class="k">rec</span> <span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="84" class="fn">toXml</span> <span class="o">=</span>
+        <span class="k">function</span>
+        <span class="c">// Primitive values are returned as objects</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="85" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs51" data-fsdocs-tip-unique="86" class="id">Null</span> <span class="k">-&gt;</span> <span class="k">null</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="87" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="88" class="id">Boolean</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="89" class="fn">b</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="90" class="fn">b</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="91" class="rt">obj</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="92" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="93" class="id">Number</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="94" class="fn">number</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs55" data-fsdocs-tip-unique="95" class="fn">number</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="96" class="rt">obj</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="97" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="98" class="id">Float</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="99" class="fn">number</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs57" data-fsdocs-tip-unique="100" class="fn">number</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="101" class="rt">obj</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="102" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="103" class="id">String</span> <span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="104" class="fn">s</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="105" class="fn">s</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="106" class="rt">obj</span>
+
+        <span class="c">// JSON object becomes a collection of XML</span>
+        <span class="c">// attributes (for primitives) or child elements</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="107" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs37" data-fsdocs-tip-unique="108" class="id">Record</span> <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="109" class="fn">properties</span> <span class="k">-&gt;</span>
+            <span data-fsdocs-tip="fs59" data-fsdocs-tip-unique="110" class="fn">properties</span>
+            <span class="o">|&gt;</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="111" class="m">Array</span><span class="pn">.</span><span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="112" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span class="pn">(</span><span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="113" class="fn">key</span><span class="pn">,</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="114" class="fn">value</span><span class="pn">)</span> <span class="k">-&gt;</span>
+                <span class="k">match</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="115" class="fn">value</span> <span class="k">with</span>
+                <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="116" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs15" data-fsdocs-tip-unique="117" class="id">String</span> <span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="118" class="fn">s</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="119" class="fn">attr</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="120" class="fn">key</span> <span data-fsdocs-tip="fs58" data-fsdocs-tip-unique="121" class="fn">s</span>
+                <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="122" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs52" data-fsdocs-tip-unique="123" class="id">Boolean</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="124" class="fn">b</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="125" class="fn">attr</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="126" class="fn">key</span> <span data-fsdocs-tip="fs53" data-fsdocs-tip-unique="127" class="fn">b</span>
+                <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="128" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs54" data-fsdocs-tip-unique="129" class="id">Number</span> <span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="130" class="fn">n</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="131" class="fn">attr</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="132" class="fn">key</span> <span data-fsdocs-tip="fs62" data-fsdocs-tip-unique="133" class="fn">n</span>
+                <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="134" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs56" data-fsdocs-tip-unique="135" class="id">Float</span> <span data-fsdocs-tip="fs63" data-fsdocs-tip-unique="136" class="fn">n</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs40" data-fsdocs-tip-unique="137" class="fn">attr</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="138" class="fn">key</span> <span data-fsdocs-tip="fs63" data-fsdocs-tip-unique="139" class="fn">n</span>
+                <span class="pn">|</span> <span class="id">_</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="140" class="fn">elem</span> <span data-fsdocs-tip="fs28" data-fsdocs-tip-unique="141" class="fn">key</span> <span class="pn">(</span><span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="142" class="fn">toXml</span> <span data-fsdocs-tip="fs61" data-fsdocs-tip-unique="143" class="fn">value</span><span class="pn">)</span><span class="pn">)</span>
+            <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="144" class="rt">obj</span>
+
+        <span class="c">// JSON array is turned into a</span>
+        <span class="c">// sequence of &lt;item&gt; elements</span>
+        <span class="pn">|</span> <span data-fsdocs-tip="fs14" data-fsdocs-tip-unique="145" class="rt">JsonValue</span><span class="pn">.</span><span data-fsdocs-tip="fs20" data-fsdocs-tip-unique="146" class="id">Array</span> <span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="147" class="fn">elements</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs64" data-fsdocs-tip-unique="148" class="fn">elements</span> <span class="o">|&gt;</span> <span data-fsdocs-tip="fs33" data-fsdocs-tip-unique="149" class="m">Array</span><span class="pn">.</span><span data-fsdocs-tip="fs60" data-fsdocs-tip-unique="150" class="id">map</span> <span class="pn">(</span><span class="k">fun</span> <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="151" class="fn">item</span> <span class="k">-&gt;</span> <span data-fsdocs-tip="fs47" data-fsdocs-tip-unique="152" class="fn">elem</span> <span class="s">&quot;item&quot;</span> <span class="pn">(</span><span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="153" class="fn">toXml</span> <span data-fsdocs-tip="fs65" data-fsdocs-tip-unique="154" class="fn">item</span><span class="pn">)</span><span class="pn">)</span> <span class="o">:&gt;</span> <span data-fsdocs-tip="fs49" data-fsdocs-tip-unique="155" class="rt">obj</span>
+
+    <span class="c">// Perform the conversion and cast the result to sequence</span>
+    <span class="c">// of objects (may fail for unexpected inputs!)</span>
+    <span class="pn">(</span><span data-fsdocs-tip="fs50" data-fsdocs-tip-unique="156" class="fn">toXml</span> <span data-fsdocs-tip="fs39" data-fsdocs-tip-unique="157" class="fn">x</span><span class="pn">)</span> <span class="o">:?&gt;</span> <span data-fsdocs-tip="fs46" data-fsdocs-tip-unique="158" class="rt">XObject</span> <span data-fsdocs-tip="fs66" data-fsdocs-tip-unique="159" class="if">seq</span>
+</code></pre>
+<h2><a name="Related-articles" class="anchor" href="#Related-articles">Related articles</a></h2>
+<ul>
+<li>API Reference: <a href="https://fsprojects.github.io/FSharp.Data/reference/fsharp-data-jsonvalue.html">JsonValue</a></li>
+<li>
+<a href="../library/JsonValue.html">JSON Parser</a> - a tutorial that introduces
+<code>JsonValue</code> for working with JSON values dynamically.
+</li>
+<li>
+<a href="../library/JsonProvider.html">JSON Type Provider</a> - discusses F# type provider
+that provides type-safe access to JSON data.
+</li>
+<li>
+<a href="../library/XmlProvider.html">XML Type Provider</a> - discusses the F# type provider
+that provides type-safe access to XML data.
+</li>
+</ul>
+
+        <div popover class="fsdocs-tip" id="fs1">namespace System</div>
+<div popover class="fsdocs-tip" id="fs2">namespace System.Xml</div>
+<div popover class="fsdocs-tip" id="fs3">namespace System.Xml.Linq</div>
+<div popover class="fsdocs-tip" id="fs4">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
+<div popover class="fsdocs-tip" id="fs5">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
+<div popover class="fsdocs-tip" id="fs6">val fromXml: xml: XElement -&gt; JsonValue<br /><em>&#160;Creates a JSON representation of a XML element</em></div>
+<div popover class="fsdocs-tip" id="fs7">val xml: XElement</div>
+<div popover class="fsdocs-tip" id="fs8">Multiple items<br />type XElement =
+  inherit XContainer
+  interface IXmlSerializable
+  new: other: XElement -&gt; unit + 4 overloads
+  member AncestorsAndSelf: unit -&gt; XElement seq + 1 overload
+  member Attribute: name: XName -&gt; XAttribute
+  member Attributes: unit -&gt; XAttribute seq + 1 overload
+  member DescendantNodesAndSelf: unit -&gt; XNode seq
+  member DescendantsAndSelf: unit -&gt; XElement seq + 1 overload
+  member GetDefaultNamespace: unit -&gt; XNamespace
+  member GetNamespaceOfPrefix: prefix: string -&gt; XNamespace
+  ...<br /><em>&lt;summary&gt;Represents an XML element.  See XElement Class Overview and the Remarks section on this page for usage information and examples.&lt;/summary&gt;</em><br /><br />--------------------<br />XElement(other: XElement) : XElement<br />XElement(name: XName) : XElement<br />XElement(other: XStreamingElement) : XElement<br />XElement(name: XName, content: obj) : XElement<br />XElement(name: XName, content: obj array) : XElement</div>
+<div popover class="fsdocs-tip" id="fs9">val attrs: (string * JsonValue) list</div>
+<div popover class="fsdocs-tip" id="fs10">val attr: XAttribute</div>
+<div popover class="fsdocs-tip" id="fs11">XElement.Attributes() : XAttribute seq<br />XElement.Attributes(name: XName) : XAttribute seq</div>
+<div popover class="fsdocs-tip" id="fs12">property XAttribute.Name: XName with get<br /><em>&lt;summary&gt;Gets the expanded name of this attribute.&lt;/summary&gt;<br />&lt;returns&gt;An &lt;see cref=&quot;T:System.Xml.Linq.XName&quot; /&gt; containing the name of this attribute.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs13">property XName.LocalName: string with get<br /><em>&lt;summary&gt;Gets the local (unqualified) part of the name.&lt;/summary&gt;<br />&lt;returns&gt;A &lt;see cref=&quot;T:System.String&quot; /&gt; that contains the local (unqualified) part of the name.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs14">type JsonValue =
+  | String of string
+  | Number of decimal
+  | Float of float
+  | Record of properties: (string * JsonValue) array
+  | Array of elements: JsonValue array
+  | Boolean of bool
+  | Null
+  member Request: url: string * ?httpMethod: string * ?headers: (string * string) seq -&gt; HttpResponse
+  member RequestAsync: url: string * ?httpMethod: string * ?headers: (string * string) seq -&gt; Async&lt;HttpResponse&gt;
+  member ToString: saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; string + 2 overloads
+  member WriteTo: w: TextWriter * saveOptions: JsonSaveOptions * ?indentationSpaces: int -&gt; unit
+  static member AsyncLoad: uri: string * ?encoding: Encoding -&gt; Async&lt;JsonValue&gt;
+  static member Load: stream: Stream -&gt; JsonValue + 2 overloads
+  static member Parse: text: string -&gt; JsonValue
+  static member ParseMultiple: text: string -&gt; JsonValue seq
+  static member TryParse: text: string -&gt; JsonValue option<br /><em>&lt;summary&gt;
+ Represents a JSON value. Large numbers that do not fit in the
+ Decimal type are represented using the Float case, while
+ smaller numbers are represented as decimals to avoid precision loss.
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs15">union case JsonValue.String: string -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON string value
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs16">property XAttribute.Value: string with get, set<br /><em>&lt;summary&gt;Gets or sets the value of this attribute.&lt;/summary&gt;<br />&lt;exception cref=&quot;T:System.ArgumentNullException&quot;&gt;When setting, the &lt;paramref name=&quot;value&quot; /&gt; is &lt;see langword=&quot;null&quot; /&gt;.&lt;/exception&gt;<br />&lt;returns&gt;A &lt;see cref=&quot;T:System.String&quot; /&gt; containing the value of this attribute.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs17">val createArray: xelems: #XElement seq -&gt; JsonValue</div>
+<div popover class="fsdocs-tip" id="fs18">val xelems: #XElement seq</div>
+<div popover class="fsdocs-tip" id="fs19">val xelem: #XElement</div>
+<div popover class="fsdocs-tip" id="fs20">union case JsonValue.Array: elements: JsonValue array -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON array of values
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs21">val children: (string * JsonValue) seq</div>
+<div popover class="fsdocs-tip" id="fs22">XContainer.Elements() : XElement seq<br />XContainer.Elements(name: XName) : XElement seq</div>
+<div popover class="fsdocs-tip" id="fs23">module Seq
+
+from Microsoft.FSharp.Collections</div>
+<div popover class="fsdocs-tip" id="fs24">val groupBy: projection: (&#39;T -&gt; &#39;Key) -&gt; source: &#39;T seq -&gt; (&#39;Key * &#39;T seq) seq (requires equality)</div>
+<div popover class="fsdocs-tip" id="fs25">val x: XElement</div>
+<div popover class="fsdocs-tip" id="fs26">property XElement.Name: XName with get, set<br /><em>&lt;summary&gt;Gets or sets the name of this element.&lt;/summary&gt;<br />&lt;returns&gt;An &lt;see cref=&quot;T:System.Xml.Linq.XName&quot; /&gt; that contains the name of this element.&lt;/returns&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs27">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; source: &#39;T seq -&gt; &#39;U seq</div>
+<div popover class="fsdocs-tip" id="fs28">val key: string</div>
+<div popover class="fsdocs-tip" id="fs29">val childs: XElement seq</div>
+<div popover class="fsdocs-tip" id="fs30">val toList: source: &#39;T seq -&gt; &#39;T list</div>
+<div popover class="fsdocs-tip" id="fs31">val child: XElement</div>
+<div popover class="fsdocs-tip" id="fs32">val children: XElement list</div>
+<div popover class="fsdocs-tip" id="fs33">module Array
+
+from Microsoft.FSharp.Collections</div>
+<div popover class="fsdocs-tip" id="fs34">val append: array1: &#39;T array -&gt; array2: &#39;T array -&gt; &#39;T array</div>
+<div popover class="fsdocs-tip" id="fs35">val ofList: list: &#39;T list -&gt; &#39;T array</div>
+<div popover class="fsdocs-tip" id="fs36">val ofSeq: source: &#39;T seq -&gt; &#39;T array</div>
+<div popover class="fsdocs-tip" id="fs37">union case JsonValue.Record: properties: (string * JsonValue) array -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON object, represented as an array of name-value pairs
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs38">val toXml: x: JsonValue -&gt; XObject seq<br /><em>&#160;Creates an XML representation of a JSON value (works<br />&#160;only when the top-level value is an object or an array)</em></div>
+<div popover class="fsdocs-tip" id="fs39">val x: JsonValue</div>
+<div popover class="fsdocs-tip" id="fs40">val attr: name: string -&gt; value: &#39;a -&gt; XObject</div>
+<div popover class="fsdocs-tip" id="fs41">val name: string</div>
+<div popover class="fsdocs-tip" id="fs42">val value: &#39;a</div>
+<div popover class="fsdocs-tip" id="fs43">Multiple items<br />type XAttribute =
+  inherit XObject
+  new: other: XAttribute -&gt; unit + 1 overload
+  member Remove: unit -&gt; unit
+  member SetValue: value: obj -&gt; unit
+  member ToString: unit -&gt; string
+  static member op_Explicit: attribute: XAttribute -&gt; bool + 24 overloads
+  member IsNamespaceDeclaration: bool
+  member Name: XName
+  member NextAttribute: XAttribute
+  member NodeType: XmlNodeType
+  ...<br /><em>&lt;summary&gt;Represents an XML attribute.&lt;/summary&gt;</em><br /><br />--------------------<br />XAttribute(other: XAttribute) : XAttribute<br />XAttribute(name: XName, value: obj) : XAttribute</div>
+<div popover class="fsdocs-tip" id="fs44">type XName =
+  interface IEquatable&lt;XName&gt;
+  interface ISerializable
+  member Equals: obj: obj -&gt; bool
+  member GetHashCode: unit -&gt; int
+  member ToString: unit -&gt; string
+  static member (&lt;&gt;) : left: XName * right: XName -&gt; bool
+  static member (=) : left: XName * right: XName -&gt; bool
+  static member Get: expandedName: string -&gt; XName + 1 overload
+  static member op_Implicit: expandedName: string -&gt; XName
+  member LocalName: string
+  ...<br /><em>&lt;summary&gt;Represents a name of an XML element or attribute.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs45">XName.Get(expandedName: string) : XName<br />XName.Get(localName: string, namespaceName: string) : XName</div>
+<div popover class="fsdocs-tip" id="fs46">type XObject =
+  interface IXmlLineInfo
+  member AddAnnotation: annotation: obj -&gt; unit
+  member Annotation: ``type`` : Type -&gt; obj + 1 overload
+  member Annotations: ``type`` : Type -&gt; obj seq + 1 overload
+  member RemoveAnnotations: ``type`` : Type -&gt; unit + 1 overload
+  member BaseUri: string
+  member Document: XDocument
+  member NodeType: XmlNodeType
+  member Parent: XElement
+  member Changed: EventHandler&lt;XObjectChangeEventArgs&gt;
+  ...<br /><em>&lt;summary&gt;Represents a node or an attribute in an XML tree.&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs47">val elem: name: string -&gt; value: obj -&gt; XObject</div>
+<div popover class="fsdocs-tip" id="fs48">val value: obj</div>
+<div popover class="fsdocs-tip" id="fs49">type obj = System.Object</div>
+<div popover class="fsdocs-tip" id="fs50">val toXml: (JsonValue -&gt; obj)</div>
+<div popover class="fsdocs-tip" id="fs51">union case JsonValue.Null: JsonValue<br /><em>&lt;summary&gt;
+ A JSON null value
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs52">union case JsonValue.Boolean: bool -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON boolean value
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs53">val b: bool</div>
+<div popover class="fsdocs-tip" id="fs54">union case JsonValue.Number: decimal -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON number stored as a decimal (used for numbers that fit in the decimal range)
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs55">val number: decimal</div>
+<div popover class="fsdocs-tip" id="fs56">union case JsonValue.Float: float -&gt; JsonValue<br /><em>&lt;summary&gt;
+ A JSON number stored as a float (used for large numbers that do not fit in decimal)
+&lt;/summary&gt;</em></div>
+<div popover class="fsdocs-tip" id="fs57">val number: float</div>
+<div popover class="fsdocs-tip" id="fs58">val s: string</div>
+<div popover class="fsdocs-tip" id="fs59">val properties: (string * JsonValue) array</div>
+<div popover class="fsdocs-tip" id="fs60">val map: mapping: (&#39;T -&gt; &#39;U) -&gt; array: &#39;T array -&gt; &#39;U array</div>
+<div popover class="fsdocs-tip" id="fs61">val value: JsonValue</div>
+<div popover class="fsdocs-tip" id="fs62">val n: decimal</div>
+<div popover class="fsdocs-tip" id="fs63">val n: float</div>
+<div popover class="fsdocs-tip" id="fs64">val elements: JsonValue array</div>
+<div popover class="fsdocs-tip" id="fs65">val item: JsonValue</div>
+<div popover class="fsdocs-tip" id="fs66">Multiple items<br />val seq: sequence: &#39;T seq -&gt; &#39;T seq<br /><br />--------------------<br />type &#39;T seq = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;</div>
+
+    </div>
+</main>
+<aside id="fsdocs-page-menu">
+    <p id="on-this-page">On this page</p>
+    <ul>
+  <li class="level-1">
+    <a href="#Converting-between-JSON-and-XML">
+      Converting between JSON and XML
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Initialization">
+      Initialization
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Converting-XML-to-JSON">
+      Converting XML to JSON
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Converting-JSON-to-XML">
+      Converting JSON to XML
+    </a>
+  </li>
+  <li class="level-2">
+    <a href="#Related-articles">
+      Related articles
+    </a>
+  </li>
+</ul>
+</aside>
+<dialog>
+    <input type="search" placeholder="Search docs" />
+    <div class="results">
+        <ul></ul>
+        <p class="empty">Type something to start searching.</p>
+    </div>
+</dialog>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-tips.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-details-toggle.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-theme.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-search.js"></script>
+<script type="module" src="https://fsprojects.github.io/FSharp.Data/content/fsdocs-copy-button.js"></script>
+
+</body>
+</html>
