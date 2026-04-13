@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.8 - Apr 13 2026
+
+- Performance: JSON parser avoids one `Substring` allocation per `\uXXXX` escape by directly indexing into the source string; also uses span-based `Decimal.TryParse`/`Double.TryParse` for number tokens on .NET 8 to avoid a `Substring` allocation per number
+
 ## 8.1.7 - Apr 7 2026
 
 - Performance: HTML parser avoids `ToCharArray()` allocations in several code paths: `EmitToAttributeValue` now iterates the substituted string directly; `Cons(char[])` and `Cons(string)` use `StringBuilder.Append` directly; `Pop(count)` uses `Array.init` instead of creating an integer range array; CDATA opening marker no longer creates a temporary `char[]`.
