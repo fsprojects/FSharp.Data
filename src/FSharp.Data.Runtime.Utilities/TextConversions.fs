@@ -104,11 +104,14 @@ type TextConversions private () =
             // No adorners found, return original string to avoid allocation
             value
         else
-            // Adorners found, perform filtering
-            String(
-                value.ToCharArray()
-                |> Array.filter (not << TextConversions.DefaultRemovableAdornerCharacters.Contains)
-            )
+            // Adorners found, perform filtering via StringBuilder to avoid ToCharArray allocation
+            let sb = System.Text.StringBuilder(value.Length)
+
+            for c in value do
+                if not (TextConversions.DefaultRemovableAdornerCharacters.Contains(c)) then
+                    sb.Append(c) |> ignore
+
+            sb.ToString()
 
     /// Turns empty or null string value into None, otherwise returns Some
     static member AsString str =

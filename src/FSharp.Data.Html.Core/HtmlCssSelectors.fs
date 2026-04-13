@@ -91,20 +91,18 @@ module internal HtmlCssSelectors =
             readStringIntoSb (System.Text.StringBuilder(initial)) chars
 
         let (|StartsWith|_|) (s: string) (items: char list) =
-            let candidates = s.ToCharArray()
-
-            if items.Length < candidates.Length then
+            if items.Length < s.Length then
                 None
             else
-                let start = items |> Seq.take (candidates.Length) |> Seq.toList
+                let start = items |> Seq.take s.Length
 
-                if (Seq.compareWith (fun a b -> (int a) - (int b)) start candidates) = 0 then
+                if (Seq.compareWith (fun a b -> (int a) - (int b)) start s) = 0 then
                     Some(items |> Seq.skip s.Length |> Seq.toList)
                 else
                     None
 
         let (|TokenStr|_|) (s: string) x =
-            let chars = s.ToCharArray() |> Array.toList
+            let chars = List.ofSeq s
 
             let rec equal x s =
                 match x, s with
@@ -216,7 +214,7 @@ module internal HtmlCssSelectors =
 
         member public x.Tokenize(pCssSelector: string) =
             cssSelector <- pCssSelector
-            source <- cssSelector.ToCharArray() |> Array.toList
+            source <- List.ofSeq cssSelector
             charCount <- source.Length
             tokenize ()
 
