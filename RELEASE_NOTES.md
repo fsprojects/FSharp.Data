@@ -3,6 +3,7 @@
 ## 8.1.8 - Apr 13 2026
 
 - Code: `NameUtils.niceCamelName` now short-circuits with zero allocations when the result already starts with a lower-case letter; the general case now uses `StringBuilder.Append(string, int, int)` to avoid creating an intermediate `Substring`. `capitalizeFirstLetter` similarly short-circuits when the first letter is already upper-case. Also fixes `Pluralizer` to avoid `Substring(0,1)` in its capitalize path.
+- Performance: JSON parser avoids one `Substring` allocation per `\uXXXX` escape by directly indexing into the source string; also uses span-based `Decimal.TryParse`/`Double.TryParse` for number tokens on .NET 8 to avoid a `Substring` allocation per number
 
 ## 8.1.7 - Apr 7 2026
 
