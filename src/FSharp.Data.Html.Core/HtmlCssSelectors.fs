@@ -59,7 +59,7 @@ module internal HtmlCssSelectors =
 
             (isHexadecimalDigit || c = '\n' || c = '\f' || c = '\r') |> not
 
-        let rec readString acc =
+        let rec readStringIntoSb (acc: System.Text.StringBuilder) =
             function
             | c :: t when
                 Char.IsLetterOrDigit(c)
@@ -68,19 +68,27 @@ module internal HtmlCssSelectors =
                 || c.Equals('+')
                 || c.Equals('/')
                 ->
-                readString (acc + (c.ToString())) t
+                acc.Append(c) |> ignore
+                readStringIntoSb acc t
             | '\'' :: t ->
                 if inQuotes then
                     inQuotes <- false
-                    acc, t
+                    acc.ToString(), t
                 else
                     inQuotes <- true
-                    readString acc t
-            | '\\' :: c :: t when isCharacterEscapable c -> readString (acc + (c.ToString())) t
-            | c :: t when inQuotes -> readString (acc + (c.ToString())) t
-            | c :: t -> acc, c :: t
-            | [] -> acc, []
+                    readStringIntoSb acc t
+            | '\\' :: c :: t when isCharacterEscapable c ->
+                acc.Append(c) |> ignore
+                readStringIntoSb acc t
+            | c :: t when inQuotes ->
+                acc.Append(c) |> ignore
+                readStringIntoSb acc t
+            | c :: t -> acc.ToString(), c :: t
+            | [] -> acc.ToString(), []
             | c -> failwithf "Invalid css selector syntax at: %s" (new String(Array.ofList c))
+
+        let readString (initial: string) chars =
+            readStringIntoSb (System.Text.StringBuilder(initial)) chars
 
         let (|StartsWith|_|) (s: string) (items: char list) =
             let candidates = s.ToCharArray()
