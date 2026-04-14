@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.9 - Apr 14 2026
+
+- Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
 ## 8.1.8 - Apr 13 2026
 
 - Performance: JSON parser avoids one `Substring` allocation per `\uXXXX` escape by directly indexing into the source string; also uses span-based `Decimal.TryParse`/`Double.TryParse` for number tokens on .NET 8 to avoid a `Substring` allocation per number
