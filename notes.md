@@ -1,48 +1,25 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-12 (run 24298725681)
+## Last run: 2026-04-14 (run 24381075327)
 
-### SYSTEMIC ISSUE: MCP servers blocked by policy
+### Open PRs
+- #1717: HTTP encoding ISO-8859-1 to UTF-8 — **SUPERSEDED** by new rebase branch (should be closed)
+- #1739: improve: fast-path allocation checks in niceCamelName, capitalizeFirstLetter, Pluralizer (open since 2026-04-13)
+- branch `repo-assist/fix-issue-1251-http-response-default-utf8-rebase-2026-04-14`: HTTP fix rebased onto 8.1.9
+- branch `repo-assist/eng-update-tpsdk-2026-04-14`: TPSDK update to 75ac6119
 
-Root cause: Copilot CLI 1.0.24 performs an MCP registry policy check at
-api.github.com/copilot/mcp_registry before loading MCP servers.
-This request fails with 401 Bad credentials because no GitHub token
-is configured for this endpoint. As a result, ALL non-default MCP servers
-(github, safeoutputs) are blocked.
-
-This has caused runs 24226524583, 24274612549, and 24298725681 to fail
-with "No Safe Outputs Generated".
-
-Fix needed: Provide a GitHub token with copilot write scope to the
-copilot CLI environment, OR configure the workflow to allow these MCPs
-without policy check (if supported).
-
-### Prepared but unpushed perf work
-Branch: repo-assist/perf-css-readstring-json-asspan-2026-04-12
-Cannot push without safeoutputs tools. Changes:
-- HtmlCssSelectors.fs: readString now uses StringBuilder (O(n2) to O(n) allocations)
-- JsonValue.fs: JsonStringEncodeTo uses AsSpan on .NET 6+ (avoids Substring allocs)
-Build and tests pass (format ok, all tests green).
-
-### Open PRs (all CI green)
-- #1717: HTTP encoding ISO-8859-1 to UTF-8 (endorsed by dsyme; all CI pass; ready for merge)
-- #1734: test: JsonValue.ParseMultiple, Load(Stream), Load(TextReader), WriteTo
-- #1735: perf: avoid ToCharArray allocations in TextConversions, HtmlParser, etc.
+### Recently merged
+- #1738: perf: JSON unicode parsenum (merged by @dsyme on 2026-04-13)
+- #1737: perf: CSS readString + JsonStringEncodeTo AsSpan (merged 2026-04-12)
+- #1735: perf: avoid ToCharArray (merged 2026-04-09)
+- #1734: test: JsonValue.ParseMultiple etc. (merged 2026-04-08)
 
 ### Open Issues
 - #1671: Consider System.Text.Json dependency (no new human activity)
-- #1726: April 2026 Monthly Activity Summary (needs update when MCP fixed)
-- #1736: Repo Assist failed (documents MCP failures)
+- #1726: April 2026 Monthly Activity Summary (updated this run)
 
-### Recently merged (by dsyme)
-- #1733: perf: avoid ToCharArray allocations in HtmlParser (merged 2026-04-07)
-- #1732: ci: add Fantomas format check job to PR workflow (merged 2026-04-05)
-- #1731: test: trimHtml, capitalizeFirstLetter, uniqueGenerator tests (merged 2026-04-06)
-- #1729: perf: nicePascalName StringBuilder rewrite (merged 2026-04-05)
-- #1728: perf: reuse StringBuilder+ResizeArray in CSV parser (merged 2026-04-04)
-
-### Backlog (when MCP is fixed)
-1. Push branch repo-assist/perf-css-readstring-json-asspan-2026-04-12 and create PR
-2. Update monthly summary #1726 with this run activity
-3. Add comment to issue #1736 noting root cause diagnosis
-4. Monitor PR #1717 for merge
+### Backlog
+1. Monitor new HTTP fix PR for merge (supersedes #1717)
+2. Monitor TPSDK update PR for merge
+3. Close PR #1717 once new PR is merged (ask maintainer)
+4. Continue monitoring issue #1671

@@ -1,12 +1,12 @@
 {
-  "v": "2026-04-13",
-  "r": "24326004866",
-  "open_prs": [1717],
+  "v": "2026-04-14",
+  "r": "24381075327",
+  "open_prs": [1739],
   "pending_branches": [
-    "repo-assist/perf-json-unicode-parsenum-2026-04-13",
-    "repo-assist/improve-nameutils-alloc-fastpath-2026-04-13"
+    "repo-assist/fix-issue-1251-http-response-default-utf8-rebase-2026-04-14",
+    "repo-assist/eng-update-tpsdk-2026-04-14"
   ],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-13: Created 2 new PRs. (1) perf-json-unicode-parsenum: inline \\u hex parsing (no Substring per escape), AsSpan for parseNum on net8.0. (2) improve-nameutils-alloc-fastpath: fast-path short-circuit in niceCamelName, capitalizeFirstLetter, Pluralizer. PRs #1734 (test) and #1735 (perf ToCharArray) both merged by @dsyme on 2026-04-13. PR #1717 (HTTP UTF-8 encoding) still open."
+  "notes": "2026-04-14: Created 2 new PRs. (1) HTTP fix rebase (closes #1251): cherry-picked onto main, version 8.1.9, supersedes #1717 (which should be closed). (2) TPSDK update: paket.lock updated to 75ac6119 (bug fix for Logger + O(1) lookups); also corrected stale AssemblyInfo (8.1.0.0 → 8.1.8.0). PR #1738 was merged before this run (JSON perf). PR #1739 still open (nameutils alloc fastpath)."
 }
