@@ -51,6 +51,35 @@ jobs:
           user: dsyme
     - name: Publish NuGets (if this version not published before)
       run: dotnet nuget push bin\FSharp.Data.*.nupkg -s https://www.nuget.org/api/v2/package -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
+    - name: Create GitHub release (if new version)
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: pwsh
+      run: |
+        $version = (Select-String -Path RELEASE_NOTES.md -Pattern '^## (\d+\.\d+\.\d+)' |
+            Select-Object -First 1).Matches.Groups[1].Value
+        $tagName = "v$version"
+        Write-Host "Checking if release $tagName exists..."
+        gh release view $tagName 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "Creating GitHub release $tagName"
+          $lines = Get-Content RELEASE_NOTES.md
+          $notes = [System.Collections.Generic.List[string]]::new()
+          $inSection = $false
+          foreach ($line in $lines) {
+            if ($line -match "^## $([regex]::Escape($version))") { $inSection = $true; continue }
+            if ($inSection -and $line -match '^## ') { break }
+            if ($inSection) { $notes.Add($line) }
+          }
+          $notesText = ($notes | Where-Object { $_.Trim() -ne "" }) -join "`n"
+          $notesFile = [System.IO.Path]::Combine($env:TEMP, "release-notes.txt")
+          Set-Content -Path $notesFile -Value $notesText -NoNewline
+          $packages = Get-ChildItem bin\FSharp.Data.*.nupkg | Select-Object -ExpandProperty FullName
+          $ghArgs = @($tagName, '--title', $tagName, '--notes-file', $notesFile) + $packages
+          gh release create @ghArgs
+        } else {
+          Write-Host "Release $tagName already exists, skipping"
+        }
 
 # Trusted publishing uses NuGet OIDC
 # See: https://learn.microsoft.com/nuget/nuget-org/publish-a-package#trusted-publishing
