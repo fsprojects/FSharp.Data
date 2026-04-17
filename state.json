@@ -1,8 +1,8 @@
 {
-  "v": "2026-04-16",
-  "r": "24492371399",
-  "open_prs": [1717, 1739, 1740, 1741, 1743, 1744, 1745],
+  "v": "2026-04-17",
+  "r": "24547876999",
+  "open_prs": [1717, 1739, 1740, 1741, 1743, 1744, 1745, 1746],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-16: Created PR #1745 — fix: dispose SHA1 instance in Caching.hashString; use SHA1.HashData on .NET 5+ (resource leak fix, 2920 tests pass). PR #1717 superseded by #1740 (should be closed). PR #1743 is a Dependabot bump for actions/upload-artifact 7.0.0→7.0.1 (pending review)."
+  "notes": "2026-04-17: Task 9 — Created PR #1746 with 37 StructuralInference unit tests (typeTag, subtypeInfered, inferCollectionType, getInferedTypeFromString; 2957 tests pass). Task 4 — CI workflows now use dotnet-version-file: global.json instead of hardcoded 10.0.201 (also in PR #1746). #1717 still superseded by #1740."
 }

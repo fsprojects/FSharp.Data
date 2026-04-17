@@ -1,6 +1,6 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-16 (run 24492371399)
+## Last run: 2026-04-17 (run 24547876999)
 
 ### Open PRs
 - #1717: HTTP encoding ISO-8859-1 to UTF-8 — **SUPERSEDED** by #1740 (should be closed)
@@ -10,6 +10,7 @@
 - #1743: Dependabot — Bump actions/upload-artifact 7.0.0→7.0.1
 - #1744: ci: automatically create GitHub releases on push to main (addresses #1742)
 - #1745: fix: dispose SHA1 instance in Caching.hashString; use SHA1.HashData on .NET 5+
+- #1746: test+eng: 37 StructuralInference unit tests; CI reads SDK version from global.json
 
 ### Open Issues
 - #1671: Consider System.Text.Json dependency (no new human activity)
