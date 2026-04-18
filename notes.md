@@ -1,29 +1,27 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-17 (run 24547876999)
+## Last run: 2026-04-18 (run 24596880377)
 
 ### Open PRs
-- #1717: HTTP encoding ISO-8859-1 to UTF-8 — **SUPERSEDED** by #1740 (should be closed)
-- #1739: improve: fast-path allocation checks in niceCamelName, capitalizeFirstLetter, Pluralizer
-- #1740: fix: HTTP response default encoding ISO-8859-1 → UTF-8 (Closes #1251)
-- #1741: eng: update FSharp.TypeProviders.SDK to 75ac6119
-- #1743: Dependabot — Bump actions/upload-artifact 7.0.0→7.0.1
-- #1744: ci: automatically create GitHub releases on push to main (addresses #1742)
-- #1745: fix: dispose SHA1 instance in Caching.hashString; use SHA1.HashData on .NET 5+
-- #1746: test+eng: 37 StructuralInference unit tests; CI reads SDK version from global.json
+- #1717: HTTP encoding ISO-8859-1 to UTF-8 — STALE (base from April 1; #1740 was closed without merge 2026-04-17); consider closing
+- #1750: ci: automatically create GitHub releases on push to main (addresses #1742); opened by @dsyme from Repo Assist branch — awaiting review
+- #aw_rel819: release: bump version to 8.1.9 — SHA1 disposal, WorldBank retry, TypeProviders.SDK update — created this run
 
 ### Open Issues
-- #1671: Consider System.Text.Json dependency (no new human activity)
+- #1671: Consider System.Text.Json dependency (no new human activity; commented Feb 2026)
 - #1726: April 2026 Monthly Activity Summary (updated this run)
-- #1742: Automate the creation of GitHub releases (commented last run, PR #1744 pending)
+- #1742: Automate GitHub releases — active discussion; @dsyme questioning whether needed; Repo Assist commented this run
 
-### Recently merged
-- #1738: perf: JSON unicode parsenum (merged by @dsyme on 2026-04-13)
-- #1737: perf: CSS readString + JsonStringEncodeTo AsSpan (merged 2026-04-12)
-- #1735: perf: avoid ToCharArray (merged 2026-04-09)
-- #1734: test: JsonValue.ParseMultiple etc. (merged 2026-04-08)
+### Recently merged (since 8.1.8)
+- #1749: fix: WorldBank retry delay (merged 2026-04-17 by @dsyme)
+- #1745: fix: SHA1 disposal in Caching.hashString (merged 2026-04-17 by @dsyme)
+- #1747: test: 37 StructuralInference tests + CI SDK version from global.json (merged 2026-04-17 by @dsyme)
+- #1743: Dependabot: Bump actions/upload-artifact 7.0.0→7.0.1 (merged 2026-04-17 by @dsyme)
+- #1741: eng: update FSharp.TypeProviders.SDK to 75ac6119 (merged 2026-04-17 by @dsyme)
+- #1739: improve: fast-path in niceCamelName/capitalizeFirstLetter/Pluralizer (merged 2026-04-17 by @dsyme)
 
 ### Backlog
-1. Monitor all open PRs for merge
-2. Close PR #1717 once #1740 is merged (ask maintainer)
-3. Continue monitoring issue #1671 for new activity
+1. Monitor release PR (#aw_rel819) for merge
+2. Monitor GitHub releases PR (#1750) - may be declined given @dsyme's questions
+3. Consider closing #1717 (superseded by closed #1740; HTTP encoding fix on hold)
+4. Continue monitoring #1671 for human activity

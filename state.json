@@ -1,8 +1,8 @@
 {
-  "v": "2026-04-17",
-  "r": "24547876999",
-  "open_prs": [1717, 1739, 1740, 1741, 1743, 1744, 1745, 1746],
+  "v": "2026-04-18",
+  "r": "24596880377",
+  "open_prs": [1717, 1750],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-17: Task 9 — Created PR #1746 with 37 StructuralInference unit tests (typeTag, subtypeInfered, inferCollectionType, getInferedTypeFromString; 2957 tests pass). Task 4 — CI workflows now use dotnet-version-file: global.json instead of hardcoded 10.0.201 (also in PR #1746). #1717 still superseded by #1740."
+  "notes": "2026-04-18: Task 10 — Created release PR (8.1.9) with SHA1 disposal fix, WorldBank retry delay, TypeProviders.SDK update (2957 tests pass). Task 2 — Commented on #1742 with context on GitHub releases vs NuGet. Many PRs merged by @dsyme on 2026-04-17: #1739, #1741, #1743, #1745, #1747, #1749. HTTP encoding fix still pending in stale PR #1717."
 }
