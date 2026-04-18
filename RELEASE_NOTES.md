@@ -1,5 +1,11 @@
 # Release Notes
 
+## 8.1.9 - Apr 18 2026
+
+- Fix: `Caching.hashString` now disposes the `SHA1` instance after use; on .NET 5+ uses `SHA1.HashData` (static, pool-backed) to avoid allocation entirely (PR #1745)
+- Fix: WorldBank type provider now waits 2 seconds between HTTP retries, making it resilient to transient 502 errors from the WorldBank API (PR #1749)
+- Eng: update `FSharp.TypeProviders.SDK` to latest master (`75ac6119`), pulling in a bug fix for the SDK logger and O(1) field/event/property lookups (PR #1741)
+
 ## 8.1.8 - Apr 13 2026
 
 - Code: `NameUtils.niceCamelName` now short-circuits with zero allocations when the result already starts with a lower-case letter; the general case now uses `StringBuilder.Append(string, int, int)` to avoid creating an intermediate `Substring`. `capitalizeFirstLetter` similarly short-circuits when the first letter is already upper-case. Also fixes `Pluralizer` to avoid `Substring(0,1)` in its capitalize path.
