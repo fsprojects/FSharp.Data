@@ -1,8 +1,8 @@
 {
-  "v": "2026-04-18",
-  "r": "24596880377",
-  "open_prs": [1717, 1750],
+  "v": "2026-04-20",
+  "r": "24648782542",
+  "open_prs": [1717],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-18: Task 10 — Created release PR (8.1.9) with SHA1 disposal fix, WorldBank retry delay, TypeProviders.SDK update (2957 tests pass). Task 2 — Commented on #1742 with context on GitHub releases vs NuGet. Many PRs merged by @dsyme on 2026-04-17: #1739, #1741, #1743, #1745, #1747, #1749. HTTP encoding fix still pending in stale PR #1717."
+  "notes": "2026-04-20: Task 8 — Created HtmlCharRefs perf PR (branch repo-assist/perf-htmlcharrefs-dict-2026-04-20); replaces Map with Dictionary for O(1) lookups; 2957 tests pass. PRs #1750, #1751 merged by @dsyme on 2026-04-20. Issue #1742 closed (not planned). PR #1717 (HTTP encoding fix) still open."
 }
