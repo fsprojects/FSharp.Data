@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.10 - Apr 20 2026
+
+- Performance: `HtmlCharRefs` entity lookup now uses a `Dictionary<string, string>` instead of an F# `Map`, giving O(1) lookups instead of O(log n) for ~2230 HTML named-entity entries. Also avoids a repeated `char[]` allocation in the `TrimEnd` call inside the active pattern.
+
 ## 8.1.9 - Apr 18 2026
 
 - Fix: `Caching.hashString` now disposes the `SHA1` instance after use; on .NET 5+ uses `SHA1.HashData` (static, pool-backed) to avoid allocation entirely (PR #1745)
