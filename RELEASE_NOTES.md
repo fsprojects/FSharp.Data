@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.11 - Apr 21 2026
+
+- Fix: `HttpEncodings.ResponseDefaultEncoding` now defaults to UTF-8 instead of ISO-8859-1, matching `System.Net.Http.HttpClient` behaviour. RFC 2616 specified ISO-8859-1 but modern servers and browsers default to UTF-8; the old default caused garbled output when fetching UTF-8 content without an explicit `charset` (Closes #1251)
+
 ## 8.1.10 - Apr 20 2026
 
 - Performance: `HtmlCharRefs` entity lookup now uses a `Dictionary<string, string>` instead of an F# `Map`, giving O(1) lookups instead of O(log n) for ~2230 HTML named-entity entries. Also avoids a repeated `char[]` allocation in the `TrimEnd` call inside the active pattern.
