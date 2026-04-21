@@ -1,8 +1,8 @@
 {
-  "v": "2026-04-20",
-  "r": "24648782542",
+  "v": "2026-04-21",
+  "r": "24704231494",
   "open_prs": [1717],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-20: Task 8 — Created HtmlCharRefs perf PR (branch repo-assist/perf-htmlcharrefs-dict-2026-04-20); replaces Map with Dictionary for O(1) lookups; 2957 tests pass. PRs #1750, #1751 merged by @dsyme on 2026-04-20. Issue #1742 closed (not planned). PR #1717 (HTTP encoding fix) still open."
+  "notes": "2026-04-21: Task 6 — Created clean HTTP encoding fix branch repo-assist/fix-issue-1251-http-utf8-2026-04-21 (supersedes #1717); PR pending creation; 2957+489 tests pass. #1717 should be closed. Issue #1752 (protected files) can be closed. Issue #1671 (System.Text.Json) no new human activity, hold."
 }
