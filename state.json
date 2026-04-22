@@ -1,8 +1,8 @@
 {
-  "v": "2026-04-21",
-  "r": "24704231494",
-  "open_prs": [1717],
+  "v": "2026-04-22",
+  "r": "24760332693",
+  "open_prs": [1717, 1754, 1755],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-21: Task 6 — Created clean HTTP encoding fix branch repo-assist/fix-issue-1251-http-utf8-2026-04-21 (supersedes #1717); PR pending creation; 2957+489 tests pass. #1717 should be closed. Issue #1752 (protected files) can be closed. Issue #1671 (System.Text.Json) no new human activity, hold."
+  "notes": "2026-04-22: Task 5 — Created PR (branch: repo-assist/improve-htmlparser-dead-code-2026-04-22): HtmlParser EmitTag dead code removal and redundant ToLowerInvariant; 783 tests pass. Task 4 — noted Dependabot PR #1755. PR #1717 should be closed (superseded by #1754). Issue #1752 can be closed."
 }
