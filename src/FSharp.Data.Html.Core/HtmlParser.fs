@@ -177,12 +177,16 @@ module internal HtmlParser =
             x.Tokens <- result :: x.Tokens
 
         member x.IsFormattedTag =
-            match x.CurrentTagName().ToLowerInvariant() with
+            // Tag names are already lowercased at read time (ConsTag applies ToLowerInvariant),
+            // so no need to call ToLowerInvariant here.
+            match x.CurrentTagName() with
             | "pre" -> true
             | _ -> false
 
         member x.IsScriptTag =
-            match x.CurrentTagName().ToLowerInvariant() with
+            // Tag names are already lowercased at read time (ConsTag applies ToLowerInvariant),
+            // so no need to call ToLowerInvariant here.
+            match x.CurrentTagName() with
             | "script"
             | "style" -> true
             | _ -> false
@@ -200,15 +204,15 @@ module internal HtmlParser =
                 else
                     Tag(false, name, x.GetAttributes())
 
-            // pre is the only default formatted tag, nested pres are not
-            // allowed in the spec.
-            if x.IsFormattedTag then
+            // "pre" is the only default formatted tag; nested pre elements are not
+            // allowed in the spec.  Use `name` directly to avoid re-computing CurrentTagName().
+            // The else branch (x.HasFormattedParent <- x.HasFormattedParent || false) was a
+            // no-op and has been removed.
+            if name = "pre" then
                 x.HasFormattedParent <- not isEnd
-            else
-                x.HasFormattedParent <- x.HasFormattedParent || x.IsFormattedTag
 
             x.InsertionMode <-
-                if x.IsScriptTag && (not isEnd) then
+                if (name = "script" || name = "style") && (not isEnd) then
                     ScriptMode
                 else
                     DefaultMode
