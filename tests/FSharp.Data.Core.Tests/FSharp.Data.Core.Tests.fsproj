@@ -44,6 +44,7 @@
     <Compile Include="HtmlAttributeExtensions.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
     <Compile Include="HtmlTableCell.fs" />
+    <Compile Include="HtmlInference.fs" />
     <Compile Include="StructuralInference.fs" />
     <Compile Include="StructuralTypes.fs" />
     <Compile Include="BaseTypesHtmlDocument.fs" />
