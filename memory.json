@@ -1,1 +1,9 @@
-{"v":"2026-04-15","r":"24436539596","open_prs":[1717,1739,1740,1741,1744],"summary_issue_month":"2026-04","mcp_blocked":false,"notes":"PR #1717 superseded by #1740; issue #1742 commented; labelled #1742 enhancement; PR #1744 created for GitHub release automation"}
+{
+  "v": "2026-04-24",
+  "r": "24872553055",
+  "open_prs": [1717, 1754],
+  "pending_branches": ["repo-assist/fix-issue-1251-http-utf8-rebase-2026-04-24"],
+  "summary_issue_month": "2026-04",
+  "mcp_blocked": false,
+  "notes": "PR #1717 and #1754 superseded by new branch repo-assist/fix-issue-1251-http-utf8-rebase-2026-04-24 (8.1.12 rebase, Closes #1251); issue #1752 can be closed; #1671 no new human activity"
+}
