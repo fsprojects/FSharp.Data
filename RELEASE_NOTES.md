@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.12 - Apr 24 2026
+
+- Fix: `HttpEncodings.ResponseDefaultEncoding` now defaults to UTF-8 instead of ISO-8859-1, matching `System.Net.Http.HttpClient` behaviour. RFC 2616 specified ISO-8859-1 but modern servers and browsers default to UTF-8; the old default caused garbled output when fetching UTF-8 content without an explicit `charset` (Closes #1251)
+
 ## 8.1.11 - Apr 22 2026
 
 - Code: `HtmlParser` `EmitTag` removes dead code in the `else` branch (the expression `x.HasFormattedParent || x.IsFormattedTag` was always equivalent to `x.HasFormattedParent` since `x.IsFormattedTag` is always `false` in that branch). Uses `name` directly to avoid re-computing `CurrentTagName()` for formatted/script tag checks. Also removes redundant `.ToLowerInvariant()` calls in `IsFormattedTag` and `IsScriptTag` since tag names are already lowercased at read time.
