@@ -38,6 +38,7 @@
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvFile.fs" />
     <Compile Include="CsvParserProperties.fs" />
+    <Compile Include="StringExtensions.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
