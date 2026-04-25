@@ -1,9 +1,13 @@
 {
-  "v": "2026-04-23",
-  "r": "24817020698",
-  "open_prs": [1717, 1754, 1755, 1756],
-  "pending_prs": ["repo-assist/test-htmlinference-2026-04-23"],
+  "v": "2026-04-25",
+  "r": "24922569845",
+  "open_prs": [1717, 1754, 1758],
+  "pending_branches": [
+    "repo-assist/eng-nuget-login-v1.2.0-2026-04-25",
+    "repo-assist/test-stringextensions-2026-04-25"
+  ],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
-  "notes": "2026-04-23: Task 6 — All Repo Assist PRs (#1754, #1756) passing CI, no changes needed. Task 9 (sub) — Created PR on branch repo-assist/test-htmlinference-2026-04-23: 23 unit tests for HtmlInference.inferListType and inferHeaders; 2980 tests pass. PR #1717 should be closed (superseded by #1754). Issue #1752 can be closed."
+  "mcp_blocked": false,
+  "notes": "2026-04-25: Task 4 — NuGet/login v1.1.0→v1.2.0 PR created; Task 3 alt — 48 StringExtensions tests PR created (48 pass); pre-existing infra failure: OpenTelemetry.Api 1.15.0 no patch blocks full local build; PRs #1754 and #1717 should be closed (superseded by #1758); issue #1752 can be closed"
 }
