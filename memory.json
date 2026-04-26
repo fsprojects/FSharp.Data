@@ -1,9 +1,13 @@
 {
-  "v": "2026-04-24",
-  "r": "24872553055",
-  "open_prs": [1717, 1754],
-  "pending_branches": ["repo-assist/fix-issue-1251-http-utf8-rebase-2026-04-24"],
+  "v": "2026-04-26",
+  "r": "24948435287",
+  "open_prs": [1717, 1754, 1758, 1759],
+  "pending_branches": [
+    "repo-assist/eng-update-githubactionstestlogger-2026-04-26",
+    "repo-assist/fix-jsonschema-unused-resolution-folder-2026-04-26",
+    "repo-assist/eng-nuget-login-v1.2.0-2026-04-25"
+  ],
   "summary_issue_month": "2026-04",
   "mcp_blocked": false,
-  "notes": "PR #1717 and #1754 superseded by new branch repo-assist/fix-issue-1251-http-utf8-rebase-2026-04-24 (8.1.12 rebase, Closes #1251); issue #1752 can be closed; #1671 no new human activity"
+  "notes": "PR #1717 and #1754 superseded by #1758; issue #1752 can be closed; #1671 no new human activity. OpenTelemetry.Api vulnerability FIXED in branch eng-update-githubactionstestlogger-2026-04-26 (OpenTelemetry.Api 1.15.0→1.15.3, GitHubActionsTestLogger 3.0.1→3.0.3)."
 }
