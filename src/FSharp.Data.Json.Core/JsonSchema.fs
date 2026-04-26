@@ -231,8 +231,10 @@ module JsonSchema =
     let parseSchemaFromString (schemaString: string) =
         JsonValue.Parse(schemaString) |> parseSchema
 
-    /// Parse a JSON Schema from a TextReader
-    let parseSchemaFromTextReader (resolutionFolder: string) (reader: System.IO.TextReader) =
+    /// Parse a JSON Schema from a TextReader.
+    /// The <c>resolutionFolder</c> parameter is reserved for future <c>$ref</c> resolution support
+    /// and is not currently used; JSON Schema <c>$ref</c> resolution is not yet implemented.
+    let parseSchemaFromTextReader (_resolutionFolder: string) (reader: System.IO.TextReader) =
         let schemaString = reader.ReadToEnd()
         parseSchemaFromString schemaString
 
