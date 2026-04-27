@@ -1,13 +1,12 @@
 {
-  "v": "2026-04-26",
-  "r": "24948435287",
-  "open_prs": [1717, 1754, 1758, 1759],
+  "v": "2026-04-27",
+  "r": "24976977785",
+  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763],
   "pending_branches": [
-    "repo-assist/eng-update-githubactionstestlogger-2026-04-26",
-    "repo-assist/fix-jsonschema-unused-resolution-folder-2026-04-26",
-    "repo-assist/eng-nuget-login-v1.2.0-2026-04-25"
+    "repo-assist/test-xmlruntime-2026-04-27-clean",
+    "repo-assist/eng-multitarget-2026-04-27-clean"
   ],
   "summary_issue_month": "2026-04",
   "mcp_blocked": false,
-  "notes": "PR #1717 and #1754 superseded by #1758; issue #1752 can be closed; #1671 no new human activity. OpenTelemetry.Api vulnerability FIXED in branch eng-update-githubactionstestlogger-2026-04-26 (OpenTelemetry.Api 1.15.0→1.15.3, GitHubActionsTestLogger 3.0.1→3.0.3)."
+  "notes": "PR #1717 and #1754 superseded by #1758. Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files. PR #1762: OpenTelemetry.Api fix. PR #1763: FS1182 fix. New this run: test-xmlruntime branch (39 XmlRuntime tests, 45 total pass), eng-multitarget branch (net8.0 added to Html.Core, Http, WorldBank.Core - fixes NETSDK1212 warnings, 245 tests pass)."
 }
