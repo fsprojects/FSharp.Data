@@ -1,12 +1,12 @@
 {
-  "v": "2026-04-27",
-  "r": "24976977785",
-  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763],
+  "v": "2026-04-28",
+  "r": "25034425539",
+  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765],
   "pending_branches": [
-    "repo-assist/test-xmlruntime-2026-04-27-clean",
-    "repo-assist/eng-multitarget-2026-04-27-clean"
+    "repo-assist/fix-json-writeto-culture-2026-04-28"
   ],
   "summary_issue_month": "2026-04",
+  "summary_issue_number": 1726,
   "mcp_blocked": false,
-  "notes": "PR #1717 and #1754 superseded by #1758. Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files. PR #1762: OpenTelemetry.Api fix. PR #1763: FS1182 fix. New this run: test-xmlruntime branch (39 XmlRuntime tests, 45 total pass), eng-multitarget branch (net8.0 added to Html.Core, Http, WorldBank.Core - fixes NETSDK1212 warnings, 245 tests pass)."
+  "notes": "2026-04-28: Task 10 — JsonValue.WriteTo InvariantCulture fix + indentation alloc fix PR created (branch repo-assist/fix-json-writeto-culture-2026-04-28); 2983 tests pass. PRs #1717 and #1754 superseded by #1758. Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files. PRs #1762 (OpenTelemetry fix), #1763 (FS1182 fix), #1764 (XmlRuntime tests), #1765 (multitarget net8.0) all awaiting review."
 }
