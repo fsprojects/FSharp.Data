@@ -73,11 +73,16 @@ type JsonValue =
     member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces: int) =
         let indentationSpaces = defaultArg indentationSpaces 2
 
+        // Write `count` space characters without allocating an intermediate string.
+        let inline writeSpaces count =
+            for _ = 1 to count do
+                w.Write(' ')
+
         let newLine =
             if saveOptions = JsonSaveOptions.None then
                 fun indentation plus ->
                     w.WriteLine()
-                    System.String(' ', indentation + plus) |> w.Write
+                    writeSpaces (indentation + plus)
             else
                 fun _ _ -> ()
 
@@ -94,7 +99,7 @@ type JsonValue =
             function
             | Null -> w.Write "null"
             | Boolean b -> w.Write(if b then "true" else "false")
-            | Number number -> w.Write number
+            | Number number -> w.Write(number.ToString(CultureInfo.InvariantCulture))
             | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
             | Float number ->
                 let s = number.ToString("R", CultureInfo.InvariantCulture)

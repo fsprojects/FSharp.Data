@@ -1,5 +1,10 @@
 # Release Notes
 
+## 8.1.12 - Apr 28 2026
+
+- Fix: `JsonValue.WriteTo` now always uses `CultureInfo.InvariantCulture` when serializing `Number` (decimal) values, preventing invalid JSON output (e.g. `1,5` instead of `1.5`) when called with a `TextWriter` configured with a non-English culture.
+- Perf: `JsonValue.WriteTo` no longer allocates an intermediate `System.String(' ', n)` per indentation level; spaces are written directly to the writer.
+
 ## 8.1.11 - Apr 22 2026
 
 - Code: `HtmlParser` `EmitTag` removes dead code in the `else` branch (the expression `x.HasFormattedParent || x.IsFormattedTag` was always equivalent to `x.HasFormattedParent` since `x.IsFormattedTag` is always `false` in that branch). Uses `name` directly to avoid re-computing `CurrentTagName()` for formatted/script tag checks. Also removes redundant `.ToLowerInvariant()` calls in `IsFormattedTag` and `IsScriptTag` since tag names are already lowercased at read time.
