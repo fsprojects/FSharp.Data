@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.12 - Apr 29 2026
+
+- Performance: `HtmlNode.serialize` no longer allocates a temporary `string` on each newline/indentation step; uses `StringBuilder.Append(char, int)` overload directly. `isVoidElement` set is now computed once at module initialisation instead of being re-created on every `HtmlNode.ToString()` call. `HtmlDocument.ToString()` uses a single `StringBuilder` for the whole document instead of `List.map … |> String.Concat`.
+
 ## 8.1.11 - Apr 22 2026
 
 - Code: `HtmlParser` `EmitTag` removes dead code in the `else` branch (the expression `x.HasFormattedParent || x.IsFormattedTag` was always equivalent to `x.HasFormattedParent` since `x.IsFormattedTag` is always `false` in that branch). Uses `name` directly to avoid re-computing `CurrentTagName()` for formatted/script tag checks. Also removes redundant `.ToLowerInvariant()` calls in `IsFormattedTag` and `IsScriptTag` since tag names are already lowercased at read time.

@@ -7,6 +7,33 @@ open System.Text
 
 // --------------------------------------------------------------------------------------
 
+[<AutoOpen>]
+module private HtmlNodeHelpers =
+    // Void elements per the HTML spec — stored as a module-level constant so the Set is not
+    // re-created on every HtmlNode.ToString() call.
+    let private htmlVoidElementSet =
+        Set.ofArray
+            [| "area"
+               "base"
+               "br"
+               "col"
+               "command"
+               "embed"
+               "hr"
+               "img"
+               "input"
+               "keygen"
+               "link"
+               "meta"
+               "param"
+               "source"
+               "track"
+               "wbr" |]
+
+    let isVoidElement name = Set.contains name htmlVoidElementSet
+
+// --------------------------------------------------------------------------------------
+
 /// <summary>Represents an HTML attribute. The name is always normalized to lowercase</summary>
 /// <namespacedoc>
 ///   <summary>Contains the primary types for the FSharp.Data package.</summary>
@@ -92,28 +119,6 @@ type HtmlNode =
     static member NewCData content = HtmlCData(content)
 
     override x.ToString() =
-        let isVoidElement =
-            let set =
-                [| "area"
-                   "base"
-                   "br"
-                   "col"
-                   "command"
-                   "embed"
-                   "hr"
-                   "img"
-                   "input"
-                   "keygen"
-                   "link"
-                   "meta"
-                   "param"
-                   "source"
-                   "track"
-                   "wbr" |]
-                |> Set.ofArray
-
-            fun name -> Set.contains name set
-
         let rec serialize (sb: StringBuilder) indentation canAddNewLine insidePre html =
             let append (str: string) = sb.Append str |> ignore
 
@@ -124,7 +129,7 @@ type HtmlNode =
 
             let newLine plus =
                 sb.AppendLine() |> ignore
-                String(' ', indentation + plus) |> append
+                sb.Append(' ', indentation + plus) |> ignore
 
             match html with
             | HtmlElement(name, attributes, elements) ->
@@ -224,11 +229,17 @@ type HtmlDocument =
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
-            (if String.IsNullOrEmpty docType then
-                 ""
-             else
-                 "<!DOCTYPE " + docType + ">" + Environment.NewLine)
-            + (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
+            let sb = StringBuilder()
+
+            if not (String.IsNullOrEmpty docType) then
+                sb.Append("<!DOCTYPE ") |> ignore
+                sb.Append(docType) |> ignore
+                sb.AppendLine(">") |> ignore
+
+            for element in elements do
+                sb.Append(element.ToString()) |> ignore
+
+            sb.ToString()
 
     /// <exclude />
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
