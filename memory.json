@@ -1,12 +1,13 @@
 {
-  "v": "2026-04-28",
-  "r": "25034425539",
-  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765],
+  "v": "2026-04-29",
+  "r": "25091338347",
+  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765, 1766],
   "pending_branches": [
-    "repo-assist/fix-json-writeto-culture-2026-04-28"
+    "repo-assist/perf-htmlnode-serialize-2026-04-29",
+    "repo-assist/test-htmlnode-tostring-2026-04-29"
   ],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
   "mcp_blocked": false,
-  "notes": "2026-04-28: Task 10 — JsonValue.WriteTo InvariantCulture fix + indentation alloc fix PR created (branch repo-assist/fix-json-writeto-culture-2026-04-28); 2983 tests pass. PRs #1717 and #1754 superseded by #1758. Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files. PRs #1762 (OpenTelemetry fix), #1763 (FS1182 fix), #1764 (XmlRuntime tests), #1765 (multitarget net8.0) all awaiting review."
+  "notes": "2026-04-29: Task 8 — HtmlNode.serialize perf: isVoidElement module-level constant, newLine uses sb.Append(' ', n), HtmlDocument uses single StringBuilder; 2980 tests pass. Task 10 — 25 tests for HtmlNode.ToString and HtmlDocument.ToString; 3005 tests total. PRs #1762-#1766 still awaiting review. PRs #1717 and #1754 should be closed (superseded by #1758). Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files."
 }
