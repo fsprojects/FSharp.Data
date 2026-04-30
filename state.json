@@ -1,13 +1,13 @@
 {
-  "v": "2026-04-25",
-  "r": "24922569845",
-  "open_prs": [1717, 1754, 1758],
+  "v": "2026-04-30",
+  "r": "25147894561",
+  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765, 1766, 1768, 1769],
   "pending_branches": [
-    "repo-assist/eng-nuget-login-v1.2.0-2026-04-25",
-    "repo-assist/test-stringextensions-2026-04-25"
+    "repo-assist/test-json-option-extensions-2026-04-30",
+    "repo-assist/test-csvruntime-operations-2026-04-30"
   ],
   "summary_issue_month": "2026-04",
   "summary_issue_number": 1726,
   "mcp_blocked": false,
-  "notes": "2026-04-25: Task 4 — NuGet/login v1.1.0→v1.2.0 PR created; Task 3 alt — 48 StringExtensions tests PR created (48 pass); pre-existing infra failure: OpenTelemetry.Api 1.15.0 no patch blocks full local build; PRs #1754 and #1717 should be closed (superseded by #1758); issue #1752 can be closed"
+  "notes": "2026-04-30: Task 9 — 28 unit tests for JsonExtensions.InnerText and JsonValue.Properties (branch test-json-option-extensions-2026-04-30); Task 10 — 30 unit tests for CsvFile transformation methods (Filter/Take/Skip/Truncate/Append/Cache/SaveToString); pre-existing infra: OpenTelemetry.Api 1.15.0 vulnerability fixed by #1762 (pending merge); PRs #1754 and #1717 should be closed (superseded by #1758); issue #1752 can be closed; PR #1768=HtmlNode serialize perf, PR #1769=HtmlNode toString tests"
 }
