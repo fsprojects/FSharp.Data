@@ -41,6 +41,7 @@
     <Compile Include="CsvParserProperties.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlNodeSerialization.fs" />
     <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlAttributeExtensions.fs" />
     <Compile Include="HtmlCssSelectors.fs" />
