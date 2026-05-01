@@ -55,7 +55,8 @@ group Test
     nuget NUnit3TestAdapter
     nuget FsUnit  4.2.0
     nuget FsCheck 2.16.6
-    nuget GitHubActionsTestLogger
+    nuget GitHubActionsTestLogger 3.0.3
+    nuget OpenTelemetry.Api >= 1.15.1
 
 group Benchmarks
     frameworks: net8.0
