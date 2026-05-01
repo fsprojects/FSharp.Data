@@ -1,33 +1,27 @@
 # Repo Assist Notes
 
-## Last run: 2026-04-29 (run 25091338347)
+## Key Open PRs (as of 2026-05-01)
 
-### Open PRs
-- #1758: HTTP encoding ISO-8859-1 to UTF-8 (Closes #1251, 8.1.12 rebase) — awaiting maintainer review/merge
-- #1759: 48 unit tests for StringExtensions — awaiting review
-- #1762: OpenTelemetry.Api fix (GHSA-g94r-2vxg-569j) — awaiting review
-- #1763: FS1182 fix in JsonSchema — awaiting review
-- #1764: 39 XmlRuntime unit tests — awaiting review
-- #1765: net8.0 multi-target for Html.Core, Http, WorldBank.Core — awaiting review
-- #1766: JsonValue.WriteTo InvariantCulture fix + indentation alloc fix — awaiting review
-- branch repo-assist/perf-htmlnode-serialize-2026-04-29: HtmlNode.serialize perf improvements
-- branch repo-assist/test-htmlnode-tostring-2026-04-29: 25 HtmlNode serialization tests
-- #1754: should be closed (superseded by #1758)
-- #1717: should be closed (superseded by #1758)
+- **#1762** (PRIORITY): fix OpenTelemetry.Api >= 1.15.1 — MERGE THIS FIRST; unblocks all other PR CI
+- #1758: HTTP response default encoding fix (Closes #1251)
+- #1759: 48 StringExtensions tests
+- #1763: FS1182 warning fix in JsonSchema
+- #1764: 39 XmlRuntime tests
+- #1765: net8.0 multi-targeting (fixes NETSDK1212 warnings)
+- #1766: JsonValue.WriteTo InvariantCulture fix
+- #1768: HtmlNode.serialize perf (CI fixed 2026-05-01)
+- #1769: HtmlNode.ToString tests (CI fixed 2026-05-01)
+- #1770: JsonExtensions.InnerText tests (CI fixed 2026-05-01)
+- #1771: CsvFile transformation tests (CI fixed 2026-05-01)
+- #1767: Dependabot NuGet/login 1.1.0 → 1.2.0
 
-### Open Issues
-- #1671: Consider System.Text.Json (no new human activity; commented Feb 2026)
-- #1752: Protected files (about PR #1717) — can be closed now #1758 exists
-- #1760: NuGet/login v1.2.0 blocked by protected files — needs manual PR
-- #1726: April 2026 Monthly Activity Summary (updated this run)
+## PRs to Close
+- #1717, #1754: superseded by #1758
 
-### Infrastructure Note
-Pre-existing build failure: OpenTelemetry.Api 1.15.0 vulnerability (GHSA-g94r-2vxg-569j, no patch)
-breaks `dotnet run --project build/build.fsproj -t Build`. Does NOT affect GitHub CI.
-Tests can be run locally with: dotnet test <project> -p:NuGetAudit=false
+## Issues to Close
+- #1752: protected-files resolved
+- #1760: superseded by Dependabot PR #1767
 
-### Backlog
-1. Monitor all pending Repo Assist PRs for merge
-2. Maintainer should close PR #1754 and #1717 (superseded)
-3. Maintainer should close issue #1752 (resolved)
-4. Continue monitoring #1671 for human activity
+## Monthly Summary
+- April 2026: issue #1726 (CLOSED)
+- May 2026: created this run
