@@ -1,13 +1,14 @@
 {
-  "v": "2026-04-29",
-  "r": "25091338347",
-  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765, 1766],
+  "v": "2026-05-03",
+  "r": "25270210380",
+  "open_prs": [1717, 1759, 1762, 1763, 1764, 1765, 1766, 1768, 1770, 1771, 1767],
   "pending_branches": [
-    "repo-assist/perf-htmlnode-serialize-2026-04-29",
-    "repo-assist/test-htmlnode-tostring-2026-04-29"
+    "repo-assist/eng-fix-netsdk1212-trimmable-2026-05-03"
   ],
-  "summary_issue_month": "2026-04",
-  "summary_issue_number": 1726,
+  "summary_issue_month": "2026-05",
+  "summary_issue_number": 1772,
   "mcp_blocked": false,
-  "notes": "2026-04-29: Task 8 — HtmlNode.serialize perf: isVoidElement module-level constant, newLine uses sb.Append(' ', n), HtmlDocument uses single StringBuilder; 2980 tests pass. Task 10 — 25 tests for HtmlNode.ToString and HtmlDocument.ToString; 3005 tests total. PRs #1762-#1766 still awaiting review. PRs #1717 and #1754 should be closed (superseded by #1758). Issue #1752 can be closed. Issue #1760: NuGet/login v1.2.0 blocked by protected files."
+  "closed_prs": [1754, 1758, 1769],
+  "merged_prs": [1769],
+  "notes": "2026-05-03: Task 6 — commented on #1763 (Windows CI infra fluke, all tests passed). Task 4 — created NETSDK1212 fix PR (branch repo-assist/eng-fix-netsdk1212-trimmable-2026-05-03, all 3814 tests pass). PR #1769 merged by dsyme on 2026-05-01. PRs #1754 and #1758 closed without merging on 2026-05-01. Issue #1760 closed. Issue #1251 (HTTP UTF-8 default) still unresolved. PR #1717 stale and should be closed."
 }
