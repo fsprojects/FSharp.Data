@@ -9,7 +9,7 @@ open FSharp.Data.HttpRequestHeaders
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
-open System.Net.NetworkInformation
+open System.Net.Sockets
 open System.IO
 open System.Text
 
@@ -50,29 +50,31 @@ let startXmlHttpLocalServer() =
         } |> Async.StartAsTask :> Task
     )) |> ignore
 
+    // Use TcpListener(0) to ask the OS for a free port, then release it.
+    // This avoids Windows excluded port ranges (reserved by Hyper-V/Docker) that
+    // caused intermittent SocketException (10013: WSAEACCES) on Windows CI.
     let freePort =
-        let random = new System.Random()
-        let mutable port = random.Next(10000, 65000)
-        while
-            IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
-            |> Array.map (fun x -> x.Port)
-            |> Array.contains port do
-                port <- random.Next(10000, 65000)
+        let listener = new TcpListener(System.Net.IPAddress.Loopback, 0)
+        listener.Start()
+        let port = (listener.LocalEndpoint :?> System.Net.IPEndPoint).Port
+        listener.Stop()
         port
 
     let baseAddress = $"http://127.0.0.1:{freePort}"
-    let workerTask = app.RunAsync(baseAddress)
+
+    // Use StartAsync so the server is guaranteed ready before we return
+    app.Urls.Add(baseAddress)
+    app.StartAsync() |> Async.AwaitTask |> Async.RunSynchronously
 
     { new ITestHttpServer with
-        member this.Dispose() =
-            app.StopAsync() |> Async.AwaitTask |> ignore
-        member this.WorkerTask = workerTask
-        member this.BaseAddress = baseAddress }
+        member _.Dispose() =
+            app.StopAsync() |> Async.AwaitTask |> Async.RunSynchronously
+        member _.WorkerTask = Task.CompletedTask
+        member _.BaseAddress = baseAddress }
 
 [<Test>]
 let ``XElement.Request sends XML via POST by default`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100) // Let server start
     
     let xml = XElement(XName.Get("test"), "sample content")
     let response = xml.Request(localServer.BaseAddress + "/echo")
@@ -85,7 +87,6 @@ let ``XElement.Request sends XML via POST by default`` () =
 [<Test>]
 let ``XElement.Request with custom HTTP method`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"), "content")
     let response = xml.Request(localServer.BaseAddress + "/test/PUT", httpMethod = HttpMethod.Put)
@@ -98,7 +99,6 @@ let ``XElement.Request with custom HTTP method`` () =
 [<Test>]
 let ``XElement.Request includes default User-Agent header`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let response = xml.Request(localServer.BaseAddress + "/echo")
@@ -109,7 +109,6 @@ let ``XElement.Request includes default User-Agent header`` () =
 [<Test>]
 let ``XElement.Request with custom headers`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let customHeaders = [("X-Custom-Header", "test-value")]
@@ -120,7 +119,6 @@ let ``XElement.Request with custom headers`` () =
 [<Test>]
 let ``XElement.Request preserves existing User-Agent when provided`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let customHeaders = [UserAgent "CustomAgent/1.0"]
@@ -131,7 +129,6 @@ let ``XElement.Request preserves existing User-Agent when provided`` () =
 [<Test>]
 let ``XElement.Request includes XML content type header`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let response = xml.Request(localServer.BaseAddress + "/echo")
@@ -142,7 +139,6 @@ let ``XElement.Request includes XML content type header`` () =
 [<Test>]
 let ``XElement.Request with complex XML structure`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = 
         XElement(XName.Get("root"),
@@ -163,7 +159,6 @@ let ``XElement.Request with complex XML structure`` () =
 [<Test>]
 let ``XElement.RequestAsync sends XML via POST by default`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"), "async content")
     let response = xml.RequestAsync(localServer.BaseAddress + "/echo") |> Async.RunSynchronously
@@ -176,7 +171,6 @@ let ``XElement.RequestAsync sends XML via POST by default`` () =
 // [<Test>]
 // let ``XElement.RequestAsync with custom HTTP method`` () =
 //     use localServer = startXmlHttpLocalServer()
-//     System.Threading.Thread.Sleep(100)
     
 //     let xml = XElement(XName.Get("test"))
 //     let response = xml.RequestAsync(localServer.BaseAddress + "/test/PUT", httpMethod = HttpMethod.Put) |> Async.RunSynchronously
@@ -189,7 +183,6 @@ let ``XElement.RequestAsync sends XML via POST by default`` () =
 [<Test>]
 let ``XElement.RequestAsync with custom headers`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let customHeaders = [("X-Async-Header", "async-value")]
@@ -200,7 +193,6 @@ let ``XElement.RequestAsync with custom headers`` () =
 [<Test>]
 let ``XElement.RequestAsync includes default User-Agent header`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let response = xml.RequestAsync(localServer.BaseAddress + "/echo") |> Async.RunSynchronously
@@ -210,7 +202,6 @@ let ``XElement.RequestAsync includes default User-Agent header`` () =
 [<Test>]
 let ``XElement.RequestAsync preserves existing User-Agent when provided`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = XElement(XName.Get("test"))
     let customHeaders = [UserAgent "AsyncAgent/1.0"]
@@ -221,7 +212,6 @@ let ``XElement.RequestAsync preserves existing User-Agent when provided`` () =
 [<Test>]
 let ``XElement with namespaces serializes correctly`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let ns = XNamespace.Get("http://example.com/test")
     let xml = XElement(ns + "root", XAttribute(XNamespace.Xmlns + "test", ns.NamespaceName), "content")
@@ -235,7 +225,6 @@ let ``XElement with namespaces serializes correctly`` () =
 [<Test>]
 let ``XElement serialization disables formatting`` () =
     use localServer = startXmlHttpLocalServer()
-    System.Threading.Thread.Sleep(100)
     
     let xml = 
         XElement(XName.Get("root"),
