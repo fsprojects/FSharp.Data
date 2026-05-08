@@ -859,3 +859,31 @@ let ``JsonValue WriteTo with None (default) produces indented output`` () =
     let result = writer.ToString()
     result.Contains("\n") |> should equal true
     result.Contains("  ") |> should equal true
+
+[<Test>]
+let ``JsonValue WriteTo serializes decimals using InvariantCulture regardless of thread culture`` () =
+    // In cultures that use ',' as decimal separator (e.g. de-DE), TextWriter.Write(decimal)
+    // could produce invalid JSON like {"price":1,5} instead of {"price":1.5}.
+    // WriteTo must always use InvariantCulture for decimal numbers.
+    use _holder = withCulture "de-DE"
+    let json = JsonValue.Record [| "price", JsonValue.Number 1.5M |]
+    use writer = new System.IO.StringWriter()
+    json.WriteTo(writer, JsonSaveOptions.DisableFormatting)
+    let result = writer.ToString()
+    result |> should equal """{"price":1.5}"""
+
+[<Test>]
+let ``JsonValue ToString serializes decimal array using InvariantCulture`` () =
+    use _holder = withCulture "fr-FR"
+    let json = JsonValue.Array [| JsonValue.Number 1.5M; JsonValue.Number 99.99M |]
+    json.ToString(JsonSaveOptions.DisableFormatting)
+    |> should equal "[1.5,99.99]"
+
+[<Test>]
+let ``JsonValue WriteTo indentation uses correct number of spaces`` () =
+    let json = JsonValue.Record [| "x", JsonValue.Number 1M |]
+    use writer = new System.IO.StringWriter()
+    json.WriteTo(writer, JsonSaveOptions.None, 4)
+    let result = writer.ToString()
+    // With 4-space indent, the property line should start with 4 spaces
+    result |> should contain "    \"x\""
