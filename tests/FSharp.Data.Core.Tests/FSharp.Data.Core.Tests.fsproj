@@ -35,6 +35,7 @@
     <Compile Include="JsonDocument.fs" />
     <Compile Include="JsonRuntime.fs" />
     <Compile Include="JsonSchema.fs" />
+    <Compile Include="JsonValueOptionExtensions.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvFile.fs" />
     <Compile Include="CsvRuntimeOperations.fs" />
