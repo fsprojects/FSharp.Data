@@ -1,6 +1,10 @@
 # Release Notes
 
-## 8.1.12 - Apr 28 2026
+## 8.1.13 - May 08 2026
+
+- Performance: `HtmlNode.serialize` no longer allocates a temporary `string` on each newline/indentation step; uses `StringBuilder.Append(char, int)` overload directly. `isVoidElement` set is now computed once at module initialisation instead of being re-created on every `HtmlNode.ToString()` call. `HtmlDocument.ToString()` uses a single `StringBuilder` for the whole document instead of `List.map … |> String.Concat`.
+
+## 8.1.12 - Apr 29 2026
 
 - Fix: `JsonValue.WriteTo` now always uses `CultureInfo.InvariantCulture` when serializing `Number` (decimal) values, preventing invalid JSON output (e.g. `1,5` instead of `1.5`) when called with a `TextWriter` configured with a non-English culture.
 - Perf: `JsonValue.WriteTo` no longer allocates an intermediate `System.String(' ', n)` per indentation level; spaces are written directly to the writer.
