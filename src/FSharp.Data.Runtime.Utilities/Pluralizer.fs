@@ -226,7 +226,7 @@ let private adjustCase (s: string) (template: string) =
         else if allUpper then
             s.ToUpperInvariant()
         else if firstUpper && not <| Char.IsUpper s.[0] then
-            s.Substring(0, 1).ToUpperInvariant() + s.Substring(1)
+            (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
         else
             s
 

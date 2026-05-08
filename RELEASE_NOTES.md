@@ -1,8 +1,40 @@
 # Release Notes
 
-## 9.0.0 - Apr 01 2026
+## 9.0.0 - May 09 2026
 
 - Change HTTP response default encoding from ISO-8859-1 to UTF-8 to match `System.Net.Http.HttpClient` behaviour (closes #1251)
+
+## 8.1.13 - May 08 2026
+
+- Performance: `HtmlNode.serialize` no longer allocates a temporary `string` on each newline/indentation step; uses `StringBuilder.Append(char, int)` overload directly. `isVoidElement` set is now computed once at module initialisation instead of being re-created on every `HtmlNode.ToString()` call. `HtmlDocument.ToString()` uses a single `StringBuilder` for the whole document instead of `List.map … |> String.Concat`.
+
+## 8.1.12 - Apr 29 2026
+
+- Fix: `JsonValue.WriteTo` now always uses `CultureInfo.InvariantCulture` when serializing `Number` (decimal) values, preventing invalid JSON output (e.g. `1,5` instead of `1.5`) when called with a `TextWriter` configured with a non-English culture.
+- Perf: `JsonValue.WriteTo` no longer allocates an intermediate `System.String(' ', n)` per indentation level; spaces are written directly to the writer.
+
+## 8.1.11 - Apr 22 2026
+
+- Code: `HtmlParser` `EmitTag` removes dead code in the `else` branch (the expression `x.HasFormattedParent || x.IsFormattedTag` was always equivalent to `x.HasFormattedParent` since `x.IsFormattedTag` is always `false` in that branch). Uses `name` directly to avoid re-computing `CurrentTagName()` for formatted/script tag checks. Also removes redundant `.ToLowerInvariant()` calls in `IsFormattedTag` and `IsScriptTag` since tag names are already lowercased at read time.
+
+## 8.1.10 - Apr 20 2026
+
+- Performance: `HtmlCharRefs` entity lookup now uses a `Dictionary<string, string>` instead of an F# `Map`, giving O(1) lookups instead of O(log n) for ~2230 HTML named-entity entries. Also avoids a repeated `char[]` allocation in the `TrimEnd` call inside the active pattern.
+
+## 8.1.9 - Apr 18 2026
+
+- Fix: `Caching.hashString` now disposes the `SHA1` instance after use; on .NET 5+ uses `SHA1.HashData` (static, pool-backed) to avoid allocation entirely (PR #1745)
+- Fix: WorldBank type provider now waits 2 seconds between HTTP retries, making it resilient to transient 502 errors from the WorldBank API (PR #1749)
+- Eng: update `FSharp.TypeProviders.SDK` to latest master (`75ac6119`), pulling in a bug fix for the SDK logger and O(1) field/event/property lookups (PR #1741)
+
+## 8.1.8 - Apr 13 2026
+
+- Code: `NameUtils.niceCamelName` now short-circuits with zero allocations when the result already starts with a lower-case letter; the general case now uses `StringBuilder.Append(string, int, int)` to avoid creating an intermediate `Substring`. `capitalizeFirstLetter` similarly short-circuits when the first letter is already upper-case. Also fixes `Pluralizer` to avoid `Substring(0,1)` in its capitalize path.
+- Performance: JSON parser avoids one `Substring` allocation per `\uXXXX` escape by directly indexing into the source string; also uses span-based `Decimal.TryParse`/`Double.TryParse` for number tokens on .NET 8 to avoid a `Substring` allocation per number
+
+## 8.1.7 - Apr 7 2026
+
+- Performance: HTML parser avoids `ToCharArray()` allocations in several code paths: `EmitToAttributeValue` now iterates the substituted string directly; `Cons(char[])` and `Cons(string)` use `StringBuilder.Append` directly; `Pop(count)` uses `Array.init` instead of creating an integer range array; CDATA opening marker no longer creates a temporary `char[]`.
 
 ## 8.1.6 - Apr 5 2026
 

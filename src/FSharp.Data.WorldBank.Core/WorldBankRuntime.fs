@@ -18,6 +18,7 @@ open FSharp.Data.Runtime.Caching
 module Implementation =
 
     let private retryCount = 5
+    let private retryDelayMs = 2000 // 2 seconds between retries to handle transient API failures (e.g. 502 Bad Gateway)
     let private parallelIndicatorPageDownloads = 8
 
     type internal IndicatorRecord =
@@ -85,6 +86,8 @@ module Implementation =
                         Debug.WriteLine(sprintf "[WorldBank] error: %s" (e.ToString()))
 
                         if attempt > 0 then
+                            // Delay before retrying to handle transient server-side failures (e.g. 502 Bad Gateway)
+                            do! Async.Sleep retryDelayMs
                             return! worldBankRequest (attempt - 1) funcs args
                         else
                             return! failwithf "Failed to request '%s'. Error: %O" url e

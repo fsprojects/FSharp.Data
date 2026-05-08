@@ -73,11 +73,16 @@ type JsonValue =
     member x.WriteTo(w: TextWriter, saveOptions, ?indentationSpaces: int) =
         let indentationSpaces = defaultArg indentationSpaces 2
 
+        // Write `count` space characters without allocating an intermediate string.
+        let inline writeSpaces count =
+            for _ = 1 to count do
+                w.Write(' ')
+
         let newLine =
             if saveOptions = JsonSaveOptions.None then
                 fun indentation plus ->
                     w.WriteLine()
-                    System.String(' ', indentation + plus) |> w.Write
+                    writeSpaces (indentation + plus)
             else
                 fun _ _ -> ()
 
@@ -94,7 +99,7 @@ type JsonValue =
             function
             | Null -> w.Write "null"
             | Boolean b -> w.Write(if b then "true" else "false")
-            | Number number -> w.Write number
+            | Number number -> w.Write(number.ToString(CultureInfo.InvariantCulture))
             | Float v when Double.IsInfinity v || Double.IsNaN v -> w.Write "null"
             | Float number ->
                 let s = number.ToString("R", CultureInfo.InvariantCulture)
@@ -165,9 +170,13 @@ type JsonValue =
                     || c = '\\'
 
                 if needsEscaping then
-                    // Write all accumulated unescaped characters in one operation using Substring
+                    // Write all accumulated unescaped characters in one operation
                     if i > lastWritePos then
+#if NETSTANDARD2_0
                         w.Write(value.Substring(lastWritePos, i - lastWritePos))
+#else
+                        w.Write(value.AsSpan(lastWritePos, i - lastWritePos))
+#endif
 
                     // Write the escaped character
                     if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
@@ -187,7 +196,11 @@ type JsonValue =
 
             // Write any remaining unescaped characters
             if lastWritePos < value.Length then
+#if NETSTANDARD2_0
                 w.Write(value.Substring(lastWritePos))
+#else
+                w.Write(value.AsSpan(lastWritePos))
+#endif
 
     /// <summary>Serializes this JsonValue to a string with the specified formatting options.</summary>
     /// <param name="saveOptions">Controls formatting: indented, compact, or compact with spaces.</param>
@@ -341,24 +354,21 @@ type private JsonParser(jsonText: string) =
                 | 'u' ->
                     ensure (i + 5 < s.Length)
 
-                    let hexdigit d =
+                    let inline hexdigit (d: char) =
                         if d >= '0' && d <= '9' then int32 d - int32 '0'
                         elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
                         elif d >= 'A' && d <= 'F' then int32 d - int32 'A' + 10
                         else failwith "hexdigit"
 
-                    let unicodeChar (s: string) =
-                        if s.Length <> 4 then
-                            failwith "unicodeChar"
-
+                    // Direct indexing avoids a Substring allocation per \uXXXX escape.
+                    let ch =
                         char (
-                            hexdigit s.[0] * 4096
-                            + hexdigit s.[1] * 256
-                            + hexdigit s.[2] * 16
-                            + hexdigit s.[3]
+                            hexdigit s.[i + 2] * 4096
+                            + hexdigit s.[i + 3] * 256
+                            + hexdigit s.[i + 4] * 16
+                            + hexdigit s.[i + 5]
                         )
 
-                    let ch = unicodeChar (s.Substring(i + 2, 4))
                     buf.Append(ch) |> ignore
                     i <- i + 4 // the \ and u will also be skipped past further below
                 | 'U' ->
@@ -368,7 +378,7 @@ type private JsonParser(jsonText: string) =
                         if s.Length <> 8 then
                             failwithf "unicodeChar (%O)" s
 
-                        if s.[0..1] <> "00" then
+                        if s.[0] <> '0' || s.[1] <> '0' then
                             failwithf "unicodeChar (%O)" s
 
                         UnicodeHelper.getUnicodeSurrogatePair
@@ -400,6 +410,7 @@ type private JsonParser(jsonText: string) =
             i <- i + 1
 
         let len = i - start
+#if NETSTANDARD2_0
         let sub = s.Substring(start, len)
 
         match TextConversions.AsDecimal CultureInfo.InvariantCulture sub with
@@ -408,6 +419,17 @@ type private JsonParser(jsonText: string) =
             match TextConversions.AsFloat [||] false CultureInfo.InvariantCulture sub with
             | Some x -> JsonValue.Float x
             | _ -> throw ()
+#else
+        // Span-based parsing avoids a Substring allocation per number token.
+        let span = s.AsSpan(start, len)
+
+        match Decimal.TryParse(span, NumberStyles.Currency, CultureInfo.InvariantCulture) with
+        | true, x -> JsonValue.Number x
+        | false, _ ->
+            match Double.TryParse(span, NumberStyles.Any, CultureInfo.InvariantCulture) with
+            | true, x -> JsonValue.Float x
+            | false, _ -> throw ()
+#endif
 
     and parsePair cont =
         let key = parseString ()

@@ -67,10 +67,15 @@ let nicePascalName (s: string) =
 let niceCamelName (s: string) =
     let name = nicePascalName s
 
-    if name.Length > 0 then
-        name.[0].ToString().ToLowerInvariant() + name.Substring(1)
-    else
+    if name.Length = 0 || Char.IsLower(name.[0]) then
+        // Fast path: already starts with a lower-case letter — no allocation needed.
         name
+    else
+        // Lower-case the first character and append the remainder.
+        let sb = Text.StringBuilder(name.Length)
+        sb.Append(Char.ToLowerInvariant(name.[0])) |> ignore
+        sb.Append(name, 1, name.Length - 1) |> ignore
+        sb.ToString()
 
 /// Given a function to format names (such as 'niceCamelName' or 'nicePascalName')
 /// returns a name generator that never returns duplicate name (by appending an
@@ -115,8 +120,17 @@ let uniqueGenerator (niceName: string -> string) =
 let capitalizeFirstLetter (s: string) =
     match s.Length with
     | 0 -> ""
+    | _ when Char.IsUpper(s.[0]) ->
+        // Fast path: already starts with an upper-case letter — no allocation needed.
+        s
     | 1 -> (Char.ToUpperInvariant s.[0]).ToString()
-    | _ -> (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
+    | _ ->
+        // Upper-case the first character and append the remainder via StringBuilder
+        // to avoid creating two intermediate strings.
+        let sb = Text.StringBuilder(s.Length)
+        sb.Append(Char.ToUpperInvariant(s.[0])) |> ignore
+        sb.Append(s, 1, s.Length - 1) |> ignore
+        sb.ToString()
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive

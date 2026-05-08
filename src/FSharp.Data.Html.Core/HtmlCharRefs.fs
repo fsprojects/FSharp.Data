@@ -1,11 +1,16 @@
 ﻿namespace FSharp.Data
 
 open System
+open System.Collections.Generic
 open System.Globalization
 
 module internal HtmlCharRefs =
 
-    let private refs =
+    // Avoid a new char[] allocation on every TrimEnd call
+    let private semiColonChars = [| ';' |]
+
+    // ~2230 HTML named-entity entries; stored as a Dictionary for O(1) lookup
+    let private refsEntries =
         [| "&Aacute;", "\u00C1"
            "&Aacute", "\u00C1"
            "&aacute;", "\u00E1"
@@ -2237,10 +2242,17 @@ module internal HtmlCharRefs =
            "&zscr;", "\uD835\uDCCF"
            "&zwj;", "\u200D"
            "&zwnj;", "\u200C" |]
-        |> Map.ofArray
+
+    let private refs =
+        let d = Dictionary<string, string>(refsEntries.Length, StringComparer.Ordinal)
+
+        for k, v in refsEntries do
+            d.[k] <- v
+
+        d
 
     let (|Number|Lookup|) (orig: string) =
-        let s = orig.TrimEnd([| ';' |])
+        let s = orig.TrimEnd(semiColonChars)
 
         if s.Length > 2 then
             let (delimeters, discriminator) =
@@ -2275,4 +2287,7 @@ module internal HtmlCharRefs =
                 string lead + string tail
             else
                 string (char num)
-        | Lookup(ref) -> defaultArg (refs.TryFind ref) ref
+        | Lookup(ref) ->
+            match refs.TryGetValue(ref) with
+            | true, v -> v
+            | false, _ -> ref

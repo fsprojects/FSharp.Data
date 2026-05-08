@@ -128,7 +128,7 @@ module internal HtmlParser =
         member x.Peek() = x.Reader.PeekChar()
 
         member x.Pop(count) =
-            [| 0 .. (count - 1) |] |> Array.map (fun _ -> x.Reader.ReadChar())
+            Array.init count (fun _ -> x.Reader.ReadChar())
 
         member x.Contents = x.Content.ToString()
         member x.ContentLength = x.Content.Length
@@ -177,12 +177,16 @@ module internal HtmlParser =
             x.Tokens <- result :: x.Tokens
 
         member x.IsFormattedTag =
-            match x.CurrentTagName().ToLowerInvariant() with
+            // Tag names are already lowercased at read time (ConsTag applies ToLowerInvariant),
+            // so no need to call ToLowerInvariant here.
+            match x.CurrentTagName() with
             | "pre" -> true
             | _ -> false
 
         member x.IsScriptTag =
-            match x.CurrentTagName().ToLowerInvariant() with
+            // Tag names are already lowercased at read time (ConsTag applies ToLowerInvariant),
+            // so no need to call ToLowerInvariant here.
+            match x.CurrentTagName() with
             | "script"
             | "style" -> true
             | _ -> false
@@ -200,15 +204,15 @@ module internal HtmlParser =
                 else
                     Tag(false, name, x.GetAttributes())
 
-            // pre is the only default formatted tag, nested pres are not
-            // allowed in the spec.
-            if x.IsFormattedTag then
+            // "pre" is the only default formatted tag; nested pre elements are not
+            // allowed in the spec.  Use `name` directly to avoid re-computing CurrentTagName().
+            // The else branch (x.HasFormattedParent <- x.HasFormattedParent || false) was a
+            // no-op and has been removed.
+            if name = "pre" then
                 x.HasFormattedParent <- not isEnd
-            else
-                x.HasFormattedParent <- x.HasFormattedParent || x.IsFormattedTag
 
             x.InsertionMode <-
-                if x.IsScriptTag && (not isEnd) then
+                if (name = "script" || name = "style") && (not isEnd) then
                     ScriptMode
                 else
                     DefaultMode
@@ -221,7 +225,7 @@ module internal HtmlParser =
             assert (x.InsertionMode = InsertionMode.CharRefMode)
             let content = x.Content.ToString() |> HtmlCharRefs.substitute
 
-            for c in content.ToCharArray() do
+            for c in content do
                 x.ConsAttrValue c
 
             x.Content <- { Contents = StringBuilder() }
@@ -257,8 +261,12 @@ module internal HtmlParser =
 
         member x.Cons() = x.Content.Cons(x.Reader.ReadChar())
         member x.Cons(char: char) = x.Content.Cons(char)
-        member x.Cons(chars: char array) = Array.iter (x.Content.Cons) chars
-        member x.Cons(chars: string) = x.Cons(chars.ToCharArray())
+
+        member x.Cons(chars: char array) =
+            x.Content.Contents.Append(chars) |> ignore
+
+        member x.Cons(chars: string) =
+            x.Content.Contents.Append(chars) |> ignore
 
         member x.ConsTag() =
             match x.Reader.ReadChar() with
@@ -666,7 +674,7 @@ module internal HtmlParser =
                 match new String(Array.append current (state.Pop(5))) with
                 | "DOCTYPE" -> docType state
                 | "[CDATA[" ->
-                    state.Cons("<![CDATA[".ToCharArray())
+                    state.Cons("<![CDATA[")
                     cData 0 state
                 | _ -> bogusComment state
 
@@ -1109,7 +1117,10 @@ module internal HtmlParser =
                 parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
             | TagEnd name :: rest when
                 name <> expectedTagEnd
-                && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev)))
+                && (name
+                    <> (new String(
+                        Array.init expectedTagEnd.Length (fun i -> expectedTagEnd.[expectedTagEnd.Length - 1 - i])
+                    )))
                 ->
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd parentTagName rest
