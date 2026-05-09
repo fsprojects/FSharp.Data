@@ -11,6 +11,8 @@
     <PackageProjectUrl>https://fsprojects.github.io/FSharp.Data</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FSharp.Data/master/docs/img/logo.png</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
+    <Product>FSharp.Data</Product>
+    <AssemblyDescription>Library of F# type providers and data access tools</AssemblyDescription>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)src\keyfile.snk</AssemblyOriginatorKeyFile>
     <PublicSign>false</PublicSign>

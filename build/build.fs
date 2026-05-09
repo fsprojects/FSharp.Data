@@ -20,7 +20,7 @@ let buildscript () =
         (!!includes).SetBaseDirectory(__SOURCE_DIRECTORY__ </> "..")
 
     // --------------------------------------------------------------------------------------
-    // Information about the project to be used at NuGet and in AssemblyInfo files
+    // Information about the project to be used at NuGet
     // --------------------------------------------------------------------------------------
 
     let project = "FSharp.Data"
@@ -57,27 +57,6 @@ let buildscript () =
     let isCI = Environment.GetEnvironmentVariable("CI") <> null
 
     // --------------------------------------------------------------------------------------
-    // Generate assembly info files with the right version & up-to-date information
-
-    Target.create "AssemblyInfo" (fun _ ->
-        for file in !!"src/AssemblyInfo*.fs" do
-            let replace (oldValue: string) newValue (str: string) = str.Replace(oldValue, newValue)
-
-            let title =
-                Path.GetFileNameWithoutExtension file |> replace "AssemblyInfo" "FSharp.Data"
-
-            let versionSuffix = ".0"
-            let version = release.AssemblyVersion + versionSuffix
-
-            AssemblyInfoFile.createFSharp
-                file
-                [ AssemblyInfo.Title title
-                  AssemblyInfo.Product project
-                  AssemblyInfo.Description summary
-                  AssemblyInfo.Version version
-                  AssemblyInfo.FileVersion version ])
-
-    // --------------------------------------------------------------------------------------
     // Clean build results
 
     Target.create "Clean" (fun _ ->
@@ -110,6 +89,7 @@ let buildscript () =
                 Configuration = DotNet.BuildConfiguration.Release
                 MSBuildParams =
                     { o.MSBuildParams with
+                        Properties = [ ("Version", release.NugetVersion) ]
                         DisableInternalBinLog = true } }))
 
     Target.create "RunTests" (fun _ ->
@@ -217,9 +197,7 @@ let buildscript () =
         printfn "")
 
     let sourceFiles =
-        !!"src/**/*.fs" ++ "src/**/*.fsi" ++ "build/build.fs"
-        -- "src/**/obj/**/*.fs"
-        -- "src/AssemblyInfo*.fs"
+        !!"src/**/*.fs" ++ "src/**/*.fsi" ++ "build/build.fs" -- "src/**/obj/**/*.fs"
 
     Target.create "Format" (fun _ ->
         let result =
@@ -267,7 +245,7 @@ let buildscript () =
 
     Target.create "All" ignore
 
-    "Clean" ==> "AssemblyInfo" ==> "CheckFormat" ==> "Build"
+    "Clean" ==> "CheckFormat" ==> "Build"
 
     "Build" ==> "CleanDocs" ==> "GenerateDocs" ==> "All"
 

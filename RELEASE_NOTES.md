@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.1.14 - May 09 2026
+
+- Eng: Remove manual `AssemblyInfo*.fs` files; use SDK-generated assembly attributes instead.
+
 ## 8.1.13 - May 08 2026
 
 - Performance: `HtmlNode.serialize` no longer allocates a temporary `string` on each newline/indentation step; uses `StringBuilder.Append(char, int)` overload directly. `isVoidElement` set is now computed once at module initialisation instead of being re-created on every `HtmlNode.ToString()` call. `HtmlDocument.ToString()` uses a single `StringBuilder` for the whole document instead of `List.map … |> String.Concat`.
