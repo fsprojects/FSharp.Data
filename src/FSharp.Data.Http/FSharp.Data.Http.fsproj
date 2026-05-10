@@ -5,7 +5,6 @@
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <OtherFlags>$(OtherFlags) --warnon:1182 --nowarn:10001 --nowarn:44</OtherFlags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageIcon>logo.png</PackageIcon>
     <!-- always have tailcalls on for design time compiler add-in to allow repo to compile in DEBUG, see https://github.com/fsprojects/FSharp.Data/issues/1410 -->
     <Tailcalls>true</Tailcalls>
@@ -13,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Http.fs" />
-    <Compile Include="../AssemblyInfo.Http.fs" />
     <Compile Include="InternalsVisibleTo.fs" />
     <None Include="../../docs/img/logo.png" Pack="true" PackagePath="" />
     <None Include="paket.references" />
