@@ -31,8 +31,8 @@ on:
     - id: check
       run: |
         MAX_OPEN_PRS=8
-        if [[ "${{ github.event_name }}" != "schedule" ]]; then exit 0; fi
-        COUNT=$(gh pr list --repo ${{ github.repository }} --state open --search 'in:title "[repo-assist]"' --json number --jq 'length')
+        if [[ "$GITHUB_EVENT_NAME" != "schedule" ]]; then exit 0; fi
+        COUNT=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --search 'in:title "[repo-assist]"' --json number --jq 'length')
         [[ "$COUNT" -lt "$MAX_OPEN_PRS" ]]
       # exits 0 if not scheduled or <MAX_OPEN_PRS open PRs, 1 if ≥MAX_OPEN_PRS
 
@@ -91,7 +91,7 @@ safe-outputs:
     max: 4
   push-to-pull-request-branch:
     target: "*"
-    title-prefix: "[repo-assist] "
+    required-title-prefix: "[repo-assist] "
     max: 4
     protected-files: fallback-to-issue
   create-issue:
@@ -100,7 +100,7 @@ safe-outputs:
     max: 4
   update-issue:
     target: "*"
-    title-prefix: "[repo-assist] "
+    required-title-prefix: "[repo-assist] "
     max: 1
   add-labels:
     allowed: [bug, enhancement, "help wanted", "good first issue", "spam", "off topic", documentation, question, duplicate, wontfix, "needs triage", "needs investigation", "breaking change", performance, security, refactor]
@@ -205,7 +205,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@c7d030cd6d4607b90d9ac3ffc8b24aff4f251632
+source: githubnext/agentics/workflows/repo-assist.md@298f992955146a6731d380a9de808e17861708e5
 ---
 
 # Repo Assist
