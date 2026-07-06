@@ -71,11 +71,27 @@ Name,Age
 John,25
 Jane,30"""
     let csv = CsvFile.Parse(csvData, skipRows=2)
-    
+
     csv.Headers |> should equal (Some [| "Name"; "Age" |])
     let rows = csv.Rows |> Array.ofSeq
     rows.Length |> should equal 2
     rows.[0].Columns |> should equal [| "John"; "25" |]
+
+[<Test>]
+let ``CsvFile.Parse with skipRows supports repeated enumeration`` () =
+    let csvData = """Comment line 1
+Comment line 2
+Name,Age
+John,25
+Jane,30"""
+    let csv = CsvFile.Parse(csvData, skipRows=2)
+
+    // the second enumeration re-reads the source and must skip the same prologue rows
+    let firstPass = csv.Rows |> Array.ofSeq
+    let secondPass = csv.Rows |> Array.ofSeq
+    firstPass.Length |> should equal 2
+    secondPass.Length |> should equal 2
+    secondPass.[0].Columns |> should equal [| "John"; "25" |]
 
 [<Test>]
 let ``CsvFile.Parse handles ignoreErrors`` () =

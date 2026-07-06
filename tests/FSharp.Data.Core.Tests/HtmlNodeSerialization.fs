@@ -223,3 +223,16 @@ let ``HtmlNode constructed with NewElement round-trips to same string`` () =
     let lis = uls.[0].Descendants() |> Seq.filter (fun n -> n.Name() = "li") |> Seq.toList
     lis.Length |> should equal 2
 
+// ─────────────────────────────────────────────────────────────────────────────
+// HtmlNode.ToString() — deeply nested documents
+// ─────────────────────────────────────────────────────────────────────────────
+
+[<Test>]
+let ``Serialization of deeply nested elements does not overflow the stack`` () =
+    // the parser handles arbitrary nesting with an explicit stack, so ToString must too
+    let depth = 10000
+    let html = String.replicate depth "<div>" + "x" + String.replicate depth "</div>"
+    let doc = HtmlDocument.Parse html
+    let serialized = doc.ToString()
+    serialized.Contains "x" |> should equal true
+

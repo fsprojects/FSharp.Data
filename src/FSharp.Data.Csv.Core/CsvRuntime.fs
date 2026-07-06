@@ -104,6 +104,7 @@ module private CsvHelpers =
           LineIterator: IEnumerator<string[] * int>
           ColumnCount: int
           HasHeaders: bool
+          SkipRows: int
           Separators: string
           Quote: char }
 
@@ -111,11 +112,21 @@ module private CsvHelpers =
     /// is accessed and then will call 'nextSeq' each time for all future GetEnumerator calls
     type private ReentrantEnumerable<'T>(firstSeq: seq<'T>, nextSeq: unit -> seq<'T>) =
         let mutable first = true
+        let sync = obj ()
 
         interface seq<'T> with
             member x.GetEnumerator() =
-                if first then
-                    first <- false
+                // synchronized so concurrent enumerations cannot both claim 'firstSeq'
+                // and end up sharing one live reader
+                let isFirst =
+                    lock sync (fun () ->
+                        if first then
+                            first <- false
+                            true
+                        else
+                            false)
+
+                if isFirst then
                     firstSeq.GetEnumerator()
                 else
                     nextSeq().GetEnumerator()
@@ -165,6 +176,7 @@ module private CsvHelpers =
           LineIterator = linesIterator
           ColumnCount = numberOfColumns
           HasHeaders = hasHeaders
+          SkipRows = skipRows
           Separators = separators
           Quote = quote }
 
@@ -181,6 +193,7 @@ module private CsvHelpers =
           LineIterator = linesIterator
           ColumnCount = numberOfColumns
           HasHeaders = hasHeaders
+          SkipRows = skipRows
           Separators = separators
           Quote = quote }
         =
@@ -205,6 +218,8 @@ module private CsvHelpers =
         let nextSeq () =
             let reader: TextReader = newReader ()
             let csv = CsvReader.readCsvFile reader separators quote
+            // re-apply skipRows exactly like the first read did, then the header row
+            let csv = if skipRows > 0 then Seq.skip skipRows csv else csv
             if hasHeaders then Seq.skip 1 csv else csv
 
         let untypedRows = ReentrantEnumerable<_>(firstSeq, nextSeq)
@@ -459,8 +474,6 @@ type CsvFile<'RowType>
         let quote = (defaultArg quote x.Quote).ToString()
         let doubleQuote = quote + quote
 
-        use writer = writer
-
         // RFC 4180 (https://www.rfc-editor.org/rfc/rfc4180)
         // 2.  Definition of the CSV Format
         // Each record is located on a separated line, delimited by a line break CRLF
@@ -471,6 +484,22 @@ type CsvFile<'RowType>
             | null -> String.Empty
             | _ -> str
 
+        // quote fields containing any of the document's separators (not just the one
+        // used for saving), the quote char, or a line break (a bare CR also terminates
+        // a row when re-parsing, so it needs quoting like LF)
+        let charsNeedingQuoting =
+            (x.Separators + separator + quote + "\r\n").ToCharArray() |> Array.distinct
+
+        let writeEscaped (item: string) =
+            let item = item |> nullSafeguard
+
+            if item.IndexOfAny(charsNeedingQuoting) >= 0 then
+                writer.Write quote
+                writer.Write(item.Replace(quote, doubleQuote))
+                writer.Write quote
+            else
+                writer.Write item
+
         let writeLine writeItem (items: string[]) =
             for i = 0 to items.Length - 2 do
                 writeItem items.[i]
@@ -480,25 +509,15 @@ type CsvFile<'RowType>
             writer.WriteLine()
 
         match x.Headers with
-        | Some headers -> headers |> writeLine writer.Write
+        | Some headers -> headers |> writeLine writeEscaped
         | None -> ()
 
         for row in x.Rows do
-            row
-            |> rowToStringArray.Invoke
-            |> writeLine (fun item ->
-                let item = item |> nullSafeguard
+            row |> rowToStringArray.Invoke |> writeLine writeEscaped
 
-                if
-                    item.IndexOf(separator, StringComparison.Ordinal) >= 0
-                    || item.IndexOf(quote, StringComparison.Ordinal) >= 0
-                    || item.IndexOf('\n') >= 0
-                then
-                    writer.Write quote
-                    writer.Write(item.Replace(quote, doubleQuote))
-                    writer.Write quote
-                else
-                    writer.Write item)
+        // the writer is owned by the caller and must not be disposed here,
+        // but buffered output should be visible when Save returns
+        writer.Flush()
 
     /// Saves CSV to the specified stream
     member x.Save(stream: Stream, [<Optional>] ?separator, [<Optional>] ?quote) =

@@ -119,18 +119,24 @@ type HtmlNode =
     static member NewCData content = HtmlCData(content)
 
     override x.ToString() =
-        let rec serialize (sb: StringBuilder) indentation canAddNewLine insidePre html =
-            let append (str: string) = sb.Append str |> ignore
+        let sb = StringBuilder()
+        let append (str: string) = sb.Append str |> ignore
 
-            let appendEndTag name =
-                append "</"
-                append name
-                append ">"
+        let appendEndTag name =
+            append "</"
+            append name
+            append ">"
 
-            let newLine plus =
-                sb.AppendLine() |> ignore
-                sb.Append(' ', indentation + plus) |> ignore
+        let newLine indentation plus =
+            sb.AppendLine() |> ignore
+            sb.Append(' ', indentation + plus) |> ignore
 
+        // serialization uses an explicit work stack instead of call-stack recursion:
+        // the parser accepts arbitrarily deep documents (it uses its own stack), so
+        // ToString must not StackOverflow on them either
+        let work = System.Collections.Generic.Stack<unit -> unit>()
+
+        let rec serialize indentation canAddNewLine insidePre html =
             match html with
             | HtmlElement(name, attributes, elements) ->
                 let onlyText =
@@ -143,7 +149,7 @@ type HtmlNode =
                 let nowInsidePre = insidePre || isPreTag
 
                 if canAddNewLine && not insidePre && not (onlyText || isPreTag) then
-                    newLine 0
+                    newLine indentation 0
 
                 append "<"
                 append name
@@ -164,18 +170,23 @@ type HtmlNode =
                     append ">"
 
                     if not insidePre && not (onlyText || isPreTag) then
-                        newLine 2
+                        newLine indentation 2
 
-                    let mutable canAddNewLine = false
+                    // pushed first so it runs after all children are processed
+                    work.Push(fun () ->
+                        if not insidePre && not (onlyText || isPreTag) then
+                            newLine indentation 0
 
-                    for element in elements do
-                        serialize sb (indentation + 2) canAddNewLine nowInsidePre element
-                        canAddNewLine <- true
+                        appendEndTag name)
 
-                    if not insidePre && not (onlyText || isPreTag) then
-                        newLine 0
+                    // push children in reverse so they pop in document order;
+                    // only the first child is serialized with canAddNewLine = false
+                    let elements = List.toArray elements
 
-                    appendEndTag name
+                    for i in elements.Length - 1 .. -1 .. 0 do
+                        let element = elements.[i]
+                        let canAddNewLine = i > 0
+                        work.Push(fun () -> serialize (indentation + 2) canAddNewLine nowInsidePre element)
             | HtmlText str -> append str
             | HtmlComment str ->
                 append "<!--"
@@ -186,8 +197,11 @@ type HtmlNode =
                 append str
                 append "]]>"
 
-        let sb = StringBuilder()
-        serialize sb 0 false false x |> ignore
+        serialize 0 false false x
+
+        while work.Count > 0 do
+            work.Pop () ()
+
         sb.ToString()
 
     /// <exclude />

@@ -2260,15 +2260,16 @@ module internal HtmlCharRefs =
 
             match delimeters with
             | ("&#", _) ->
-                let num =
+                let styles, num =
                     if discriminator <> 'x' then
-                        s.Substring(2, s.Length - 2)
+                        NumberStyles.Integer, s.Substring(2, s.Length - 2)
                     else
-                        s.Substring(3, s.Length - 3)
+                        NumberStyles.AllowHexSpecifier, s.Substring(3, s.Length - 3)
 
-                match UInt32.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+                match UInt32.TryParse(num, styles, CultureInfo.InvariantCulture) with
                 | true, i -> Number(i)
                 | false, _ -> Lookup(orig)
+            // legacy hex form without the '#', e.g. &x41;
             | ("&x", _) ->
                 let num = s.Substring(2, s.Length - 2)
 

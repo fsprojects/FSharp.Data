@@ -44,13 +44,29 @@ module Implementation =
     type internal ServiceConnection(restCache: ICache<_, _>, serviceUrl: string, sources) =
 
         let worldBankUrl (functions: string list) (props: (string * string) list) =
+            // each function is a single path segment: EscapeDataString escapes '/', '?', '#'
+            // and '&' so runtime-supplied codes cannot rewrite the request path or query
             let url =
-                serviceUrl :: (List.map Uri.EscapeUriString functions) |> String.concat "/"
+                serviceUrl :: (List.map Uri.EscapeDataString functions) |> String.concat "/"
 
             let query = [ "per_page", "1000"; "format", "json" ] @ props
             Http.AppendQueryToUrl(url, query)
 
         // The WorldBank data changes very slowly indeed (monthly updates to values, rare updates to schema), hence caching it is ok.
+
+        // the API returns HTTP 200 with an error body (e.g. [{"message":[...]}]) for
+        // throttled/invalid requests; caching such a body would poison the cache for its
+        // whole expiration, so only valid paged documents may be cached or returned
+        let isValidPagedResponse (doc: string) =
+            try
+                match JsonValue.Parse doc with
+                | JsonValue.Array items when items.Length > 0 ->
+                    match items.[0] with
+                    | JsonValue.Record fields -> fields |> Array.exists (fun (k, _) -> k = "pages")
+                    | _ -> false
+                | _ -> false
+            with _ ->
+                false
 
         let rec worldBankRequest attempt funcs args : Async<string> =
             async {
@@ -78,10 +94,19 @@ module Implementation =
                                  else doc)
                         )
 
-                        if not (String.IsNullOrEmpty doc) then
+                        if isValidPagedResponse doc then
                             restCache.Set(url, doc)
-
-                        return doc
+                            return doc
+                        else
+                            // raising here routes error bodies through the retry logic below,
+                            // which handles transient throttling
+                            return
+                                failwithf
+                                    "Invalid response from '%s': %s"
+                                    url
+                                    (if isNull doc then "null"
+                                     elif doc.Length > 200 then doc.[0..199] + "..."
+                                     else doc)
                     with e ->
                         Debug.WriteLine(sprintf "[WorldBank] error: %s" (e.ToString()))
 
@@ -369,8 +394,12 @@ type IIndicatorsDescriptions =
 type IndicatorsDescriptions internal (connection: ServiceConnection, topicCode) =
     let indicatorsDescriptions =
         seq {
-            for indicatorId in connection.IndicatorsByTopic.[topicCode] ->
-                IndicatorDescription(connection, topicCode, indicatorId)
+            // a topic property is generated for every topic, but indicators may all have
+            // been filtered out by the Sources parameter — yield an empty sequence then
+            match connection.IndicatorsByTopic.TryGetValue topicCode with
+            | true, indicatorIds ->
+                for indicatorId in indicatorIds -> IndicatorDescription(connection, topicCode, indicatorId)
+            | false, _ -> ()
         }
 
     interface IIndicatorsDescriptions with

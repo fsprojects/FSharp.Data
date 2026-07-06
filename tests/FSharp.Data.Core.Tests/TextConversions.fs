@@ -189,7 +189,7 @@ let ``DateTimeOffset conversions`` () =
 [<Test>]
 let ``DateTimeOffset conversions with additional formats``() =
   let culture = CultureInfo.InvariantCulture
-  
+
   // More timezone formats
   TextConversions.AsDateTimeOffset culture "2020-01-01T12:00:00+05:30" |> Option.isSome |> should equal true
   TextConversions.AsDateTimeOffset culture "2020-01-01T12:00:00-08:00" |> Option.isSome |> should equal true

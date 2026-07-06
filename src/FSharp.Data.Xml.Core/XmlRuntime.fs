@@ -287,19 +287,19 @@ type XmlRuntime =
 
         let createElement (parent: XElement) (nameWithNS: string) =
             let namesWithNS = nameWithNS.Split '|'
+            let lastIndex = namesWithNS.Length - 1
 
-            (parent, namesWithNS)
-            ||> Array.fold (fun parent nameWithNS ->
+            (parent, Array.indexed namesWithNS)
+            ||> Array.fold (fun parent (i, nameWithNS) ->
                 let xname = XName.Get nameWithNS
 
                 if isNull parent then
                     XElement xname
                 else
-                    let element =
-                        if nameWithNS = Seq.last namesWithNS then
-                            null
-                        else
-                            parent.Element(xname)
+                    // the final segment always creates a fresh element; intermediate
+                    // segments are detected by position, not by name, so a path like
+                    // "item|item" reuses the existing wrapper element
+                    let element = if i = lastIndex then null else parent.Element(xname)
 
                     if isNull element then
                         let element = XElement xname

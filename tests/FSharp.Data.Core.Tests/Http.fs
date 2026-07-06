@@ -385,6 +385,22 @@ let ``Seekable streams create Seekable CombinedStream`` () =
     let combinedStream = HttpHelpers.writeMultipart "-" multiparts Encoding.UTF8
     combinedStream.Length |> should equal result
     combinedStream.CanSeek |> should equal true
+
+[<Test>]
+let ``CombinedStream does not treat a partial read as end of stream`` () =
+    // Stream.Read may legally return fewer bytes than requested while more data is
+    // pending (network/gzip/pipe streams); the CombinedStream must not skip to the
+    // next stream (truncating multipart uploads) when that happens
+    let partialReadStream (data: byte[]) =
+        { new MemoryStream(data) with
+            override x.Read(buffer, offset, count) = base.Read(buffer, offset, min count 3) } :> Stream
+
+    let s1 = partialReadStream [| 1uy .. 10uy |]
+    let s2 = partialReadStream [| 11uy .. 20uy |]
+    use combined = new HttpHelpers.CombinedStream(Some 20L, [ s1; s2 ])
+    use result = new MemoryStream()
+    combined.CopyTo(result)
+    result.ToArray() |> should equal [| 1uy .. 20uy |]
     
 #nowarn "44" // Use of deprecated HttpWebRequest
 

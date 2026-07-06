@@ -275,16 +275,15 @@ type private JsonParser(jsonText: string) =
             // Supported comment syntax:
             // - // ...{newLine}
             // - /* ... */
-            if i < s.Length && s.[i] = '/' then
-                i <- i + 1
-
-                if i < s.Length && s.[i] = '/' then
-                    i <- i + 1
+            // a lone '/' is not a comment and must be left for the parser to reject
+            if i + 1 < s.Length && s.[i] = '/' && (s.[i + 1] = '/' || s.[i + 1] = '*') then
+                if s.[i + 1] = '/' then
+                    i <- i + 2
 
                     while i < s.Length && (s.[i] <> '\r' && s.[i] <> '\n') do
                         i <- i + 1
-                else if i < s.Length && s.[i] = '*' then
-                    i <- i + 1
+                else
+                    i <- i + 2
 
                     while i + 1 < s.Length && (s.[i] <> '*' || s.[i + 1] <> '/') do
                         i <- i + 1

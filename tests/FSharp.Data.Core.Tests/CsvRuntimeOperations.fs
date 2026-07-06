@@ -259,3 +259,43 @@ let ``Chaining Skip and Truncate works correctly`` () =
     let rows = result.Rows |> Seq.toArray
     rows |> should haveLength 2
     rows.[0].["Name"] |> should equal "Bob"
+
+// ============================================================
+// Save round-trip fidelity
+// ============================================================
+
+[<Test>]
+let ``SaveToString quotes headers containing the separator`` () =
+    let csv = CsvFile.Parse("\"Name, First\",Age\r\nJohn,25")
+    let saved = csv.SaveToString()
+    saved |> should startWith "\"Name, First\",Age"
+    let reloaded = CsvFile.Parse(saved)
+    reloaded.Headers |> should equal (Some [| "Name, First"; "Age" |])
+
+[<Test>]
+let ``SaveToString quotes fields containing a lone carriage return`` () =
+    // a bare CR terminates a row when re-parsing, so it must be quoted like LF
+    let csv = CsvFile.Parse("A,B\r\n\"x\ry\",2")
+    let saved = csv.SaveToString()
+    let reloaded = CsvFile.Parse(saved)
+    let rows = reloaded.Rows |> Seq.toArray
+    rows |> should haveLength 1
+    rows.[0].Columns |> should equal [| "x\ry"; "2" |]
+
+[<Test>]
+let ``SaveToString quotes fields containing any of the document separators`` () =
+    let csv = CsvFile.Parse("A;B\r\n1;\"x,y\"", separators = ";,")
+    let saved = csv.SaveToString()
+    let reloaded = CsvFile.Parse(saved, separators = ";,")
+    let rows = reloaded.Rows |> Seq.toArray
+    rows |> should haveLength 1
+    rows.[0].Columns |> should equal [| "1"; "x,y" |]
+
+[<Test>]
+let ``Save does not dispose the caller-supplied writer`` () =
+    let csv = CsvFile.Parse(sampleCsv)
+    use sw = new StringWriter()
+    csv.Save(sw)
+    // writing after Save must work: the writer belongs to the caller
+    sw.Write("still-open")
+    sw.ToString() |> should contain "still-open"
