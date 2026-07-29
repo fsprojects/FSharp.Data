@@ -1019,3 +1019,24 @@ let ``Drops inter-block whitespace but keeps inline whitespace``() =
         |> Seq.map HtmlNode.innerText
         |> Seq.toList
     result |> should equal [ "A B"; "C" ]
+
+[<Test>]
+let ``Table with a huge colspan does not overflow or allocate huge arrays``() =
+    // spans are clamped to the HTML spec limits, so a malicious colspan can neither
+    // overflow the checked column-count sum nor allocate columns per claimed span
+    let html = """<html><body><table id="t">
+        <tr><th>A</th><th>B</th><th>C</th></tr>
+        <tr><td>1</td><td>2</td><td colspan="2147483647">BIG</td></tr>
+        </table></body></html>"""
+    let tables = HtmlDocument.Parse html |> getTables false
+    tables.Length |> should equal 1
+
+[<Test>]
+let ``Table with a huge rowspan terminates and stays bounded by the actual rows``() =
+    let html = """<html><body><table id="t">
+        <tr><th>A</th><th>B</th></tr>
+        <tr><td rowspan="2000000000">1</td><td>2</td></tr>
+        <tr><td>3</td></tr>
+        </table></body></html>"""
+    let tables = HtmlDocument.Parse html |> getTables false
+    tables.Length |> should equal 1

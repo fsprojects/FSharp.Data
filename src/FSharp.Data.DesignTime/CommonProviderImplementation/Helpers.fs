@@ -85,10 +85,11 @@ type DisposableTypeProviderForNamespaces(config, ?assemblyReplacementMap) as x =
 
     static let mutable idCount = 0
 
-    let id = idCount
+    // IDE hosts can construct provider instances concurrently; an unsynchronized
+    // read-then-increment could hand two instances the same id, breaking the
+    // (fullTypeName, id) keys used for dispose actions and file watchers
+    let id = System.Threading.Interlocked.Increment(&idCount)
     let filesToWatch = Dictionary()
-
-    do idCount <- idCount + 1
 
     let dispose typeNameOpt =
         lock lockObj (fun () ->
@@ -317,12 +318,23 @@ module internal ProviderHelpers =
 
                     let sample =
                         if isWeb uri then
+                            // the cached value is the decoded (and possibly row-limited) text,
+                            // so the key must include everything that affects it, not just the URL
+                            let cacheKey =
+                                sprintf
+                                    "%s|encoding=%s|maxRows=%s"
+                                    uri.OriginalString
+                                    encodingStr
+                                    (match maxNumberOfRows with
+                                     | Some n -> string n
+                                     | None -> "")
+
                             let text =
-                                match webUrisCache.TryRetrieve(uri.OriginalString) with
+                                match webUrisCache.TryRetrieve(cacheKey) with
                                 | Some text -> text
                                 | None ->
                                     let text = readText ()
-                                    webUrisCache.Set(uri.OriginalString, text)
+                                    webUrisCache.Set(cacheKey, text)
                                     text
 
                             text
@@ -375,7 +387,9 @@ module internal ProviderHelpers =
 
         let setupDisposeAction providedType fileToWatch =
 
-            if activeDisposeActions.Add(fullTypeName, tp.Id) then
+            // synchronized: getOrCreateProvidedType can run concurrently on IDE threads
+            // and HashSet mutation is not thread-safe
+            if lock activeDisposeActions (fun () -> activeDisposeActions.Add(fullTypeName, tp.Id)) then
 
                 log "Setting up dispose action"
 

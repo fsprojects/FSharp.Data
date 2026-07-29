@@ -247,3 +247,11 @@ let ``ICache interface consistency between implementations``() =
     
     testOperations memoryCache "memory"
     testOperations fileCache "file"
+
+[<Test>]
+let ``InMemoryCache handles expirations longer than Int32 milliseconds``() =
+    // 30 days is ~2.6e9 ms, which overflows Int32; Set must not schedule a
+    // negative sleep (which would throw on a thread-pool thread)
+    let cache = createInMemoryCache (TimeSpan.FromDays 30.0)
+    cache.Set("longLived", "value")
+    cache.TryRetrieve("longLived") |> should equal (Some "value")

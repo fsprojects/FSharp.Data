@@ -351,9 +351,20 @@ let ``JsonDocument.CreateList should handle multiple JSON objects`` () =
 {"b": 2}
 {"c": 3}"""
     use reader = new StringReader(jsonText)
-    
+
     let docType = typeof<JsonDocument>
     let createListMethod = docType.GetMethod("CreateList", [| typeof<TextReader> |])
     let docs = createListMethod.Invoke(null, [| reader |]) :?> IJsonDocument[]
-    
+
     docs.Length |> should equal 3
+
+[<Test>]
+let ``CreateValue handles floats not representable as decimal`` () =
+    // NaN, infinities and out-of-decimal-range floats must not crash with OverflowException;
+    // non-finite floats serialize as null per JSON
+    JsonRuntime.CreateValue(box Double.NaN, "").JsonValue.ToString() |> should equal "null"
+    JsonRuntime.CreateValue(box Double.PositiveInfinity, "").JsonValue.ToString() |> should equal "null"
+    JsonRuntime.CreateValue(box 1e300, "").JsonValue |> should equal (JsonValue.Float 1e300)
+    JsonRuntime.CreateValue(box (Some 1e300), "").JsonValue |> should equal (JsonValue.Float 1e300)
+    // ordinary floats keep their decimal-backed representation
+    JsonRuntime.CreateValue(box 1.5, "").JsonValue |> should equal (JsonValue.Number 1.5m)

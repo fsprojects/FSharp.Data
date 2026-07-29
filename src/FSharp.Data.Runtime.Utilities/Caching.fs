@@ -3,6 +3,7 @@ module internal FSharp.Data.Runtime.Caching
 
 open System
 open System.Collections.Concurrent
+open System.Collections.Generic
 open System.Diagnostics
 open System.IO
 open System.Security.Cryptography
@@ -20,14 +21,17 @@ let createInMemoryCache (expiration: TimeSpan) =
 
     let rec invalidationFunction key =
         async {
-            do! Async.Sleep(int expiration.TotalMilliseconds)
+            // expirations over ~24.8 days overflow Int32 milliseconds; clamp and loop
+            // (the timestamp is re-checked after waking, so a short sleep just re-arms)
+            do! Async.Sleep(int (min expiration.TotalMilliseconds (float Int32.MaxValue)))
 
             match dict.TryGetValue(key) with
-            | true, (_, timestamp) ->
+            | true, ((_, timestamp) as entry) ->
                 if DateTime.UtcNow - timestamp >= expiration then
-                    match dict.TryRemove(key) with
-                    | true, _ -> log (sprintf "Cache expired: %O" key)
-                    | _ -> ()
+                    // conditional removal so a concurrent Set with a fresh timestamp
+                    // is not evicted between the check and the remove
+                    if (dict :> ICollection<KeyValuePair<_, _>>).Remove(KeyValuePair(key, entry)) then
+                        log (sprintf "Cache expired: %O" key)
                 else
                     do! invalidationFunction key
             | _ -> ()
@@ -99,14 +103,31 @@ let createInternetFileCache prefix expiration =
                 member _.Set(key, value) =
                     let cacheFile = cacheFile key
 
+                    // write to a temp file and move it into place so that concurrent readers
+                    // (other threads or processes sharing the cache folder) never observe a
+                    // partially written cache entry
+                    let tempFile = cacheFile + "." + Guid.NewGuid().ToString("N") + ".tmp"
+
                     try
-                        File.WriteAllText(cacheFile, value)
-                    with e ->
-                        Debug.WriteLine(
-                            "Caching: Failed to write file {0} with an exception: {1}",
-                            cacheFile,
-                            e.Message
-                        )
+                        try
+                            File.WriteAllText(tempFile, value)
+
+                            if File.Exists cacheFile then
+                                File.Delete cacheFile
+
+                            File.Move(tempFile, cacheFile)
+                        with e ->
+                            Debug.WriteLine(
+                                "Caching: Failed to write file {0} with an exception: {1}",
+                                cacheFile,
+                                e.Message
+                            )
+                    finally
+                        if File.Exists tempFile then
+                            try
+                                File.Delete tempFile
+                            with _ ->
+                                ()
 
                 member _.TryRetrieve(key, ?extendCacheExpiration) =
                     if extendCacheExpiration = Some true then

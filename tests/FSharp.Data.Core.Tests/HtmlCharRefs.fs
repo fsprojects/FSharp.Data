@@ -36,7 +36,20 @@ let ``Should substitute char references in attribute``() =
 
 [<Test>]
 let ``Should handle indeterminate CharRefs``() =
-    HtmlCharRefs.substitute "&#xD;" |> should equal "&#xD;"
+    HtmlCharRefs.substitute "&#xG;" |> should equal "&#xG;"
+
+[<Test>]
+let ``Should decode hexadecimal numeric character references``() =
+    HtmlCharRefs.substitute "&#x41;" |> should equal "A"
+    HtmlCharRefs.substitute "&#X42;" |> should equal "B"
+    HtmlCharRefs.substitute "&#xD;" |> should equal "\r"
+    HtmlCharRefs.substitute "&#xff;" |> should equal "ÿ"
+    HtmlCharRefs.substitute "&#x1F600;" |> should equal "\U0001F600"
+
+[<Test>]
+let ``Should decode decimal numeric character references``() =
+    HtmlCharRefs.substitute "&#65;" |> should equal "A"
+    HtmlCharRefs.substitute "&#255;" |> should equal "ÿ"
 
 [<Test>]
 let ``Should handle Unicode characters above 655355``() =

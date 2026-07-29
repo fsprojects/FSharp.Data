@@ -1471,19 +1471,15 @@ module internal HttpHelpers =
             match streams |> Seq.tryHead with
             | None -> 0
             | Some stream ->
-                let qty =
-                    if stream.CanSeek then
-                        min count (int stream.Length)
-                    else
-                        count
+                let read = stream.Read(buffer, offset, count)
 
-                let read = stream.Read(buffer, offset, qty)
-
-                if read < count then
+                if read = 0 then
+                    // only a zero-byte read signals the end of the current stream: Read may
+                    // legally return fewer bytes than requested while data is still pending
+                    // (network/gzip/pipe streams), so a partial read must not skip the stream
                     stream.Dispose()
                     streams <- streams |> Seq.skip 1
-                    let readFromRest = readFromStream buffer (offset + read) (count - read)
-                    read + readFromRest
+                    readFromStream buffer offset count
                 else
                     read
 
@@ -1615,9 +1611,12 @@ module internal HttpHelpers =
 
     let asyncCopy (source: Stream) (dest: Stream) =
         async {
-            do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
-
-            source.Dispose()
+            try
+                do! source.CopyToAsync(dest) |> Async.AwaitIAsyncResult |> Async.Ignore
+            finally
+                // dispose user-supplied body streams even when the copy faults
+                // (e.g. connection reset mid-upload)
+                source.Dispose()
         }
 
     let writeBody (req: HttpWebRequest) (data: Stream) =
@@ -1747,7 +1746,12 @@ module internal HttpHelpers =
                 if bytes.Length <> 2 then
                     failwithf "Invalid value for the Range header (%s)" value
 
-                req.AddRange(int64 bytes.[0], int64 bytes.[1])
+                // RFC 7233 also allows open-ended (bytes=N-) and suffix (bytes=-N) ranges
+                match bytes.[0], bytes.[1] with
+                | "", "" -> failwithf "Invalid value for the Range header (%s)" value
+                | rangeStart, "" -> req.AddRange(int64 rangeStart)
+                | "", suffixLength -> req.AddRange(-(int64 suffixLength))
+                | rangeStart, rangeEnd -> req.AddRange(int64 rangeStart, int64 rangeEnd)
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
             | "referer" -> req.Referer <- value
             | "te" -> req.Headers.[HeaderEnum.Te] <- value

@@ -153,8 +153,10 @@ type private FileWatcher(path: string) =
         if lastWrite <> curr then
             log (sprintf "File %s: %s" action path)
             lastWrite <- curr
-            // creating a copy since the handler can be unsubscribed during the iteration
-            let handlers = subscriptions.Values |> Seq.toArray
+            // snapshot under lock: this runs on FileSystemWatcher callback threads while
+            // Subscribe/Unsubscribe mutate the dictionary from other threads, and handlers
+            // can also unsubscribe during the iteration
+            let handlers = lock subscriptions (fun () -> subscriptions.Values |> Seq.toArray)
 
             for handler in handlers do
                 handler ()
@@ -164,20 +166,22 @@ type private FileWatcher(path: string) =
         watcher.Renamed.Add(checkForChanges "renamed")
         watcher.Deleted.Add(checkForChanges "deleted")
 
-    member _.Subscribe(name, action) = subscriptions.Add(name, action)
+    member _.Subscribe(name, action) =
+        lock subscriptions (fun () -> subscriptions.Add(name, action))
 
     member _.Unsubscribe(name) =
-        if subscriptions.Remove(name) then
-            log (sprintf "Unsubscribed %s from %s watcher" name path)
+        lock subscriptions (fun () ->
+            if subscriptions.Remove(name) then
+                log (sprintf "Unsubscribed %s from %s watcher" name path)
 
-            if subscriptions.Count = 0 then
-                log (sprintf "Disposing %s watcher" path)
-                watcher.Dispose()
-                true
+                if subscriptions.Count = 0 then
+                    log (sprintf "Disposing %s watcher" path)
+                    watcher.Dispose()
+                    true
+                else
+                    false
             else
-                false
-        else
-            false
+                false)
 
 let private watchers = Dictionary<string, FileWatcher>()
 

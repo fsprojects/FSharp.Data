@@ -1,5 +1,22 @@
 # Release Notes
 
+## 8.2.0 - Jul 06 2026
+
+- Fix: HTML hexadecimal character references (`&#x41;`) are now decoded correctly; previously digit-only hex refs were parsed as decimal and refs containing `a`–`f` were left as literal text.
+- Fix: HTML table parsing clamps `colspan`/`rowspan` to the HTML spec limits (1000/65534) and no longer materializes unbounded ranges — malicious/malformed span attributes previously caused `OverflowException`, out-of-memory, or hangs.
+- Fix: `HtmlNode.ToString()` uses an explicit work stack, so deeply nested documents (which already parsed fine) no longer crash serialization with an uncatchable `StackOverflowException`.
+- Fix: `Http` multipart uploads no longer truncate when a source stream returns a partial read (e.g. network/gzip streams), and multipart parts of 2GB or more no longer overflow. User-supplied body streams are now disposed even when the upload faults.
+- Fix: `Http` `Range` headers in the RFC 7233 open-ended (`bytes=N-`) and suffix (`bytes=-N`) forms no longer throw `FormatException`.
+- Fix: `CsvFile.Rows` with `skipRows` re-applies the skip on repeated enumerations; previously the second enumeration returned garbage rows or threw.
+- Fix: `CsvFile.Save` now quotes headers, fields containing a lone `\r`, and fields containing any of the document's separators, so saved CSV round-trips correctly. `Save(TextWriter)` no longer disposes the caller-owned writer (it flushes instead).
+- Fix: JsonProvider-generated constructors no longer throw `OverflowException` for `NaN`, infinite, or very large `float` values; such values serialize through `JsonValue.Float`.
+- Fix: the JSON parser no longer silently swallows a stray `/` as whitespace (e.g. `[1, /2]` previously parsed as `[1, 2]`).
+- Fix: the in-memory cache no longer overflows `Int32` for expirations over ~24.8 days (which could crash the host process via an unhandled thread-pool exception), and a concurrently re-set entry can no longer be evicted by a stale expiration check. The file cache writes via temp-file-and-rename so concurrent readers never observe half-written entries.
+- Fix: file-watcher subscriptions are synchronized; concurrent subscribe/change events could corrupt the subscription dictionary and crash the IDE host at design time. Provider instance ids are now allocated with `Interlocked.Increment` and the design-time dispose-action set is locked.
+- Fix: the design-time web cache key now includes the `Encoding` (and row-limit) parameters, so two providers reading the same URL with different encodings no longer share the first decode.
+- Fix: WorldBank no longer caches HTTP-200 error bodies (which poisoned the cache for 30 days); invalid responses now go through the retry logic. Topics whose indicators are all filtered out by `Sources` return an empty collection instead of throwing `KeyNotFoundException`. Country/indicator codes are escaped with `Uri.EscapeDataString`, preventing URL path/query injection.
+- Fix: `XmlProvider` record creation no longer corrupts the structure when an intermediate path segment has the same name as the leaf (e.g. nested elements named `item`).
+
 ## 8.1.14 - May 09 2026
 
 - Eng: Remove manual `AssemblyInfo*.fs` files; use SDK-generated assembly attributes instead.

@@ -320,6 +320,17 @@ type JsonRuntime =
             | None -> JsonValue.Null
             | Some v -> f v
 
+        // NaN, infinities and values outside the decimal range cannot be converted
+        // to decimal; they must go through JsonValue.Float instead of crashing
+        let floatToJson (v: float) =
+            if Double.IsNaN v || Double.IsInfinity v then
+                JsonValue.Float v
+            else
+                try
+                    JsonValue.Number(decimal v)
+                with :? OverflowException ->
+                    JsonValue.Float v
+
         match value with
         | null -> JsonValue.Null
         | :? Array as v -> JsonValue.Array [| for elem in v -> JsonRuntime.ToJsonValue cultureInfo elem |]
@@ -330,7 +341,7 @@ type JsonRuntime =
         | :? TimeSpan as v -> v.ToString("g", cultureInfo) |> JsonValue.String
         | :? int as v -> JsonValue.Number(decimal v)
         | :? int64 as v -> JsonValue.Number(decimal v)
-        | :? float as v -> JsonValue.Number(decimal v)
+        | :? float as v -> floatToJson v
         | :? decimal as v -> JsonValue.Number v
         | :? bool as v -> JsonValue.Boolean v
         | :? Guid as v -> v.ToString() |> JsonValue.String
@@ -346,7 +357,7 @@ type JsonRuntime =
             optionToJson (fun (ts: TimeSpan) -> ts.ToString("g", cultureInfo) |> JsonValue.String) v
         | :? option<int> as v -> optionToJson (decimal >> JsonValue.Number) v
         | :? option<int64> as v -> optionToJson (decimal >> JsonValue.Number) v
-        | :? option<float> as v -> optionToJson (decimal >> JsonValue.Number) v
+        | :? option<float> as v -> optionToJson floatToJson v
         | :? option<decimal> as v -> optionToJson JsonValue.Number v
         | :? option<bool> as v -> optionToJson JsonValue.Boolean v
         | :? option<Guid> as v -> optionToJson (fun (g: Guid) -> g.ToString() |> JsonValue.String) v

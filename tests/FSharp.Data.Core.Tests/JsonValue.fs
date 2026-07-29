@@ -617,6 +617,14 @@ let ``JsonValue parsing with multi-line comment containing slash`` () =
     result?x.AsInteger() |> should equal 2
 
 [<Test>]
+let ``JsonValue parsing rejects a stray slash`` () =
+    // Bug: a lone '/' (not starting // or /*) was silently consumed as whitespace,
+    // so invalid documents like [1, /2] parsed as [1, 2]
+    (fun () -> JsonValue.Parse "[1, /2]" |> ignore) |> should throw typeof<Exception>
+    (fun () -> JsonValue.Parse "1 /" |> ignore) |> should throw typeof<Exception>
+    (fun () -> JsonValue.Parse """{"a" / : 1}""" |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
 let ``JsonValue parsing with multi-line comment containing both asterisk and slash`` () =
     let json = "{ /* a/b * c */ \"x\": 3 }"
     let result = JsonValue.Parse json

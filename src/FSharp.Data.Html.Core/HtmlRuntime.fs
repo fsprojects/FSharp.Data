@@ -288,11 +288,13 @@ module HtmlRuntime =
         index
         (table: HtmlNode, parents: HtmlNode list)
         =
+        // the HTML spec caps rowspan at 65534 and colspan at 1000; without the cap a
+        // malicious/malformed attribute overflows the column-count sum or allocates huge arrays
         let rowSpan cell =
-            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0)
+            min 65534 (max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0))
 
         let colSpan cell =
-            max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0)
+            min 1000 (max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0))
 
         let rows =
             let header =
@@ -347,10 +349,9 @@ module HtmlRuntime =
                         while col_i < res.[rowindex].Length && res.[rowindex].[col_i] <> Empty do
                             col_i <- col_i + 1
 
-                        for j in [ col_i .. (col_i + colSpan cell - 1) ] do
-                            for i in [ rowindex .. (rowindex + rowSpan cell - 1) ] do
-                                if i < rows.Length && j < numberOfColumns then
-                                    res.[i].[j] <- data
+                        for j in col_i .. min (col_i + colSpan cell - 1) (numberOfColumns - 1) do
+                            for i in rowindex .. min (rowindex + rowSpan cell - 1) (rows.Length - 1) do
+                                res.[i].[j] <- data
 
                 let numberOfHeaderRows =
                     res |> Array.countWhile (Array.forall (fun cell -> cell.IsHeader))
