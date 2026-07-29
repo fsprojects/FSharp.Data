@@ -29,6 +29,8 @@ on:
     pull-requests: read
   steps:
     - id: check
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         MAX_OPEN_PRS=8
         if [[ "$GITHUB_EVENT_NAME" != "schedule" ]]; then exit 0; fi
@@ -205,7 +207,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@1c6668b751c51af8571f01204ceffb19362e0f66
+source: githubnext/agentics/workflows/repo-assist.md@42c2ab5b4e4c9273534c39259b2e0df7f20f07e9
 ---
 
 # Repo Assist
