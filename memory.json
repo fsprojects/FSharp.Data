@@ -1,9 +1,14 @@
 {
-  "v": "2026-07-30",
-  "r": "30583437050",
+  "v": "2026-08-02",
+  "r": "30754621739",
   "summary_issue_month": "2026-07",
-  "mcp_blocked": false,
-  "notes": "2026-07-30: Task 1 — labelled #1786 (question, test issue). Task 4 — commented on PR #1785 (ProvidedTypes thread-safety update, recommended Windows test). Task 8 — created PR: perf: HtmlDocument.ToString reuses shared StringBuilder across child elements; all 3926 tests pass. Task 11 — closed May 2026 issue #1772, created July 2026 issue. PR #1785 by Thorium is important - updates ProvidedTypes.fs for parallel compilation thread-safety. Issue #1786 appears to be a test placeholder by dsyme.",
-  "open_prs": [1785],
-  "closed_issues": [1772]
+  "summary_issue_number": 1788,
+  "notes": "2026-08-02: Task 8 — created PR: perf: HtmlParser reuses CurrentTag and Content StringBuilders across tokens (2284 HTML tests pass). Task 11 — updated July 2026 issue #1788. Issue #1772 (May 2026) is still open — previous run attempted to close it but it remains open. Issue #1786 (test issue by dsyme) still open. PR #1785 (ProvidedTypes thread-safety by Thorium) still awaiting review.",
+  "open_prs": [1785, 1787],
+  "open_issues_flagged": [1786, 1772],
+  "comments_made": {
+    "1781": "2026-07-29",
+    "1671": "2026-02-27",
+    "1785": "2026-07-30"
+  }
 }
