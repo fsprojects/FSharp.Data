@@ -1,0 +1,17 @@
+<census-api
+    xmlns="http://thedataweb.rm.census.gov/api/discovery/"
+    xmlns:dcat="http://www.w3.org/ns/dcat#"
+    xmlns:dct="http://purl.org/dc/terms/">
+    <dct:dataset>
+        <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+        <dcat:distribution
+            dcat:accessURL="https://api.census.gov/data/2010/acs5">
+        </dcat:distribution>
+    </dct:dataset>    
+    <dct:dataset>
+        <dct:title>2006-2010 American Community Survey 5-Year Estimates</dct:title>
+        <dcat:distribution
+            dcat:accessURL="https://api.census.gov/data/2010/acs5">
+        </dcat:distribution>
+    </dct:dataset>
+</census-api>
