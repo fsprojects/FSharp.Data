@@ -1,22 +1,44 @@
-Contributing to FSharp.Data
-=======================
+# Contributing to FSharp.Data
 
-This page should provide you with some basic information if you're thinking about
-contributing to the FSharp.Data package. It gives a brief summary of the library 
-structure, how type providers are written and how the FSharp.Data package handles 
-multi-targeting (to make the providers available for Desktop as well
-as Portable libraries).
+FSharp.Data is primarily maintained through agentic development under human guidance. Maintainers
+review and discuss proposed work, then direct coding agents to make the complete change, including
+implementation, tests, documentation, samples, and other affected files.
 
- * This page can be edited by sending a pull request to FSharp.Data on GitHub, so
-   if you learn something when playing with FSharp.Data, please record your
-   [findings here](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md)!
+## Start With an Issue
 
- * If you want to discuss a feature (a good idea!), or if you want to look at 
-   suggestions how you might contribute, check out the
-   [Issue list](https://github.com/fsharp/FSharp.Data/issues) on GitHub or send
-   an email to the [F# Open-Source mailing list](http://groups.google.com/group/fsharp-opensource).
-   
-   * Easier tasks to get started with are marked with the [up-for-grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) tag.
+We generally prefer contributions as [GitHub issues] rather than pull requests. Use an issue to
+report a bug, request a feature, suggest a documentation improvement, or propose another change.
+Search for an existing report first and add useful context there instead of creating a duplicate.
+
+A useful issue explains the problem or desired outcome, why the change would be valuable, and steps
+to reproduce a bug with relevant version and platform details. Examples, logs, API sketches, proposed
+changes, patches, and links to forks or branches are welcome. Maintainers may refine the scope with
+you and then assign the issue to an agent to implement and validate the complete change.
+
+## Repo Assist
+
+[Repo Assist] is an automated AI assistant that runs regularly in this repository. It may triage or
+respond to issues, investigate bugs, suggest improvements, and attempt implementations as draft pull
+requests. Its comments and pull requests identify it as automated, and its work remains subject to
+human review. Repo Assist does not merge pull requests or make final maintenance decisions.
+
+Maintainers can also invoke Repo Assist with `/repo-assist <instructions>` to perform a specific
+agentic task, such as investigating an issue, preparing a fix, adding tests, or updating
+documentation. These directed tasks follow the same review process as its scheduled work.
+
+## Pull Requests
+
+Every pull request must have a matching issue that has been discussed with the maintainers. Open the
+issue before investing substantial effort, especially for new features, public API changes, or broad
+refactoring, and link the pull request to it.
+
+Submitting a pull request does not guarantee that its commits will be merged. Maintainers may close
+the pull request and use the issue as the basis for an agent-produced implementation instead. The
+original report, analysis, and proposed code remain valuable inputs to that work.
+
+If a pull request is the agreed approach, keep it focused on one issue, follow the existing project
+conventions, add deterministic tests for behavior changes, update documentation when applicable, and
+run the relevant build, test, and formatting checks described in [AGENTS.md].
 
 ## General info about developing type providers
 
@@ -103,3 +125,7 @@ dotnet fsdocs watch
 You can now edit documentation and the file watcher will pick up changes, regenerate the docs, and serve them up locally for you to view in a browser.
 
 Docs updates are pushed to the website every time a pull request is merged.
+
+[AGENTS.md]: AGENTS.md
+[GitHub issues]: https://github.com/fsprojects/FSharp.Data/issues
+[Repo Assist]: https://github.com/githubnext/agentics/blob/main/docs/repo-assist.md
