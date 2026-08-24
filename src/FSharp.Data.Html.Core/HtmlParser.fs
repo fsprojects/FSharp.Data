@@ -171,7 +171,7 @@ module internal HtmlParser =
         member x.EmitSelfClosingTag() =
             let name = x.CurrentTag.ToString().Trim()
             let result = Tag(true, name, x.GetAttributes())
-            x.CurrentTag <- { Contents = StringBuilder() }
+            x.CurrentTag.Clear()
             x.InsertionMode <- DefaultMode
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
@@ -217,7 +217,7 @@ module internal HtmlParser =
                 else
                     DefaultMode
 
-            x.CurrentTag <- { Contents = StringBuilder() }
+            x.CurrentTag.Clear()
             x.Attributes <- []
             x.Tokens <- result :: x.Tokens
 
@@ -228,7 +228,7 @@ module internal HtmlParser =
             for c in content do
                 x.ConsAttrValue c
 
-            x.Content <- { Contents = StringBuilder() }
+            x.Content.Clear()
             x.InsertionMode <- DefaultMode
 
         member x.Emit() : unit =
@@ -252,7 +252,7 @@ module internal HtmlParser =
                 | DocTypeMode -> DocType content
                 | CDATAMode -> CData(content.Replace("<![CDATA[", "").Replace("]]>", ""))
 
-            x.Content <- { Contents = StringBuilder() }
+            x.Content.Clear()
             x.InsertionMode <- DefaultMode
 
             match result with
