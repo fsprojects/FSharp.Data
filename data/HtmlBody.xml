@@ -1,0 +1,10 @@
+﻿<div id="root">
+  <span>Main text</span>
+  <div id="first">
+    <span>First text</span>
+    <span>Another text</span>
+  </div>
+  <div id="second">
+    <div>Second text</div>
+  </div>
+</div>
