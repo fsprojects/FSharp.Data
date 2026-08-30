@@ -1,9 +1,9 @@
 {
-  "v": "2026-05-01",
-  "r": "25202858156",
-  "open_prs": [1717, 1754, 1758, 1759, 1762, 1763, 1764, 1765, 1766, 1768, 1769, 1770, 1771],
-  "pending_branches": [],
-  "summary_issue_month": "2026-05",
+  "v": "2026-08-30",
+  "r": "33319289611",
+  "open_prs": [],
+  "pending_branches": ["repo-assist/eng-fantomas-nuget-login-comment-2026-08-30"],
+  "summary_issue_month": "2026-08",
   "mcp_blocked": false,
-  "notes": "2026-05-01: Task 6 — pushed OpenTelemetry.Api >= 1.15.1 + GitHubActionsTestLogger 3.0.3 CI fix to PRs #1768, #1769, #1770, #1771; closed April issue #1726; created May issue. Key action: merge #1762 first to fix CI on all other PRs. PRs #1717 and #1754 should be closed (superseded by #1758). Issues #1752 and #1760 can be closed. Dependabot PR #1767 handles NuGet/login update. PRs #1768-#1771 now have CI fix applied."
+  "notes": "2026-08-30: no open issues labeled bug/help-wanted/good-first-issue exist. Only 2 substantive open issues remain (#1781 JSON CsvProvider column, #1671 System.Text.Json), both already commented on by Repo Assist with no new human activity since. Created eng PR bumping Fantomas + fixing stale NuGet/login comment in push-master.yml."
 }

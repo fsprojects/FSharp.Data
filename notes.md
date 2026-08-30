@@ -24,4 +24,16 @@
 
 ## Monthly Summary
 - April 2026: issue #1726 (CLOSED)
-- May 2026: created this run
+- May 2026: issue #1772 (CLOSED)
+- July 2026: issue #1788 (CLOSED)
+- August 2026: created this run (2026-08-30)
+
+## 2026-08-30 Run Notes
+- Selected tasks: 4 (Engineering), 3 (Issue Fix), 5 (Coding Improvements)
+- Task 3: no issues labelled bug/help-wanted/good-first-issue exist; nothing fixable found
+- Task 4+5 (combined, low-risk): PR bumping Fantomas 7.0.1→7.0.6 and fixing stale
+  "this hash is v1.1.0" comment in push-master.yml (actual SHA is v1.2.0, per Dependabot
+  history — comment went stale after commit 40023654)
+- Remaining open substantive issues: #1781 (JSON CsvProvider column type request),
+  #1671 (System.Text.Json investigation) — both already have Repo Assist comments,
+  no new human activity, not re-engaged (anti-spam)
