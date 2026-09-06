@@ -1,9 +1,9 @@
 {
-  "v": "2026-08-30",
-  "r": "33319289611",
-  "open_prs": [],
-  "pending_branches": ["repo-assist/eng-fantomas-nuget-login-comment-2026-08-30"],
-  "summary_issue_month": "2026-08",
+  "v": "2026-09-06",
+  "r": "34041896168",
+  "open_prs": ["1796"],
+  "pending_branches": ["repo-assist/eng-paket-lockfile-update-2026-09-06"],
+  "summary_issue_month": "2026-09",
   "mcp_blocked": false,
-  "notes": "2026-08-30: no open issues labeled bug/help-wanted/good-first-issue exist. Only 2 substantive open issues remain (#1781 JSON CsvProvider column, #1671 System.Text.Json), both already commented on by Repo Assist with no new human activity since. Created eng PR bumping Fantomas + fixing stale NuGet/login comment in push-master.yml."
+  "notes": "2026-09-06: no unlabelled issues/PRs exist. Only 2 substantive open issues remain (#1781 JSON CsvProvider column, #1671 System.Text.Json), both already commented on by Repo Assist with no new human activity. Created eng PR refreshing paket.lock Test group transitive deps. PR #1796 (Fantomas bump) still open awaiting review."
 }

@@ -26,7 +26,26 @@
 - April 2026: issue #1726 (CLOSED)
 - May 2026: issue #1772 (CLOSED)
 - July 2026: issue #1788 (CLOSED)
-- August 2026: created this run (2026-08-30)
+- August 2026: issue #1797 (CLOSED 2026-09-06)
+- September 2026: created this run (2026-09-06)
+
+## 2026-09-06 Run Notes
+- Selected tasks: 1 (Labelling, N/A - 0 unlabelled issues, substituted Task 2),
+  4 (Engineering), 10 (Take Repo Forward)
+- Task 1: 0 unlabelled issues/PRs exist — substituted with Task 2 style triage:
+  reviewed #1781, #1671 for new human activity since last Repo Assist comment —
+  none found, not re-engaged (anti-spam)
+- Task 4: ran `dotnet paket outdated` — Test group transitive deps significantly
+  behind (OpenTelemetry 1.15->1.18, several Microsoft.Extensions.*/System.* patch
+  versions). Ran `dotnet paket update group Test`, reverted unrelated CRLF-only
+  diff in .paket/Paket.Restore.targets, verified Build + RunTests (3145 tests)
+  pass. Created PR (branch repo-assist/eng-paket-lockfile-update-2026-09-06).
+- Task 10: reviewed in-progress items — #1781/#1671 both fully answered with no
+  implementation started; left as future work since no clear next step without
+  maintainer direction on approach.
+- #1796 (Fantomas+comment fix PR from 2026-08-30) still open, awaiting review.
+- Remaining open substantive issues: #1781, #1671 — both up to date, no new
+  human activity, not re-engaged.
 
 ## 2026-08-30 Run Notes
 - Selected tasks: 4 (Engineering), 3 (Issue Fix), 5 (Coding Improvements)
