@@ -257,7 +257,7 @@ module internal ProviderHelpers =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
             | false, _ -> None
             | true, uri ->
-                if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str then
+                if String.IsNullOrWhiteSpace str || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str then
                     None
                 else
                     Some uri
