@@ -24,10 +24,38 @@
 
 ## Monthly Summary
 - April 2026: issue #1726 (CLOSED)
-- May 2026: issue #1772 (CLOSED)
+- May 2026: issue #1772 (was left open by mistake after 2026-05 run; CLOSED 2026-09-13 as stale duplicate)
 - July 2026: issue #1788 (CLOSED)
 - August 2026: issue #1797 (CLOSED 2026-09-06)
-- September 2026: created this run (2026-09-06)
+- September 2026: issue #1799 (created 2026-09-06, still open/current)
+
+## 2026-09-13 Run Notes
+- Selected tasks: 4 (Engineering), 1 (Labelling), 7 (Stale PR Nudges)
+- Task 4: pushed a follow-up commit to existing draft PR #1798 (branch
+  repo-assist/eng-paket-lockfile-update-2026-09-06-*) — re-ran
+  `dotnet paket update group Test` since new transitive updates had appeared
+  since 2026-09-06 (e.g. Microsoft.NET.Test.Sdk 18.9→18.10). Reverted the
+  usual CRLF-only .paket/Paket.Restore.targets diff. Build + RunTests verified:
+  489+3143+2 = 3634 tests pass. Pushed via push_to_pull_request_branch.
+- Task 1: 0 unlabelled issues, but discovered unlabelled external PR #1800
+  ("Minor code cleanups" by @Thorium — HTML parser perf/robustness, URI parsing
+  fix, JSON schema error message improvement). Labelled `refactor`,
+  `performance`.
+- Task 7: no non-Repo-Assist PRs stale 14+ days (#1800 was opened same day as
+  this run) — substituted with general PR/issue housekeeping: found stale
+  May 2026 monthly-activity issue #1772 still open from an earlier run
+  (should have been closed then); closed it with an explanatory comment.
+- Task 11: `update_issue` has a max of 1 call per run; that quota was already
+  used to close #1772, so the Sept monthly issue #1799 body could not also be
+  edited. Posted a comment on #1799 with this run's activity instead — next
+  run should fold it into the issue body.
+- Issue #1796 (protected-files fallback notice from 2026-08-30 run, Fantomas
+  bump + stale comment fix) remains open — content is still valid but the
+  automated PR creation failed due to protected file paths
+  (.config/dotnet-tools.json, .github/workflows/push-master.yml). Needs a
+  human to apply the patch manually, or leave as backlog.
+- #1781, #1671: no new human activity since last Repo Assist comment, not
+  re-engaged (anti-spam).
 
 ## 2026-09-06 Run Notes
 - Selected tasks: 1 (Labelling, N/A - 0 unlabelled issues, substituted Task 2),
