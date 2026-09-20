@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "cursors": {
+    "labelling_after": null,
+    "investigation_after": null
+  },
+  "issues": [
+    {
+      "number": 1781,
+      "state": "commented",
+      "updated_at": "2026-07-29",
+      "note": "CsvProvider JSON column type request; suggested ColumnName (json) schema override approach via CsvInference.fs; no implementation started; no new human activity as of 2026-09-20"
+    },
+    {
+      "number": 1671,
+      "state": "commented",
+      "updated_at": "2026-02-27",
+      "note": "System.Text.Json dependency consideration; assessed STJ-as-backend option keeping JsonValue public API; no implementation started; no new human activity as of 2026-09-20"
+    },
+    {
+      "number": 1796,
+      "state": "deferred",
+      "updated_at": "2026-08-30",
+      "note": "Fantomas 7.0.1->7.0.6 + stale NuGet/login comment fix; blocked by protect_top_level_dot_folders (.config, .github are protected); needs human to apply manually, cannot retry via automation"
+    }
+  ],
+  "fixes": [],
+  "checks": [
+    {
+      "area": "hygiene",
+      "checked_at": "2026-09-20",
+      "result": "Re-closed stale May 2026 monthly issue #1772; a 2026-09-13 comment claimed it was closed but the update_issue call did not take effect and it remained open. Confirmed closed this run.",
+      "follow_up": null
+    },
+    {
+      "area": "docs",
+      "checked_at": "2026-09-20",
+      "result": "Fixed 4 stale links in README.md (wrong org fsharp/FSharp.Data->fsprojects/FSharp.Data, wrong branch master->main, dead docs/content path->docs/library). PR created.",
+      "follow_up": "Check CONTRIBUTING.md and other root docs periodically for similar staleness; none found this run."
+    },
+    {
+      "area": "dependencies",
+      "checked_at": "2026-09-20",
+      "result": "dotnet paket outdated shows Test group significantly behind (OpenTelemetry 1.15->1.19, Microsoft.Extensions.*/System.* several versions behind, Microsoft.NET.Test.Sdk 18.0->18.10). PR #1798 already covers a 2026-09-06 refresh; a further update may be worth bundling in a future eng run.",
+      "follow_up": "Consider re-running paket update group Test in a future run since PR #1798 is from 2026-09-06/09-13 and more updates have appeared since."
+    }
+  ],
+  "completed_actions": [],
+  "priorities": [
+    {
+      "task": 6,
+      "item": "PR #1798 (paket.lock refresh)",
+      "note": "Open since 2026-09-06, awaiting maintainer review/merge; no CI issues to fix as of last check"
+    },
+    {
+      "task": 1,
+      "item": "PR #1800 (external, Thorium)",
+      "note": "Already labelled refactor+performance 2026-09-13; mergeable_state was blocked as of 2026-09-13, may need review/rebase by author"
+    },
+    {
+      "task": 5,
+      "item": "Issue #1796 fix content",
+      "note": "Fantomas bump + comment fix valid but permanently blocked by protected-files policy on .config/.github; needs a human to apply the patch manually from the issue body"
+    }
+  ]
+}
