@@ -4,7 +4,7 @@ The FSharp.Data package (`FSharp.Data.dll`) implements everything you need to ac
 
 The library supports both sample-based and schema-based type inference. The XML Type Provider supports XSD schemas, and the JSON Type Provider now supports JSON Schema for defining structured, strongly-typed access to JSON documents.
 
-We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/labels/up-for-grabs) issues, or help to improve the [documentation][3].
+We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsprojects/FSharp.Data/labels/up-for-grabs) issues, or help to improve the [documentation][3].
 
 You can see the version history [here](RELEASE_NOTES.md).
 
@@ -39,7 +39,7 @@ Releasing of docs is done by GitHub actions CI on each push to the main branch.
 ## Support and community
 
  - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data).
- - If you want to submit a bug, a feature request or help with fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to FSharp.Data](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md).
+ - If you want to submit a bug, a feature request or help with fixing bugs then look at [issues](https://github.com/fsprojects/FSharp.Data/issues) and read [contributing to FSharp.Data](https://github.com/fsprojects/FSharp.Data/blob/main/CONTRIBUTING.md).
  - To discuss more general issues about FSharp.Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
 
 ## Code of Conduct
@@ -62,6 +62,6 @@ Current maintainers are [Don Syme](https://github.com/dsyme) and [Phillip Carter
 
 Historical maintainers of this project are [Gustavo Guerra](https://github.com/ovatsus), [Tomas Petricek](https://github.com/tpetricek) and [Colin Bull](https://github.com/colinbull).
 
- [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
- [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
+ [1]: https://github.com/fsprojects/FSharp.Data/blob/main/LICENSE.md
+ [2]: https://github.com/fsprojects/FSharp.Data/tree/main/docs/library
  [3]: https://fsprojects.github.io/FSharp.Data/
