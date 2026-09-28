@@ -45,7 +45,22 @@ if: needs.pre_activation.outputs.check_result == 'success'
 
 timeout-minutes: 60
 
-permissions: read-all
+permissions:
+  actions: read
+  attestations: read
+  checks: read
+  code-quality: read
+  contents: read
+  deployments: read
+  id-token: write
+  issues: read
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: read
+  security-events: read
+  statuses: read
+  vulnerability-alerts: read
 
 network:
   allowed:
@@ -80,7 +95,9 @@ tools:
   repo-memory:
     max-file-size: 65536
     max-patch-size: 65536
-    max-file-count: 1
+    # Allows the one-time removal of five legacy memory files plus notes.json.
+    # The validation script below still enforces exactly one persisted file.
+    max-file-count: 6
     format-json: true
     allowed-extensions: [".json"]
     validation:
@@ -90,6 +107,13 @@ tools:
         const path = require("node:path");
         const fail = message => { throw new Error(`notes.json: ${message}`); };
         const notesPath = path.join(memoryRoot, "notes.json");
+        for (const legacyFile of ["memory.json", "state.json"]) {
+          fs.rmSync(path.join(memoryRoot, legacyFile), { force: true });
+        }
+        const memoryEntries = fs.readdirSync(memoryRoot, { withFileTypes: true });
+        if (memoryEntries.length !== 1 || !memoryEntries[0].isFile() || memoryEntries[0].name !== "notes.json") {
+          fail("must be the only file in repo memory");
+        }
         if (!fs.existsSync(notesPath)) fail("missing (create an initial notes.json that matches schema version 1)");
         const data = JSON.parse(fs.readFileSync(notesPath, "utf8"));
         const isObject = value => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -300,7 +324,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@4bc8419fad05e6b032741cbfd189986700bcf71c
+source: githubnext/agentics/workflows/repo-assist.md@2e8c060a20085f9e9a4fc0a9adc33374fab1cec5
 ---
 
 # Repo Assist
