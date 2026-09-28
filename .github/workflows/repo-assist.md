@@ -52,7 +52,6 @@ permissions:
   code-quality: read
   contents: read
   deployments: read
-  id-token: write
   issues: read
   discussions: read
   packages: read
@@ -324,7 +323,7 @@ steps:
           json.dump(result, f, indent=2)
       EOF
 
-source: githubnext/agentics/workflows/repo-assist.md@2e8c060a20085f9e9a4fc0a9adc33374fab1cec5
+source: githubnext/agentics/workflows/repo-assist.md@92363f86129066aaba6186afb1e5b390f2f1a1f2
 ---
 
 # Repo Assist
