@@ -366,6 +366,14 @@ module JsonSchema =
 
         resolve schema
 
+    // Cache compiled regexes by pattern so repeated validation of many values against
+    // the same schema pattern (e.g. array/object properties) doesn't recompile the regex each time.
+    let private patternRegexCache =
+        System.Collections.Concurrent.ConcurrentDictionary<string, System.Text.RegularExpressions.Regex>()
+
+    let private getPatternRegex (pattern: string) =
+        patternRegexCache.GetOrAdd(pattern, (fun p -> System.Text.RegularExpressions.Regex(p)))
+
     /// Validate a JSON value against a schema
     let rec validate (schema: JsonSchemaDefinition) (value: JsonValue) : ValidationResult =
         // Check nulls first
@@ -388,7 +396,7 @@ module JsonSchema =
                         // Validate pattern
                         match schema.Pattern with
                         | Some pattern ->
-                            let regex = System.Text.RegularExpressions.Regex(pattern)
+                            let regex = getPatternRegex pattern
 
                             if regex.IsMatch(str) then
                                 Valid
