@@ -71,9 +71,12 @@ network:
   - rust
   - java
   - github
-  - api.worldbank.org
-  - schemas.microsoft.com
-  - tomasp.net
+  - "api.nuget.org"
+  - "api.worldbank.org"
+  - "dc.services.visualstudio.com"
+  - "raw.githubusercontent.com"
+  - "schemas.microsoft.com"
+  - "tomasp.net"
   - http://www.w3.org
   - http://schemas.microsoft.com
   - www.google.com
