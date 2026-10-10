@@ -69,22 +69,26 @@ module HtmlNode =
         n |> elements |> List.filter (name >> nameSet.Contains)
 
     let private descendantsBy includeSelf recurseOnMatch predicate n =
-        let rec descendantsBy includeSelf n =
-            seq {
-                let proceed = ref true
+        // one sequence with an explicit stack: pre-order, children in
+        // document order (pushed reversed), no enumerator per level
+        seq {
+            let stack = System.Collections.Generic.Stack<HtmlNode * bool>()
+            stack.Push((n, includeSelf))
 
-                if includeSelf && predicate n then
-                    yield n
+            while stack.Count > 0 do
+                let node, considerSelf = stack.Pop()
+                let mutable proceed = true
+
+                if considerSelf && predicate node then
+                    yield node
 
                     if not recurseOnMatch then
-                        proceed := false
+                        proceed <- false
 
-                if !proceed then
-                    for element in elements n do
-                        yield! descendantsBy true element
-            }
-
-        descendantsBy includeSelf n
+                if proceed then
+                    for element in List.rev (elements node) do
+                        stack.Push((element, true))
+        }
 
     /// <summary>
     /// Gets all of the descendants of this node that statisfy the given predicate
@@ -235,7 +239,7 @@ module HtmlNode =
 
     /// Returns true if the current node has the specified name
     let inline hasName (expectedName: string) n =
-        name n = expectedName.ToLowerInvariant()
+        String.Equals(name n, expectedName, StringComparison.OrdinalIgnoreCase)
 
     /// Returns true if the current node has the specified id
     let inline hasId id n = hasAttribute "id" id n
