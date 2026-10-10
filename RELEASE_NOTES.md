@@ -1,5 +1,9 @@
 # Release Notes
 
+## 8.2.1 - Sep 28 2026
+
+- Perf: `JsonSchema.validate` now caches compiled `Regex` instances per `pattern`, instead of recompiling a new `Regex` for every string value validated against a schema `pattern` constraint. No behavior change.
+
 ## 8.2.0 - Jul 06 2026
 
 - Fix: HTML hexadecimal character references (`&#x41;`) are now decoded correctly; previously digit-only hex refs were parsed as decimal and refs containing `a`–`f` were left as literal text.
