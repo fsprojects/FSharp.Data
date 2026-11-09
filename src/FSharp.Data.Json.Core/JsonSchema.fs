@@ -334,7 +334,7 @@ module JsonSchema =
                             match Array.tryFind (fun (name, _) -> name = parts.[0]) fields with
                             | Some(_, value) -> navigate value parts.[1..]
                             | None -> failwith $"Reference part '{parts.[0]}' not found"
-                        | _ -> failwith "Invalid reference path"
+                        | _ -> failwith $"Invalid reference path: '{path}' does not lead through a record"
 
                 let referencedValue = navigate rootSchema parts
                 parseSchema referencedValue

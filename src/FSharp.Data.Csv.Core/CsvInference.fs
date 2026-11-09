@@ -500,6 +500,7 @@ type CsvFile with
     /// <param name="assumeMissingValues"> - Assumes all columns can have missing values</param>
     /// <param name="preferOptionals"> - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values</param>
     /// <param name="unitsOfMeasureProvider"> - optional function to resolve Units of Measure</param>
+    /// <param name="inferenceMode"> - how to infer types: from values only, from values and units, or not at all</param>
     member internal x.InferColumnTypes
         (
             inferRows,
